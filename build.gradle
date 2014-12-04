@@ -63,6 +63,8 @@ processResources
 }
 
 task deobfJar(type: Jar) {
+	//baseName = 'ElecCore'
+	version = "Newest"
     from sourceSets.main.output
     classifier = 'dev'
 }
