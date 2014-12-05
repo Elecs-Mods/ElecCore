@@ -1,19 +1,6 @@
 [
 {
-  "modid": "ElecTweaks",
-  "name": "",
-  "version": "",
-  "mcversion": "$mcversion",
-  "description": "",
-  "credits": "",
-  "logoFile": "",
-  "url": "",
-  "updateUrl": "",
-  "authorList": [ "" ],
-  "parent": "",
-  "screenshots": [],
-  "dependencies": [
-     ""
-  ]
+  "modid": "ElecCore",
+  "version": "${version}"
 }
 ]
