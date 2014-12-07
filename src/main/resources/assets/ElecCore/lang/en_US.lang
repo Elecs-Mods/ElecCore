@@ -1,0 +1,17 @@
+##TAB
+itemGroup.Elecs_Mods=Elec's Mods
+
+##PhoenixMoney####################
+
+    ##Coins
+    item.Elec.Coin1.name=$1 Coin
+    item.Elec.Coin2.name=$2 Coin
+    item.Elec.Coin5.name=$5 Coin
+    item.Elec.Coin10.name=$10 Coin
+
+##################################
+
+
+##ELECTESTMOD#####################
+item.Elec.TestItem.name=TestItem
+##################################
