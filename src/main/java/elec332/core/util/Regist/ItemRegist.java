@@ -1,4 +1,4 @@
-package elec332.core.modBaseUtils.Regist;
+package elec332.core.util.Regist;
 
 import cpw.mods.fml.common.registry.GameRegistry;
 import elec332.core.main.ElecCTab;
@@ -8,11 +8,11 @@ public class ItemRegist extends Item{
 	
 	public static Item Item;
 
-	protected static void registerItem(Item mItem, String name) {
+	private static void registerItem(Item mItem, String name) {
 		GameRegistry.registerItem(mItem, name);
 	}
 	
-	protected static void AddItemEXP(Item item, String Itemname, int MaxStackSize) {
+	protected static void CreateItem(Item item, String Itemname, int MaxStackSize) {
 		SetStack(item, MaxStackSize);
 		item.setCreativeTab(ElecCTab.ElecTab);
 		item.setUnlocalizedName("Elec." + Itemname);
