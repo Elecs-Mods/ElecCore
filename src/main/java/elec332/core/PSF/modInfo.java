@@ -12,4 +12,6 @@ public class modInfo {
 	public static final String MODNAME_TWEAKS = "ElecTweaks";
 	public static final String MODID_TEST = "ElecTestMod";
 	public static final String MODNAME_TEST = "ElecTestMod";
+	public static final String MODID_MONEY = "PhoenixMoney";
+	public static final String MODNAME_MONEY = "PhoenixMoney";
 }
