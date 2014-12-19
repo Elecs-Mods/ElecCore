@@ -1,4 +1,4 @@
-package elec332.core.PSF;
+package elec332.core.modBaseUtils;
 
 public class modInfo {
 	

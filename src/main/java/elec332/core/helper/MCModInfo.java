@@ -1,4 +1,4 @@
-package elec332.core.util;
+package elec332.core.helper;
 
 import com.google.common.collect.Lists;
 import cpw.mods.fml.common.ModMetadata;
