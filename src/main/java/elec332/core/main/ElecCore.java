@@ -30,7 +30,7 @@ public class ElecCore extends ModBase{
 	public static CommonProxy proxy;
 
 	@Mod.Instance(modInfo.MODID_CORE)
-	public ElecCore instance;
+	public static ElecCore instance;
 
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
