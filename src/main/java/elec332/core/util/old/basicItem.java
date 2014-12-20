@@ -9,17 +9,13 @@ public class basicItem extends Item{
 	
 	public static Item Item;
 
-	private static void registerItem(Item mItem, String name) {
-		GameRegistry.registerItem(mItem, name);
-	}
-
 	@Deprecated
 	protected static void CreateItem(Item item, String Itemname, int MaxStackSize) {
 		SetStack(item, MaxStackSize);
 		item.setCreativeTab(ElecCTab.ElecTab);
 		item.setUnlocalizedName("Elec." + Itemname);
 		item.setTextureName("Elec:" + Itemname);
-        registerItem(item, Itemname);
+		registerHelper.registerItem(item, Itemname);
 	}
 	
 	private static void SetStack(Item item, int MaxStackSize){
