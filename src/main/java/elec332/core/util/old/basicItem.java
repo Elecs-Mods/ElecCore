@@ -1,6 +1,5 @@
 package elec332.core.util.old;
 
-import cpw.mods.fml.common.registry.GameRegistry;
 import elec332.core.helper.registerHelper;
 import elec332.core.main.ElecCTab;
 import net.minecraft.item.Item;
