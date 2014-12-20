@@ -1,9 +1,6 @@
 package elec332.core.config;
 
-import java.io.File;
 import net.minecraftforge.common.config.Configuration;
-
-
 
 public class ConfigCore{
 
@@ -47,5 +44,4 @@ public class ConfigCore{
 	public static void Init(){
 		config.save();
 	}*/
-
 }
