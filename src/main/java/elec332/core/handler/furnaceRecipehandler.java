@@ -4,10 +4,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import elec332.Furnaces.JFurnace;
+//import cpw.mods.fml.common.Loader;
 import net.minecraft.block.Block;
-import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
@@ -27,8 +25,10 @@ public class furnaceRecipehandler {
     private static final furnaceRecipehandler smeltingBase = new furnaceRecipehandler();
 
     private furnaceRecipehandler(){
-        this.func_151393_a(Blocks.iron_ore, new ItemStack(JFurnace.ironNugget), 0F);
-        this.func_151393_a(Blocks.gold_ore, new ItemStack(Items.gold_nugget), 0F);
+        //if(Loader.isModLoaded(modInfo.MODID_FURNACE)){
+        //    this.func_151393_a(Blocks.iron_ore, new ItemStack(JFurnace.ironNugget), 0F);
+        //    this.func_151393_a(Blocks.gold_ore, new ItemStack(Items.gold_nugget), 0F);
+        //}
     }
 
     public void func_151393_a(Block p_151393_1_, ItemStack p_151393_2_, float p_151393_3_)
