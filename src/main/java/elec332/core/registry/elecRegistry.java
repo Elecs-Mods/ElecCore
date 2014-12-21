@@ -10,18 +10,18 @@ import net.minecraft.item.ItemStack;
  */
 public class elecRegistry {
 
-    public static void addSecondarySmelting(Block input, ItemStack output, float xp)
+    public static void addSecondarySmelting(Block input, ItemStack output)
     {
-        furnaceRecipehandler.smelting().func_151393_a(input, output, xp);
+        furnaceRecipehandler.smelting().func_151393_a(input, output, 0.0F);
     }
 
-    public static void addSecondarySmelting(Item input, ItemStack output, float xp)
+    public static void addSecondarySmelting(Item input, ItemStack output)
     {
-        furnaceRecipehandler.smelting().func_151396_a(input, output, xp);
+        furnaceRecipehandler.smelting().func_151396_a(input, output, 0.0F);
     }
 
-    public static void addSecondarySmelting(ItemStack input, ItemStack output, float xp)
+    public static void addSecondarySmelting(ItemStack input, ItemStack output)
     {
-        furnaceRecipehandler.smelting().func_151394_a(input, output, xp);
+        furnaceRecipehandler.smelting().func_151394_a(input, output, 0.0F);
     }
 }
