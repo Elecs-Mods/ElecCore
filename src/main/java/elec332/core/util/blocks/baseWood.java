@@ -12,7 +12,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 public class baseWood extends baseblock{
 
    public baseWood(String blockName, CreativeTabs CreativeTab, FMLPreInitializationEvent event) {
-        super(Material.wood, blockName, CreativeTab, event, 2);
+        super(Material.wood, blockName, CreativeTab, event, 1);
     }
 
     @Override

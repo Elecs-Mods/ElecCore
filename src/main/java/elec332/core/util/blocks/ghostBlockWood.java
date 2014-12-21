@@ -10,7 +10,7 @@ import net.minecraft.world.World;
  */
 public class ghostBlockWood extends baseWood{
     public ghostBlockWood(String blockName, CreativeTabs CTab, FMLPreInitializationEvent event){
-        super(blockName, CTab, event, 1);
+        super(blockName, CTab, event);
     }
 
     @Override
