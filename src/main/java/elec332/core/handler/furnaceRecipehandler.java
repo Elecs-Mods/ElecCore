@@ -41,6 +41,7 @@ public class furnaceRecipehandler {
         this.func_151394_a(new ItemStack(p_151396_1_, 1, 32767), p_151396_2_, p_151396_3_);
     }
 
+    @SuppressWarnings("unchecked")
     public void func_151394_a(ItemStack p_151394_1_, ItemStack p_151394_2_, float p_151394_3_)
     {
         this.smeltingList.put(p_151394_1_, p_151394_2_);
