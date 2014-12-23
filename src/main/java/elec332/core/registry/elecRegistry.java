@@ -1,6 +1,6 @@
 package elec332.core.registry;
 
-import elec332.core.handler.furnaceRecipehandler;
+import elec332.Furnaces.handler.furnaceRecipehandler;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
