@@ -8,6 +8,7 @@ import java.util.List;
  */
 public class stringHelper {
 
+    @SuppressWarnings("unchecked")
     public static ArrayList<String> convertStringArrayToArraylist(String[] string) {
         ArrayList<String> stringList = new ArrayList<String>();
         for (String s : string) {
