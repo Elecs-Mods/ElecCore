@@ -11,9 +11,13 @@ import net.minecraft.item.Item;
  */
 public class baseItem extends Item{
     public baseItem(String name, CreativeTabs creativetab, FMLPreInitializationEvent event){
+        this(name, creativetab, modInfoHelper.getModID(event));
+    }
+
+    public baseItem(String name, CreativeTabs creativetab, String modID){
         setCreativeTab(creativetab);
-        setUnlocalizedName(modInfoHelper.getModID(event) + "." + name);
-        setTextureName(name);
+        setUnlocalizedName(modID + "." + name);
+        setTextureName(modID + ":" + name);
         registerHelper.registerItem(this, name);
     }
 }
