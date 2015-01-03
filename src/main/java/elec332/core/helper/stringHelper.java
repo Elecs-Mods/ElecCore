@@ -22,7 +22,7 @@ public class stringHelper {
 
         return Def;
     }
-    
+
     @SuppressWarnings("unchecked")
     public static ArrayList mergeArrays(ArrayList arrayList1, ArrayList arrayList2){
         ArrayList returnArraylist = new ArrayList();

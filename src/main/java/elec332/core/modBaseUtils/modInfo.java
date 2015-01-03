@@ -2,7 +2,7 @@ package elec332.core.modBaseUtils;
 
 public class modInfo {
 	
-	public static final String DEPENDENCIES = "required-after:Forge@[10.13.0.1230,)";
+	public static final String DEPENDENCIES = "required-after:Forge@[10.13.0.1230,);required-after:ElecCore";
 	public static final String ACCEPTEDMCVERSIONS = "[1.7.10]";
 	public static final String CLIENTPROXY = "elec332.core.proxies.ClientProxy";
 	public static final String COMMONPROXY = "elec332.core.proxies.CommonProxy";

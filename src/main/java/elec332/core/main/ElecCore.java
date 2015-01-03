@@ -14,7 +14,7 @@ import net.minecraftforge.common.config.Configuration;
 
 
 @Mod(modid = modInfo.MODID_CORE, name = modInfo.MODNAME_CORE, dependencies = modInfo.DEPENDENCIES,
-acceptedMinecraftVersions = modInfo.ACCEPTEDMCVERSIONS, useMetadata = true, canBeDeactivated = false)
+acceptedMinecraftVersions = "required-after:Forge@[10.13.0.1230,)", useMetadata = true, canBeDeactivated = false)
 public class ElecCore extends ModBase{
 
 	protected static Configuration config;
