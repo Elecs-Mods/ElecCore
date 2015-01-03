@@ -13,8 +13,8 @@ import elec332.core.proxies.CommonProxy;
 import net.minecraftforge.common.config.Configuration;
 
 
-@Mod(modid = modInfo.MODID_CORE, name = modInfo.MODNAME_CORE, dependencies = modInfo.DEPENDENCIES,
-acceptedMinecraftVersions = "required-after:Forge@[10.13.0.1230,)", useMetadata = true, canBeDeactivated = false)
+@Mod(modid = modInfo.MODID_CORE, name = modInfo.MODNAME_CORE, dependencies = "required-after:Forge@[10.13.0.1230,)",
+acceptedMinecraftVersions = modInfo.ACCEPTEDMCVERSIONS, useMetadata = true, canBeDeactivated = false)
 public class ElecCore extends ModBase{
 
 	protected static Configuration config;
