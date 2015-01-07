@@ -1,6 +1,7 @@
 package elec332.core.helper;
 
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraftforge.oredict.OreDictionary;
 
 /**
@@ -18,5 +19,9 @@ public class oredictHelper {
     }
     public static int getOredictItemDamage(int number, String OreDictname){
         return OreDictionary.getOres(OreDictname).get(number).getItemDamage();
+    }
+    public static ItemStack getFirstOreDictItemWithMeta(String Oredictname){ return getOreDictItemWithMeta(Oredictname, 0); }
+    public static ItemStack getOreDictItemWithMeta(String Oredictname, int entry){
+        return new ItemStack(getOredictEntry(entry, Oredictname), 1, getOredictItemDamage(entry, Oredictname));
     }
 }
