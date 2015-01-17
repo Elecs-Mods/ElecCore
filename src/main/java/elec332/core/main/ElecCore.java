@@ -5,8 +5,11 @@ import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+import elec332.core.handler.integration;
 import elec332.core.helper.FileHelper;
 import elec332.core.helper.MCModInfo;
+import elec332.core.helper.logHelper;
+import elec332.core.helper.modInfoHelper;
 import elec332.core.modBaseUtils.ModBase;
 import elec332.core.modBaseUtils.modInfo;
 import elec332.core.proxies.CommonProxy;
@@ -18,6 +21,8 @@ acceptedMinecraftVersions = modInfo.ACCEPTEDMCVERSIONS, useMetadata = true, canB
 public class ElecCore extends ModBase{
 
 	protected static Configuration config;
+	static String ModID;
+	public static logHelper logger = new logHelper(ModID);
 
 	//EXP	
 
@@ -32,6 +37,8 @@ public class ElecCore extends ModBase{
 
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
+		integration.init();
+		this.ModID = modInfoHelper.getModID(event);
 		this.config = new Configuration(FileHelper.getConfigFileElec(event));
 		loadConfiguration(config);
 
