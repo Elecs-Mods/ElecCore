@@ -44,15 +44,11 @@ public class ElecCore extends ModBase{
 
 		MCModInfo.CreateMCModInfoElec(event, "Provides core functionality for Elec's Mods",
 				"-", "assets/elec332/logo.png",	new String[]{"Elec332"});
-		if(elec332.core.main.config.isEnabled("TestItemEXP22222222", true)) {
-			System.out.println("jkhvhjtfydfyj");
-		}
 	}
 
 
 	@EventHandler
     public void init(FMLInitializationEvent event) {
 		loadConfiguration(config);
-		//ConfigCore.loadConfiguration(config);
     }
 }
