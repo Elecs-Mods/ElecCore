@@ -1,9 +1,11 @@
 package elec332.core.util.blocks;
 
+import codechicken.nei.api.ItemInfo;
 import elec332.core.helper.registerHelper;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockCrops;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 
 /**
  * Created by Elec332 on 28-12-2014.
@@ -16,6 +18,12 @@ public class baseCrop extends BlockCrops {
         this.setBlockName(modID + "." + blockName + "cropBlock");
         this.setBlockTextureName(modID + ":" + blockName);
         registerHelper.registerBlock(this, blockName + "cropBlock");
+        try {
+            ItemInfo.hiddenItems.add(new ItemStack(this));
+        }catch (Exception e){
+            System.out.println("NEI wasnt loaded, skipping NEI intergration");
+        }
+
         //seedItem = new baseSeed(blockName, modID, this);
     }
 
