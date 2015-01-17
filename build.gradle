@@ -15,6 +15,17 @@ buildscript {
     }
 }
 
+repositories {
+    maven {
+        name 'CB Maven FS'
+        url "http://chickenbones.net/maven/"
+    }
+    maven {
+        name 'ForgeFS'
+        url 'http://files.minecraftforge.net/maven'
+     }
+}
+
 apply plugin: 'forge'
 
 ext.configFile = file "build.properties"
