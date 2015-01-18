@@ -43,13 +43,14 @@ public class ElecCore extends ModBase{
 
 		MCModInfo.CreateMCModInfoElec(event, "Provides core functionality for Elec's Mods",
 				"-", "assets/elec332/logo.png",	new String[]{"Elec332"});
-		instance.info("");
+		notifyEvent(event);
 	}
 
 
 	@EventHandler
     public void init(FMLInitializationEvent event) {
 		loadConfiguration();
+		notifyEvent(event);
     }
 
 	@Override

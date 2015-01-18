@@ -8,11 +8,14 @@ import elec332.core.main.ElecCore;
  */
 public class integration {
 
-    public static boolean NEIIntergration = Loader.isModLoaded("NotEnoughItems");
+    public static boolean NEIIntergration = CFG("NotEnoughItems") && Loader.isModLoaded("NotEnoughItems");
 
     public static void init(){
-       // if (!NEIIntergration)
-            //ElecCore.instance.info("No NEI detected, skipping NEI integration...");
+        if (!NEIIntergration)
+            ElecCore.instance.info("No NEI detected, skipping NEI integration...");
     }
 
+    static Boolean CFG(String name){
+        return ElecCore.instance.config.isEnabled(name, true, "Integration");
+    }
 }

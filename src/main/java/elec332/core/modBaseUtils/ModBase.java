@@ -16,27 +16,23 @@ public abstract class ModBase extends logHelper {
     @Override
     public abstract String modID();
 
-    protected ConfigCore config;
+    public ConfigCore config;
 
     public void loadConfiguration(){
         if (config == null)
             this.config = new ConfigCore(configFile());
-        config.loadConfiguration();
+        config.syncConfiguration();
     }
 
-
-    String notifystuff = modID() + " has ";
     protected void notifyEvent(FMLPreInitializationEvent event){
-        info( notifystuff + event.getModState());
+        info(modID() + " has " + event.getModState());
     }
     protected void notifyEvent(FMLInitializationEvent event){
-        info( notifystuff + event.getModState());
+        info(modID() + " has " + event.getModState());
     }
     protected void notifyEvent(FMLPostInitializationEvent event){
-        info( notifystuff + event.getModState());
+        info(modID() + " has " + event.getModState());
     }
-
-
 
     @Deprecated
     public void loadConfiguration(Configuration config) {
