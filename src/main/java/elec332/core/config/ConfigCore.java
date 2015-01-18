@@ -1,47 +1,38 @@
 package elec332.core.config;
 
 import net.minecraftforge.common.config.Configuration;
+import net.minecraftforge.common.config.Property;
 
-public class ConfigCore{
+import java.io.File;
 
-	public static boolean isEnabled(Configuration config, String name, boolean def) {
-		return config.get("enable", name, def).getBoolean(def);
+public class ConfigCore extends Configuration{
+
+	public ConfigCore(File file){
+		super(file);
 	}
 
-	public static boolean AddCFG(Configuration config, String name, String category, boolean DEFAULT_VALUE, String description) {
-		return config.getBoolean(name, category, DEFAULT_VALUE, description);
+	//public abstract File configFile();
+
+	//Configuration configuration;
+
+	//public Property isEnabled(String name, boolean def) {
+	//	return configuration.get("enable", name, def).getBoolean(def);
+	//}
+
+	public Boolean isEnabled(String name, boolean defaultValue)
+	{
+		Property prop = get("enable", name, defaultValue);
+		return prop.getBoolean();
 	}
 
-
-
-
-
-
-
-	/*static Configuration config;
-	static File cfgFile;
-	static String MODCFGCALL = "Elec_Mods";
-
-	public static boolean isEnabled(String name, boolean def) {
-		return config.get("enable", name, def).getBoolean(def);
+	//public boolean AddCFG(String name, String category, boolean DEFAULT_VALUE, String description){
+	//	return getBoolean(name, category, DEFAULT_VALUE, description);
+	//}
+	public void loadConfiguration() {
+		load();
+		//if (config.hasChanged()){
+		save();
+		//}
 	}
 
-	public static boolean CFG(String name, boolean def){
-		return isEnabled(name, def);
-	}
-
-	public static boolean AddCFG(String name, String category, boolean DEFAULT_VALUE, String description){
-		return config.getBoolean(name, category, DEFAULT_VALUE, description);
-	}
-	public static void preInit(File file){
-
-		cfgFile = new File(file, MODCFGCALL+".cfg");
-		config = new Configuration(cfgFile);
-		config.load();
-	}
-
-
-	public static void Init(){
-		config.save();
-	}*/
 }

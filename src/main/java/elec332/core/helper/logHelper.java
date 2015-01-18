@@ -6,17 +6,13 @@ import org.apache.logging.log4j.Level;
 /**
  * Created by Elec332 on 17-1-2015.
  */
-public class logHelper {
+public abstract class logHelper {
 
-    public logHelper (String name) {
-        this.MODID = name;
-    }
-
-    static String MODID;
+    protected abstract String modID();
 
     public void log (Level logLevel, Object object)
     {
-        FMLLog.log(MODID, logLevel, String.valueOf(object));
+        FMLLog.log(modID(), logLevel, String.valueOf(object));
     }
 
     public void all(Object object) {

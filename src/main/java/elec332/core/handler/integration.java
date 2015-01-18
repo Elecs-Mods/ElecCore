@@ -11,8 +11,8 @@ public class integration {
     public static boolean NEIIntergration = Loader.isModLoaded("NotEnoughItems");
 
     public static void init(){
-        if (!NEIIntergration)
-            ElecCore.logger.info("No NEI detected, skipping NEI integration...");
+       // if (!NEIIntergration)
+            //ElecCore.instance.info("No NEI detected, skipping NEI integration...");
     }
 
 }
