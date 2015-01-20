@@ -14,15 +14,17 @@ import elec332.core.modBaseUtils.modInfo;
 import elec332.core.proxies.CommonProxy;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 
 
 @Mod(modid = modInfo.MODID_CORE, name = modInfo.MODNAME_CORE, dependencies = "required-after:Forge@[10.13.0.1230,)",
 acceptedMinecraftVersions = modInfo.ACCEPTEDMCVERSIONS, useMetadata = true, canBeDeactivated = false)
 public class ElecCore extends ModBase{
 
-	File cfgFile;
-	String ModID;
-
+	@SuppressWarnings("unchecked")
+	public static LinkedHashMap<String, ArrayList> Updates = new LinkedHashMap();
+	public static ArrayList<String> outdatedModList = new ArrayList<String>();
 	//EXP	
 
 	
@@ -40,9 +42,11 @@ public class ElecCore extends ModBase{
 		this.ModID = modInfoHelper.getModID(event);
 		loadConfiguration();
 		integration.init();
+		runUpdateCheck(event, "https://raw.githubusercontent.com/Elecs-Mods/ElecCore/master/build.properties");
 
 		MCModInfo.CreateMCModInfoElec(event, "Provides core functionality for Elec's Mods",
 				"-", "assets/elec332/logo.png",	new String[]{"Elec332"});
+		processVersionCheck();
 		notifyEvent(event);
 	}
 
@@ -52,6 +56,13 @@ public class ElecCore extends ModBase{
 		loadConfiguration();
 		notifyEvent(event);
     }
+
+	void processVersionCheck(){
+
+	}
+
+	File cfgFile;
+	String ModID;
 
 	@Override
 	public String modID(){

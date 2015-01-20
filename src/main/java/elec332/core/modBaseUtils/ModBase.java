@@ -5,9 +5,14 @@ import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import elec332.core.config.ConfigCore;
 import elec332.core.helper.logHelper;
+import elec332.core.helper.modInfoHelper;
+import elec332.core.main.ElecCore;
 import net.minecraftforge.common.config.Configuration;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.InputStreamReader;
+import java.net.URL;
 
 public abstract class ModBase extends logHelper {
 
@@ -42,6 +47,46 @@ public abstract class ModBase extends logHelper {
         //}
     }
 
+    boolean outdated = false;
+    boolean uptodate = false;
+    String onlineVer;
 
-
+    protected void runUpdateCheck(FMLPreInitializationEvent event, String versionURL){
+        event.getModLog().info("Starting version check");
+        String modVerO = modInfoHelper.getModVersion(event);
+        try {
+            BufferedReader reader = new BufferedReader(new InputStreamReader(new URL(versionURL).openStream()));
+                this.onlineVer = reader.readLine().replace("mod_version=", "");
+            reader.close();
+            //this.onlineVer ="1.3.0";
+        }catch (Exception e){
+            event.getModLog().warn("Couldn't run VersionCheck: ", e);
+        }
+        String[] unparsed= onlineVer.replace(".", " ").split(" ");
+        String qr[] = modVerO.replace(".", " ").split(" ");
+        if (unparsed.length == qr.length) {
+            for (int i = 0; i < unparsed.length; i++) {
+                String mr = qr[i];
+                String nr = unparsed[i];
+                int v = Integer.parseInt(nr);
+                if (!modVerO.equalsIgnoreCase(onlineVer)) {
+                    if (v < Integer.parseInt(mr))
+                        this.uptodate = true;
+                    if (!uptodate)
+                        if (v > Integer.parseInt(mr))
+                            this.outdated = true;
+                }
+            }
+        }else {
+            event.getModLog().warn("The online version length and the internal version length differs, report this to the mod author!");
+            event.getModLog().warn("Assuming you are using an outdated version");
+            this.outdated = true;
+        }
+        if (outdated) {
+            event.getModLog().info("Marking as outdated");
+            //ElecCore.outdatedModList.add(modInfoHelper.getModID(event));
+        }else
+            event.getModLog().info("Marking as up-to-date");
+        event.getModLog().info("Version check complete");
+    }
 }

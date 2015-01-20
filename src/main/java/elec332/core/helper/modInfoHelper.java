@@ -14,4 +14,8 @@ public class modInfoHelper {
     public static String getModname(FMLPreInitializationEvent event){
         return event.getModMetadata().name;
     }
+
+    public static String getModVersion(FMLPreInitializationEvent event){
+        return event.getModMetadata().version;
+    }
 }
