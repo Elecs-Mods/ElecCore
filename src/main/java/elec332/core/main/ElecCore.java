@@ -1,10 +1,12 @@
 package elec332.core.main;
 
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+import elec332.core.handler.FMLEventHandler;
 import elec332.core.handler.integration;
 import elec332.core.helper.FileHelper;
 import elec332.core.helper.MCModInfo;
@@ -43,10 +45,10 @@ public class ElecCore extends ModBase{
 		loadConfiguration();
 		integration.init();
 		runUpdateCheck(event, "https://raw.githubusercontent.com/Elecs-Mods/ElecCore/master/build.properties");
+		FMLCommonHandler.instance().bus().register(new FMLEventHandler());
 
 		MCModInfo.CreateMCModInfoElec(event, "Provides core functionality for Elec's Mods",
 				"-", "assets/elec332/logo.png",	new String[]{"Elec332"});
-		processVersionCheck();
 		notifyEvent(event);
 	}
 
@@ -56,10 +58,6 @@ public class ElecCore extends ModBase{
 		loadConfiguration();
 		notifyEvent(event);
     }
-
-	void processVersionCheck(){
-
-	}
 
 	File cfgFile;
 	String ModID;

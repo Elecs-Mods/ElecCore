@@ -13,6 +13,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.util.ArrayList;
 
 public abstract class ModBase extends logHelper {
 
@@ -52,8 +53,10 @@ public abstract class ModBase extends logHelper {
     String onlineVer;
 
     protected void runUpdateCheck(FMLPreInitializationEvent event, String versionURL){
+        String modID_V = modInfoHelper.getModID(event);
+        String versionInternal = modInfoHelper.getModVersion(event);
         event.getModLog().info("Starting version check");
-        String modVerO = modInfoHelper.getModVersion(event);
+        ArrayList<String> updateInfo = new ArrayList<String>();
         try {
             BufferedReader reader = new BufferedReader(new InputStreamReader(new URL(versionURL).openStream()));
                 this.onlineVer = reader.readLine().replace("mod_version=", "");
@@ -63,13 +66,13 @@ public abstract class ModBase extends logHelper {
             event.getModLog().warn("Couldn't run VersionCheck: ", e);
         }
         String[] unparsed= onlineVer.replace(".", " ").split(" ");
-        String qr[] = modVerO.replace(".", " ").split(" ");
+        String qr[] = versionInternal.replace(".", " ").split(" ");
         if (unparsed.length == qr.length) {
             for (int i = 0; i < unparsed.length; i++) {
                 String mr = qr[i];
                 String nr = unparsed[i];
                 int v = Integer.parseInt(nr);
-                if (!modVerO.equalsIgnoreCase(onlineVer)) {
+                if (!versionInternal.equalsIgnoreCase(onlineVer)) {
                     if (v < Integer.parseInt(mr))
                         this.uptodate = true;
                     if (!uptodate)
@@ -83,8 +86,11 @@ public abstract class ModBase extends logHelper {
             this.outdated = true;
         }
         if (outdated) {
+            updateInfo.add(versionInternal);
+            updateInfo.add(onlineVer);
             event.getModLog().info("Marking as outdated");
-            //ElecCore.outdatedModList.add(modInfoHelper.getModID(event));
+            ElecCore.outdatedModList.add(modID_V);
+            ElecCore.Updates.put(modID_V, updateInfo);
         }else
             event.getModLog().info("Marking as up-to-date");
         event.getModLog().info("Version check complete");
