@@ -2,7 +2,6 @@ package elec332.core.api.dimension;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import elec332.core.api.dimension.teleporter.Teleporter;
 import elec332.core.helper.registerHelper;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockPortal;
@@ -33,8 +32,15 @@ public class PortalBlock extends BlockPortal{
     }
 
     int DimID;
-    static Block portal;
+    static PortalBlock portal;
     static Block frame;
+
+    boolean vanillaTexture;
+
+    public PortalBlock vanillaTexture() {
+        this.vanillaTexture = true;
+        return this;
+    }
 
     public boolean func_150000_e(World p_150000_1_, int p_150000_2_, int p_150000_3_, int p_150000_4_) {
         PortalBlock.Size size = new PortalBlock.Size(p_150000_1_, p_150000_2_, p_150000_3_, p_150000_4_, 1);
@@ -54,9 +60,9 @@ public class PortalBlock extends BlockPortal{
         if(par5Entity.ridingEntity == null && par5Entity.riddenByEntity == null && par5Entity instanceof EntityPlayerMP) {
             EntityPlayerMP thePlayer = (EntityPlayerMP)par5Entity;
             if(par5Entity.dimension != DimID) {
-                thePlayer.mcServer.getConfigurationManager().transferPlayerToDimension(thePlayer, DimID, new Teleporter(thePlayer.mcServer.worldServerForDimension(DimID), portal, frame));
+                util.TPPlayerToDim(thePlayer, frame, portal, DimID);
             } else {
-                thePlayer.mcServer.getConfigurationManager().transferPlayerToDimension(thePlayer, 0, new Teleporter(thePlayer.mcServer.worldServerForDimension(0), portal, frame));
+                util.TPPlayerToDim(thePlayer, frame, portal, 0);
             }
         }
     }
@@ -80,6 +86,10 @@ public class PortalBlock extends BlockPortal{
     }
 
     public void updateTick(World par1World, int par2, int par3, int par4, Random par5Random) {
+    }
+
+    public void registerBlockIcons(IIconRegister iconRegister) {
+        this.blockIcon = iconRegister.registerIcon(vanillaTexture ? "portal" : this.getTextureName());
     }
 
     public static class Size {
