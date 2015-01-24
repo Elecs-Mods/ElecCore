@@ -36,9 +36,15 @@ public class PortalBlock extends BlockPortal{
     static Block frame;
 
     boolean vanillaTexture;
+    int timePortal = 10;
 
     public PortalBlock vanillaTexture() {
         this.vanillaTexture = true;
+        return this;
+    }
+
+    public PortalBlock setTeleportTime(int Time) {
+        this.timePortal = Time;
         return this;
     }
 
@@ -59,7 +65,11 @@ public class PortalBlock extends BlockPortal{
     public void onEntityCollidedWithBlock(World par1World, int par2, int par3, int par4, Entity par5Entity) {
         if(par5Entity.ridingEntity == null && par5Entity.riddenByEntity == null && par5Entity instanceof EntityPlayerMP) {
             EntityPlayerMP thePlayer = (EntityPlayerMP)par5Entity;
+            if(par5Entity.timeUntilPortal > 0){
+                par5Entity.timeUntilPortal = timePortal;
+            }
             if(par5Entity.dimension != DimID) {
+                par5Entity.timeUntilPortal = timePortal;
                 util.TPPlayerToDim(thePlayer, frame, portal, DimID);
             } else {
                 util.TPPlayerToDim(thePlayer, frame, portal, 0);
