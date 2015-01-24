@@ -68,10 +68,11 @@ public class PortalBlock extends BlockPortal{
             if(par5Entity.timeUntilPortal > 0){
                 par5Entity.timeUntilPortal = timePortal;
             }
-            if(par5Entity.dimension != DimID) {
+            else if(par5Entity.dimension != DimID) {
                 par5Entity.timeUntilPortal = timePortal;
                 util.TPPlayerToDim(thePlayer, frame, portal, DimID);
             } else {
+                par5Entity.timeUntilPortal = timePortal;
                 util.TPPlayerToDim(thePlayer, frame, portal, 0);
             }
         }
