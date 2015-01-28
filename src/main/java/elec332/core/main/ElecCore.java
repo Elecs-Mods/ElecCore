@@ -6,6 +6,8 @@ import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+import elec332.core.api.dimension.PortalBlurr;
+import elec332.core.api.dimension.teleporter.PlayerHandler;
 import elec332.core.handler.FMLEventHandler;
 import elec332.core.handler.integration;
 import elec332.core.helper.FileHelper;
@@ -14,6 +16,8 @@ import elec332.core.helper.modInfoHelper;
 import elec332.core.modBaseUtils.ModBase;
 import elec332.core.modBaseUtils.modInfo;
 import elec332.core.proxies.CommonProxy;
+import net.minecraft.client.Minecraft;
+import net.minecraftforge.common.MinecraftForge;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -46,6 +50,8 @@ public class ElecCore extends ModBase{
 		integration.init();
 		runUpdateCheck(event, "https://raw.githubusercontent.com/Elecs-Mods/ElecCore/master/build.properties");
 		FMLCommonHandler.instance().bus().register(new FMLEventHandler());
+		MinecraftForge.EVENT_BUS.register(new PortalBlurr(Minecraft.getMinecraft()));
+		FMLCommonHandler.instance().bus().register(new PlayerHandler());
 
 		MCModInfo.CreateMCModInfoElec(event, "Provides core functionality for Elec's Mods",
 				"-", "assets/elec332/logo.png",	new String[]{"Elec332"});

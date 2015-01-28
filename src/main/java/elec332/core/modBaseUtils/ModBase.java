@@ -62,9 +62,7 @@ public abstract class ModBase extends logHelper {
                 this.onlineVer = reader.readLine().replace("mod_version=", "");
             reader.close();
             //this.onlineVer ="1.3.0";
-        }catch (Exception e){
-            event.getModLog().warn("Couldn't run VersionCheck: ", e);
-        }
+
         String[] unparsed= onlineVer.replace(".", " ").split(" ");
         String qr[] = versionInternal.replace(".", " ").split(" ");
         if (unparsed.length == qr.length) {
@@ -94,5 +92,8 @@ public abstract class ModBase extends logHelper {
         }else
             event.getModLog().info("Marking as up-to-date");
         event.getModLog().info("Version check complete");
+        }catch (Exception e){
+            event.getModLog().warn("Couldn't run VersionCheck: ", e);
+        }
     }
 }
