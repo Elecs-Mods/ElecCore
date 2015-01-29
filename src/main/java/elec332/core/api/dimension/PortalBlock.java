@@ -1,24 +1,15 @@
 package elec332.core.api.dimension;
 
-import com.jordsta.stuff.Main;
-import com.jordsta.stuff.dimensions.teleporterDimension;
-import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import elec332.core.api.dimension.teleporter.PlayerHandler;
-import elec332.core.api.dimension.teleporter.Teleporter;
-import elec332.core.api.dimension.teleporter.Teleporter_NoPortal;
 import elec332.core.helper.registerHelper;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockPortal;
 import net.minecraft.block.material.Material;
-import net.minecraft.client.entity.EntityPlayerSP;
-import net.minecraft.client.gui.GuiIngame;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.util.Direction;
 import net.minecraft.world.World;
@@ -44,13 +35,12 @@ public class PortalBlock extends BlockPortal{
     static PortalBlock portal;
     static Block frame;
 
-    int TimeInPortal;
-    boolean vanillaTexture;
+    boolean vanillaTexture = true;
     static Integer timePortal = 10;
     boolean hasToBeSneaking = false;
 
-    public PortalBlock vanillaTexture() {
-        this.vanillaTexture = true;
+    public PortalBlock vanillaTexture(boolean b) {
+        this.vanillaTexture = b;
         return this;
     }
 
@@ -63,6 +53,10 @@ public class PortalBlock extends BlockPortal{
         //this.timePortal = 0;
         this.hasToBeSneaking = true;
         return this;
+    }
+
+    public boolean tryToCreatePortal(World world, int x, int y, int z){
+        return func_150000_e(world, x, y, z);
     }
 
     public boolean func_150000_e(World p_150000_1_, int p_150000_2_, int p_150000_3_, int p_150000_4_) {
@@ -83,35 +77,26 @@ public class PortalBlock extends BlockPortal{
     public void onEntityCollidedWithBlock(World world, int x, int y, int z, Entity par5Entity){
         if(par5Entity.ridingEntity == null && par5Entity.riddenByEntity == null && par5Entity instanceof EntityPlayerMP) {
             EntityPlayerMP thePlayer = (EntityPlayerMP) par5Entity;
-            //setPlayerInPortal(thePlayer);
-            PlayerHandler.setPlayerTPBool(thePlayer, true);
-            /*
-            int test = 10;
-
-
-            // int j = entityplayermp.dimension;
-            TimeInPortal++;
-            //if (TimeInPortal == test) {
-
-                //GuiIngame.func_130015_b;
-                if(par5Entity.timeUntilPortal > 0){
+            if (hasToBeSneaking){
+                if (thePlayer.isSneaking())
+                    executeTP(thePlayer);
+            }else {
+                if (par5Entity.timeUntilPortal > 0) {
                     par5Entity.timeUntilPortal = timePortal;
-                }
-                else if(par5Entity.dimension != DimID) {
-
-
-                    if (TimeInPortal == test){par5Entity.timeUntilPortal = timePortal;
-                        util.TPPlayerToDim(thePlayer, frame, portal, DimID);
-                        TimeInPortal = 0;
-                    }
                 } else {
-
-                    if (TimeInPortal == test) {par5Entity.timeUntilPortal = timePortal;
-                        util.TPPlayerToDim(thePlayer, frame, portal, 0);
-                        TimeInPortal = 0;
-                    }
+                    executeTP(thePlayer);
                 }
-            //}*/
+            }
+        }
+    }
+
+    void executeTP(EntityPlayerMP thePlayer){
+        if(thePlayer.dimension != DimID) {
+            thePlayer.timeUntilPortal = timePortal;
+            util.TPPlayerToDim(thePlayer, frame, portal, DimID);
+        } else {
+            thePlayer.timeUntilPortal = timePortal;
+            util.TPPlayerToDim(thePlayer, frame, portal, 0);
         }
     }
 

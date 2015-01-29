@@ -50,8 +50,8 @@ public class ElecCore extends ModBase{
 		integration.init();
 		runUpdateCheck(event, "https://raw.githubusercontent.com/Elecs-Mods/ElecCore/master/build.properties");
 		FMLCommonHandler.instance().bus().register(new FMLEventHandler());
-		MinecraftForge.EVENT_BUS.register(new PortalBlurr(Minecraft.getMinecraft()));
-		FMLCommonHandler.instance().bus().register(new PlayerHandler());
+		//MinecraftForge.EVENT_BUS.register(new PortalBlurr(Minecraft.getMinecraft()));
+		//FMLCommonHandler.instance().bus().register(new PlayerHandler());
 
 		MCModInfo.CreateMCModInfoElec(event, "Provides core functionality for Elec's Mods",
 				"-", "assets/elec332/logo.png",	new String[]{"Elec332"});
