@@ -8,6 +8,8 @@ import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.world.World;
 
 import java.util.Random;
 
@@ -25,6 +27,12 @@ public class baseblock extends Block{
         registerHelper.registerBlock(this, blockName);
     }
 
+    public baseblock setGhost(){
+        this.ghost = true;
+        return this;
+    }
+
+    boolean ghost;
     String name;
     String modID;
     int Dropped;
@@ -34,6 +42,15 @@ public class baseblock extends Block{
     public void registerBlockIcons(IIconRegister iconRegister) {
         blockIcon = iconRegister.registerIcon(modID + ":" + name);
     }
+
+    @Override
+    public AxisAlignedBB getCollisionBoundingBoxFromPool(World world, int x, int y, int z)
+    {
+        if (ghost)
+            return null;
+        return AxisAlignedBB.getBoundingBox((double)x + this.minX, (double)y + this.minY, (double)z + this.minZ, (double)x + this.maxX, (double)y + this.maxY, (double)z + this.maxZ);
+    }
+
 
     public int quantityDropped(Random random)
     {
