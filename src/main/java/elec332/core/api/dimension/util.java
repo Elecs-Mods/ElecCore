@@ -8,7 +8,7 @@ import net.minecraft.entity.player.EntityPlayerMP;
 /**
  * Created by Elec332 on 24-1-2015.
  */
-public class util {
+class util {
     public static void TPPlayerToDim(EntityPlayerMP thePlayer, Block frame, PortalBlock portal, int DimID){
         thePlayer.mcServer.getConfigurationManager().transferPlayerToDimension(thePlayer, DimID, new Teleporter(thePlayer.mcServer.worldServerForDimension(DimID), portal, frame));
     }

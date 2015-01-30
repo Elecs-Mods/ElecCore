@@ -1,4 +1,4 @@
-package elec332.core.api.dimension;
+package elec332.core.api.dimension.N_W;
 
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import elec332.core.main.ElecCore;

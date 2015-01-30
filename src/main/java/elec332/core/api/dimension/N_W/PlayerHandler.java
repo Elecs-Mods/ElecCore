@@ -1,4 +1,4 @@
-package elec332.core.api.dimension.teleporter;
+package elec332.core.api.dimension.N_W;
 
 /**
  * Created by Elec332 on 28-1-2015.
