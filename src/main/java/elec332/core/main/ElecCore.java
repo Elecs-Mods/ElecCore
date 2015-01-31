@@ -27,6 +27,7 @@ public class ElecCore extends ModBase{
 	@SuppressWarnings("unchecked")
 	public static LinkedHashMap<String, ArrayList> Updates = new LinkedHashMap();
 	public static ArrayList<String> outdatedModList = new ArrayList<String>();
+	public static boolean Debug;
 	//EXP	
 
 	
@@ -42,11 +43,11 @@ public class ElecCore extends ModBase{
 	public void preInit(FMLPreInitializationEvent event) {
 		this.cfgFile = FileHelper.getConfigFileElec(event);
 		this.ModID = modInfoHelper.getModID(event);
-
 		loadConfiguration();
 		integration.init();
 		runUpdateCheck(event, "https://raw.githubusercontent.com/Elecs-Mods/ElecCore/master/build.properties");
 		FMLCommonHandler.instance().bus().register(new FMLEventHandler());
+		Debug = config.isEnabled("Debug", false);
 		//MinecraftForge.EVENT_BUS.register(new PortalBlurr(Minecraft.getMinecraft()));
 		//FMLCommonHandler.instance().bus().register(new PlayerHandler());
 
