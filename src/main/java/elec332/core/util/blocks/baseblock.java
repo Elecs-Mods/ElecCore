@@ -8,6 +8,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.item.Item;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
 
@@ -29,9 +30,28 @@ public class baseblock extends Block{
 
     public baseblock setGhost(){
         this.ghost = true;
+        this.setNoOpaqueCube();
         return this;
     }
 
+    public baseblock setItemDropped(Item itemDropped){
+        this.dropped = itemDropped;
+        return this;
+    }
+
+    //I know vanilla has this, but that's a void, this isn't ;)
+    public baseblock setToolLevel(String toolClass, int level){
+        this.setHarvestLevel(toolClass, level);
+        return this;
+    }
+
+    public baseblock setNoOpaqueCube(){
+        this.opaqueCube = false;
+        return this;
+    }
+
+    Boolean opaqueCube;
+    Item dropped;
     boolean ghost;
     String name;
     String modID;
@@ -45,28 +65,31 @@ public class baseblock extends Block{
 
     @Override
     @SideOnly(Side.CLIENT)
-    protected String getTextureName()
-    {
+    protected String getTextureName(){
         if (this.textureName != null)
             return textureName;
         return modID + ":" + name;
     }
 
+    @Override
     public boolean isOpaqueCube(){
-        return !ghost;
+        return opaqueCube != null ? opaqueCube : true;
     }
 
     @Override
-    public AxisAlignedBB getCollisionBoundingBoxFromPool(World world, int x, int y, int z)
-    {
+    public AxisAlignedBB getCollisionBoundingBoxFromPool(World world, int x, int y, int z){
         if (ghost)
             return null;
         return AxisAlignedBB.getBoundingBox((double)x + this.minX, (double)y + this.minY, (double)z + this.minZ, (double)x + this.maxX, (double)y + this.maxY, (double)z + this.maxZ);
     }
 
-
-    public int quantityDropped(Random random)
-    {
+    @Override
+    public int quantityDropped(Random random){
         return Dropped;
+    }
+
+    @Override
+    public Item getItemDropped(int par1, Random rand, int par2){
+        return dropped != null ? dropped : super.getItemDropped(par1, rand, par2);
     }
 }
