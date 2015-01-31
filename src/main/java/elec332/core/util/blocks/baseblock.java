@@ -39,8 +39,21 @@ public class baseblock extends Block{
 
     @Override
     @SideOnly(Side.CLIENT)
-    public void registerBlockIcons(IIconRegister iconRegister) {
-        blockIcon = iconRegister.registerIcon(modID + ":" + name);
+    public void registerBlockIcons(IIconRegister iconRegister){
+        blockIcon = iconRegister.registerIcon(this.getTextureName());
+    }
+
+    @Override
+    @SideOnly(Side.CLIENT)
+    protected String getTextureName()
+    {
+        if (this.textureName != null)
+            return textureName;
+        return modID + ":" + name;
+    }
+
+    public boolean isOpaqueCube(){
+        return !ghost;
     }
 
     @Override
