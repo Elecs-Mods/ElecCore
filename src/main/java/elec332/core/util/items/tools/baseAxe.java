@@ -12,9 +12,10 @@ import net.minecraft.item.ItemAxe;
 public class baseAxe extends ItemAxe{
     public baseAxe(ToolMaterial mat, String name, CreativeTabs creativetab, FMLPreInitializationEvent event){
         super(mat);
+        String modName = modInfoHelper.getModID(event);
         setCreativeTab(creativetab);
-        setUnlocalizedName(modInfoHelper.getModID(event) + "." + name);
-        setTextureName(name);
+        setUnlocalizedName(modName + "." + name);
+        setTextureName(modName + ":" + name);
         registerHelper.registerItem(this, name);
     }
 }
