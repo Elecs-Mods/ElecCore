@@ -6,7 +6,7 @@ import java.util.List;
 /**
  * Created by Elec332 on 23-12-2014.
  */
-public class stringHelper {
+public class StringHelper {
 
     @SuppressWarnings("unchecked")
     public static ArrayList<String> convertStringArrayToArraylist(String[] string) {

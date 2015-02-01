@@ -1,6 +1,6 @@
 package elec332.core.util.items;
 
-import elec332.core.helper.registerHelper;
+import elec332.core.helper.RegisterHelper;
 import elec332.core.util.blocks.baseCrop;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
@@ -22,6 +22,6 @@ public class baseSeed extends ItemSeeds {
         this.setTextureName(modID + ":" + name + ".seed");
         //this.setMaxDamage(0);
         //this.setHasSubtypes(true);
-        registerHelper.registerItem(this, name + "seed");
+        RegisterHelper.registerItem(this, name + "seed");
     }
 }

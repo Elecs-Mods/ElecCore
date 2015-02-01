@@ -9,7 +9,7 @@ import net.minecraftforge.oredict.OreDictionary;
 /**
  * Created by Elec332 on 19-12-2014.
  */
-public class registerHelper {
+public class RegisterHelper {
 
     public void registerBlock(Block block){
         registerBlock(block, block.getUnlocalizedName().substring(5));

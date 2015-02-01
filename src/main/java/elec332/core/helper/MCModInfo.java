@@ -22,7 +22,7 @@ public class MCModInfo {
 
 	public static void CreateMCModInfo(FMLPreInitializationEvent event, String credits, String desc, String url, String logo, String[] authors)
 	{
-		CreateMCModInfo(event, modInfoHelper.getModID(event), modInfoHelper.getModname(event), credits, desc, url, logo, authors);
+		CreateMCModInfo(event, ModInfoHelper.getModID(event), ModInfoHelper.getModname(event), credits, desc, url, logo, authors);
 	}
 
 	public static void CreateMCModInfoElec(FMLPreInitializationEvent event, String desc, String url, String logo, String[] authors)

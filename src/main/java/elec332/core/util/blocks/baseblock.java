@@ -3,7 +3,7 @@ package elec332.core.util.blocks;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import elec332.core.helper.registerHelper;
+import elec332.core.helper.RegisterHelper;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
@@ -25,7 +25,7 @@ public class baseblock extends Block{
         setBlockName(modID + "." + blockName);
         setCreativeTab(CreativeTab);
         this.name = blockName;
-        registerHelper.registerBlock(this, blockName);
+        RegisterHelper.registerBlock(this, blockName);
     }
 
     public baseblock setGhost(){

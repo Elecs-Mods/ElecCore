@@ -5,10 +5,10 @@ import java.util.ArrayList;
 /**
  * Created by Elec332 on 16-1-2015.
  */
-public class arrayHelper {
-    public static ArrayList convertStringArrayToArraylist(Object[] string) {
-        return null;
-    }
+public class ArrayHelper {
+    //public static ArrayList convertStringArrayToArraylist(Object[] string) {
+    //    return null;
+    //}
 
     @SuppressWarnings("unchecked")
     public static ArrayList mergeArrays(ArrayList arrayList1, ArrayList arrayList2){

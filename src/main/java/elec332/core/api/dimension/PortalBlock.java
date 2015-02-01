@@ -2,7 +2,7 @@ package elec332.core.api.dimension;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import elec332.core.helper.registerHelper;
+import elec332.core.helper.RegisterHelper;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockPortal;
 import net.minecraft.block.material.Material;
@@ -28,7 +28,7 @@ public class PortalBlock extends BlockPortal{
         this.DimID = DimID;
         this.frame = frameBlock;
         this.portal = this;
-        registerHelper.registerBlock(this, name);
+        RegisterHelper.registerBlock(this, name);
     }
 
     int DimID;
@@ -93,10 +93,10 @@ public class PortalBlock extends BlockPortal{
     void executeTP(EntityPlayerMP thePlayer){
         if(thePlayer.dimension != DimID) {
             thePlayer.timeUntilPortal = timePortal;
-            util.TPPlayerToDim(thePlayer, frame, portal, DimID);
+            Util.TPPlayerToDim(thePlayer, frame, portal, DimID);
         } else {
             thePlayer.timeUntilPortal = timePortal;
-            util.TPPlayerToDim(thePlayer, frame, portal, 0);
+            Util.TPPlayerToDim(thePlayer, frame, portal, 0);
         }
     }
 

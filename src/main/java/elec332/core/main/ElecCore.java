@@ -7,10 +7,10 @@ import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import elec332.core.handler.FMLEventHandler;
-import elec332.core.handler.integration;
+import elec332.core.handler.Integration;
 import elec332.core.helper.FileHelper;
 import elec332.core.helper.MCModInfo;
-import elec332.core.helper.modInfoHelper;
+import elec332.core.helper.ModInfoHelper;
 import elec332.core.modBaseUtils.ModBase;
 import elec332.core.modBaseUtils.modInfo;
 import elec332.core.proxies.CommonProxy;
@@ -42,9 +42,9 @@ public class ElecCore extends ModBase{
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
 		this.cfgFile = FileHelper.getConfigFileElec(event);
-		this.ModID = modInfoHelper.getModID(event);
+		this.ModID = ModInfoHelper.getModID(event);
 		loadConfiguration();
-		integration.init();
+		Integration.init();
 		runUpdateCheck(event, "https://raw.githubusercontent.com/Elecs-Mods/ElecCore/master/build.properties");
 		FMLCommonHandler.instance().bus().register(new FMLEventHandler());
 		Debug = config.isEnabled("Debug", false);

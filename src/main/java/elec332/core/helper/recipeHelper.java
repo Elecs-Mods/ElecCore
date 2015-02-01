@@ -8,7 +8,7 @@ import net.minecraft.item.crafting.IRecipe;
 /**
  * Created by Elec332 on 3-1-2015.
  */
-public class recipeHelper {
+public class RecipeHelper {
 
     public static IRecipe addStorageRecipe(ItemStack Input, Item Output){
         return addStorageRecipe(Input, new ItemStack(Output));

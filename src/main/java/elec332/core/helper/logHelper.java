@@ -7,7 +7,7 @@ import org.apache.logging.log4j.Level;
 /**
  * Created by Elec332 on 17-1-2015.
  */
-public abstract class logHelper {
+public abstract class LogHelper {
 
     protected abstract String modID();
 

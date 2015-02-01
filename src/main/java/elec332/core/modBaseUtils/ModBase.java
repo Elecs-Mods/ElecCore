@@ -4,8 +4,8 @@ import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import elec332.core.config.ConfigCore;
-import elec332.core.helper.logHelper;
-import elec332.core.helper.modInfoHelper;
+import elec332.core.helper.LogHelper;
+import elec332.core.helper.ModInfoHelper;
 import elec332.core.main.ElecCore;
 import net.minecraftforge.common.config.Configuration;
 
@@ -15,7 +15,7 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.ArrayList;
 
-public abstract class ModBase extends logHelper {
+public abstract class ModBase extends LogHelper {
 
     protected abstract File configFile();
 
@@ -53,8 +53,8 @@ public abstract class ModBase extends logHelper {
     String onlineVer;
 
     protected void runUpdateCheck(FMLPreInitializationEvent event, String versionURL){
-        String modID_V = modInfoHelper.getModID(event);
-        String versionInternal = modInfoHelper.getModVersion(event);
+        String modID_V = ModInfoHelper.getModID(event);
+        String versionInternal = ModInfoHelper.getModVersion(event);
         event.getModLog().info("Starting version check");
         ArrayList<String> updateInfo = new ArrayList<String>();
         try {

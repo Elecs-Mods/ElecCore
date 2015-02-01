@@ -7,7 +7,7 @@ import net.minecraftforge.oredict.OreDictionary;
 /**
  * Created by Elec332 on 23-12-2014.
  */
-public class oredictHelper {
+public class OredictHelper {
     public static Item getFirstOredictEntry(String Oredictname){
         return getOredictEntry(0, Oredictname);
     }

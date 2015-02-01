@@ -6,12 +6,12 @@ import elec332.core.main.ElecCore;
 /**
  * Created by Elec332 on 17-1-2015.
  */
-public class integration {
+public class Integration {
 
-    public static boolean NEIIntergration = CFG("NotEnoughItems") && Loader.isModLoaded("NotEnoughItems");
+    public static boolean NEIIntegration = (CFG("NotEnoughItems") && Loader.isModLoaded("NotEnoughItems"));
 
     public static void init(){
-        if (!NEIIntergration)
+        if (!NEIIntegration)
             ElecCore.instance.info("No NEI detected, skipping NEI integration...");
     }
 
