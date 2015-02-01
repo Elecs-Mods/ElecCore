@@ -19,7 +19,7 @@ public class baseCrop extends BlockCrops {
         this.setBlockName(modID + "." + blockName + "cropBlock");
         this.setBlockTextureName(modID + ":" + blockName);
         RegisterHelper.registerBlock(this, blockName + "cropBlock");
-        if (Integration.NEBIntegration)
+        if (Integration.NEIIntegration)
             ItemInfo.hiddenItems.add(new ItemStack(this));
         //seedItem = new baseSeed(blockName, modID, this);
     }
