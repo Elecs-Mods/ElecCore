@@ -10,8 +10,10 @@ import java.io.File;
 public class FileHelper {
 
     public static File getConfigFileElec(FMLPreInitializationEvent event){
-        File cfgFile;
-        cfgFile = new File(event.getModConfigurationDirectory() + "/Elec's_Mods", event.getModMetadata().modId + ".cfg");
-        return cfgFile;
+        return new File(event.getModConfigurationDirectory() + "/Elec's_Mods", event.getModMetadata().modId + ".cfg");
+    }
+
+    public static File getCustomConfigFileElec(FMLPreInitializationEvent event, String folder, String fileName){
+        return new File(event.getModConfigurationDirectory() + "/Elec's_Mods/" + folder, fileName+".cfg");
     }
 }

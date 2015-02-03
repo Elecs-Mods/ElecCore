@@ -7,6 +7,7 @@ import elec332.core.config.ConfigCore;
 import elec332.core.helper.LogHelper;
 import elec332.core.helper.ModInfoHelper;
 import elec332.core.main.ElecCore;
+import net.minecraft.launchwrapper.Launch;
 import net.minecraftforge.common.config.Configuration;
 
 import java.io.BufferedReader;
@@ -51,6 +52,8 @@ public abstract class ModBase extends LogHelper {
     boolean outdated = false;
     boolean uptodate = false;
     String onlineVer;
+
+    public static boolean developmentEnvironment = (Boolean) Launch.blackboard.get("fml.deobfuscatedEnvironment");
 
     protected void runUpdateCheck(FMLPreInitializationEvent event, String versionURL){
         String modID_V = ModInfoHelper.getModID(event);
