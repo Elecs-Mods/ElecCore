@@ -5,7 +5,7 @@ import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import java.io.File;
 
 /**
- * Created by Arnout on 18-12-2014.
+ * Created by Elec332 on 18-12-2014.
  */
 public class FileHelper {
 

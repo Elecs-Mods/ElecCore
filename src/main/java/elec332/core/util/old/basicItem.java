@@ -4,6 +4,9 @@ import elec332.core.helper.RegisterHelper;
 import elec332.core.main.ElecCTab;
 import net.minecraft.item.Item;
 
+/**
+ * Created by Elec332.
+ */
 public class basicItem extends Item{
 	
 	public static Item Item;

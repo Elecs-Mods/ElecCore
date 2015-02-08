@@ -4,6 +4,9 @@ import net.minecraftforge.common.config.Configuration;
 
 import java.io.File;
 
+/**
+ * Created by Elec332.
+ */
 public class ConfigCore extends Configuration{
 
 	public ConfigCore(File file){

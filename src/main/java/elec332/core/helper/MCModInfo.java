@@ -4,6 +4,9 @@ import com.google.common.collect.Lists;
 import cpw.mods.fml.common.ModMetadata;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 
+/**
+ * Created by Elec332.
+ */
 public class MCModInfo {
 
 	public static void CreateMCModInfo(FMLPreInitializationEvent event, String modid, String name, String version, String credits, String desc, String url, String logo, String[] authors)

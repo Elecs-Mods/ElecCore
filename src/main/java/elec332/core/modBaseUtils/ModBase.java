@@ -16,6 +16,9 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.ArrayList;
 
+/**
+ * Created by Elec332.
+ */
 public abstract class ModBase extends LogHelper {
 
     protected abstract File configFile();

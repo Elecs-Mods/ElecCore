@@ -13,7 +13,6 @@ import java.util.ArrayList;
  * Created by Elec332 on 20-1-2015.
  */
 public class FMLEventHandler extends ElecCore{
-
     @SubscribeEvent
     public void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
         if (event.player instanceof EntityPlayerMP) {

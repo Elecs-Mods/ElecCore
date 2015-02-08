@@ -6,6 +6,9 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 
+/**
+ * Created by Elec332.
+ */
 public class ElecCTab {
 
 	public static CreativeTabs ElecTab = new CreativeTabs("Elecs_Mods") {
