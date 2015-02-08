@@ -3,6 +3,7 @@ package elec332.core.util.blocks;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import elec332.core.helper.ModInfoHelper;
 import elec332.core.helper.RegisterHelper;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -18,14 +19,23 @@ import java.util.Random;
  * Created by Elec332 on 20-12-2014.
  */
 public class baseblock extends Block{
-    public baseblock(Material baseMaterial, String blockName, CreativeTabs CreativeTab, FMLPreInitializationEvent event, int setQuantitydropped) {
+    public baseblock(Material baseMaterial, String blockName, FMLPreInitializationEvent event) {
         super(baseMaterial);
-        this.modID = event.getModMetadata().modId;
-        this.Dropped = setQuantitydropped;
+        this.modID = ModInfoHelper.getModID(event);
         setBlockName(modID + "." + blockName);
-        setCreativeTab(CreativeTab);
         this.name = blockName;
         RegisterHelper.registerBlock(this, blockName);
+    }
+
+    public baseblock(Material baseMaterial, String blockName, FMLPreInitializationEvent event, CreativeTabs CreativeTab) {
+        this(baseMaterial, blockName, event);
+        setCreativeTab(CreativeTab);
+    }
+
+    @Deprecated
+    public baseblock(Material baseMaterial, String blockName, CreativeTabs CreativeTab, FMLPreInitializationEvent event, int setQuantityDropped) {
+        this(baseMaterial, blockName, event, CreativeTab);
+        this.Dropped = setQuantityDropped;
     }
 
     public baseblock setGhost(){
@@ -47,6 +57,11 @@ public class baseblock extends Block{
 
     public baseblock setNoOpaqueCube(){
         this.opaqueCube = false;
+        return this;
+    }
+
+    public baseblock setQuantityDropped(int setQuantityDropped){
+        this.Dropped = setQuantityDropped;
         return this;
     }
 
