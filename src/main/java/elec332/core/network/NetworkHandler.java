@@ -1,5 +1,6 @@
 package elec332.core.network;
 
+import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import cpw.mods.fml.relauncher.Side;
 
@@ -8,13 +9,14 @@ import cpw.mods.fml.relauncher.Side;
  */
 public class NetworkHandler {
     public NetworkHandler(String channelName){
-        this.name = channelName;
+        this.channelName = channelName.toLowerCase();
+        this.networkWrapper = new SimpleNetworkWrapper(this.channelName);
     }
 
-    String name;
+    String channelName;
     int i = 0;
 
-    SimpleNetworkWrapper networkWrapper = new SimpleNetworkWrapper(name);
+    SimpleNetworkWrapper networkWrapper;
 
     public void registerServerPacket(Class<? extends AbstractPacket> packetClass){
         register(packetClass, Side.SERVER);
@@ -26,6 +28,10 @@ public class NetworkHandler {
 
     public SimpleNetworkWrapper getNetworkWrapper() {
         return networkWrapper;
+    }
+
+    public String getChannelName() {
+        return channelName;
     }
 
     @SuppressWarnings("unchecked")
