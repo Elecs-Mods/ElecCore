@@ -2,3 +2,9 @@
 build/
 build.bat
 *.db
+eclipse/
+out/
+*.iws
+*.ipr
+*.iml
+src/main/resources/META-INF/eleccore_at.cfg
