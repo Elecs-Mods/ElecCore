@@ -47,7 +47,7 @@ public class ElecCore extends ModBase{
 		this.ModID = ModInfoHelper.getModID(event);
 		loadConfiguration();
 		Integration.init();
-		runUpdateCheck(event, "https://raw.githubusercontent.com/Elecs-Mods/ElecCore/master/build.properties");
+		//runUpdateCheck(event, "https://raw.githubusercontent.com/Elecs-Mods/ElecCore/master/build.properties");
 		FMLCommonHandler.instance().bus().register(new FMLEventHandler());
 		Debug = config.isEnabled("Debug", false);
 		//MinecraftForge.EVENT_BUS.register(new PortalBlurr(Minecraft.getMinecraft()));
