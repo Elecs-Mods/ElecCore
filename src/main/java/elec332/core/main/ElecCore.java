@@ -23,7 +23,7 @@ import java.util.LinkedHashMap;
  * Created by Elec332.
  */
 @Mod(modid = modInfo.MODID_CORE, name = modInfo.MODNAME_CORE, dependencies = "required-after:Forge@[10.13.0.1230,)",
-acceptedMinecraftVersions = modInfo.ACCEPTEDMCVERSIONS, useMetadata = true, canBeDeactivated = false)
+acceptedMinecraftVersions = modInfo.ACCEPTEDMCVERSIONS, version = "#ELECCORE_VER#", useMetadata = true, canBeDeactivated = false)
 public class ElecCore extends ModBase{
 
 	@SuppressWarnings("unchecked")

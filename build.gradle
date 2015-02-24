@@ -43,6 +43,9 @@ archivesBaseName = "ElecCore"
 minecraft {
     version = config.minecraft_version + "-" + config.forge_version
     runDir = "eclipse"
+	
+	replaceIn "main/ElecCore.java"
+    replace "#ELECCORE_VER#", (config.mod_version+"."+(System.env.DRONE_BUILD_NUMBER ?: "9999.custom"))
 }
 
 dependencies {
@@ -60,7 +63,7 @@ processResources
         include 'mcmod.info'
                 
         // replace version and mcversion
-        expand 'version':config.mod_version, 'mcversion':config.minecraft_version
+        expand 'version':(config.mod_version+"."+(System.env.DRONE_BUILD_NUMBER ?: "9999.custom")), 'mcversion':config.minecraft_version
     }
         
     // copy everything else, thats not the mcmod.info
