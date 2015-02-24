@@ -9,11 +9,19 @@ import java.io.File;
  */
 public class FileHelper {
 
+    public static File getElecConfigFolder(FMLPreInitializationEvent event){
+        return new File(event.getModConfigurationDirectory(), "/Elec's Mods");
+    }
+
     public static File getConfigFileElec(FMLPreInitializationEvent event){
-        return new File(event.getModConfigurationDirectory() + "/Elec's_Mods", event.getModMetadata().modId + ".cfg");
+        return new File(getElecConfigFolder(event), ModInfoHelper.getModname(event) + ".cfg");
+    }
+
+    public static File getCustomConfigFolderElec(FMLPreInitializationEvent event, String folder){
+        return new File(getElecConfigFolder(event), folder);
     }
 
     public static File getCustomConfigFileElec(FMLPreInitializationEvent event, String folder, String fileName){
-        return new File(event.getModConfigurationDirectory() + "/Elec's_Mods/" + folder, fileName+".cfg");
+        return new File(getCustomConfigFolderElec(event, folder), fileName+".cfg");
     }
 }
