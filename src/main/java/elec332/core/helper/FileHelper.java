@@ -14,7 +14,7 @@ public class FileHelper {
     }
 
     public static File getConfigFileElec(FMLPreInitializationEvent event){
-        return new File(getElecConfigFolder(event), ModInfoHelper.getModname(event) + ".cfg");
+        return new File(getElecConfigFolder(event), ModInfoHelper.getModID(event) + ".cfg");
     }
 
     public static File getCustomConfigFolderElec(FMLPreInitializationEvent event, String folder){
