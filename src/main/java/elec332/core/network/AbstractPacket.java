@@ -12,13 +12,13 @@ public abstract class AbstractPacket implements IMessage, IMessageHandler<Abstra
 
     @Override
     public void fromBytes(ByteBuf buf) {
-
     }
 
     @Override
     public void toBytes(ByteBuf buf) {
-
     }
+
+    public Object networkPackageObject;
 
     @Override
     public abstract IMessage onMessage(AbstractPacket message, MessageContext ctx);
