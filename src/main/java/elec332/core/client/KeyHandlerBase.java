@@ -8,6 +8,7 @@ import cpw.mods.fml.common.gameevent.InputEvent;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.settings.KeyBinding;
+import org.lwjgl.input.Keyboard;
 
 import java.util.ArrayList;
 
@@ -16,6 +17,7 @@ import java.util.ArrayList;
  */
 public abstract class KeyHandlerBase {
     ArrayList<KeyBinding> keyBindings;
+    ArrayList<String> keyBindingNames;
     protected static KeyHandlerBase KHB;
 
     public KeyHandlerBase() {
@@ -33,10 +35,27 @@ public abstract class KeyHandlerBase {
         }
     }
 
-    protected void registerKeyBinding(KeyBinding keyBinding){
+    public void registerKeyBinding(KeyBinding keyBinding){
         ClientRegistry.registerKeyBinding(keyBinding);
         keyBindings.add(keyBinding);
+        keyBindingNames.add(keyBinding.getKeyDescription());
     }
+
+    public void registerKeyBinding(String buttonName, int KeyBoardKey, String unlocalisedGroupName){
+        KeyBinding keyBinding = new KeyBinding(buttonName, KeyBoardKey, unlocalisedGroupName);
+        ClientRegistry.registerKeyBinding(keyBinding);
+        keyBindings.add(keyBinding);
+        keyBindingNames.add(keyBinding.getKeyDescription());
+    }
+
+    public KeyBinding getKeyBinding(String s){
+        if (keyBindingNames.contains(s)){
+            return keyBindings.get(keyBindingNames.indexOf(s));
+        }
+        return null;
+    }
+
+
 
     public abstract void performAction(KeyBinding key);
 }
