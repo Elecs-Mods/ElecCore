@@ -8,7 +8,6 @@ import cpw.mods.fml.common.gameevent.InputEvent;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.settings.KeyBinding;
-import org.lwjgl.input.Keyboard;
 
 import java.util.ArrayList;
 
@@ -21,6 +20,8 @@ public abstract class KeyHandlerBase {
     protected static KeyHandlerBase KHB;
 
     public KeyHandlerBase() {
+        keyBindings = new ArrayList<KeyBinding>();
+        keyBindingNames = new ArrayList<String>();
         FMLCommonHandler.instance().bus().register(this);
         KHB = this;
     }
