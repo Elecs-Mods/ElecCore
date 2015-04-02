@@ -7,6 +7,10 @@ import net.minecraft.item.ItemStack;
  */
 public class ItemHelper {
 
+    public static boolean areItemsEqual(ItemStack itemStack1, ItemStack itemStack2){
+        return itemStack1 != null && itemStack2 != null && itemStack1.getItem() == itemStack2.getItem() && itemStack1.getItemDamage() == itemStack2.getItemDamage();
+    }
+
     public static ItemStack getNuggetFromOre(String Ore){
         return getNuggetFromOre(Ore, 1);
     }
@@ -16,8 +20,7 @@ public class ItemHelper {
         try{
             return new ItemStack(OredictHelper.getFirstOredictEntry(nuggetName),Amount , OredictHelper.getFirstOredictItemDamage(nuggetName));
         }catch (Exception e){
-
+            return null;
         }
-        return null;
     }
 }

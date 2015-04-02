@@ -1,7 +1,7 @@
 package elec332.core.helper;
 
 import cpw.mods.fml.common.FMLLog;
-import elec332.core.main.ElecCore;
+import elec332.core.config.ConfigCore;
 import org.apache.logging.log4j.Level;
 
 /**
@@ -10,6 +10,8 @@ import org.apache.logging.log4j.Level;
 public abstract class LogHelper {
 
     protected abstract String modID();
+
+    protected abstract ConfigCore configCore();
 
     public void log (Level logLevel, Object object)
     {
@@ -21,8 +23,8 @@ public abstract class LogHelper {
     }
 
     public void debug(Object object) {
-        if (ElecCore.Debug)
-            log(Level.DEBUG, object);
+        if (configCore().get(ConfigCore.CATEGORY_GENERAL, "Log Debug", false).getBoolean())
+            info(object);
     }
 
     public void error(Object object) {

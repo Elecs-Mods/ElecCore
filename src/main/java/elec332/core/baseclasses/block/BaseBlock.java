@@ -1,4 +1,4 @@
-package elec332.core.util.blocks;
+package elec332.core.baseclasses.block;
 
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.relauncher.Side;
@@ -18,8 +18,8 @@ import java.util.Random;
 /**
  * Created by Elec332 on 20-12-2014.
  */
-public class baseblock extends Block{
-    public baseblock(Material baseMaterial, String blockName, FMLPreInitializationEvent event) {
+public class BaseBlock extends Block{
+    public BaseBlock(Material baseMaterial, String blockName, FMLPreInitializationEvent event) {
         super(baseMaterial);
         this.modID = ModInfoHelper.getModID(event);
         setBlockName(modID + "." + blockName);
@@ -27,40 +27,40 @@ public class baseblock extends Block{
         RegisterHelper.registerBlock(this, blockName);
     }
 
-    public baseblock(Material baseMaterial, String blockName, FMLPreInitializationEvent event, CreativeTabs CreativeTab) {
+    public BaseBlock(Material baseMaterial, String blockName, FMLPreInitializationEvent event, CreativeTabs CreativeTab) {
         this(baseMaterial, blockName, event);
         setCreativeTab(CreativeTab);
     }
 
     @Deprecated
-    public baseblock(Material baseMaterial, String blockName, CreativeTabs CreativeTab, FMLPreInitializationEvent event, int setQuantityDropped) {
+    public BaseBlock(Material baseMaterial, String blockName, CreativeTabs CreativeTab, FMLPreInitializationEvent event, int setQuantityDropped) {
         this(baseMaterial, blockName, event, CreativeTab);
         this.Dropped = setQuantityDropped;
     }
 
-    public baseblock setGhost(){
+    public BaseBlock setGhost(){
         this.ghost = true;
         this.setNoOpaqueCube();
         return this;
     }
 
-    public baseblock setItemDropped(Item itemDropped){
+    public BaseBlock setItemDropped(Item itemDropped){
         this.dropped = itemDropped;
         return this;
     }
 
     //I know vanilla has this, but that's a void, this isn't ;)
-    public baseblock setToolLevel(String toolClass, int level){
+    public BaseBlock setToolLevel(String toolClass, int level){
         this.setHarvestLevel(toolClass, level);
         return this;
     }
 
-    public baseblock setNoOpaqueCube(){
+    public BaseBlock setNoOpaqueCube(){
         this.opaqueCube = false;
         return this;
     }
 
-    public baseblock setQuantityDropped(int setQuantityDropped){
+    public BaseBlock setQuantityDropped(int setQuantityDropped){
         this.Dropped = setQuantityDropped;
         return this;
     }

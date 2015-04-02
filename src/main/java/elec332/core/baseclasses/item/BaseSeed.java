@@ -1,7 +1,7 @@
-package elec332.core.util.items;
+package elec332.core.baseclasses.item;
 
+import elec332.core.baseclasses.block.BaseCrop;
 import elec332.core.helper.RegisterHelper;
-import elec332.core.util.blocks.baseCrop;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemSeeds;
@@ -9,12 +9,12 @@ import net.minecraft.item.ItemSeeds;
 /**
  * Created by Elec332 on 29-12-2014.
  */
-public class baseSeed extends ItemSeeds {
-    public baseSeed(String name, String modID, Item cropItem){
-        this(name, modID, cropItem, new baseCrop(name, modID));
+public class BaseSeed extends ItemSeeds {
+    public BaseSeed(String name, String modID, Item cropItem){
+        this(name, modID, cropItem, new BaseCrop(name, modID));
     }
 
-    protected baseSeed(String name, String modID, Item cropItem, baseCrop block) {
+    protected BaseSeed(String name, String modID, Item cropItem, BaseCrop block) {
         super(block, Blocks.farmland);
         block.seed(this);
         block.crop(cropItem);

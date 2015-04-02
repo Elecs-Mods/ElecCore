@@ -5,9 +5,11 @@ import cpw.mods.fml.common.gameevent.PlayerEvent;
 import elec332.core.main.ElecCore;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.ChatComponentText;
-import static net.minecraft.util.EnumChatFormatting.*;
 
 import java.util.ArrayList;
+
+import static net.minecraft.util.EnumChatFormatting.GOLD;
+import static net.minecraft.util.EnumChatFormatting.RED;
 
 /**
  * Created by Elec332 on 20-1-2015.

@@ -1,4 +1,4 @@
-package elec332.core.util.blocks;
+package elec332.core.baseclasses.block;
 
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.relauncher.Side;
@@ -14,9 +14,9 @@ import java.util.Random;
 /**
  * Created by Elec332 on 20-12-2014.
  */
-public class baseBlockGravity extends BlockFalling{
+public class BaseBlockGravity extends BlockFalling{
     //Just an copy of baseBlock, but I cant extend 2 classes at the same time ;)
-    public baseBlockGravity(Material baseMaterial, String blockName, CreativeTabs CreativeTab, FMLPreInitializationEvent event, int setQuantitydropped) {
+    public BaseBlockGravity(Material baseMaterial, String blockName, CreativeTabs CreativeTab, FMLPreInitializationEvent event, int setQuantitydropped) {
         super(baseMaterial);
         this.modID = event.getModMetadata().modId;
         this.Dropped = setQuantitydropped;

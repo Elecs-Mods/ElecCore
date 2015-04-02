@@ -1,7 +1,6 @@
 package elec332.core.helper;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by Elec332 on 23-12-2014.
@@ -21,5 +20,9 @@ public class StringHelper {
         Arraylist.toArray(Def);
 
         return Def;
+    }
+
+    public static String uppercaseFully(String s){
+        return s.toUpperCase();
     }
 }

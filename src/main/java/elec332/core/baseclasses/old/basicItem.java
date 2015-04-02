@@ -1,4 +1,4 @@
-package elec332.core.util.old;
+package elec332.core.baseclasses.old;
 
 import elec332.core.helper.RegisterHelper;
 import elec332.core.main.ElecCTab;

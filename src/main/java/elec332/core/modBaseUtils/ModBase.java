@@ -28,6 +28,11 @@ public abstract class ModBase extends LogHelper {
 
     public ConfigCore config;
 
+    @Override
+    protected ConfigCore configCore() {
+        return config;
+    }
+
     public void loadConfiguration(){
         if (config == null)
             this.config = new ConfigCore(configFile());

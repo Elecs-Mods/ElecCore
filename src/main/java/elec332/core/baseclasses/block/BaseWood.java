@@ -1,4 +1,4 @@
-package elec332.core.util.blocks;
+package elec332.core.baseclasses.block;
 
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import net.minecraft.block.material.Material;
@@ -9,9 +9,9 @@ import net.minecraftforge.common.util.ForgeDirection;
 /**
  * Created by Elec332 on 19-12-2014.
  */
-public class baseWood extends baseblock{
+public class BaseWood extends BaseBlock {
 
-   public baseWood(String blockName, CreativeTabs CreativeTab, FMLPreInitializationEvent event) {
+   public BaseWood(String blockName, CreativeTabs CreativeTab, FMLPreInitializationEvent event) {
         super(Material.wood, blockName, CreativeTab, event, 1);
     }
 
