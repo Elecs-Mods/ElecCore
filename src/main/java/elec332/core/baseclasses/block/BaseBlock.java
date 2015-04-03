@@ -20,22 +20,14 @@ import java.util.Random;
  */
 public class BaseBlock extends Block{
     public BaseBlock(Material baseMaterial, String blockName, FMLPreInitializationEvent event) {
-        super(baseMaterial);
-        this.modID = ModInfoHelper.getModID(event);
+       this(baseMaterial, blockName, ModInfoHelper.getModID(event));
+    }
+    public BaseBlock(Material material, String blockName, String modID){
+        super(material);
+        this.modID = modID;
         setBlockName(modID + "." + blockName);
         this.name = blockName;
         RegisterHelper.registerBlock(this, blockName);
-    }
-
-    public BaseBlock(Material baseMaterial, String blockName, FMLPreInitializationEvent event, CreativeTabs CreativeTab) {
-        this(baseMaterial, blockName, event);
-        setCreativeTab(CreativeTab);
-    }
-
-    @Deprecated
-    public BaseBlock(Material baseMaterial, String blockName, CreativeTabs CreativeTab, FMLPreInitializationEvent event, int setQuantityDropped) {
-        this(baseMaterial, blockName, event, CreativeTab);
-        this.Dropped = setQuantityDropped;
     }
 
     public BaseBlock setGhost(){

@@ -11,9 +11,13 @@ import net.minecraftforge.common.util.ForgeDirection;
  */
 public class BaseWood extends BaseBlock {
 
-   public BaseWood(String blockName, CreativeTabs CreativeTab, FMLPreInitializationEvent event) {
-        super(Material.wood, blockName, CreativeTab, event, 1);
+    public BaseWood(String blockName, String modID){
+        super(Material.wood, blockName, modID);
     }
+
+   public BaseWood(String blockName, FMLPreInitializationEvent event) {
+        super(Material.wood, blockName, event);
+   }
 
     @Override
     public int getFlammability(IBlockAccess world, int x, int y, int z, ForgeDirection face) {

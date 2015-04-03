@@ -9,7 +9,7 @@ import net.minecraft.creativetab.CreativeTabs;
  */
 public class BaseRock extends BaseBlock {
 
-    public BaseRock(String blockName, CreativeTabs CreativeTab, FMLPreInitializationEvent event){
-        super(Material.rock, blockName, CreativeTab, event, 1);
+    public BaseRock(String blockName, FMLPreInitializationEvent event){
+        super(Material.rock, blockName, event);
     }
 }
