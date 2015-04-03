@@ -1,6 +1,6 @@
 package elec332.core.baseclasses.block;
 
-//import codechicken.nei.api.ItemInfo;
+import codechicken.nei.api.ItemInfo;
 import cpw.mods.fml.common.Loader;
 import elec332.core.handler.Integration;
 import elec332.core.helper.RegisterHelper;
@@ -21,8 +21,8 @@ public class BaseCrop extends BlockCrops {
         this.setBlockName(modID + "." + blockName + "cropBlock");
         this.setBlockTextureName(modID + ":" + blockName);
         RegisterHelper.registerBlock(this, blockName + "cropBlock");
-        //if (Integration.NEIIntegration)
-            //ItemInfo.hiddenItems.add(new ItemStack(this));
+        if (Integration.NEIIntegration)
+            ItemInfo.hiddenItems.add(new ItemStack(this));
         //seedItem = new baseSeed(blockName, modID, this);
     }
 
