@@ -36,7 +36,7 @@ public abstract class WorldGen implements IWorldGenerator {
         GameRegistry.registerWorldGenerator(this, 1000);
     }
 
-    private void generateEnd(World world, Random random, int chunkX, int chunkZ, WorldGenInfo info) {
+    public void generateEnd(World world, Random random, int chunkX, int chunkZ, WorldGenInfo info) {
         if (info.getShouldGen()){
             for (int i = 0; i < info.timesPerChunk * info.getGenerationMultiplier(); i++) {
                 int xCoord = chunkX + random.nextInt(16);
@@ -47,7 +47,7 @@ public abstract class WorldGen implements IWorldGenerator {
         }
     }
 
-    private void generateNether(World world, Random random, int chunkX, int chunkZ, WorldGenInfo info) {
+    public void generateNether(World world, Random random, int chunkX, int chunkZ, WorldGenInfo info) {
         if (info.getShouldGen()){
             for (int i = 0; i < info.timesPerChunk * info.getGenerationMultiplier(); i++) {
                 int xCoord = chunkX + random.nextInt(16);
@@ -58,7 +58,7 @@ public abstract class WorldGen implements IWorldGenerator {
         }
     }
 
-    private void generateOverworld(World world, Random random, int chunkX, int chunkZ, WorldGenInfo info) {
+    public void generateOverworld(World world, Random random, int chunkX, int chunkZ, WorldGenInfo info) {
         if (info.getShouldGen()){
             for (int i = 0; i < info.timesPerChunk * info.getGenerationMultiplier(); i++) {
                 int xCoord = chunkX + random.nextInt(16);
