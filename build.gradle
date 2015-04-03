@@ -72,9 +72,10 @@ processResources
     }
 }
 
-task deobfJar(type: Jar) {
-	//baseName = 'ElecCore'
-	version = "Newest"
+tasks.build.dependsOn('deobfJar')
+
+task deobfJar(type: Jar) { // Generate deobfuscated
+	//version = "Newest"
     from sourceSets.main.output
-    classifier = 'dev'
+    classifier = 'deobf'
 }
