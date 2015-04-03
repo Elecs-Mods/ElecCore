@@ -9,8 +9,7 @@ import net.minecraftforge.common.util.ForgeDirection;
  */
 public class DirectionHelper {
     public static ForgeDirection getFacingOnPlacement(EntityLivingBase entityLivingBase){
-        int i = MathHelper.floor_double((double) (entityLivingBase.rotationYaw * 4.0F / 360.0F) + 0.5D) & 3;
-        switch (i){
+        switch (getDirectionNumberOnPlacement(entityLivingBase)){
             case 0:
                 return ForgeDirection.NORTH;
             case 1:
@@ -42,5 +41,16 @@ public class DirectionHelper {
             default:
                 return ForgeDirection.UNKNOWN;
         }
+    }
+
+    public static final int[][] ROTATION_MATRIX_YAW = {
+            {0, 1, 2, 3, 4, 5},
+            {0, 1, 4, 5, 3, 2},
+            {0, 1, 3, 2, 5, 4},
+            {0, 1, 5, 4, 2, 3},
+    };
+
+    public static int getDirectionNumberOnPlacement(EntityLivingBase entityLivingBase){
+        return MathHelper.floor_double((double) (entityLivingBase.rotationYaw * 4.0F / 360.0F) + 0.5D) & 3;
     }
 }
