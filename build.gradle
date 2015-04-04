@@ -75,7 +75,7 @@ processResources
 tasks.build.dependsOn('deobfJar')
 
 task deobfJar(type: Jar) { // Generate deobfuscated
-	//version = "Newest"
+	version = "Newest"
     from sourceSets.main.output
     classifier = 'deobf'
 }
