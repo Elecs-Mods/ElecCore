@@ -1,15 +1,26 @@
 package elec332.core.world;
 
 import elec332.core.player.PlayerHelper;
+import net.minecraft.block.Block;
 import net.minecraft.entity.effect.EntityLightningBolt;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 
 /**
  * Created by Elec332 on 20-3-2015.
  */
 public class WorldHelper {
+
+    public static TileEntity getTileAt(World world, Vec3 loc){
+        return world.getTileEntity((int)loc.xCoord, (int)loc.yCoord, (int)loc.zCoord);
+    }
+
+    public static Block getBlockAt(World world, Vec3 loc){
+        return world.getBlock((int)loc.xCoord, (int)loc.yCoord, (int)loc.zCoord);
+    }
 
     public static void spawnLightningAtLookVec(EntityPlayer player, Double range){
         MovingObjectPosition position = PlayerHelper.getPosPlayerIsLookingAt(player, range);

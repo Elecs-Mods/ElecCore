@@ -5,12 +5,11 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
-import net.minecraft.tileentity.TileEntity;
 
 /**
  * Created by Elec332 on 30-3-2015.
  */
-public abstract class BaseTileWithInventory extends TileEntity implements IInventory {
+public abstract class BaseTileWithInventory extends TileBase implements IInventory {
 
     public BaseTileWithInventory(int size){
         super();
