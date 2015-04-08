@@ -8,8 +8,28 @@ import net.minecraftforge.common.util.ForgeDirection;
  * Created by Elec332 on 2-4-2015.
  */
 public class DirectionHelper {
+
     public static ForgeDirection getFacingOnPlacement(EntityLivingBase entityLivingBase){
-        switch (getDirectionNumberOnPlacement(entityLivingBase)){
+        return getDirectionFromNumber(getDirectionNumberOnPlacement(entityLivingBase));
+    }
+
+    public static int getNumberForDirection(ForgeDirection forgeDirection){
+        switch (forgeDirection){
+            case NORTH:
+                return 0;
+            case EAST:
+                return 1;
+            case SOUTH:
+                return 2;
+            case WEST:
+                return 3;
+            default:
+                return -1;
+        }
+    }
+
+    public static ForgeDirection getDirectionFromNumber(int i){
+        switch (i){
             case 0:
                 return ForgeDirection.NORTH;
             case 1:
