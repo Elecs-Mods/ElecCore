@@ -10,7 +10,7 @@ import net.minecraft.tileentity.TileEntity;
 /**
  * Created by Elec332 on 30-3-2015.
  */
-public class BaseTileWithInventory extends TileEntity implements IInventory {
+public abstract class BaseTileWithInventory extends TileEntity implements IInventory {
 
     public BaseTileWithInventory(int size){
         super();
@@ -101,9 +101,12 @@ public class BaseTileWithInventory extends TileEntity implements IInventory {
     /**
      * Returns the name of the inventory
      */
+    @Override
     public String getInventoryName() {
-        return this.hasCustomInventoryName() ? this.customInventoryName : "container";
+        return this.hasCustomInventoryName()?this.customInventoryName:standardInventoryName();
     }
+
+    protected abstract String standardInventoryName();
 
     public void setCustomInventoryName(String newName) {
         this.customInventoryName = newName;
