@@ -7,6 +7,7 @@ import java.io.File;
 /**
  * Created by Elec332.
  */
+@Deprecated
 public class ConfigCore extends Configuration{
 
 	public ConfigCore(File file){
