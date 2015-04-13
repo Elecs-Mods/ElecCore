@@ -1,6 +1,5 @@
 package elec332.core.nbt;
 
-import elec332.parcelcustommod.enchants.Enchantments;
 import net.minecraft.nbt.NBTTagCompound;
 import org.apache.commons.lang3.Validate;
 
@@ -20,7 +19,7 @@ public class NBTHelper {
         //for (Field field : objClass.getDeclaredFields()) {
             try {
                /* field.setAccessible(true);
-                Enchantments.logger.info("Running for field: " + field.getName());
+                System.out.println("Running for field: " + field.getName());
                 if (field.isAnnotationPresent(NBTData.class)) {*/
                     //System.out.println(field.getName() + " is annotated with @ISaveData");
                     if (field.getType().equals(Integer.TYPE)) {
@@ -59,7 +58,7 @@ public class NBTHelper {
         for (Field field : objClass.getDeclaredFields()) {
             try {
                 field.setAccessible(true);
-                Enchantments.logger.info("Running for field: " + field.getName());
+                System.out.println("Running for field: " + field.getName());
                 if (field.isAnnotationPresent(NBTData.class)) {
                     if (field.getType().equals(Integer.TYPE)) {
                         System.out.println(field.getName() + " was a valid integer");
