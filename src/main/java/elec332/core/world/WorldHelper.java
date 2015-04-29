@@ -1,6 +1,7 @@
 package elec332.core.world;
 
 import elec332.core.player.PlayerHelper;
+import elec332.core.util.BlockLoc;
 import net.minecraft.block.Block;
 import net.minecraft.entity.effect.EntityLightningBolt;
 import net.minecraft.entity.player.EntityPlayer;
@@ -14,12 +15,12 @@ import net.minecraft.world.World;
  */
 public class WorldHelper {
 
-    public static TileEntity getTileAt(World world, Vec3 loc){
-        return world.getTileEntity((int)loc.xCoord, (int)loc.yCoord, (int)loc.zCoord);
+    public static TileEntity getTileAt(World world, BlockLoc loc){
+        return world.getTileEntity(loc.xCoord, loc.yCoord, loc.zCoord);
     }
 
-    public static Block getBlockAt(World world, Vec3 loc){
-        return world.getBlock((int)loc.xCoord, (int)loc.yCoord, (int)loc.zCoord);
+    public static Block getBlockAt(World world, BlockLoc loc){
+        return world.getBlock(loc.xCoord, loc.yCoord, loc.zCoord);
     }
 
     public static void spawnLightningAtLookVec(EntityPlayer player, Double range){

@@ -9,6 +9,7 @@ import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import elec332.core.handler.FMLEventHandler;
 import elec332.core.handler.Integration;
+import elec332.core.handler.TickHandler;
 import elec332.core.helper.FileHelper;
 import elec332.core.helper.MCModInfo;
 import elec332.core.helper.ModInfoHelper;
@@ -50,6 +51,7 @@ public class ElecCore extends ModBase{
 		Integration.init();
 		//runUpdateCheck(event, "https://raw.githubusercontent.com/Elecs-Mods/ElecCore/master/build.properties");
 		FMLCommonHandler.instance().bus().register(new FMLEventHandler());
+		FMLCommonHandler.instance().bus().register(new TickHandler());
 		Debug = config.isEnabled("Debug", false);
 
 		MCModInfo.CreateMCModInfoElec(event, "Provides core functionality for Elec's Mods",
