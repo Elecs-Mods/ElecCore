@@ -27,28 +27,25 @@ import java.util.ArrayList;
  */
 public class BlockBase extends Block implements IWrenchable{
 
-    public BlockBase(Material mat, Class tileClass, String blockName) {
+    public BlockBase(Material mat, Class tileClass, String blockName, String modID) {
         super(mat);
         setResistance(4.5F);
         setHardness(2.0F);
         setStepSound(soundTypeStone);
+        this.setBlockName(modID + "." + blockName);
         this.tileClass = tileClass;
         this.blockName = blockName;
+        this.modID = modID;
     }
 
     @SideOnly(Side.CLIENT)
     public IIcon[] icons = new IIcon[6];
     private Class tileClass;
     private String blockName;
-    private String texturePrefix;
+    private String modID;
 
     public BlockBase register(){
         RegisterHelper.registerBlock(this, blockName);
-        return this;
-    }
-
-    public BlockBase setTextureLocation(String s){
-        this.texturePrefix = s+":";
         return this;
     }
 
@@ -211,7 +208,7 @@ public class BlockBase extends Block implements IWrenchable{
     protected String getTextureName(){
         if (this.textureName != null)
             return textureName;
-        return texturePrefix + blockName;
+        return modID + ":" + blockName;
     }
 
     protected enum BlockSide{
