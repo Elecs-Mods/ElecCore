@@ -42,16 +42,18 @@ public class ElecCore extends ModBase{
 
 	@Mod.Instance(ModInfo.MODID_CORE)
 	public static ElecCore instance;
+	public static TickHandler tickHandler;
 
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
 		this.cfgFile = FileHelper.getConfigFileElec(event);
 		this.ModID = ModInfoHelper.getModID(event);
+		tickHandler = new TickHandler();
 		loadConfiguration();
 		Integration.init();
 		//runUpdateCheck(event, "https://raw.githubusercontent.com/Elecs-Mods/ElecCore/master/build.properties");
 		FMLCommonHandler.instance().bus().register(new FMLEventHandler());
-		FMLCommonHandler.instance().bus().register(new TickHandler());
+		FMLCommonHandler.instance().bus().register(tickHandler);
 		Debug = config.isEnabled("Debug", false);
 
 		MCModInfo.CreateMCModInfoElec(event, "Provides core functionality for Elec's Mods",
