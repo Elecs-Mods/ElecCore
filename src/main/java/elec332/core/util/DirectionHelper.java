@@ -2,6 +2,7 @@ package elec332.core.util;
 
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.MathHelper;
+import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
 /**
@@ -72,5 +73,10 @@ public class DirectionHelper {
 
     public static int getDirectionNumberOnPlacement(EntityLivingBase entityLivingBase){
         return MathHelper.floor_double((double) (entityLivingBase.rotationYaw * 4.0F / 360.0F) + 0.5D) & 3;
+    }
+
+    public static void setFacing_YAW(World world, int i, int i1, int i2, ForgeDirection forgeDirection) {
+        world.markBlockForUpdate(i, i1, i2);
+        world.setBlockMetadataWithNotify(i, i1, i2, getNumberForDirection(forgeDirection), 2);
     }
 }
