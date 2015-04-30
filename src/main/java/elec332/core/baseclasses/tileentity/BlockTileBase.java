@@ -9,6 +9,7 @@ import elec332.core.util.DirectionHelper;
 import elec332.core.util.IComparatorOverride;
 import elec332.core.util.IRedstoneHandler;
 import net.minecraft.block.Block;
+import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.EntityLivingBase;
@@ -25,9 +26,9 @@ import java.util.ArrayList;
 /**
  * Created by Elec332 on 30-4-2015.
  */
-public class BlockBase extends Block implements IWrenchable{
+public class BlockTileBase extends Block implements IWrenchable, ITileEntityProvider{
 
-    public BlockBase(Material mat, Class tileClass, String blockName, String modID) {
+    public BlockTileBase(Material mat, Class tileClass, String blockName, String modID) {
         super(mat);
         setResistance(4.5F);
         setHardness(2.0F);
@@ -44,7 +45,7 @@ public class BlockBase extends Block implements IWrenchable{
     private String blockName;
     private String modID;
 
-    public BlockBase register(){
+    public BlockTileBase register(){
         RegisterHelper.registerBlock(this, blockName);
         return this;
     }
@@ -60,7 +61,7 @@ public class BlockBase extends Block implements IWrenchable{
     }
 
     @Override
-    public TileEntity createTileEntity(World world, int metadata) {
+    public TileEntity createNewTileEntity(World world, int metadata) {
         try {
             return (TileEntity) this.tileClass.newInstance();
         } catch (Exception ex) {
