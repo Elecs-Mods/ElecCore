@@ -32,9 +32,11 @@ public class TickHandler {
     }
 
     private void processSingleTicks(TickEvent event){
-        if (event.phase == TickEvent.Phase.START)
-            for (IRunOnce runnable : toGo)
+        if (event.phase == TickEvent.Phase.START && !toGo.isEmpty()) {
+            for (IRunOnce runnable : toGo) {
                 runnable.run();
-        toGo.clear();
+            }
+            toGo.clear();
+        }
     }
 }
