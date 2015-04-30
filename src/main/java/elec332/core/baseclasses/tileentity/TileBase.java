@@ -1,6 +1,6 @@
 package elec332.core.baseclasses.tileentity;
 
-import elec332.core.handler.TickHandler;
+import elec332.core.main.ElecCore;
 import elec332.core.util.BlockLoc;
 import elec332.core.util.IRunOnce;
 import net.minecraft.tileentity.TileEntity;
@@ -10,42 +10,40 @@ import net.minecraft.tileentity.TileEntity;
  */
 public class TileBase extends TileEntity {
 
-    private boolean loaded;
-
     @Override
     public void validate() {
         super.validate();
-        TickHandler.registerCall(new IRunOnce() {
+        ElecCore.tickHandler.registerCall(new IRunOnce() {
             @Override
             public void run() {
-                if (getWorldObj().blockExists(xCoord, yCoord, zCoord)){
+                if (getWorldObj().blockExists(xCoord, yCoord, zCoord)) {
                     onTileLoaded();
                 }
             }
         });
     }
 
+
     public void invalidate() {
-        if(this.loaded) {
-            this.onTileUnloaded();
+        if (!isInvalid()){
+            super.invalidate();
+            onTileUnloaded();
         }
-        super.invalidate();
     }
 
     public void onChunkUnload() {
-        if(this.loaded) {
-            this.onTileUnloaded();
+        if (!isInvalid()){
+            super.onChunkUnload();
+            super.invalidate();
+            onTileUnloaded();
         }
-        super.onChunkUnload();
     }
 
 
     public void onTileLoaded(){
-        this.loaded = true;
     }
 
     public void onTileUnloaded(){
-        this.loaded = false;
     }
 
     public void notifyNeighboursOfDataChange(){
