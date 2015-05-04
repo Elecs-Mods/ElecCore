@@ -2,7 +2,7 @@ package elec332.core.baseclasses.tileentity;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import elec332.core.api.wrench.IWrench;
+import elec332.core.api.wrench.IRightClickCancel;
 import elec332.core.api.wrench.IWrenchable;
 import elec332.core.helper.RegisterHelper;
 import elec332.core.util.DirectionHelper;
@@ -52,7 +52,7 @@ public class BlockTileBase extends Block implements IWrenchable, ITileEntityProv
 
     @Override
     public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int side, float hitX, float hitY, float hitZ) {
-        if (player.getHeldItem() != null && player.getHeldItem().getItem() instanceof IWrench)
+        if (player.getHeldItem() != null && player.getHeldItem().getItem() instanceof IRightClickCancel)
             return false;
         TileEntity tile = world.getTileEntity(x, y, z);
         if (tile instanceof TileBase)

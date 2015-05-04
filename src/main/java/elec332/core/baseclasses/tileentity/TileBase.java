@@ -8,9 +8,19 @@ import elec332.core.util.IRunOnce;
 import net.minecraft.block.Block;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.NetworkManager;
+import net.minecraft.network.Packet;
+import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.management.PlayerManager;
+import net.minecraft.server.management.ServerConfigurationManager;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.World;
+import net.minecraft.world.WorldServer;
+import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import java.util.ArrayList;
@@ -152,6 +162,41 @@ public class TileBase extends TileEntity {
     }
 
     protected void setMetaForFacingOnPlacement(EntityLivingBase entityLivingBase){
-        worldObj.setBlockMetadataWithNotify(xCoord, yCoord, zCoord, DirectionHelper.getDirectionNumberOnPlacement(entityLivingBase), 2);
+        setBlockMetadataWithNotify(DirectionHelper.getDirectionNumberOnPlacement(entityLivingBase));
+    }
+
+    //NETWORK///////////////////////
+
+    public void syncData(){
+        this.worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+    }
+
+    public void sendPacket(int ID, NBTTagCompound data){
+        if (worldObj instanceof WorldServer) {
+            PlayerManager playerManager = ((WorldServer) worldObj).getPlayerManager();
+            for (Object obj : MinecraftServer.getServer().getConfigurationManager().playerEntityList) {
+                EntityPlayerMP player = (EntityPlayerMP) obj;
+                Chunk chunk = worldObj.getChunkFromBlockCoords(this.xCoord, this.zCoord);
+                if (playerManager.isPlayerWatchingChunk(player, chunk.xPosition, chunk.zPosition))
+                    player.playerNetServerHandler.sendPacket(new S35PacketUpdateTileEntity(this.xCoord, this.yCoord, this.zCoord, ID, data));
+            }
+        }
+    }
+
+    @Override
+    public Packet getDescriptionPacket() {
+        NBTTagCompound nbtTag = new NBTTagCompound();
+        writeToNBT(nbtTag);
+        return new S35PacketUpdateTileEntity(this.xCoord, this.yCoord, this.zCoord, 0, nbtTag);
+    }
+
+    @Override
+    public void onDataPacket(NetworkManager net, S35PacketUpdateTileEntity packet) {
+        if (packet.func_148853_f() == 0)
+            readFromNBT(packet.func_148857_g());
+        else onDataPacket(packet.func_148853_f(), packet.func_148857_g());
+    }
+
+    public void onDataPacket(int id, NBTTagCompound tag){
     }
 }
