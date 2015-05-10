@@ -8,6 +8,28 @@ import net.minecraftforge.oredict.OreDictionary;
  * Created by Elec332 on 23-12-2014.
  */
 public class OredictHelper {
+
+    public static boolean oreExists(ItemStack stack){
+        return OreDictionary.getOres(getOreName(stack)).size() > 0;
+    }
+
+    public static String getOreName(ItemStack stack){
+        return OreDictionary.getOreName(getOreID(stack));
+    }
+
+    public static int getOreID(ItemStack stack){
+        return OreDictionary.getOreID(stack);
+    }
+
+
+
+
+
+
+
+
+
+
     public static Item getFirstOredictEntry(String Oredictname){
         return getOredictEntry(0, Oredictname);
     }
