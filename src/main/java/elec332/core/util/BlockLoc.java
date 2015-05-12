@@ -2,6 +2,7 @@ package elec332.core.util;
 
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraftforge.common.util.ForgeDirection;
 
 /**
  * Created by Elec332 on 23-4-2015.
@@ -18,6 +19,10 @@ public class BlockLoc {
         this.xCoord = xCoord;
         this.yCoord = yCoord;
         this.zCoord = zCoord;
+    }
+
+    public BlockLoc atSide(ForgeDirection direction){
+        return new BlockLoc(xCoord+direction.offsetX, yCoord+direction.offsetY, zCoord+direction.offsetZ);
     }
 
     public int xCoord;
