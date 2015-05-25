@@ -33,7 +33,7 @@ public class TickHandler {
 
     private void processSingleTicks(TickEvent event){
         if (event.phase == TickEvent.Phase.START && !toGo.isEmpty()) {
-            for (IRunOnce runnable : toGo) {
+            for (IRunOnce runnable = toGo.poll(); runnable != null; runnable = toGo.poll()) {
                 runnable.run();
             }
             toGo.clear();
