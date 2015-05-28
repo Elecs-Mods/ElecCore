@@ -3,13 +3,28 @@ package elec332.core.player;
 import elec332.core.main.ElecCore;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.MovingObjectPosition;
+
+import java.util.UUID;
 
 /**
  * Created by Elec332 on 19-3-2015.
  */
 public class PlayerHelper {
+
+    public static UUID getPlayerUUID(EntityPlayer player){
+        return player.getGameProfile().getId();
+    }
+
+    public static void sendMessageToPlayer(EntityPlayer player, String s){
+        try {
+            player.addChatComponentMessage(new ChatComponentText(s));
+        } catch (NullPointerException e){
+            //Null player, whoops
+        }
+    }
 
     public static void addPersonalMessageToClient(String s){
         ElecCore.proxy.addPersonalMessageToPlayer(s);
