@@ -13,9 +13,10 @@ import java.util.Queue;
 public class TickHandler {
 
     public TickHandler(){
-        toGo = new ArrayDeque<IRunOnce>();
+        toGo = new ArrayDeque<Runnable>();
     }
-    private Queue<IRunOnce> toGo;
+
+    private Queue<Runnable> toGo;
 
     @SubscribeEvent
     public void onTick(TickEvent.ServerTickEvent event){
@@ -27,13 +28,23 @@ public class TickHandler {
         processSingleTicks(event);
     }
 
-    public void registerCall(IRunOnce runnable){
+    @Deprecated
+    public void registerCall(final IRunOnce runnable){
+        toGo.add(new Runnable() {
+            @Override
+            public void run() {
+                runnable.run();
+            }
+        });
+    }
+
+    public void registerCall(final Runnable runnable){
         toGo.add(runnable);
     }
 
     private void processSingleTicks(TickEvent event){
         if (event.phase == TickEvent.Phase.START && !toGo.isEmpty()) {
-            for (IRunOnce runnable = toGo.poll(); runnable != null; runnable = toGo.poll()) {
+            for (Runnable runnable = toGo.poll(); runnable != null; runnable = toGo.poll()) {
                 runnable.run();
             }
             toGo.clear();
