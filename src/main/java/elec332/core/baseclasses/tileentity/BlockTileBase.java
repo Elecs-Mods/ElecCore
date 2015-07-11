@@ -39,7 +39,6 @@ public class BlockTileBase extends Block implements IWrenchable, ITileEntityProv
         this.modID = modID;
     }
 
-    @SideOnly(Side.CLIENT)
     public IIcon[] icons = new IIcon[6];
     private Class tileClass;
     private String blockName;
@@ -173,6 +172,7 @@ public class BlockTileBase extends Block implements IWrenchable, ITileEntityProv
     }
 
     @Override
+    @SideOnly(Side.CLIENT)
     public IIcon getIcon(int side, int meta) {
         return icons[DirectionHelper.ROTATION_MATRIX_YAW[meta][side]];
     }
@@ -188,18 +188,22 @@ public class BlockTileBase extends Block implements IWrenchable, ITileEntityProv
         icons[5] = iconRegister.registerIcon(getSideTexture(BlockSide.LEFT));
     }
 
+    @SideOnly(Side.CLIENT)
     public String getSideTexture(BlockSide side) {
         return getTextureName() + "_side";
     }
 
+    @SideOnly(Side.CLIENT)
     public String getFrontTexture(){
         return getTextureName() + "_front";
     }
 
+    @SideOnly(Side.CLIENT)
     public String getTopIconName() {
         return getTextureName() + "_top";
     }
 
+    @SideOnly(Side.CLIENT)
     public String getBottomIconName() {
         return getTextureName() + "_bottom";
     }
