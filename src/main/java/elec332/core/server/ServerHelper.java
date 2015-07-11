@@ -25,7 +25,9 @@ import java.util.UUID;
  * Created by Elec332 on 28-5-2015.
  */
 public class ServerHelper {
+
     public static final ServerHelper instance = new ServerHelper();
+
     private ServerHelper(){
         EventHelper.registerHandlerForge(new EventHandler());
         this.playerData = new HashMap<UUID, ElecPlayer>();
@@ -80,8 +82,6 @@ public class ServerHelper {
     public boolean isValid(){
         return getMinecraftServer() != null;
     }
-
-
 
     public static boolean isServer(World world){
         return !world.isRemote;

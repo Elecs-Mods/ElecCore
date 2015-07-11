@@ -50,7 +50,7 @@ public class MineTweakerHelper {
     }
 
     public static File getMTFile(String fileName, String... fileComments){
-        File ret = new File("scripts/Elec332/", fileName+".zs");
+        File ret = new File("scripts/Elec332/scripts", fileName+".zs");
         if (!ret.getParentFile().exists())
             ret.getParentFile().mkdirs();
         if (!ret.exists()){
