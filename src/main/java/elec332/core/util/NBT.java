@@ -16,7 +16,7 @@ public class NBT {
     }
 
     public static enum NBTData{
-        END(new NBTTagEnd()),                           //0
+        END((byte)0, NBTTagEnd.class),                  //0
         BYTE(new NBTTagByte((byte)0)),                  //1
         SHORT(new NBTTagShort((short)0)),               //2
         INT(new NBTTagInt(0)),                          //3
@@ -31,8 +31,12 @@ public class NBT {
 
         ///##########################///
         private NBTData(NBTBase nbtBase){
-            ID = nbtBase.getId();
-            clazz = nbtBase.getClass();
+            this(nbtBase.getId(), nbtBase.getClass());
+        }
+
+        private NBTData(byte i, Class<? extends NBTBase> clazz){
+            this.ID = i;
+            this.clazz = clazz;
         }
 
         private final byte ID;
