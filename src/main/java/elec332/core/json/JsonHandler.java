@@ -153,23 +153,11 @@ public class JsonHandler {
         private JsonElement element;
     }
 
-    private static boolean isType(TypeToken<?> type, Class<?> clazz){
-        return type.getRawType().isAssignableFrom(clazz);
-    }
+    public abstract static class ElecFactory<E> {
 
-    public abstract static class ElecFactory<E>{
-
-       /*public ElecFactory(Class<E> clazz){
-            this.clazz = clazz;
-        }
-
-        private Class<E> clazz;
-*/
         public abstract TypeAdapter<E> getTypeAdapter();
 
-        public abstract Class<E> getFactoryClass() ;//{
-        //    return clazz;
-        //}
+        public abstract Class<E> getFactoryClass() ;
 
         public boolean hasParameter(){
             return false;
@@ -177,9 +165,9 @@ public class JsonHandler {
 
     }
 
-    public static abstract class ParameterizedTypeFactory<E> extends ElecFactory<E>{
+    public static abstract class ParameterizedTypeFactory<E> extends ElecFactory<E> {
 
-        public abstract <P> TypeAdapter<E> getTypeAdapter(final TypeAdapter elementAdapter);
+        public abstract <P> TypeAdapter<E> getTypeAdapter(final TypeAdapter<P> elementAdapter);
 
         @Override
         public TypeAdapter<E> getTypeAdapter() {
@@ -189,6 +177,7 @@ public class JsonHandler {
         public final boolean hasParameter(){
             return true;
         }
+
     }
 
 }
