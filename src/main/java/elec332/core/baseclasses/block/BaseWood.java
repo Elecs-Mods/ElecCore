@@ -2,7 +2,6 @@ package elec332.core.baseclasses.block;
 
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import net.minecraft.block.material.Material;
-import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.world.IBlockAccess;
 import net.minecraftforge.common.util.ForgeDirection;
 
