@@ -1,5 +1,8 @@
 package elec332.core.server;
 
+import com.google.common.collect.Maps;
+import cpw.mods.fml.common.Loader;
+import cpw.mods.fml.common.LoaderState;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent;
 import elec332.core.player.PlayerHelper;
@@ -16,7 +19,6 @@ import net.minecraftforge.event.world.WorldEvent;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -30,14 +32,26 @@ public class ServerHelper {
 
     private ServerHelper(){
         EventHelper.registerHandlerForgeAndFML(new EventHandler());
-        this.playerData = new HashMap<UUID, ElecPlayer>();
-        this.worldData = new HashMap<Integer, NBTHelper>();
+        this.playerData = Maps.newHashMap();
+        this.worldData = Maps.newHashMap();
+        this.extendedPropertiesList = Maps.newHashMap();
+        this.locked = false;
         setInvalid();
     }
 
+    public void registerExtendedProperties(String identifier, Class<? extends ElecPlayer.ExtendedProperties> propClass){
+        if (extendedPropertiesList.keySet().contains(identifier))
+            throw new IllegalArgumentException("Property for "+identifier+" has already been registered!");
+        if (Loader.instance().hasReachedState(LoaderState.AVAILABLE) || locked)
+            throw new IllegalArgumentException("Mod is attempting to register properties too late: "+identifier+"  "+propClass.getName());
+        extendedPropertiesList.put(identifier, propClass);
+    }
+
+    private final Map<String, Class<? extends ElecPlayer.ExtendedProperties>> extendedPropertiesList;
     private NBTHelper generalData;
     private Map<UUID, ElecPlayer> playerData;
     private Map<Integer, NBTHelper> worldData;
+    private boolean locked; //Extra safety, in case Loader.instance().hasReachedState(LoaderState.AVAILABLE) fails
 
     public ElecPlayer getPlayer(EntityPlayer player){
         return getPlayer(PlayerHelper.getPlayerUUID(player));
@@ -75,6 +89,20 @@ public class ServerHelper {
         return (List<EntityPlayer>) getMinecraftServer().getConfigurationManager().playerEntityList;
     }
 
+    public boolean isPlayerOnline(UUID uuid){
+        return getPlayer(uuid).isOnline();
+    }
+
+    public EntityPlayer getRealPlayer(UUID uuid){
+        if (isPlayerOnline(uuid)){
+            for (EntityPlayer player : getOnlinePlayers()){
+                if (PlayerHelper.getPlayerUUID(player).equals(uuid))
+                    return player;
+            }
+        }
+        return null;
+    }
+
     public MinecraftServer getMinecraftServer(){
         return MinecraftServer.getServer();
     }
@@ -104,7 +132,10 @@ public class ServerHelper {
                     NBTTagCompound tagCompound = tagList1.getCompoundTagAt(i);
                     UUID uuid = UUID.fromString(tagCompound.getString("uuid"));
                     NBTTagCompound data = tagCompound.getCompoundTag("data");
-                    ServerHelper.this.playerData.put(uuid, new ElecPlayer(new NBTHelper(data)));
+                    ElecPlayer player = new ElecPlayer(uuid);
+                    player.setExtendedProperties(extendedPropertiesList);
+                    player.readFromNBT(data);
+                    ServerHelper.this.playerData.put(uuid, player);
                 }
                 NBTTagList tagList2 = fromFile(new File(folder, "worldData.dat")).getTagList("dimData", 10);
                 for (int i = 0; i < tagList2.tagCount(); i++) {
@@ -123,7 +154,7 @@ public class ServerHelper {
                 toFile(ServerHelper.this.generalData.toNBT(), new File(folder, "generalData.dat"));
                 NBTTagList tagList1 = new NBTTagList();
                 for (UUID uuid : ServerHelper.this.playerData.keySet()){
-                    tagList1.appendTag(new NBTHelper(new NBTTagCompound()).addToTag(uuid.toString(), "uuid").addToTag(ServerHelper.this.playerData.get(uuid).getData().toNBT(), "data").toNBT());
+                    tagList1.appendTag(new NBTHelper(new NBTTagCompound()).addToTag(uuid.toString(), "uuid").addToTag(ServerHelper.this.playerData.get(uuid).saveToNBT(), "data").toNBT());
                 }
                 toFile(new NBTHelper().addToTag(tagList1, "playerData").toNBT(), new File(folder, "playerData.dat"));
                 NBTTagList tagList2 = new NBTTagList();
@@ -142,9 +173,15 @@ public class ServerHelper {
 
         @SubscribeEvent
         public void playerJoined(PlayerEvent.PlayerLoggedInEvent event){
-            if (!ServerHelper.this.playerData.keySet().contains(PlayerHelper.getPlayerUUID(event.player)))
-                ServerHelper.this.playerData.put(PlayerHelper.getPlayerUUID(event.player), new ElecPlayer(new NBTHelper()));
-            ServerHelper.this.playerData.get(PlayerHelper.getPlayerUUID(event.player)).setOnline(true);
+            ServerHelper.this.locked = true;
+            UUID uuid = PlayerHelper.getPlayerUUID(event.player);
+            if (!ServerHelper.this.playerData.keySet().contains(uuid)) {
+                ElecPlayer player = new ElecPlayer(uuid);
+                player.setExtendedProperties(extendedPropertiesList);
+                player.readFromNBT(new NBTTagCompound());
+                ServerHelper.this.playerData.put(uuid, player);
+            }
+            ServerHelper.this.playerData.get(uuid).setOnline(true);
         }
 
         @SubscribeEvent
