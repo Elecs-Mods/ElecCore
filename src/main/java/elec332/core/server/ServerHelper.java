@@ -29,7 +29,7 @@ public class ServerHelper {
     public static final ServerHelper instance = new ServerHelper();
 
     private ServerHelper(){
-        EventHelper.registerHandlerForge(new EventHandler());
+        EventHelper.registerHandlerForgeAndFML(new EventHandler());
         this.playerData = new HashMap<UUID, ElecPlayer>();
         this.worldData = new HashMap<Integer, NBTHelper>();
         setInvalid();
@@ -117,7 +117,7 @@ public class ServerHelper {
         }
 
         @SubscribeEvent
-        public void onWorldUnload(WorldEvent.Save event){
+        public void onWorldSave(WorldEvent.Save event){
             if (isServer(event.world) && WorldHelper.getDimID(event.world) == 1){
                 File folder = new File(event.world.getSaveHandler().getWorldDirectory(), "elec332/");
                 toFile(ServerHelper.this.generalData.toNBT(), new File(folder, "generalData.dat"));
@@ -131,8 +131,13 @@ public class ServerHelper {
                     tagList2.appendTag(new NBTHelper(new NBTTagCompound()).addToTag(i, "dim").addToTag(ServerHelper.this.worldData.get(i).toNBT(), "data").toNBT());
                 }
                 toFile(new NBTHelper().addToTag(tagList2, "dimData").toNBT(), new File(folder, "worldData.dat"));
-                setInvalid();
             }
+        }
+
+        @SubscribeEvent
+        public void onWorldUnload(WorldEvent.Unload event){
+            if (WorldHelper.getDimID(event.world) == 1)
+                ServerHelper.this.setInvalid();
         }
 
         @SubscribeEvent
@@ -152,13 +157,22 @@ public class ServerHelper {
         if (file == null)
             return null;
         try {
-            if (!file.exists() && file.createNewFile())
+            if (!file.exists()) {
+                createFile(file);
                 return new NBTTagCompound();
+            }
             return CompressedStreamTools.read(file);
         } catch (IOException e){
             //Bad luck for you
+            e.printStackTrace();
             return null;
         }
+    }
+
+    public static void createFile(File file) throws IOException{
+        if (!file.exists())
+            if (!file.getParentFile().mkdirs() && !file.createNewFile())
+                throw new IOException();
     }
 
     public void toFile(NBTTagCompound tagCompound, File file){
@@ -166,6 +180,7 @@ public class ServerHelper {
             CompressedStreamTools.write(tagCompound, file);
         } catch (IOException e){
             //Bad luck for you
+            e.printStackTrace();
         }
     }
 }
