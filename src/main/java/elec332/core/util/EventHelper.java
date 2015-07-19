@@ -17,12 +17,16 @@ public class EventHelper {
                 registerHandlerFML(reg);
                 break;
             case BOTH:
-                registerHandlerForge(reg);
-                registerHandlerFML(reg);
+                registerHandlerForgeAndFML(reg);
                 break;
             default:
                 break;
         }
+    }
+
+    public static void registerHandlerForgeAndFML(Object reg){
+        registerHandlerForge(reg);
+        registerHandlerFML(reg);
     }
 
     public static void registerHandlerForge(Object reg){
