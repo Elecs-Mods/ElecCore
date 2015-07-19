@@ -93,7 +93,7 @@ public class ServerHelper {
         this.worldData.clear();
     }
 
-    private class EventHandler{
+    public class EventHandler{
         @SubscribeEvent
         public void onWorldLoad(WorldEvent.Load event){
             if (isServer(event.world) && WorldHelper.getDimID(event.world) == 1){
