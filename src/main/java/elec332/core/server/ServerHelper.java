@@ -149,8 +149,10 @@ public class ServerHelper {
     }
 
     public static NBTTagCompound fromFile(File file){
-        if (file == null || !file.exists())
+        if (file == null)
             return null;
+        if (!file.exists() && file.createNewFile()){
+            return new NBTTagCompound();
         try {
             return CompressedStreamTools.read(file);
         } catch (IOException e){
