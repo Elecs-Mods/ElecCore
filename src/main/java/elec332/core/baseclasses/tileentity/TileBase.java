@@ -50,11 +50,11 @@ public class TileBase extends TileEntity {
     }
 
     public void onChunkUnload() {
-        if (!isInvalid()) {
+        //if (!isInvalid()) {
             super.onChunkUnload();
-            super.invalidate();
+            //super.invalidate();
             onTileUnloaded();
-        }
+        //}
     }
 
     @Override
