@@ -39,7 +39,7 @@ public class BlockTileBase extends Block implements IWrenchable, ITileEntityProv
         this.modID = modID;
     }
 
-    public IIcon[] icons = new IIcon[6];
+    public IIcon[][] icons = new IIcon[2][6];
     private Class tileClass;
     private String blockName;
     private String modID;
@@ -174,37 +174,52 @@ public class BlockTileBase extends Block implements IWrenchable, ITileEntityProv
     @Override
     @SideOnly(Side.CLIENT)
     public IIcon getIcon(int side, int meta) {
-        return icons[DirectionHelper.ROTATION_MATRIX_YAW[meta][side]];
+        return icons[0][DirectionHelper.ROTATION_MATRIX_YAW[2][side]];
+    }
+
+    @Override
+    @SideOnly(Side.CLIENT)
+    public IIcon getIcon(IBlockAccess world, int x, int y, int z, int side) {
+        int meta = world.getBlockMetadata(x, y, z);
+        TileEntity tile = world.getTileEntity(x, y, z);
+        int i = tile instanceof IActivatableMachine && ((IActivatableMachine)tile).isActive() ? 1 : 0;
+        return icons[i][DirectionHelper.ROTATION_MATRIX_YAW[meta][side]];
     }
 
     @Override
     @SideOnly(Side.CLIENT)
     public void registerBlockIcons(IIconRegister iconRegister){
-        icons[0] = iconRegister.registerIcon(getBottomIconName());
-        icons[1] = iconRegister.registerIcon(getTopIconName());
-        icons[2] = iconRegister.registerIcon(getFrontTexture());
-        icons[3] = iconRegister.registerIcon(getSideTexture(BlockSide.BACK));
-        icons[4] = iconRegister.registerIcon(getSideTexture(BlockSide.RIGHT));
-        icons[5] = iconRegister.registerIcon(getSideTexture(BlockSide.LEFT));
+        icons[0][0] = iconRegister.registerIcon(getBottomIconName(true));
+        icons[0][1] = iconRegister.registerIcon(getTopIconName(true));
+        icons[0][2] = iconRegister.registerIcon(getFrontTexture(true));
+        icons[0][3] = iconRegister.registerIcon(getSideTexture(true, BlockSide.BACK));
+        icons[0][4] = iconRegister.registerIcon(getSideTexture(true, BlockSide.RIGHT));
+        icons[0][5] = iconRegister.registerIcon(getSideTexture(true, BlockSide.LEFT));
+        icons[1][0] = iconRegister.registerIcon(getBottomIconName(false));
+        icons[1][1] = iconRegister.registerIcon(getTopIconName(false));
+        icons[1][2] = iconRegister.registerIcon(getFrontTexture(false));
+        icons[1][3] = iconRegister.registerIcon(getSideTexture(false, BlockSide.BACK));
+        icons[1][4] = iconRegister.registerIcon(getSideTexture(false, BlockSide.RIGHT));
+        icons[1][5] = iconRegister.registerIcon(getSideTexture(false, BlockSide.LEFT));
     }
 
     @SideOnly(Side.CLIENT)
-    public String getSideTexture(BlockSide side) {
+    public String getSideTexture(boolean active, BlockSide side) {
         return getTextureName() + "_side";
     }
 
     @SideOnly(Side.CLIENT)
-    public String getFrontTexture(){
+    public String getFrontTexture(boolean active){
         return getTextureName() + "_front";
     }
 
     @SideOnly(Side.CLIENT)
-    public String getTopIconName() {
+    public String getTopIconName(boolean active) {
         return getTextureName() + "_top";
     }
 
     @SideOnly(Side.CLIENT)
-    public String getBottomIconName() {
+    public String getBottomIconName(boolean active) {
         return getTextureName() + "_bottom";
     }
 
@@ -216,7 +231,7 @@ public class BlockTileBase extends Block implements IWrenchable, ITileEntityProv
         return modID + ":" + blockName;
     }
 
-    protected enum BlockSide{
+    public enum BlockSide{
         LEFT, BACK, RIGHT
     }
 }

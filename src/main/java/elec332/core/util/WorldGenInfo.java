@@ -8,15 +8,25 @@ import net.minecraft.block.Block;
 public class WorldGenInfo {
     int clusterSize = 0;
 
-    int multiplier = 1;
+    float multiplier = 1;
     boolean shouldGen = true;
     public int timesPerChunk;
     public int yLevelMax;
-    public Block block;
+    public final Block block;
+    public final int meta;
+
+    public WorldGenInfo(int yLevelMax, int timesPerChunk, Block block, int meta){
+        this.yLevelMax = yLevelMax;
+        this.timesPerChunk = timesPerChunk;
+        this.block = block;
+        this.meta = meta;
+    }
+
     public WorldGenInfo(int yLevelMax, int timesPerChunk, Block block){
         this.yLevelMax = yLevelMax;
         this.timesPerChunk = timesPerChunk;
         this.block = block;
+        this.meta = 0;
     }
 
 
@@ -25,7 +35,7 @@ public class WorldGenInfo {
     }
 
     //Gets worldGen info
-    public int getGenerationMultiplier(){
+    public float getGenerationMultiplier(){
         return multiplier;
     }
 
@@ -39,7 +49,7 @@ public class WorldGenInfo {
     }
 
     //Sets worldGen info
-    public WorldGenInfo setGenerationMultiplier(int i){
+    public WorldGenInfo setGenerationMultiplier(float i){
         this.multiplier = i;
         return this;
     }

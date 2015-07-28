@@ -167,7 +167,7 @@ public class ServerHelper {
 
         @SubscribeEvent
         public void onWorldUnload(WorldEvent.Unload event){
-            if (WorldHelper.getDimID(event.world) == 0)
+            if (isServer(event.world) && WorldHelper.getDimID(event.world) == 0)
                 ServerHelper.this.setInvalid();
         }
 
