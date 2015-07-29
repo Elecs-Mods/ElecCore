@@ -57,7 +57,7 @@ public class AbstractMultiBlockTile extends TileBase implements IMultiBlockTile 
      */
     @Override
     public void invalidateMultiBlock() {
-        multiBlockData.isValidMultiBlock();
+        multiBlockData.invalidateMultiBlock();
     }
 
     /**
@@ -99,5 +99,23 @@ public class AbstractMultiBlockTile extends TileBase implements IMultiBlockTile 
     @Override
     public IMultiBlock getMultiBlock() {
         return multiBlockData.getMultiBlock();
+    }
+
+    @Override
+    public void validate() {
+        super.validate();
+        multiBlockData.tileEntityValidate();
+    }
+
+    @Override
+    public void onChunkUnload() {
+        super.onChunkUnload();
+        multiBlockData.tileEntityChunkUnload();
+    }
+
+    @Override
+    public void invalidate() {
+        super.invalidate();
+        multiBlockData.tileEntityInvalidate();
     }
 }
