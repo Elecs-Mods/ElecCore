@@ -19,8 +19,8 @@ import java.util.List;
  */
 public final class MultiBlockRegistry extends AbstractWorldRegistryHolder<MultiBlockRegistry.MultiBlockWorldRegistry>{
 
-    public static final MultiBlockRegistry instance = new MultiBlockRegistry();
-    private MultiBlockRegistry(){
+    //public static final MultiBlockRegistry instance = new MultiBlockRegistry();
+    public MultiBlockRegistry(){
         this.registry = Maps.newHashMap();
         this.structureRegistry = new MultiBlockStructureRegistry(this);
         EventHelper.registerHandlerForge(this);

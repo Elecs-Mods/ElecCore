@@ -12,10 +12,12 @@ import net.minecraftforge.common.util.ForgeDirection;
  */
 public final class MultiBlockData {
 
-    public MultiBlockData(IMultiBlockTile tile){
+    public MultiBlockData(IMultiBlockTile tile, MultiBlockRegistry registry){
         this.tile = tile;
+        this.registry = registry;
     }
 
+    private final MultiBlockRegistry registry;
     private final IMultiBlockTile tile;
     private IMultiBlock multiBlock = null;
     private ForgeDirection mbFacing = null;
@@ -82,7 +84,7 @@ public final class MultiBlockData {
             ElecCore.tickHandler.registerCall(new Runnable() {
                 @Override
                 public void run() {
-                    IMultiBlock.tileEntityValidate(tile, multiBlock, MultiBlockRegistry.instance);
+                    IMultiBlock.tileEntityValidate(tile, multiBlock, registry);
                 }
             });
         }

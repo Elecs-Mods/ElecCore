@@ -2,6 +2,7 @@ package elec332.core.multiblock;
 
 import elec332.core.baseclasses.tileentity.TileBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.util.ForgeDirection;
 
 /**
@@ -9,9 +10,9 @@ import net.minecraftforge.common.util.ForgeDirection;
  */
 public class AbstractMultiBlockTile extends TileBase implements IMultiBlockTile {
 
-    public AbstractMultiBlockTile(){
+    public AbstractMultiBlockTile(MultiBlockRegistry registry){
         super();
-        this.multiBlockData = new MultiBlockData(this);
+        this.multiBlockData = new MultiBlockData(this, registry);
     }
 
     private MultiBlockData multiBlockData;
@@ -24,6 +25,18 @@ public class AbstractMultiBlockTile extends TileBase implements IMultiBlockTile 
     @Override
     public boolean onBlockActivated(EntityPlayer player, int side, float hitX, float hitY, float hitZ) {
         return getMultiBlock() instanceof AbstractMultiBlock ?  ((AbstractMultiBlock) getMultiBlock()).onAnyBlockActivated(player): super.onBlockActivated(player, side, hitX, hitY, hitZ);
+    }
+
+    @Override
+    public void writeToNBT(NBTTagCompound tagCompound) {
+        super.writeToNBT(tagCompound);
+        multiBlockData.writeToNBT(tagCompound);
+    }
+
+    @Override
+    public void readFromNBT(NBTTagCompound tagCompound) {
+        super.readFromNBT(tagCompound);
+        multiBlockData.readFromNBT(tagCompound);
     }
 
     /**
