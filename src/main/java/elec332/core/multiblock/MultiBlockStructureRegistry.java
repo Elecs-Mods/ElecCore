@@ -3,6 +3,7 @@ package elec332.core.multiblock;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import elec332.core.util.BlockLoc;
+import elec332.core.world.WorldHelper;
 import net.minecraft.block.Block;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.IBlockAccess;
@@ -158,7 +159,8 @@ public final class MultiBlockStructureRegistry {
             multiBlock.startLoop(new BlockStructure.IPositionCall() {
                 @Override
                 public void forPos(int length, int width, int height) {
-                    if (!atLocation(getTranslated(x, y, z, side, length, width, height), world).equals(multiBlock.getStructure()[length][width][height])){
+                    BlockLoc translated = getTranslated(x, y, z, side, length, width, height);
+                    if (!atLocation(translated, world).equals(multiBlock.getStructure()[length][width][height]) || hasMultiBlock(translated, world)){
                         throw new RuntimeException("INVALID");
                     }
                 }
@@ -171,6 +173,15 @@ public final class MultiBlockStructureRegistry {
         }
         System.out.println("VALID STUFF HERE, YAYZZZ :D");
         return true;
+    }
+
+    private boolean hasMultiBlock(BlockLoc loc, World world){
+        TileEntity tile = WorldHelper.getTileAt(world, loc);
+        if (tile instanceof IMultiBlockTile){
+            if (((IMultiBlockTile) tile).getMultiBlock() != null)
+                return true;
+        }
+        return false;
     }
 
     private BlockLoc getTranslated(int x, int y, int z, ForgeDirection side, int length, int width, int height){
