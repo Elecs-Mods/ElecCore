@@ -3,6 +3,7 @@ package elec332.core.multiblock;
 import com.google.common.collect.ImmutableList;
 import elec332.core.util.BlockLoc;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.World;
 
 import java.util.List;
 import java.util.UUID;
@@ -60,6 +61,10 @@ public abstract class IMultiBlock {
      * Invalidate your multiblock here
      */
     public abstract void invalidate();
+
+    public World getWorldObj(){
+        return this.multiBlockRegistry.getWorldObj();
+    }
 
     /**
      * Make sure this gets called when any of the tiles in this multiblock invalidate

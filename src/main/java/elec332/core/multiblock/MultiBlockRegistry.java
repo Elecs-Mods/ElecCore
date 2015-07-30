@@ -86,6 +86,10 @@ public final class MultiBlockRegistry extends AbstractWorldRegistryHolder<MultiB
             list.add(tile);
         }*/
 
+        protected World getWorldObj(){
+            return world;
+        }
+
         protected void invalidateMultiBlock(IMultiBlock multiBlock){
             for (BlockLoc loc : multiBlock.getAllMultiBlockLocations()){
                 TileEntity tile = WorldHelper.getTileAt(world, loc);
