@@ -151,6 +151,11 @@ public class TileBase extends TileEntity {
         DirectionHelper.setFacing_YAW(worldObj, xCoord, yCoord, zCoord, forgeDirection);
     }
 
+    public boolean openGui(EntityPlayer player, Object mod, int guiID){
+        player.openGui(mod, guiID, worldObj, xCoord, yCoord, zCoord);
+        return true;
+    }
+
     protected ItemStack itemStackFromNBTTile(){
         NBTTagCompound compound = new NBTTagCompound();
         ItemStack ret = new ItemStack(getBlockType(), 1, getBlockMetadata());

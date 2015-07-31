@@ -1,13 +1,18 @@
 package elec332.core.inventory;
 
+import com.google.common.collect.Lists;
+import elec332.core.inventory.widget.Widget;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
+import net.minecraft.inventory.ICrafting;
 import net.minecraft.inventory.Slot;
+
+import java.util.List;
 
 /**
  * Created by Elec332 on 4-4-2015.
  */
-public class BaseContainer extends Container {
+public class BaseContainer extends Container implements IWidgetContainer{
 
     public BaseContainer(EntityPlayer player, int offset){
         this(player);
@@ -18,12 +23,24 @@ public class BaseContainer extends Container {
         //this.tileEntity = tile;
         this.thePlayer = player;
         this.offset = 0;
+        this.widgets = Lists.newArrayList();
     }
 
     //private BaseTileWithInventory tileEntity;
-    protected EntityPlayer thePlayer;
+    protected final EntityPlayer thePlayer;
+    protected final List<Widget> widgets;
     private int offset;
     private int hotBarFactor = 0;
+
+    public List<Widget> getWidgets(){
+        return this.widgets;
+    }
+
+    @Override
+    public void addWidget(Widget widget) {
+        this.widgets.add(widget);
+        widget.setContainer(this);
+    }
 
     public void addPlayerInventoryToContainer(){
         /*for(int j = 0; j < 3; j++) {
@@ -48,6 +65,23 @@ public class BaseContainer extends Container {
 
     public void setOffset(int offset) {
         this.offset = offset;
+    }
+
+    @Override
+    public void addCraftingToCrafters(ICrafting iCrafting) {
+        for (Widget widget : widgets)
+            widget.initWidget(iCrafting);
+        super.addCraftingToCrafters(iCrafting);
+    }
+
+    @Override
+    public void detectAndSendChanges() {
+        super.detectAndSendChanges();
+        for (Widget widget : widgets){
+            for (Object obj : crafters){
+                widget.detectAndSendChanges((ICrafting)obj);
+            }
+        }
     }
 
     @Override

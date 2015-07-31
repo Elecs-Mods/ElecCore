@@ -122,7 +122,7 @@ public final class MultiBlockRegistry extends AbstractWorldRegistryHolder<MultiB
             try {
                 multiBlock = clazz.getConstructor().newInstance();
             } catch (Exception e){
-                throw new RuntimeException("Error invoking class: "+clazz.getName()+" Please make sure the constructor has no arguments!");
+                throw new RuntimeException("Error invoking class: "+clazz.getName()+" Please make sure the constructor has no arguments!", e);
             }
             boolean one = false;
             for (BlockLoc loc : allLocations){

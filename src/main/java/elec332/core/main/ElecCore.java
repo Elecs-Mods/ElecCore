@@ -15,6 +15,8 @@ import elec332.core.helper.MCModInfo;
 import elec332.core.helper.ModInfoHelper;
 import elec332.core.modBaseUtils.ModBase;
 import elec332.core.modBaseUtils.ModInfo;
+import elec332.core.network.NetworkHandler;
+import elec332.core.network.PacketSyncWidget;
 import elec332.core.proxies.CommonProxy;
 
 import java.io.File;
@@ -28,8 +30,7 @@ import java.util.LinkedHashMap;
 acceptedMinecraftVersions = ModInfo.ACCEPTEDMCVERSIONS, version = "#ELECCORE_VER#", useMetadata = true, canBeDeactivated = false)
 public class ElecCore extends ModBase{
 
-	@SuppressWarnings("unchecked")
-	public static LinkedHashMap<String, ArrayList> Updates = new LinkedHashMap();
+	public static LinkedHashMap<String, ArrayList> Updates = new LinkedHashMap<String, ArrayList>();
 	public static ArrayList<String> outdatedModList = new ArrayList<String>();
 	public static boolean Debug;
 	//EXP	
@@ -43,12 +44,15 @@ public class ElecCore extends ModBase{
 	@Mod.Instance(ModInfo.MODID_CORE)
 	public static ElecCore instance;
 	public static TickHandler tickHandler;
+	public static NetworkHandler networkHandler;
 
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
 		this.cfgFile = FileHelper.getConfigFileElec(event);
 		this.ModID = ModInfoHelper.getModID(event);
 		tickHandler = new TickHandler();
+		networkHandler = new NetworkHandler(modID());
+		networkHandler.registerClientPacket(PacketSyncWidget.class);
 		loadConfiguration();
 		Integration.init();
 		//runUpdateCheck(event, "https://raw.githubusercontent.com/Elecs-Mods/ElecCore/master/build.properties");
