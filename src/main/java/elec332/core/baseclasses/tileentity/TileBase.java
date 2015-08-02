@@ -2,6 +2,7 @@ package elec332.core.baseclasses.tileentity;
 
 import com.google.common.collect.Lists;
 import elec332.core.main.ElecCore;
+import elec332.core.server.ServerHelper;
 import elec332.core.util.BlockLoc;
 import elec332.core.util.DirectionHelper;
 import elec332.core.util.IRunOnce;
@@ -175,15 +176,8 @@ public class TileBase extends TileEntity {
     }
 
     public void sendPacket(int ID, NBTTagCompound data){
-        if (worldObj instanceof WorldServer) {
-            PlayerManager playerManager = ((WorldServer) worldObj).getPlayerManager();
-            for (Object obj : MinecraftServer.getServer().getConfigurationManager().playerEntityList) {
-                EntityPlayerMP player = (EntityPlayerMP) obj;
-                Chunk chunk = worldObj.getChunkFromBlockCoords(this.xCoord, this.zCoord);
-                if (playerManager.isPlayerWatchingChunk(player, chunk.xPosition, chunk.zPosition))
-                    player.playerNetServerHandler.sendPacket(new S35PacketUpdateTileEntity(this.xCoord, this.yCoord, this.zCoord, ID, data));
-            }
-        }
+        for (EntityPlayerMP player : ServerHelper.instance.getAllPlayersWatchingBlock(worldObj, this.xCoord, this.zCoord))
+            player.playerNetServerHandler.sendPacket(new S35PacketUpdateTileEntity(this.xCoord, this.yCoord, this.zCoord, ID, data));
     }
 
     @Override
