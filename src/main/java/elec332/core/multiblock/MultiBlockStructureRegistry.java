@@ -2,9 +2,19 @@ package elec332.core.multiblock;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import cpw.mods.fml.common.network.simpleimpl.IMessage;
+import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
+import cpw.mods.fml.common.network.simpleimpl.MessageContext;
+import cpw.mods.fml.relauncher.Side;
+import elec332.core.network.AbstractMessage;
+import elec332.core.server.ServerHelper;
 import elec332.core.util.BlockLoc;
+import elec332.core.util.NBTHelper;
 import elec332.core.world.WorldHelper;
 import net.minecraft.block.Block;
+import net.minecraft.client.Minecraft;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
@@ -16,11 +26,12 @@ import java.util.Map;
 /**
  * Created by Elec332 on 26-7-2015.
  */
-public final class MultiBlockStructureRegistry {
+public final class MultiBlockStructureRegistry implements IMessageHandler<MultiBlockStructureRegistry.SyncMultiBlockPacket, IMessage>{
 
     protected MultiBlockStructureRegistry(MultiBlockRegistry multiBlockRegistry){
         this.multiBlockStructures = Maps.newHashMap();
         this.multiBlockRegistry = multiBlockRegistry;
+        multiBlockRegistry.networkHandler.getNetworkWrapper().registerMessage(this, SyncMultiBlockPacket.class, 0, Side.CLIENT);
     }
 
     private final MultiBlockRegistry multiBlockRegistry;
@@ -49,7 +60,7 @@ public final class MultiBlockStructureRegistry {
             return false;
         for (IMultiBlockStructure multiBlock : multiBlockStructures.values()){
             if (multiBlock.getTriggerBlock().equals(blockData)){
-                if (tryCreateStructure(multiBlock, world, x, y, z, side)) {
+                if (tryCreateStructure(multiBlock, world, x, y, z, side, false)) {
                     return true;
                 }
             }
@@ -58,10 +69,10 @@ public final class MultiBlockStructureRegistry {
     }
 
     protected boolean attemptReCreate(String s, TileEntity tile, ForgeDirection facing){
-        return tryCreateStructure(multiBlockStructures.get(s), tile.getWorldObj(), tile.xCoord, tile.yCoord, tile.zCoord, facing);
+        return tryCreateStructure(multiBlockStructures.get(s), tile.getWorldObj(), tile.xCoord, tile.yCoord, tile.zCoord, facing, true);
     }
 
-    private boolean tryCreateStructure(IMultiBlockStructure multiBlock, World world, int x, int y, int z, ForgeDirection side){
+    private boolean tryCreateStructure(IMultiBlockStructure multiBlock, World world, int x, int y, int z, ForgeDirection side, boolean recreate){
         if (side == ForgeDirection.UNKNOWN || side == ForgeDirection.UP || side == ForgeDirection.DOWN)
             return false;
         BlockData leftBottomCorner = null;
@@ -126,6 +137,10 @@ public final class MultiBlockStructureRegistry {
             }
             //newZ--;
             multiBlockRegistry.get(world).createNewMultiBlock(multiBlock, new BlockLoc(newX, newY, newZ), getAllMultiBlockLocations(multiBlock.getStructure(), newX, newY, newZ, side), world, side);
+            if (!recreate && !world.isRemote){
+                for (EntityPlayerMP player : ServerHelper.instance.getAllPlayersWatchingBlock(world, newX, newZ))
+                    multiBlockRegistry.networkHandler.getNetworkWrapper().sendTo(new SyncMultiBlockPacket(multiBlock, x, y, z, side, this), player);
+            }
             return true;
         }
         return false;
@@ -166,12 +181,12 @@ public final class MultiBlockStructureRegistry {
                 }
             });
         } catch (RuntimeException e){
-            System.out.println("INVALID");
+            //System.out.println("INVALID");
             if (e.getMessage().equals("INVALID"))
                 return false;
             throw new RuntimeException(e);
         }
-        System.out.println("VALID STUFF HERE, YAYZZZ :D");
+        //System.out.println("VALID STUFF HERE, YAYZZZ :D");
         return true;
     }
 
@@ -216,6 +231,25 @@ public final class MultiBlockStructureRegistry {
         if (block == null)
             return null;
         return new BlockData(block, meta);
+    }
+
+    public static final class SyncMultiBlockPacket extends AbstractMessage {
+
+        public SyncMultiBlockPacket(){
+            super(null);
+        }
+
+        private SyncMultiBlockPacket(IMultiBlockStructure multiBlock, int x, int y, int z, ForgeDirection side, MultiBlockStructureRegistry structureRegistry){
+            super(new NBTHelper().addToTag(x, "x").addToTag(y, "y").addToTag(z, "z").addToTag(side.toString(), "side").addToTag(structureRegistry.getIdentifier(multiBlock), "mbs").toNBT());
+        }
+
+    }
+
+    @Override
+    public IMessage onMessage(SyncMultiBlockPacket message, MessageContext ctx) {
+        NBTTagCompound tag = message.networkPackageObject;
+        tryCreateStructure(multiBlockStructures.get(tag.getString("mbs")), Minecraft.getMinecraft().theWorld, tag.getInteger("x"), tag.getInteger("y"), tag.getInteger("z"), ForgeDirection.valueOf(tag.getString("side")), false);
+        return null;
     }
 
 }

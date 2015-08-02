@@ -80,23 +80,23 @@ public final class MultiBlockData {
     }
 
     public void tileEntityValidate(){
-        if (!getTileEntityWorld().isRemote) {
+        //if (!getTileEntityWorld().isRemote) {
             ElecCore.tickHandler.registerCall(new Runnable() {
                 @Override
                 public void run() {
                     IMultiBlock.tileEntityValidate(tile, multiBlock, registry);
                 }
             });
-        }
+        //}
     }
 
     public void tileEntityInvalidate(){
-        if (!getTileEntityWorld().isRemote)
+        //if (!getTileEntityWorld().isRemote)
             IMultiBlock.tileEntityInvalidate(multiBlock);
     }
 
     public void tileEntityChunkUnload(){
-        if (!getTileEntityWorld().isRemote)
+        //if (!getTileEntityWorld().isRemote)
             IMultiBlock.tileEntityChunkUnload(multiBlock, tile);
     }
 }

@@ -2,6 +2,8 @@ package elec332.core.multiblock;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import cpw.mods.fml.common.Loader;
+import elec332.core.network.NetworkHandler;
 import elec332.core.util.BlockLoc;
 import elec332.core.util.EventHelper;
 import elec332.core.world.WorldHelper;
@@ -19,11 +21,20 @@ import java.util.List;
  */
 public final class MultiBlockRegistry extends AbstractWorldRegistryHolder<MultiBlockRegistry.MultiBlockWorldRegistry>{
 
-    //public static final MultiBlockRegistry instance = new MultiBlockRegistry();
     public MultiBlockRegistry(){
+        this(new NetworkHandler(Loader.instance().activeModContainer().getModId()+"|MultiBlocks"));
+    }
+
+    public MultiBlockRegistry(NetworkHandler networkHandler){
         this.registry = Maps.newHashMap();
+        this.networkHandler = networkHandler;
         this.structureRegistry = new MultiBlockStructureRegistry(this);
         EventHelper.registerHandlerForge(this);
+    }
+
+    @Override
+     public boolean serverOnly() {
+        return false;
     }
 
     @Override
@@ -33,6 +44,7 @@ public final class MultiBlockRegistry extends AbstractWorldRegistryHolder<MultiB
 
     private HashMap<Class<? extends IMultiBlockStructure>, Class<? extends IMultiBlock>> registry;
     private final MultiBlockStructureRegistry structureRegistry;
+    protected final NetworkHandler networkHandler;
 
 
     public void registerMultiBlock(IMultiBlockStructure multiBlockStructure, String name, Class<? extends IMultiBlock> multiBlock){
