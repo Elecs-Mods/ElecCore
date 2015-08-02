@@ -18,6 +18,7 @@ import elec332.core.modBaseUtils.ModInfo;
 import elec332.core.network.NetworkHandler;
 import elec332.core.network.PacketSyncWidget;
 import elec332.core.proxies.CommonProxy;
+import elec332.core.server.ServerHelper;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -59,6 +60,7 @@ public class ElecCore extends ModBase{
 		FMLCommonHandler.instance().bus().register(new FMLEventHandler());
 		FMLCommonHandler.instance().bus().register(tickHandler);
 		Debug = config.isEnabled("Debug", false);
+		ServerHelper.instance.load();
 
 		MCModInfo.CreateMCModInfoElec(event, "Provides core functionality for Elec's Mods",
 				"-", "assets/elec332/logo.png",	new String[]{"Elec332"});

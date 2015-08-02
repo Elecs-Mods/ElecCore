@@ -1,5 +1,6 @@
 package elec332.core.server;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.LoaderState;
@@ -10,11 +11,15 @@ import elec332.core.util.EventHelper;
 import elec332.core.util.NBTHelper;
 import elec332.core.world.WorldHelper;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.management.PlayerManager;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldServer;
+import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.event.world.WorldEvent;
 
 import java.io.File;
@@ -37,6 +42,12 @@ public class ServerHelper {
         this.extendedPropertiesList = Maps.newHashMap();
         this.locked = false;
         setInvalid();
+    }
+
+    /**
+     * Dummy method to make sure this gets registered on the Forge EventBus before world load
+     */
+    public void load(){
     }
 
     public void registerExtendedProperties(String identifier, Class<? extends ElecPlayer.ExtendedProperties> propClass){
@@ -85,8 +96,8 @@ public class ServerHelper {
     }
 
     @SuppressWarnings("unchecked")
-    public List<EntityPlayer> getOnlinePlayers(){
-        return (List<EntityPlayer>) getMinecraftServer().getConfigurationManager().playerEntityList;
+    public List<EntityPlayerMP> getOnlinePlayers(){
+        return (List<EntityPlayerMP>) getMinecraftServer().getConfigurationManager().playerEntityList;
     }
 
     public boolean isPlayerOnline(UUID uuid){
@@ -101,6 +112,19 @@ public class ServerHelper {
             }
         }
         return null;
+    }
+
+    public List<EntityPlayerMP> getAllPlayersWatchingBlock(World world, int x, int z){
+        List<EntityPlayerMP> ret = Lists.newArrayList();
+        if (world instanceof WorldServer) {
+            PlayerManager playerManager = ((WorldServer) world).getPlayerManager();
+            for (EntityPlayerMP player : getOnlinePlayers()) {
+                Chunk chunk = world.getChunkFromBlockCoords(x, z);
+                if (playerManager.isPlayerWatchingChunk(player, chunk.xPosition, chunk.zPosition))
+                    ret.add(player);
+            }
+        }
+        return ret;
     }
 
     public MinecraftServer getMinecraftServer(){
@@ -122,6 +146,7 @@ public class ServerHelper {
     }
 
     public class EventHandler{
+
         @SubscribeEvent
         public void onWorldLoad(WorldEvent.Load event){
             if (isServer(event.world) && WorldHelper.getDimID(event.world) == 0){
