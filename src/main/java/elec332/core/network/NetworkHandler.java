@@ -25,6 +25,14 @@ public class NetworkHandler {
         register(packetClass, Side.CLIENT);
     }
 
+    public void registerServerPacket(AbstractPacket packet){
+        register(packet, Side.SERVER);
+    }
+
+    public void registerClientPacket(AbstractPacket packet){
+        register(packet, Side.CLIENT);
+    }
+
     public SimpleNetworkWrapper getNetworkWrapper() {
         return networkWrapper;
     }
@@ -36,6 +44,12 @@ public class NetworkHandler {
     @SuppressWarnings("unchecked")
     private void register(Class packetClass, Side side){
         networkWrapper.registerMessage(packetClass, packetClass, i, side);
+        ++i;
+    }
+
+    @SuppressWarnings("unchecked")
+    private void register(AbstractPacket packet, Side side){
+        networkWrapper.registerMessage(packet, packet.getClass(), i, side);
         ++i;
     }
 }
