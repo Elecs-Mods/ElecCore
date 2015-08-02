@@ -30,7 +30,7 @@ public abstract class AbstractWorldRegistryHolder<T extends IWorldRegistry> {
     protected T get(World world, boolean create) {
         if (world == null)
             throw new IllegalArgumentException();
-        if (!world.isRemote) {
+        if (!world.isRemote || !serverOnly()) {
             T ret = mappings.get(world);
             if (ret == null && create) {
                 ret = newRegistry(world);
@@ -42,14 +42,15 @@ public abstract class AbstractWorldRegistryHolder<T extends IWorldRegistry> {
         return null;
     }
 
+    public abstract boolean serverOnly();
+
     public abstract T newRegistry(World world);
 
     //////////////////////////////////////////////////////
 
-    public void unload(World world) {
+    private void unload(World world) {
         mappings.get(world).onWorldUnload();
         mappings.remove(world);
-
     }
 
     @SubscribeEvent
@@ -68,6 +69,7 @@ public abstract class AbstractWorldRegistryHolder<T extends IWorldRegistry> {
             if (WorldHelper.getDimID(event.world) == WorldHelper.getDimID(world)) {
                 world_unload = world;
                 unload(world);
+                break;
             }
         }
         if (world_unload != null)
