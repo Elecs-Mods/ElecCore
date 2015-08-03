@@ -13,7 +13,7 @@ import java.util.UUID;
 /**
  * Created by Elec332 on 3-8-2015.
  */
-public abstract class AbstractCableGrid<G extends AbstractCableGrid, T extends AbstractGridTile<G, T>, W extends AbstractWiringTypeHelper, A extends AbstractWorldGridHolder>{
+public abstract class AbstractCableGrid<G extends AbstractCableGrid<G, T, W, A>, T extends AbstractGridTile<G, T, W>, W extends AbstractWiringTypeHelper, A extends AbstractWorldGridHolder<A, G, T, W>>{
     public AbstractCableGrid(World world, T p, ForgeDirection direction, W wiringHelper){
         acceptors = new ArrayList<GridData>();
         providers = new ArrayList<GridData>();
@@ -53,8 +53,7 @@ public abstract class AbstractCableGrid<G extends AbstractCableGrid, T extends A
         this.acceptors.addAll(grid.acceptors);
         this.providers.addAll(grid.providers);
         this.specialProviders.addAll(grid.specialProviders);
-        for (Object df : grid.locations){
-            BlockLoc vec = (BlockLoc)df;
+        for (BlockLoc vec : grid.locations){
             T powerTile = (T)getWorldHolder().getPowerTile(vec);
             if (powerTile != null)
                 powerTile.replaceGrid(grid, (G)this);

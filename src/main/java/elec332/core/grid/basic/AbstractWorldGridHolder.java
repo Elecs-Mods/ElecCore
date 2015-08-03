@@ -13,7 +13,7 @@ import java.util.*;
 /**
  * Created by Elec332 on 3-8-2015.
  */
-public abstract class AbstractWorldGridHolder<A extends AbstractWorldGridHolder, G extends AbstractCableGrid<G, T, W, A>, T extends AbstractGridTile<G, T>, W extends AbstractWiringTypeHelper> {
+public abstract class AbstractWorldGridHolder<A extends AbstractWorldGridHolder<A, G, T, W>, G extends AbstractCableGrid<G, T, W, A>, T extends AbstractGridTile<G, T, W>, W extends AbstractWiringTypeHelper> {
 
     public AbstractWorldGridHolder(World world, W wiringHelper){
         this.world = world;
