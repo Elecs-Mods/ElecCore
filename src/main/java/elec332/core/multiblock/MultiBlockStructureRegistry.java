@@ -14,6 +14,7 @@ import elec332.core.world.WorldHelper;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.IBlockAccess;
@@ -181,12 +182,12 @@ public final class MultiBlockStructureRegistry implements IMessageHandler<MultiB
                 }
             });
         } catch (RuntimeException e){
-            //System.out.println("INVALID");
-            if (e.getMessage().equals("INVALID"))
+            System.out.println("INVALID");
+            if (e.getMessage() != null && e.getMessage().equals("INVALID"))
                 return false;
             throw new RuntimeException(e);
         }
-        //System.out.println("VALID STUFF HERE, YAYZZZ :D");
+        System.out.println("VALID STUFF HERE, YAYZZZ :D");
         return true;
     }
 
@@ -228,8 +229,8 @@ public final class MultiBlockStructureRegistry implements IMessageHandler<MultiB
     private BlockData atLocation(IBlockAccess world, int x, int y, int z){
         Block block = world.getBlock(x, y, z);
         int meta = world.getBlockMetadata(x, y, z);
-        if (block == null)
-            return null;
+        if (block == null || block == Blocks.air)
+            return new BlockData(null);
         return new BlockData(block, meta);
     }
 

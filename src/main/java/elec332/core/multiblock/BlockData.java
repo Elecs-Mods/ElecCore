@@ -38,6 +38,6 @@ public final class BlockData {
 
     @Override
     public boolean equals(Object obj) {
-        return obj instanceof BlockData && ((BlockData) obj).block.equals(block) && checkMeta(obj);
+        return obj instanceof BlockData && ((BlockData) obj).block == block && checkMeta(obj);
     }
 }

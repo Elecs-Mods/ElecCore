@@ -25,13 +25,17 @@ public final class BlockStructure {
             for (int w = 0; w < width; w++) {
                 for (int h = 0; h < height; h++) {
                     BlockData blockData = data.getBlockAtPos(l, w, h);
-                    structure[l][w][h] = blockData;
-                    if (allBlocks.get(blockData) == null)
-                        allBlocks.put(blockData, 0);
-                    int i = allBlocks.get(blockData);
-                    i++;
-                    allBlocks.remove(blockData);
-                    allBlocks.put(blockData, i);
+                    if (blockData != null && blockData.block != null) {
+                        structure[l][w][h] = blockData;
+                        if (allBlocks.get(blockData) == null)
+                            allBlocks.put(blockData, 0);
+                        int i = allBlocks.get(blockData);
+                        i++;
+                        allBlocks.remove(blockData);
+                        allBlocks.put(blockData, i);
+                    } else {
+                        structure[l][w][h] = new BlockData(null);
+                    }
                 }
             }
         }
