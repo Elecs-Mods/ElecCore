@@ -79,6 +79,11 @@ public class ElecCore extends ModBase{
 		//Nope
 	}
 
+	public static void systemPrintDebug(Object s){
+		if (Debug)
+			System.out.println(s);
+	}
+
 	File cfgFile;
 	String ModID;
 
