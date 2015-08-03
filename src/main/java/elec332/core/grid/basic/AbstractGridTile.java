@@ -1,32 +1,29 @@
 package elec332.core.grid.basic;
 
+import elec332.core.main.ElecCore;
 import elec332.core.util.BlockLoc;
-import elec332.eflux.EFlux;
-import elec332.eflux.api.energy.IEnergyReceiver;
-import elec332.eflux.api.energy.IEnergySource;
-import elec332.eflux.api.energy.IEnergyTransmitter;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.util.ForgeDirection;
 
 /**
  * Created by Elec332 on 3-8-2015.
  */
-public abstract class AbstractGridTile<G extends AbstractCableGrid, T extends AbstractGridTile> {
+public abstract class AbstractGridTile<G extends AbstractCableGrid<G, T, W, ?>, T extends AbstractGridTile<G, T, W>, W extends AbstractWiringTypeHelper> {
     @SuppressWarnings("unchecked")
-    public AbstractGridTile(TileEntity tileEntity){
+    public AbstractGridTile(TileEntity tileEntity, W wiringHelper){
         if (!isTileValid(tileEntity))
             throw new IllegalArgumentException();
         this.tile = tileEntity;
         this.location = new BlockLoc(tileEntity);
         this.grids = (G[]) new Object[6];
-        if (tileEntity instanceof IEnergyTransmitter) {
+        if (wiringHelper.isTransmitter(tileEntity)) {
             this.grids[0] = newGrid(ForgeDirection.UNKNOWN);
             this.connectType = AbstractWiringTypeHelper.ConnectType.CONNECTOR;
-        } else if (tileEntity instanceof IEnergyReceiver && tileEntity instanceof IEnergySource)
+        } else if (wiringHelper.isReceiver(tileEntity) && wiringHelper.isSource(tileEntity))
             this.connectType = AbstractWiringTypeHelper.ConnectType.SEND_RECEIVE;
-        else if (tileEntity instanceof IEnergyReceiver)
+        else if (wiringHelper.isReceiver(tileEntity))
             this.connectType = AbstractWiringTypeHelper.ConnectType.RECEIVE;
-        else if (tileEntity instanceof IEnergySource)
+        else if (wiringHelper.isSource(tileEntity))
             this.connectType = AbstractWiringTypeHelper.ConnectType.SEND;
         this.hasInit = true;
     }
@@ -69,17 +66,17 @@ public abstract class AbstractGridTile<G extends AbstractCableGrid, T extends Ab
                 if (grid != null)
                     q++;
             }
-            EFlux.systemPrintDebug("OldSizeBeforeMerge: " + q);
+            ElecCore.systemPrintDebug("OldSizeBeforeMerge: " + q);
             int i = removeGrid(old);
-            EFlux.systemPrintDebug(i);
+            ElecCore.systemPrintDebug(i);
             grids[i] = newGrid;
             q = 0;
             for (G grid : grids){
                 if (grid != null)
                     q++;
             }
-            EFlux.systemPrintDebug("NewSizeAfterMerge " + q);
-            EFlux.systemPrintDebug(grids.length);
+            ElecCore.systemPrintDebug("NewSizeAfterMerge " + q);
+            ElecCore.systemPrintDebug(grids.length);
         }
     }
 
