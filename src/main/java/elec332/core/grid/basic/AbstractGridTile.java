@@ -1,10 +1,13 @@
 package elec332.core.grid.basic;
 
+import com.google.common.collect.Lists;
 import elec332.core.main.ElecCore;
 import elec332.core.registry.AbstractWorldRegistryHolder;
 import elec332.core.util.BlockLoc;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.util.ForgeDirection;
+
+import java.util.List;
 
 /**
  * Created by Elec332 on 3-8-2015.
@@ -37,6 +40,7 @@ public abstract class AbstractGridTile<G extends AbstractCableGrid<G, T, W, A>, 
     private AbstractWiringTypeHelper.ConnectType connectType;
     private final AbstractWorldRegistryHolder<A> worldGridHolder;
 
+    @SuppressWarnings("unchecked")
     private G getGrid(int i){
         return (G) grids[i];
     }
@@ -102,8 +106,13 @@ public abstract class AbstractGridTile<G extends AbstractCableGrid<G, T, W, A>, 
         return -1;
     }
 
-    public G[] getGrids() {
-        return (G[]) grids;
+    @SuppressWarnings("unchecked")
+    public List<G> getGrids() {
+        List<G> ret = Lists.newArrayList();
+        for (int i = 0; i < grids.length; i++) {
+            ret.add(getGrid(i));
+        }
+        return ret;
     }
 
     public G getGridFromSide(ForgeDirection forgeDirection){
@@ -111,7 +120,7 @@ public abstract class AbstractGridTile<G extends AbstractCableGrid<G, T, W, A>, 
     }
 
     private G getFromSide(ForgeDirection direction){
-        G grid = (G) grids[direction.ordinal()];
+        G grid = getGrid(direction.ordinal());
         if (grid == null) {
             grid = newGridP(direction);
             grids[direction.ordinal()] = grid;
@@ -122,7 +131,7 @@ public abstract class AbstractGridTile<G extends AbstractCableGrid<G, T, W, A>, 
     public G getGrid(){
         if (!singleGrid())
             throw new UnsupportedOperationException("Request grid when tile has multiple grids");
-        G grid = (G) grids[0];
+        G grid = getGrid(0);
         if (grid == null){
             grid = newGridP(ForgeDirection.UNKNOWN);
             grids[0] = grid;
