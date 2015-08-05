@@ -1,5 +1,6 @@
 package elec332.core.baseclasses.tileentity;
 
+import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import elec332.core.api.wrench.IRightClickCancel;
@@ -28,7 +29,7 @@ import java.util.ArrayList;
  */
 public class BlockTileBase extends Block implements IWrenchable, ITileEntityProvider{
 
-    public BlockTileBase(Material mat, Class tileClass, String blockName, String modID) {
+    public BlockTileBase(Material mat, Class<? extends TileEntity> tileClass, String blockName, String modID) {
         super(mat);
         setResistance(4.5F);
         setHardness(2.0F);
@@ -40,9 +41,14 @@ public class BlockTileBase extends Block implements IWrenchable, ITileEntityProv
     }
 
     public IIcon[][] icons = new IIcon[2][6];
-    private Class tileClass;
+    private Class<? extends TileEntity> tileClass;
     private String blockName;
     private String modID;
+
+    public BlockTileBase registerTile(){
+        GameRegistry.registerTileEntity(tileClass, blockName);
+        return this;
+    }
 
     public BlockTileBase register(){
         RegisterHelper.registerBlock(this, blockName);
