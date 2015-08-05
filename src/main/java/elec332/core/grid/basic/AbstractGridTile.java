@@ -1,6 +1,7 @@
 package elec332.core.grid.basic;
 
 import elec332.core.main.ElecCore;
+import elec332.core.registry.AbstractWorldRegistryHolder;
 import elec332.core.util.BlockLoc;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.util.ForgeDirection;
@@ -10,12 +11,13 @@ import net.minecraftforge.common.util.ForgeDirection;
  */
 public abstract class AbstractGridTile<G extends AbstractCableGrid<G, T, W, A>, T extends AbstractGridTile<G, T, W, A>, W extends AbstractWiringTypeHelper, A extends AbstractWorldGridHolder<A, G, T, W>> {
     @SuppressWarnings("unchecked")
-    public AbstractGridTile(TileEntity tileEntity, W wiringHelper, A worldGridHolder){
-        if (!isTileValid(tileEntity))
+    public AbstractGridTile(TileEntity tileEntity, W wiringHelper, AbstractWorldRegistryHolder<A> worldGridHolder){
+        if (!wiringHelper.isTileValid(tileEntity))
             throw new IllegalArgumentException();
         this.tile = tileEntity;
         this.location = new BlockLoc(tileEntity);
-        this.grids = (G[]) new Object[6];
+        this.grids = new Object[6];
+        this.worldGridHolder =worldGridHolder;
         if (wiringHelper.isTransmitter(tileEntity)) {
             this.grids[0] = newGridP(ForgeDirection.UNKNOWN);
             this.connectType = AbstractWiringTypeHelper.ConnectType.CONNECTOR;
@@ -25,18 +27,19 @@ public abstract class AbstractGridTile<G extends AbstractCableGrid<G, T, W, A>, 
             this.connectType = AbstractWiringTypeHelper.ConnectType.RECEIVE;
         else if (wiringHelper.isSource(tileEntity))
             this.connectType = AbstractWiringTypeHelper.ConnectType.SEND;
-        this.worldGridHolder =worldGridHolder;
         this.hasInit = true;
     }
-
-    protected abstract boolean isTileValid(TileEntity tile);
 
     private TileEntity tile;
     private boolean hasInit = false;
     private BlockLoc location;
-    private G[] grids;
+    private Object[] grids;
     private AbstractWiringTypeHelper.ConnectType connectType;
-    private final A worldGridHolder;
+    private final AbstractWorldRegistryHolder<A> worldGridHolder;
+
+    private G getGrid(int i){
+        return (G) grids[i];
+    }
 
     private boolean singleGrid(){
         return this.connectType == AbstractWiringTypeHelper.ConnectType.CONNECTOR;
@@ -63,7 +66,7 @@ public abstract class AbstractGridTile<G extends AbstractCableGrid<G, T, W, A>, 
             grids[0] = newGrid;
         } else {
             int q = 0;
-            for (G grid : grids){
+            for (Object grid : grids){
                 if (grid != null)
                     q++;
             }
@@ -72,7 +75,7 @@ public abstract class AbstractGridTile<G extends AbstractCableGrid<G, T, W, A>, 
             ElecCore.systemPrintDebug(i);
             grids[i] = newGrid;
             q = 0;
-            for (G grid : grids){
+            for (Object grid : grids){
                 if (grid != null)
                     q++;
             }
@@ -100,7 +103,7 @@ public abstract class AbstractGridTile<G extends AbstractCableGrid<G, T, W, A>, 
     }
 
     public G[] getGrids() {
-        return grids;
+        return (G[]) grids;
     }
 
     public G getGridFromSide(ForgeDirection forgeDirection){
@@ -108,7 +111,7 @@ public abstract class AbstractGridTile<G extends AbstractCableGrid<G, T, W, A>, 
     }
 
     private G getFromSide(ForgeDirection direction){
-        G grid = grids[direction.ordinal()];
+        G grid = (G) grids[direction.ordinal()];
         if (grid == null) {
             grid = newGridP(direction);
             grids[direction.ordinal()] = grid;
@@ -119,7 +122,7 @@ public abstract class AbstractGridTile<G extends AbstractCableGrid<G, T, W, A>, 
     public G getGrid(){
         if (!singleGrid())
             throw new UnsupportedOperationException("Request grid when tile has multiple grids");
-        G grid = grids[0];
+        G grid = (G) grids[0];
         if (grid == null){
             grid = newGridP(ForgeDirection.UNKNOWN);
             grids[0] = grid;
@@ -127,8 +130,12 @@ public abstract class AbstractGridTile<G extends AbstractCableGrid<G, T, W, A>, 
         return grid;
     }
 
+    protected AbstractWorldRegistryHolder<A> getWorldGridHolder() {
+        return this.worldGridHolder;
+    }
+
     private G newGridP(ForgeDirection direction){
-        return worldGridHolder.registerGrid(newGrid(direction));
+        return worldGridHolder.get(tile.getWorldObj()).registerGrid(newGrid(direction));
     }
 
     protected abstract G newGrid(ForgeDirection direction);

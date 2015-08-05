@@ -2,6 +2,7 @@ package elec332.core.grid.basic;
 
 import cpw.mods.fml.common.FMLCommonHandler;
 import elec332.core.main.ElecCore;
+import elec332.core.registry.AbstractWorldRegistryHolder;
 import elec332.core.util.BlockLoc;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
@@ -14,7 +15,7 @@ import java.util.UUID;
  * Created by Elec332 on 3-8-2015.
  */
 public abstract class AbstractCableGrid<G extends AbstractCableGrid<G, T, W, A>, T extends AbstractGridTile<G, T, W, A>, W extends AbstractWiringTypeHelper, A extends AbstractWorldGridHolder<A, G, T, W>>{
-    public AbstractCableGrid(World world, T p, ForgeDirection direction, W wiringHelper){
+    public AbstractCableGrid(World world, T p, ForgeDirection direction, W wiringHelper, AbstractWorldRegistryHolder<A> worldGridHolder){
         acceptors = new ArrayList<GridData>();
         providers = new ArrayList<GridData>();
         locations = new ArrayList<BlockLoc>();
@@ -29,6 +30,7 @@ public abstract class AbstractCableGrid<G extends AbstractCableGrid<G, T, W, A>,
         if (wiringHelper.isTransmitter(p.getTile()))
         FMLCommonHandler.instance().bus().register(this);
         identifier = UUID.randomUUID();
+        this.worldGridHolder = worldGridHolder;
     }
 
     protected final UUID identifier;
@@ -37,6 +39,7 @@ public abstract class AbstractCableGrid<G extends AbstractCableGrid<G, T, W, A>,
     protected List<GridData> providers;
     protected List<GridData> specialProviders;
     protected List<BlockLoc> locations;
+    private final AbstractWorldRegistryHolder<A> worldGridHolder;
 
     public List<BlockLoc> getLocations(){
         return locations;
@@ -65,7 +68,9 @@ public abstract class AbstractCableGrid<G extends AbstractCableGrid<G, T, W, A>,
 
     public abstract void onTick();
 
-    protected abstract A getWorldHolder();
+    protected A getWorldHolder(){
+        return this.worldGridHolder.get(world);
+    }
 
     protected final void invalidate(){
     }

@@ -20,6 +20,8 @@ public abstract class AbstractWiringTypeHelper {
 
     public abstract boolean canSourceProvideTo(TileEntity tile, ForgeDirection direction);
 
+    public abstract boolean isTileValid(TileEntity tile);
+
     public enum ConnectType{
         CONNECTOR, SEND, RECEIVE, SEND_RECEIVE
     }

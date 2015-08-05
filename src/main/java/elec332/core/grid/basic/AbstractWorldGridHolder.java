@@ -3,6 +3,7 @@ package elec332.core.grid.basic;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import elec332.core.main.ElecCore;
+import elec332.core.registry.IWorldRegistry;
 import elec332.core.util.BlockLoc;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
@@ -13,7 +14,7 @@ import java.util.*;
 /**
  * Created by Elec332 on 3-8-2015.
  */
-public abstract class AbstractWorldGridHolder<A extends AbstractWorldGridHolder<A, G, T, W>, G extends AbstractCableGrid<G, T, W, A>, T extends AbstractGridTile<G, T, W, A>, W extends AbstractWiringTypeHelper> {
+public abstract class AbstractWorldGridHolder<A extends AbstractWorldGridHolder<A, G, T, W>, G extends AbstractCableGrid<G, T, W, A>, T extends AbstractGridTile<G, T, W, A>, W extends AbstractWiringTypeHelper> implements IWorldRegistry{
 
     public AbstractWorldGridHolder(World world, W wiringHelper){
         this.world = world;
@@ -48,8 +49,6 @@ public abstract class AbstractWorldGridHolder<A extends AbstractWorldGridHolder<
         ElecCore.systemPrintDebug("Tile placed at " + genCoords(tile).toString());
     }
 
-    protected abstract boolean isTileValid(TileEntity tile);
-
     protected abstract T newGridTile(TileEntity tile);
 
     public void addTile(T powerTile){
@@ -59,7 +58,7 @@ public abstract class AbstractWorldGridHolder<A extends AbstractWorldGridHolder<
             for (ForgeDirection direction : ForgeDirection.VALID_DIRECTIONS) {
                 ElecCore.systemPrintDebug("Processing tile at " + powerTile.getLocation().toString() + " for side " + direction.toString());
                 TileEntity possTile = world.getTileEntity(theTile.xCoord + direction.offsetX, theTile.yCoord + direction.offsetY, theTile.zCoord + direction.offsetZ);
-                if (possTile != null && isTileValid(possTile)) {
+                if (possTile != null && wiringHelper.isTileValid(possTile)) {
                     T powerTile1 = getPowerTile(genCoords(possTile));
                     if (powerTile1 == null || !powerTile1.hasInit()) {
                         pending.add(powerTile);
@@ -118,7 +117,7 @@ public abstract class AbstractWorldGridHolder<A extends AbstractWorldGridHolder<
     }
 
     public void removeTile(TileEntity tile){
-        if (!isTileValid(tile))
+        if (!wiringHelper.isTileValid(tile))
             throw new IllegalArgumentException();
         /*PowerTile powerTile = ;
         powerTile.toGo = 3;
@@ -153,7 +152,7 @@ public abstract class AbstractWorldGridHolder<A extends AbstractWorldGridHolder<
                     for (BlockLoc vec : vec3List2) {
                         ElecCore.systemPrintDebug("Re-adding tile at " + vec.toString());
                         TileEntity tileEntity1 = getTile(vec);
-                        if (isTileValid(tileEntity1))
+                        if (wiringHelper.isTileValid(tileEntity1))
                             if (getPowerTile(vec) != null)
                                 addTile(getPowerTile(vec));
                     }
@@ -162,7 +161,12 @@ public abstract class AbstractWorldGridHolder<A extends AbstractWorldGridHolder<
         }
     }
 
-    public void onServerTickInternal(){
+    @Override
+    public void tick() {
+        onServerTickInternal();
+    }
+
+    private void onServerTickInternal(){
         ElecCore.systemPrintDebug("Tick! " + world.provider.dimensionId);
         if (!pending.isEmpty() && pending.size() == oldInt) {
                /*List<PowerTile> tr = new ArrayList<PowerTile>();
@@ -213,5 +217,9 @@ public abstract class AbstractWorldGridHolder<A extends AbstractWorldGridHolder<
 
     private TileEntity getTile(BlockLoc vec){
         return world.getTileEntity(vec.xCoord, vec.yCoord, vec.zCoord);
+    }
+
+    @Override
+    public void onWorldUnload() {
     }
 }
