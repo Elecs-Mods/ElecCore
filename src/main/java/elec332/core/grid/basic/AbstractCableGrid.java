@@ -1,6 +1,5 @@
 package elec332.core.grid.basic;
 
-import cpw.mods.fml.common.FMLCommonHandler;
 import elec332.core.main.ElecCore;
 import elec332.core.registry.AbstractWorldRegistryHolder;
 import elec332.core.util.BlockLoc;
@@ -20,15 +19,18 @@ public abstract class AbstractCableGrid<G extends AbstractCableGrid<G, T, W, A>,
         providers = new ArrayList<GridData>();
         locations = new ArrayList<BlockLoc>();
         specialProviders = new ArrayList<GridData>();
+        transmitters = new ArrayList<GridData>();
         this.world = world;
         locations.add(p.getLocation());
+        if (wiringHelper.isTransmitter(p.getTile()))
+            transmitters.add(new GridData(p.getLocation(), direction));
         if (wiringHelper.isSource(p.getTile()) && wiringHelper.canSourceProvideTo(p.getTile(), direction)) {
             providers.add(new GridData(p.getLocation(), direction));
         }
         if (wiringHelper.isReceiver(p.getTile()) && wiringHelper.canReceiverReceiveFrom(p.getTile(), direction))
             acceptors.add(new GridData(p.getLocation(), direction));
-        if (wiringHelper.isTransmitter(p.getTile()))
-        FMLCommonHandler.instance().bus().register(this);
+        //if (wiringHelper.isTransmitter(p.getTile()))
+        //FMLCommonHandler.instance().bus().register(this);
         identifier = UUID.randomUUID();
         this.worldGridHolder = worldGridHolder;
     }
@@ -38,6 +40,7 @@ public abstract class AbstractCableGrid<G extends AbstractCableGrid<G, T, W, A>,
     protected List<GridData> acceptors;
     protected List<GridData> providers;
     protected List<GridData> specialProviders;
+    protected List<GridData> transmitters;
     protected List<BlockLoc> locations;
     private final AbstractWorldRegistryHolder<A> worldGridHolder;
 
@@ -55,6 +58,7 @@ public abstract class AbstractCableGrid<G extends AbstractCableGrid<G, T, W, A>,
         this.locations.addAll(grid.locations);
         this.acceptors.addAll(grid.acceptors);
         this.providers.addAll(grid.providers);
+        this.transmitters.addAll(grid.transmitters);
         this.specialProviders.addAll(grid.specialProviders);
         for (BlockLoc vec : grid.locations){
             T powerTile = getWorldHolder().getPowerTile(vec);
@@ -72,7 +76,7 @@ public abstract class AbstractCableGrid<G extends AbstractCableGrid<G, T, W, A>,
         return this.worldGridHolder.get(world);
     }
 
-    protected final void invalidate(){
+    protected void invalidate(){
     }
 
     @Override

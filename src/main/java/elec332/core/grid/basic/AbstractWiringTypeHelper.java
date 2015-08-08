@@ -18,6 +18,8 @@ public abstract class AbstractWiringTypeHelper {
 
     public abstract boolean canTransmitterConnectTo(TileEntity transmitter, TileEntity otherTransmitter);
 
+    public abstract boolean canTransmitterConnectTo(TileEntity transmitter, ForgeDirection direction);
+
     public abstract boolean canSourceProvideTo(TileEntity tile, ForgeDirection direction);
 
     public abstract boolean isTileValid(TileEntity tile);

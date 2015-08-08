@@ -82,7 +82,7 @@ public abstract class AbstractWorldGridHolder<A extends AbstractWorldGridHolder<
         if (powerTile1.getConnectType() == powerTile2.getConnectType() && (powerTile1.getConnectType() == AbstractWiringTypeHelper.ConnectType.SEND || powerTile1.getConnectType() == AbstractWiringTypeHelper.ConnectType.RECEIVE))
             return false; //We don't want to receivers or 2 sources connecting, do we?
         if (powerTile1.getConnectType() == AbstractWiringTypeHelper.ConnectType.CONNECTOR && powerTile2.getConnectType() == AbstractWiringTypeHelper.ConnectType.CONNECTOR){
-            return wiringHelper.canTransmitterConnectTo(mainTile, powerTile2.getTile());
+            return wiringHelper.canTransmitterConnectTo(mainTile, powerTile2.getTile()) && wiringHelper.canTransmitterConnectTo(mainTile, direction) && canConnectFromSide(direction.getOpposite(), powerTile2);
         } else if (powerTile1.getConnectType() == AbstractWiringTypeHelper.ConnectType.CONNECTOR){
             return canConnectFromSide(direction.getOpposite(), powerTile2);
         } else {
@@ -108,7 +108,7 @@ public abstract class AbstractWorldGridHolder<A extends AbstractWorldGridHolder<
         boolean flag1 = false;
         boolean flag2 = false;
         if (wiringHelper.isTransmitter(secondTile))
-            return true;
+            return wiringHelper.canTransmitterConnectTo(secondTile, direction);
         if (wiringHelper.isReceiver(secondTile))
             flag1 = wiringHelper.canReceiverReceiveFrom(secondTile, direction);
         if (wiringHelper.isSource(secondTile))
