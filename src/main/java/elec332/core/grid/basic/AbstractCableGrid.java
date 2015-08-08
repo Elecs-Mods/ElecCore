@@ -49,17 +49,13 @@ public abstract class AbstractCableGrid<G extends AbstractCableGrid<G, T, W, A>,
     }
 
     @SuppressWarnings("unchecked")
-    public G mergeGrids(G grid){
+    public final G mergeGrids(G grid){
         if (this.world.provider.dimensionId != grid.world.provider.dimensionId)
             throw new RuntimeException();
         if (this.equals(grid))
             return (G)this;
         getWorldHolder().removeGrid(grid);
-        this.locations.addAll(grid.locations);
-        this.acceptors.addAll(grid.acceptors);
-        this.providers.addAll(grid.providers);
-        this.transmitters.addAll(grid.transmitters);
-        this.specialProviders.addAll(grid.specialProviders);
+        uponGridMerge(grid);
         for (BlockLoc vec : grid.locations){
             T powerTile = getWorldHolder().getPowerTile(vec);
             if (powerTile != null)
@@ -68,6 +64,20 @@ public abstract class AbstractCableGrid<G extends AbstractCableGrid<G, T, W, A>,
         grid.invalidate();
         ElecCore.systemPrintDebug("MERGED");
         return (G)this;
+    }
+
+    /**
+     * Use this to copy data over from the parameter, the parameter is
+     * a grid that will be merged into this one
+     *
+     * @param grid The grid that will be removed
+     */
+    protected void uponGridMerge(G grid){
+        this.locations.addAll(grid.locations);
+        this.acceptors.addAll(grid.acceptors);
+        this.providers.addAll(grid.providers);
+        this.transmitters.addAll(grid.transmitters);
+        this.specialProviders.addAll(grid.specialProviders);
     }
 
     public abstract void onTick();
