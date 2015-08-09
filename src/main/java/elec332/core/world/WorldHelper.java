@@ -5,6 +5,7 @@ import elec332.core.util.BlockLoc;
 import net.minecraft.block.Block;
 import net.minecraft.entity.effect.EntityLightningBolt;
 import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.item.EntityTNTPrimed;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
@@ -17,6 +18,10 @@ import net.minecraftforge.common.ForgeChunkManager;
  * Created by Elec332 on 20-3-2015.
  */
 public class WorldHelper {
+
+    public static void spawnExplosion(World worldObj, int xCoord, int yCoord, int zCoord, float force){
+        worldObj.createExplosion(null, xCoord, yCoord, zCoord, force*4, true);
+    }
 
     public static ForgeChunkManager.Ticket requestTicket(World world, BlockLoc loc, Object modInstance){
         ForgeChunkManager.Ticket ticket = ForgeChunkManager.requestTicket(modInstance, world, ForgeChunkManager.Type.NORMAL);
