@@ -54,14 +54,13 @@ public abstract class AbstractCableGrid<G extends AbstractCableGrid<G, T, W, A>,
             throw new RuntimeException();
         if (this.equals(grid))
             return (G)this;
-        getWorldHolder().removeGrid(grid);
         uponGridMerge(grid);
         for (BlockLoc vec : grid.locations){
             T powerTile = getWorldHolder().getPowerTile(vec);
             if (powerTile != null)
                 powerTile.replaceGrid(grid, (G)this);
         }
-        grid.invalidate();
+        getWorldHolder().removeGrid(grid);
         ElecCore.systemPrintDebug("MERGED");
         return (G)this;
     }
@@ -78,6 +77,15 @@ public abstract class AbstractCableGrid<G extends AbstractCableGrid<G, T, W, A>,
         this.providers.addAll(grid.providers);
         this.transmitters.addAll(grid.transmitters);
         this.specialProviders.addAll(grid.specialProviders);
+    }
+
+    /**
+     * This gets called right before a this grid gets recreated because
+     * a tile gor removed from the grid.
+     *
+     * @param tile The tile that will be removed
+     */
+    protected void onTileRemoved(T tile){
     }
 
     public abstract void onTick();

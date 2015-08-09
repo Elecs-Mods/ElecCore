@@ -39,6 +39,7 @@ public abstract class AbstractWorldGridHolder<A extends AbstractWorldGridHolder<
     }
 
     protected void removeGrid(G grid){
+        grid.invalidate();
         grids.remove(grid);
     }
 
@@ -133,12 +134,13 @@ public abstract class AbstractWorldGridHolder<A extends AbstractWorldGridHolder<
                     List<BlockLoc> vec3List = new ArrayList<BlockLoc>();
                     vec3List.addAll(grid.getLocations());
                     vec3List.remove(powerTile.getLocation());
+                    ElecCore.systemPrintDebug(grids.size());
+                    grid.onTileRemoved(powerTile);
+                    removeGrid(grid);
+                    ElecCore.systemPrintDebug(grids.size());
                     ElecCore.systemPrintDebug(registeredTiles.keySet().size());
                     registeredTiles.remove(powerTile.getLocation());
                     ElecCore.systemPrintDebug(registeredTiles.keySet().size());
-                    ElecCore.systemPrintDebug(grids.size());
-                    this.grids.remove(grid);
-                    ElecCore.systemPrintDebug(grids.size());
                     List<BlockLoc> vec3List2 = new ArrayList<BlockLoc>();
                     for (BlockLoc vec : vec3List) {
                         if (!vec.equals(powerTile.getLocation())) {
@@ -221,5 +223,7 @@ public abstract class AbstractWorldGridHolder<A extends AbstractWorldGridHolder<
 
     @Override
     public void onWorldUnload() {
+        //for (G grid : grids)
+         //   grid.invalidate();
     }
 }
