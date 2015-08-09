@@ -44,6 +44,36 @@ public class DirectionHelper {
         }
     }
 
+    public static ForgeDirection rotateLeft(ForgeDirection direction){
+        switch (direction){
+            case NORTH:
+                return ForgeDirection.EAST;
+            case EAST:
+                return ForgeDirection.SOUTH;
+            case SOUTH:
+                return ForgeDirection.WEST;
+            case WEST:
+                return ForgeDirection.NORTH;
+            default:
+                return direction;
+        }
+    }
+
+    public static ForgeDirection rotateRight(ForgeDirection direction){
+        switch (direction){
+            case NORTH:
+                return ForgeDirection.WEST;
+            case WEST:
+                return ForgeDirection.SOUTH;
+            case SOUTH:
+                return ForgeDirection.EAST;
+            case EAST:
+                return ForgeDirection.NORTH;
+            default:
+                return direction;
+        }
+    }
+
     @Deprecated
     public static ForgeDirection getOppositeSide(ForgeDirection direction){
         switch (direction){
