@@ -139,7 +139,7 @@ public abstract class AbstractDynamicMultiBlockWorldHolder<A extends AbstractDyn
     }
 
     private void onServerTickInternal(){
-        System.out.println("Tick! " + world.provider.dimensionId);
+        //System.out.println("Tick! " + world.provider.dimensionId);
         if (!pending.isEmpty() && pending.size() == oldInt) {
             //for (BlockLoc loc : pending){
             //    addTile(WorldHelper.getTileAt(world, loc));
@@ -153,7 +153,7 @@ public abstract class AbstractDynamicMultiBlockWorldHolder<A extends AbstractDyn
         for (M m : multiBlocks){
             m.tick();
         }
-        System.out.println("Tick done");
+        //System.out.println("Tick done");
     }
 
     @Override

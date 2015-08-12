@@ -27,6 +27,19 @@ public class ConfigWrapper {
         else throw new RuntimeException("You cannot register configs after init");
     }
 
+    public void registerConfigWithInnerClasses(Object obj){
+        registerConfig(obj);
+        for (Class clazz : obj.getClass().getDeclaredClasses()){
+            if (!clazz.isInterface()){
+                try {
+                    registerConfig(clazz.getConstructor().newInstance());
+                } catch (Exception e){
+                    throw new RuntimeException("Error registering config: "+clazz.getName());
+                }
+            }
+        }
+    }
+
     public Configuration getConfiguration() {
         return this.configuration;
     }

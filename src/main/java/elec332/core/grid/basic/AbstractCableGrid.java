@@ -105,7 +105,7 @@ public abstract class AbstractCableGrid<G extends AbstractCableGrid<G, T, W, A>,
     @Override
     @SuppressWarnings("unchecked")
     public boolean equals(Object obj) {
-        return obj.getClass().equals(getClass()) && ((G)obj).identifier.equals(identifier);
+        return obj != null && obj.getClass().equals(getClass()) && ((G)obj).identifier.equals(identifier);
     }
 
     public static class GridData {
