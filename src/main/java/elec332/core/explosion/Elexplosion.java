@@ -4,6 +4,7 @@ import elec332.core.util.BlockLoc;
 import elec332.core.world.WorldHelper;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
+import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
 
 /**
@@ -30,7 +31,7 @@ public class Elexplosion extends AbstractExplosion{
                         double dist = getLocation().distance(targetPosition);
                         if (dist < this.getRadius()) {
                             Block block = WorldHelper.getBlockAt(getWorld(), targetPosition);
-                            if (block != null && !block.isAir(getWorld(), x, y, x)) {
+                            if (block != null && !block.isAir(getWorld(), x, y, x) && block != Blocks.bedrock) {
                                 if (dist < this.getRadius() - 1 || getWorld().rand.nextFloat() > 0.7) {
                                     getWorld().setBlockToAir(targetPosition.xCoord, targetPosition.yCoord, targetPosition.zCoord);
                                 }
