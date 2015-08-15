@@ -39,6 +39,7 @@ public abstract class AbstractCompatHandler {
         for (ICompatHandler handler : compatHandlers){
             if (compatEnabled(handler.getType(), handler.compatEnabled(), handler.getName())) {
                 handler.init();
+                logger.info("Loading compat handler for: "+handler.getName());
             } else {
                 logger.info(handler.getName()+" was not detected, skipping compat handler for it.");
             }

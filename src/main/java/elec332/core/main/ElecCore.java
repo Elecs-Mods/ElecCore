@@ -7,8 +7,8 @@ import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+import elec332.core.compat.ElecCoreCompatHandler;
 import elec332.core.handler.FMLEventHandler;
-import elec332.core.handler.Integration;
 import elec332.core.handler.TickHandler;
 import elec332.core.helper.FileHelper;
 import elec332.core.helper.MCModInfo;
@@ -19,6 +19,7 @@ import elec332.core.network.NetworkHandler;
 import elec332.core.network.PacketSyncWidget;
 import elec332.core.proxies.CommonProxy;
 import elec332.core.server.ServerHelper;
+import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -46,16 +47,20 @@ public class ElecCore extends ModBase{
 	public static ElecCore instance;
 	public static TickHandler tickHandler;
 	public static NetworkHandler networkHandler;
+	public static ElecCoreCompatHandler compatHandler;
+	public static Logger logger;
 
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
 		this.cfgFile = FileHelper.getConfigFileElec(event);
 		this.ModID = ModInfoHelper.getModID(event);
+		loadConfiguration();
 		tickHandler = new TickHandler();
 		networkHandler = new NetworkHandler(modID());
 		networkHandler.registerClientPacket(PacketSyncWidget.class);
-		loadConfiguration();
-		Integration.init();
+		logger = event.getModLog();
+		compatHandler = new ElecCoreCompatHandler(config, logger);
+
 		//runUpdateCheck(event, "https://raw.githubusercontent.com/Elecs-Mods/ElecCore/master/build.properties");
 		FMLCommonHandler.instance().bus().register(new FMLEventHandler());
 		FMLCommonHandler.instance().bus().register(tickHandler);
@@ -71,6 +76,7 @@ public class ElecCore extends ModBase{
 	@EventHandler
     public void init(FMLInitializationEvent event) {
 		loadConfiguration();
+		compatHandler.init();
 		notifyEvent(event);
     }
 

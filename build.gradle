@@ -16,6 +16,10 @@ buildscript {
 }
 
 repositories {
+	maven {
+        name "Mobius Repo"
+        url "http://mobiusstrip.eu/maven"
+    }
     maven {
         name 'CB Maven FS'
         url "http://chickenbones.net/maven/"
@@ -49,6 +53,7 @@ minecraft {
 }
 
 dependencies {
+	compile "mcp.mobius.waila:Waila:${config.WAILA_version}_${config.minecraft_version}"
 	compile "codechicken:NotEnoughItems:${config.minecraft_version}-${config.NEI_version}:dev"
 }
 
