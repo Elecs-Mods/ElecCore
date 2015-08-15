@@ -1,7 +1,10 @@
 package elec332.core.baseclasses.tileentity;
 
 import com.google.common.collect.Lists;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import elec332.core.main.ElecCore;
+import elec332.core.network.PacketTileDataToServer;
 import elec332.core.server.ServerHelper;
 import elec332.core.util.BlockLoc;
 import elec332.core.util.DirectionHelper;
@@ -171,9 +174,21 @@ public class TileBase extends TileEntity {
         this.worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
     }
 
+    @SideOnly(Side.CLIENT)
+    public void sendPacketToServer(int ID, NBTTagCompound data){
+        ElecCore.networkHandler.getNetworkWrapper().sendToServer(new PacketTileDataToServer(this, ID, data));
+    }
+
+    public void onPacketReceivedFromClient(EntityPlayerMP sender, int ID, NBTTagCompound data){
+    }
+
     public void sendPacket(int ID, NBTTagCompound data){
         for (EntityPlayerMP player : ServerHelper.instance.getAllPlayersWatchingBlock(worldObj, this.xCoord, this.zCoord))
-            player.playerNetServerHandler.sendPacket(new S35PacketUpdateTileEntity(this.xCoord, this.yCoord, this.zCoord, ID, data));
+            sendPacketTo(player, ID, data);
+    }
+
+    public void sendPacketTo(EntityPlayerMP player, int ID, NBTTagCompound data){
+        player.playerNetServerHandler.sendPacket(new S35PacketUpdateTileEntity(this.xCoord, this.yCoord, this.zCoord, ID, data));
     }
 
     @Override
