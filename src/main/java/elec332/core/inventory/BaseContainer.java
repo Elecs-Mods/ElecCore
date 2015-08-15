@@ -38,8 +38,11 @@ public class BaseContainer extends Container implements IWidgetContainer{
 
     @Override
     public void addWidget(Widget widget) {
-        this.widgets.add(widget);
         widget.setContainer(this);
+        widget.setID(widgets.size());
+        for (Object obj : crafters)
+            widget.initWidget((ICrafting)obj);
+        this.widgets.add(widget);
     }
 
     public void addPlayerInventoryToContainer(){
@@ -75,12 +78,11 @@ public class BaseContainer extends Container implements IWidgetContainer{
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public void detectAndSendChanges() {
         super.detectAndSendChanges();
         for (Widget widget : widgets){
-            for (Object obj : crafters){
-                widget.detectAndSendChanges((ICrafting)obj);
-            }
+            widget.detectAndSendChanges(crafters);
         }
     }
 
@@ -95,6 +97,11 @@ public class BaseContainer extends Container implements IWidgetContainer{
 
     protected int hotBarFactor(){
         return hotBarFactor;
+    }
+
+    @Override
+    public void updateProgressBar(int id, int value) {
+        widgets.get(id).updateProgressbar(value);
     }
 
     @Override

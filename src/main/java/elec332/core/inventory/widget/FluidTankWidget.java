@@ -13,6 +13,8 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTank;
 import org.lwjgl.opengl.GL11;
 
+import java.util.List;
+
 /**
  * Created by Elec332 on 31-7-2015.
  */
@@ -28,23 +30,20 @@ public class FluidTankWidget extends Widget {
     private int capacity;
 
     @Override
-    public void initWidget(ICrafting iCrafting) {
-        detectAndSendChanges(iCrafting);
-    }
-
-    @Override
-    public void detectAndSendChanges(ICrafting iCrafting) {
-        if (iCrafting instanceof EntityPlayerMP){
-            if (capacity != tank.getCapacity() || nullityDiffers(fluidStack, tank.getFluid()) || !fluidStack.isFluidStackIdentical(tank.getFluid())){
-                this.capacity = tank.getCapacity();
-                NBTTagCompound tag = new NBTTagCompound();
-                if (tank.getFluid() != null) {
-                    this.fluidStack = tank.getFluid().copy();
-                    fluidStack.writeToNBT(tag);
+    public void detectAndSendChanges(List<ICrafting> crafters) {
+        if (capacity != tank.getCapacity() || nullityDiffers(fluidStack, tank.getFluid()) || !fluidStack.isFluidStackIdentical(tank.getFluid())) {
+            for (ICrafting iCrafting : crafters) {
+                if (iCrafting instanceof EntityPlayerMP) {
+                    NBTTagCompound tag = new NBTTagCompound();
+                    if (tank.getFluid() != null) {
+                        tank.getFluid().writeToNBT(tag);
+                    }
+                    tag.setInteger("capacity_TANK", tank.getCapacity());
+                    sendNBTChangesToPlayer((EntityPlayerMP) iCrafting, tag);
                 }
-                tag.setInteger("capacity_TANK", capacity);
-                sendNBTChangesToPlayer((EntityPlayerMP) iCrafting, tag);
             }
+            this.capacity = tank.getCapacity();
+            this.fluidStack = tank.getFluid().copy();
         }
     }
 

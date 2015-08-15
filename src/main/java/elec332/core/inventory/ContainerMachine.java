@@ -114,9 +114,9 @@ public class ContainerMachine extends BaseContainer {
     @Override
     public void updateProgressBar(int id, int value) {
         super.updateProgressBar(id, value);
-        if (id == 0){
-            if (tileWithSlots != null)
-                tileWithSlots.setProgress(value);
-        }
+        //if (id == 0){
+         //   if (tileWithSlots != null)
+        //        tileWithSlots.setProgress(value);
+        //}
     }
 }

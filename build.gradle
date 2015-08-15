@@ -27,7 +27,7 @@ repositories {
     maven {
         name 'ForgeFS'
         url 'http://files.minecraftforge.net/maven'
-     }
+    }
 }
 
 apply plugin: 'forge'

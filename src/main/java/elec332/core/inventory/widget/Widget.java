@@ -1,15 +1,21 @@
 package elec332.core.inventory.widget;
 
+import com.google.common.collect.Lists;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import elec332.core.client.render.InventoryRenderHelper;
 import elec332.core.inventory.IWidgetContainer;
 import elec332.core.inventory.tooltip.ToolTip;
 import elec332.core.main.ElecCore;
 import elec332.core.network.PacketSyncWidget;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.inventory.Container;
 import net.minecraft.inventory.ICrafting;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.ResourceLocation;
+
+import java.util.List;
 
 /**
  * Created by Elec332 on 31-7-2015.
@@ -30,14 +36,33 @@ public class Widget {
         return this;
     }
 
+    public final Widget setID(int id){
+        this.id = id;
+        return this;
+    }
+
     private IWidgetContainer container;
+    private int id;
     public final int x, y, u, v, width, height;
     private boolean hidden;
 
     public void initWidget(ICrafting iCrafting){
+        detectAndSendChanges(Lists.newArrayList(iCrafting));
     }
 
-    public void detectAndSendChanges(ICrafting iCrafting){
+    public void detectAndSendChanges(List<ICrafting> crafters){
+    }
+
+    public void sendProgressBarUpdate(List<ICrafting> crafters, int value){
+        for (ICrafting iCrafting : crafters)
+            iCrafting.sendProgressBarUpdate((Container)container, id, value);
+    }
+
+    public void sendProgressBarUpdate(ICrafting iCrafting, int value){
+        iCrafting.sendProgressBarUpdate((Container)container, id, value);
+    }
+
+    public void updateProgressbar(int value){
     }
 
     public final void sendNBTChangesToPlayer(EntityPlayerMP player, NBTTagCompound tagCompound){
@@ -58,6 +83,11 @@ public class Widget {
     @SideOnly(Side.CLIENT)
     public void draw(Gui gui, int guiX, int guiY, int mouseX, int mouseY) {
         gui.drawTexturedModalRect(guiX + x, guiY + y, u, v, width, height);
+    }
+
+    @SideOnly(Side.CLIENT)
+    protected void bindTexture(ResourceLocation resourceLocation){
+        InventoryRenderHelper.bindTexture(resourceLocation);
     }
 
     public Widget setHidden(boolean hidden) {

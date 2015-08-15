@@ -7,10 +7,6 @@ public interface IHasProgressBar {
 
     public int getProgress();
 
-    public void setProgress(int i);
-
-    public float getProgressScaled();
-
-    public boolean isWorking();
+    public float getProgressScaled(int progress);
 
 }
