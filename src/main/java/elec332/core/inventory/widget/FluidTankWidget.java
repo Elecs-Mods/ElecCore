@@ -43,7 +43,7 @@ public class FluidTankWidget extends Widget {
                 }
             }
             this.capacity = tank.getCapacity();
-            this.fluidStack = tank.getFluid().copy();
+            this.fluidStack = tank.getFluid() == null ? null : tank.getFluid().copy();
         }
     }
 
