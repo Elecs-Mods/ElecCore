@@ -6,6 +6,7 @@ import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.LoaderState;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent;
+import elec332.core.main.ElecCore;
 import elec332.core.player.PlayerHelper;
 import elec332.core.util.EventHelper;
 import elec332.core.util.NBTHelper;
@@ -104,9 +105,9 @@ public class ServerHelper {
         return getPlayer(uuid).isOnline();
     }
 
-    public EntityPlayer getRealPlayer(UUID uuid){
+    public EntityPlayerMP getRealPlayer(UUID uuid){
         if (isPlayerOnline(uuid)){
-            for (EntityPlayer player : getOnlinePlayers()){
+            for (EntityPlayerMP player : getOnlinePlayers()){
                 if (PlayerHelper.getPlayerUUID(player).equals(uuid))
                     return player;
             }
@@ -145,11 +146,50 @@ public class ServerHelper {
         this.worldData.clear();
     }
 
+    private void investigateErrors(boolean errorBefore){
+        if (errorBefore)
+            ElecCore.logger.error("Starting thorough investigation...");
+        boolean error = false;
+        for (EntityPlayerMP playerMP : getOnlinePlayers()){
+            if (isValid()){
+                ElecPlayer elecPlayer = getPlayer(playerMP);
+                if (elecPlayer == null){
+                    if (!errorBefore){
+                        investigateErrors(true);
+                        return;
+                    }
+                    error = true;
+                    ElecCore.logger.error("Seems like there is a player online that also never properly connected: "+playerMP.getDisplayName());
+                }
+            }
+        }
+        for (ElecPlayer elecPlayer : ServerHelper.this.playerData.values()){
+            if (elecPlayer.isOnline()) {
+                EntityPlayerMP online = getRealPlayer(elecPlayer.getPlayerUUID());
+                if (online == null) {
+                    if (!errorBefore) {
+                        investigateErrors(true);
+                        return;
+                    }
+                    error = true;
+                    ElecCore.logger.error("Seems like the player with UUID: " + elecPlayer.getPlayerUUID() + " never properly disconnected from the server.");
+                }
+            }
+        }
+        if (errorBefore) {
+            if (!error)
+                ElecCore.logger.error("No additional errors found...");
+            ElecCore.logger.error("Finished investigation.");
+        }
+    }
+
     public class EventHandler{
 
         @SubscribeEvent
         public void onWorldLoad(WorldEvent.Load event){
             if (isServer(event.world) && WorldHelper.getDimID(event.world) == 0){
+                if (!ServerHelper.this.locked)
+                    ServerHelper.this.locked = true;
                 File folder = new File(event.world.getSaveHandler().getWorldDirectory(), "elec332/");
                 ServerHelper.this.generalData = new NBTHelper(fromFile(new File(folder, "generalData.dat")));
                 NBTTagList tagList1 = fromFile(new File(folder, "playerData.dat")).getTagList("playerData", 10);
@@ -190,15 +230,18 @@ public class ServerHelper {
             }
         }
 
-        @SubscribeEvent
+        /*@SubscribeEvent
         public void onWorldUnload(WorldEvent.Unload event){
             if (isServer(event.world) && WorldHelper.getDimID(event.world) == 0)
                 ServerHelper.this.setInvalid();
-        }
+        }*/
 
         @SubscribeEvent
         public void playerJoined(PlayerEvent.PlayerLoggedInEvent event){
-            ServerHelper.this.locked = true;
+            if (!(event.player instanceof EntityPlayerMP))
+                return;
+            if (!ServerHelper.this.locked)
+                ServerHelper.this.locked = true;
             UUID uuid = PlayerHelper.getPlayerUUID(event.player);
             if (!ServerHelper.this.playerData.keySet().contains(uuid)) {
                 ElecPlayer player = new ElecPlayer(uuid);
@@ -211,7 +254,18 @@ public class ServerHelper {
 
         @SubscribeEvent
         public void onPlayerDisconnected(PlayerEvent.PlayerLoggedOutEvent event){
-            ServerHelper.this.playerData.get(PlayerHelper.getPlayerUUID(event.player)).setOnline(false);
+            if (!(event.player instanceof EntityPlayerMP))
+                return;
+            ElecPlayer player = ServerHelper.this.playerData.get(PlayerHelper.getPlayerUUID(event.player));
+            if (player == null){
+                for (int i = 0; i < 30; i++) {
+                    ElecCore.logger.error("A player disconnected from the server without connecting first!");
+                    ElecCore.logger.error("Player: "+event.player.getDisplayName());
+                }
+                investigateErrors(true);
+                return;
+            }
+            player.setOnline(false);
         }
     }
 
@@ -227,7 +281,7 @@ public class ServerHelper {
         } catch (IOException e){
             //Bad luck for you
             e.printStackTrace();
-            return null;
+            throw new RuntimeException(e); //return null;
         }
     }
 
@@ -242,7 +296,7 @@ public class ServerHelper {
             CompressedStreamTools.write(tagCompound, file);
         } catch (IOException e){
             //Bad luck for you
-            e.printStackTrace();
+            throw new RuntimeException(e); //e.printStackTrace();
         }
     }
 }
