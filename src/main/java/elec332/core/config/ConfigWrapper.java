@@ -1,10 +1,11 @@
 package elec332.core.config;
 
+import com.google.common.collect.Lists;
 import net.minecraftforge.common.config.Configuration;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Elec332 on 12-4-2015.
@@ -13,13 +14,15 @@ public class ConfigWrapper {
 
     public ConfigWrapper(Configuration configuration){
         this.configuration = configuration;
-        this.instances = new ArrayList<Object>();
+        this.instances = Lists.newArrayList();
         this.hasInit = false;
+        this.categoryDataList = Lists.newArrayList();
     }
 
     private Configuration configuration;
-    private ArrayList<Object> instances;
+    private List<Object> instances;
     private boolean hasInit;
+    private List<CategoryData> categoryDataList;
 
     public void registerConfig(Object o){
         if (!hasInit)
@@ -27,9 +30,18 @@ public class ConfigWrapper {
         else throw new RuntimeException("You cannot register configs after init");
     }
 
+    public ConfigWrapper setCategoryData(String category, String description){
+        for (CategoryData cat: this.categoryDataList){
+            if (category.equals(cat.getCategory()))
+                throw new IllegalArgumentException();
+        }
+        this.categoryDataList.add(new CategoryData(category, description));
+        return this;
+    }
+
     public void registerConfigWithInnerClasses(Object obj){
         registerConfig(obj);
-        for (Class clazz : obj.getClass().getDeclaredClasses()){
+        for (Class<?> clazz : obj.getClass().getDeclaredClasses()){
             if (!clazz.isInterface()){
                 try {
                     registerConfig(clazz.getConstructor().newInstance());
@@ -46,7 +58,11 @@ public class ConfigWrapper {
 
     public void refresh(){
         configuration.load();
-        this.hasInit = true;
+        if (!this.hasInit)
+            this.hasInit = true;
+        for (CategoryData categoryData : categoryDataList){
+            configuration.setCategoryComment(categoryData.getCategory(), categoryData.getDescription());
+        }
         for (Object o : instances){
             Class objClass = o.getClass();
             for (Field field : objClass.getDeclaredFields()){
@@ -93,5 +109,24 @@ public class ConfigWrapper {
 
     public static Configuration wrapCategoryAsConfig(Configuration configuration, String category){
         return new CategoryAsConfig(category, configuration);
+    }
+
+    private final class CategoryData{
+
+        private CategoryData(String category, String desc){
+            this.category = category;
+            this.desc = desc;
+        }
+
+        private final String category, desc;
+
+        private String getCategory(){
+            return this.category;
+        }
+
+        private String getDescription(){
+            return this.desc;
+        }
+
     }
 }
