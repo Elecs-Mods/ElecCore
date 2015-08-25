@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import elec332.core.main.ElecCore;
+import elec332.core.network.IElecCoreNetworkTile;
 import elec332.core.network.PacketTileDataToServer;
 import elec332.core.server.ServerHelper;
 import elec332.core.util.BlockLoc;
@@ -26,7 +27,7 @@ import java.util.ArrayList;
 /**
  * Created by Elec332 on 8-4-2015.
  */
-public class TileBase extends TileEntity {
+public class TileBase extends TileEntity implements IElecCoreNetworkTile{
 
     @Override
     public void validate() {
