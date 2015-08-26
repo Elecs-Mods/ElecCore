@@ -18,6 +18,7 @@ import elec332.core.modBaseUtils.ModInfo;
 import elec332.core.network.NetworkHandler;
 import elec332.core.network.PacketSyncWidget;
 import elec332.core.network.PacketTileDataToServer;
+import elec332.core.network.PacketWidgetDataToServer;
 import elec332.core.proxies.CommonProxy;
 import elec332.core.server.ServerHelper;
 import org.apache.logging.log4j.Logger;
@@ -60,6 +61,7 @@ public class ElecCore extends ModBase{
 		networkHandler = new NetworkHandler(modID());
 		networkHandler.registerClientPacket(PacketSyncWidget.class);
 		networkHandler.registerServerPacket(PacketTileDataToServer.class);
+		networkHandler.registerServerPacket(PacketWidgetDataToServer.class);
 		logger = event.getModLog();
 		compatHandler = new ElecCoreCompatHandler(config, logger);
 

@@ -20,7 +20,7 @@ public abstract class BaseGuiContainer extends GuiContainer implements IResource
     @Override
     protected void mouseClicked(int mouseX, int mouseY, int button) {
         for (Widget widget : container.getWidgets()){
-            if (!widget.isHidden() && widget.isMouseOver(mouseX, mouseY) && widget.mouseClicked(mouseX, mouseY, button))
+            if (!widget.isHidden() && widget.isMouseOver(translatedMouseX(mouseX), translatedMouseY(mouseY)) && widget.mouseClicked(translatedMouseX(mouseX), translatedMouseY(mouseY), button))
                 return;
         }
         super.mouseClicked(mouseX, mouseY, button);

@@ -8,6 +8,7 @@ import elec332.core.inventory.IWidgetContainer;
 import elec332.core.inventory.tooltip.ToolTip;
 import elec332.core.main.ElecCore;
 import elec332.core.network.PacketSyncWidget;
+import elec332.core.network.PacketWidgetDataToServer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.Container;
@@ -69,7 +70,22 @@ public class Widget {
         ElecCore.networkHandler.getNetworkWrapper().sendTo(new PacketSyncWidget(tagCompound, container, this), player);
     }
 
+    public final void sendNBTChangesToServer(NBTTagCompound tagCompound){
+        ElecCore.networkHandler.getNetworkWrapper().sendToServer(new PacketWidgetDataToServer(tagCompound, container, this));
+    }
+
+    public final void readNBTChangesFromPacket(NBTTagCompound tagCompound, Side receiver){
+        if (receiver == Side.CLIENT){
+            readNBTChangesFromPacket(tagCompound);
+        } else {
+            readNBTChangesFromPacketServerSide(tagCompound);
+        }
+    }
+
     public void readNBTChangesFromPacket(NBTTagCompound tagCompound){
+    }
+
+    public void readNBTChangesFromPacketServerSide(NBTTagCompound tagCompound){
     }
 
     public final boolean isMouseOver(int mouseX, int mouseY) {

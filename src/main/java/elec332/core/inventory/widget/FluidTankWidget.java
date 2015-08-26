@@ -68,14 +68,14 @@ public class FluidTankWidget extends Widget {
             return;
         IIcon fluidIcon = RenderHelper.getFluidTexture(fluidStack.getFluid(), false);
         float scale = fluidStack.amount / (float) capacity;
-        InventoryRenderHelper.bindTexture(RenderHelper.getBlocksResourceLocation());
+        bindTexture(RenderHelper.getBlocksResourceLocation());
         for (int col = 0; col < width / 16; col++) {
             for (int row = 0; row <= height / 16; row++) {
                 gui.drawTexturedModelRectFromIcon(guiX + x + col * 16, guiY + y + row * 16 - 1, fluidIcon, 16, 16);
             }
         }
         GL11.glColor4f(1, 1, 1, 1);
-        InventoryRenderHelper.bindTexture(((IResourceLocationProvider)gui).getBackgroundImageLocation());
+        bindTexture(((IResourceLocationProvider)gui).getBackgroundImageLocation());
         gui.drawTexturedModalRect(guiX + x, guiY + y - 1, x, y - 1, width, height - (int) Math.floor(height * scale) + 1);
         gui.drawTexturedModalRect(guiX + x, guiY + y, u, v, width, height);
         //gui.drawTexturedModalRect(guiX + x-1, guiY + y - 1, 0, 0, width+1, height - (int) Math.floor(height * scale) + 1);

@@ -11,14 +11,14 @@ import net.minecraft.inventory.Container;
 import net.minecraft.nbt.NBTTagCompound;
 
 /**
- * Created by Elec332 on 31-7-2015.
+ * Created by Elec332 on 23-8-2015.
  */
-public class PacketSyncWidget extends AbstractPacket {
+public class PacketWidgetDataToServer extends AbstractPacket {
 
-    public PacketSyncWidget(){
+    public PacketWidgetDataToServer(){
     }
 
-    public PacketSyncWidget(NBTTagCompound tag, IWidgetContainer widgetContainer, Widget widget){
+    public PacketWidgetDataToServer(NBTTagCompound tag, IWidgetContainer widgetContainer, Widget widget){
         super(new NBTHelper().addToTag(new NBTHelper().addToTag(widgetContainer.getWidgets().indexOf(widget), "widget").addToTag(((Container) widgetContainer).windowId, "window").toNBT(), "containerData").addToTag(tag, "data").toNBT());
     }
 
@@ -26,10 +26,11 @@ public class PacketSyncWidget extends AbstractPacket {
     public IMessage onMessage(AbstractPacket message, MessageContext ctx) {
         NBTTagCompound data = message.networkPackageObject.getCompoundTag("data");
         NBTTagCompound containerData = message.networkPackageObject.getCompoundTag("containerData");
-        Container openContainer = Minecraft.getMinecraft().thePlayer.openContainer;
+        Container openContainer = ctx.getServerHandler().playerEntity.openContainer;
         if (openContainer.windowId == containerData.getInteger("window")){
-            ((IWidgetContainer)openContainer).getWidgets().get(containerData.getInteger("widget")).readNBTChangesFromPacket(data, Side.CLIENT);
+            ((IWidgetContainer)openContainer).getWidgets().get(containerData.getInteger("widget")).readNBTChangesFromPacket(data, Side.SERVER);
         }
         return null;
     }
+
 }
