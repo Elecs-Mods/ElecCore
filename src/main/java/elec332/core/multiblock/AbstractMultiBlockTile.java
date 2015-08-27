@@ -1,15 +1,23 @@
 package elec332.core.multiblock;
 
+import elec332.core.baseclasses.tileentity.IInventoryTile;
 import elec332.core.baseclasses.tileentity.TileBase;
+import elec332.core.compat.handlers.WailaCompatHandler;
 import elec332.core.main.ElecCore;
+import mcp.mobius.waila.api.IWailaConfigHandler;
+import mcp.mobius.waila.api.IWailaDataAccessor;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.Container;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.util.ForgeDirection;
+
+import java.util.List;
 
 /**
  * Created by Elec332 on 28-7-2015.
  */
-public class AbstractMultiBlockTile extends TileBase implements IMultiBlockTile {
+public class AbstractMultiBlockTile extends TileBase implements IMultiBlockTile, IInventoryTile, WailaCompatHandler.IWailaInfoTile{
 
     public AbstractMultiBlockTile(MultiBlockRegistry registry){
         super();
@@ -132,4 +140,22 @@ public class AbstractMultiBlockTile extends TileBase implements IMultiBlockTile 
         super.invalidate();
         multiBlockData.tileEntityInvalidate();
     }
+
+    @Override
+    public Container getGuiServer(EntityPlayer player) {
+        return getMultiBlock() == null ? null : getMultiBlock().getGuiServer(player);
+    }
+
+    @Override
+    public Object getGuiClient(EntityPlayer player) {
+        return getMultiBlock() == null ? null : getMultiBlock().getGuiClient(player);
+    }
+
+    @Override
+    public List<String> getWailaBody(ItemStack itemStack, List<String> currentTip, IWailaDataAccessor accessor, IWailaConfigHandler config) {
+        if (getMultiBlock() != null)
+            return getMultiBlock().getWailaBody(itemStack, currentTip, accessor, config);
+        return currentTip;
+    }
+
 }
