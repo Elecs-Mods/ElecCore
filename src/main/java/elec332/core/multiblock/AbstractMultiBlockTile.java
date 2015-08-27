@@ -1,6 +1,7 @@
 package elec332.core.multiblock;
 
 import elec332.core.baseclasses.tileentity.TileBase;
+import elec332.core.main.ElecCore;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.util.ForgeDirection;
@@ -24,19 +25,32 @@ public class AbstractMultiBlockTile extends TileBase implements IMultiBlockTile 
 
     @Override
     public boolean onBlockActivated(EntityPlayer player, int side, float hitX, float hitY, float hitZ) {
-        return getMultiBlock() instanceof AbstractMultiBlock ?  ((AbstractMultiBlock) getMultiBlock()).onAnyBlockActivated(player): super.onBlockActivated(player, side, hitX, hitY, hitZ);
+        return getMultiBlock() == null ? super.onBlockActivated(player, side, hitX, hitY, hitZ) : getMultiBlock().onAnyBlockActivated(player);
     }
 
     @Override
     public void writeToNBT(NBTTagCompound tagCompound) {
         super.writeToNBT(tagCompound);
         multiBlockData.writeToNBT(tagCompound);
+        if (getMultiBlock() != null){
+            if (getMultiBlock().isSaveDelegate(this))
+                getMultiBlock().writeToNBT(tagCompound);
+        }
     }
 
     @Override
-    public void readFromNBT(NBTTagCompound tagCompound) {
+    public void readFromNBT(final NBTTagCompound tagCompound) {
         super.readFromNBT(tagCompound);
         multiBlockData.readFromNBT(tagCompound);
+        ElecCore.tickHandler.registerCall(new Runnable() {
+            @Override
+            public void run() {
+                if (getMultiBlock() != null) {
+                    if (getMultiBlock().isSaveDelegate(AbstractMultiBlockTile.this))
+                        getMultiBlock().readFromNBT(tagCompound);
+                }
+            }
+        });
     }
 
     /**
@@ -97,8 +111,8 @@ public class AbstractMultiBlockTile extends TileBase implements IMultiBlockTile 
      * @return said multiblock
      */
     @Override
-    public IMultiBlock getMultiBlock() {
-        return multiBlockData.getMultiBlock();
+    public AbstractMultiBlock getMultiBlock() {
+        return (AbstractMultiBlock) multiBlockData.getMultiBlock();
     }
 
     @Override
