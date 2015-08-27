@@ -38,14 +38,14 @@ public class ContainerMachine extends BaseContainer {
     @Override
     public void addCraftingToCrafters(ICrafting iCrafting) {
         super.addCraftingToCrafters(iCrafting);
-        if (tileWithSlots != null)
-            iCrafting.sendProgressBarUpdate(this, 0, tileWithSlots.getProgress());
+        //if (tileWithSlots != null)
+        //    iCrafting.sendProgressBarUpdate(this, 0, tileWithSlots.getProgress());
     }
 
     @Override
     public void detectAndSendChanges() {
         super.detectAndSendChanges();
-        if (tileWithSlots != null) {
+        /*if (tileWithSlots != null) {
             for (Object obj : this.crafters) {
                 ICrafting iCrafting = (ICrafting) obj;
                 if (tileWithSlots.getProgress() != lastProgressBarStatus) {
@@ -53,7 +53,7 @@ public class ContainerMachine extends BaseContainer {
                 }
             }
             this.lastProgressBarStatus = tileWithSlots.getProgress();
-        }
+        }*/
     }
 
     @Override
