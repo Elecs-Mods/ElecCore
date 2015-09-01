@@ -5,7 +5,6 @@ import elec332.core.baseclasses.tileentity.TileBase;
 import elec332.core.compat.handlers.WailaCompatHandler;
 import elec332.core.util.BlockLoc;
 import elec332.core.world.WorldHelper;
-import elec332.eflux.blocks.BlockMachinePart;
 import mcp.mobius.waila.api.IWailaConfigHandler;
 import mcp.mobius.waila.api.IWailaDataAccessor;
 import net.minecraft.entity.player.EntityPlayer;
