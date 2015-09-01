@@ -42,7 +42,7 @@ public interface IMultiBlockTile {
      *
      * @return The facing of the multiblock
      */
-    public ForgeDirection getFacing();
+    public ForgeDirection getMultiBlockFacing();
 
     /**
      * Returns the multiblock this tile belongs too, can be null

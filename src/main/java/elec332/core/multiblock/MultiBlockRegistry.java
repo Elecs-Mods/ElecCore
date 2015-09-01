@@ -146,7 +146,7 @@ public final class MultiBlockRegistry extends AbstractWorldRegistryHolder<MultiB
             }
             if (!one)
                 throw new IllegalArgumentException("A multiblock must contain at LEAST 1 IMultiBlockTile");
-            multiBlock.initMain(bottomLeft, allLocations, this, structureRegistry.getIdentifier(multiBlockStructure));
+            multiBlock.initMain(bottomLeft, facing, allLocations, this, structureRegistry.getIdentifier(multiBlockStructure));
             activeMultiBlocks.add(multiBlock);
         }
 

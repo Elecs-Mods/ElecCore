@@ -22,6 +22,10 @@ public final class BlockData {
     public final Block block;
     public final int meta;
 
+    public ItemStack toItemStack(){
+        return new ItemStack(block, 1, meta);
+    }
+
     @Override
     public String toString() {
         return MineTweakerHelper.getItemRegistryName(new ItemStack(block)) + ":" + hashCode();

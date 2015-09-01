@@ -3,13 +3,16 @@ package elec332.core.multiblock;
 import elec332.core.baseclasses.tileentity.IInventoryTile;
 import elec332.core.baseclasses.tileentity.TileBase;
 import elec332.core.compat.handlers.WailaCompatHandler;
+import elec332.core.util.BlockLoc;
 import elec332.core.world.WorldHelper;
+import elec332.eflux.blocks.BlockMachinePart;
 import mcp.mobius.waila.api.IWailaConfigHandler;
 import mcp.mobius.waila.api.IWailaDataAccessor;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
 
 import java.util.List;
 
@@ -25,7 +28,23 @@ public abstract class AbstractMultiBlock extends IMultiBlock implements IInvento
     }
 
     public TileBase getSaveDelegate(){
-        return (TileBase) WorldHelper.getTileAt(getWorldObj(), getLocation());
+        return (TileBase) getTileAt(getLocation());
+    }
+
+    public TileEntity getTileAt(BlockLoc loc){
+        return WorldHelper.getTileAt(getWorldObj(), loc);
+    }
+
+    public boolean isServer(){
+        return !getWorldObj().isRemote;
+    }
+
+    public BlockLoc getBlockLocAtTranslatedPos(int length, int width, int height){
+        return MultiBlockStructureRegistry.getTranslated(getLocation().xCoord, getLocation().yCoord, getLocation().zCoord, getMultiBlockFacing(), length, width, height);
+    }
+
+    public TileEntity getTileAtTranslatedPos(int length, int width, int height){
+        return getTileAt(getBlockLocAtTranslatedPos(length, width, height));
     }
 
     public void markDirty(){

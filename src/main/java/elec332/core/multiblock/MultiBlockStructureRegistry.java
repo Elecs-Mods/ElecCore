@@ -200,7 +200,7 @@ public final class MultiBlockStructureRegistry implements IMessageHandler<MultiB
         return false;
     }
 
-    private BlockLoc getTranslated(int x, int y, int z, ForgeDirection side, int length, int width, int height){
+    protected static BlockLoc getTranslated(int x, int y, int z, ForgeDirection side, int length, int width, int height){
         int newX;
         int newY;
         int newZ;

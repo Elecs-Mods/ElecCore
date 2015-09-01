@@ -109,7 +109,7 @@ public class AbstractMultiBlockTile extends TileBase implements IMultiBlockTile,
      * @return The facing of the multiblock
      */
     @Override
-    public ForgeDirection getFacing() {
+    public ForgeDirection getMultiBlockFacing() {
         return multiBlockData.getFacing();
     }
 

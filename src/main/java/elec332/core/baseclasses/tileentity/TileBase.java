@@ -101,6 +101,10 @@ public class TileBase extends TileEntity implements IElecCoreNetworkTile{
         this.worldObj.notifyBlockChange(xCoord, yCoord, zCoord, blockType);
     }
 
+    public ForgeDirection getTileFacing(){
+        return DirectionHelper.getDirectionFromNumber(getBlockMetadata());
+    }
+
     public BlockLoc myLocation(){
         return new BlockLoc(this.xCoord, this.yCoord, this.zCoord);
     }

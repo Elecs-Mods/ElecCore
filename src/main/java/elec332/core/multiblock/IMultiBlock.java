@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import elec332.core.util.BlockLoc;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.ForgeDirection;
 
 import java.util.List;
 import java.util.UUID;
@@ -17,10 +18,11 @@ public abstract class IMultiBlock {
         this.identifier = UUID.randomUUID();
     }
 
-    public final void initMain(BlockLoc location, List<BlockLoc> allMultiBlockLocations, MultiBlockRegistry.MultiBlockWorldRegistry registry, String structureID){
+    public final void initMain(BlockLoc location, ForgeDirection facing, List<BlockLoc> allMultiBlockLocations, MultiBlockRegistry.MultiBlockWorldRegistry registry, String structureID){
         if (this.loc != null)
             throw new RuntimeException();
         this.loc = location;
+        this.facing = facing;
         this.allMultiBlockLocations = ImmutableList.copyOf(allMultiBlockLocations);
         this.multiBlockRegistry = registry;
         this.structureID = structureID;
@@ -30,6 +32,7 @@ public abstract class IMultiBlock {
 
     private final UUID identifier;
     private BlockLoc loc;
+    private ForgeDirection facing;
     private List<BlockLoc> allMultiBlockLocations;
     private MultiBlockRegistry.MultiBlockWorldRegistry multiBlockRegistry;
     private State multiBlockState;
@@ -41,6 +44,10 @@ public abstract class IMultiBlock {
 
     public final BlockLoc getLocation() {
         return this.loc;
+    }
+
+    public final ForgeDirection getMultiBlockFacing(){
+        return this.facing;
     }
 
     public final List<BlockLoc> getAllMultiBlockLocations() {
@@ -112,7 +119,7 @@ public abstract class IMultiBlock {
         if (multiBlock != null) {
             multiBlock.tileEntityValidate();
         } else {
-            multiBlockRegistry.getStructureRegistry().attemptReCreate(tile.getStructureIdentifier(), (TileEntity) tile, tile.getFacing());
+            multiBlockRegistry.getStructureRegistry().attemptReCreate(tile.getStructureIdentifier(), (TileEntity) tile, tile.getMultiBlockFacing());
         }
     }
 
