@@ -13,6 +13,7 @@ import elec332.core.util.NBTHelper;
 import elec332.core.world.WorldHelper;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
@@ -53,7 +54,7 @@ public final class MultiBlockStructureRegistry implements IMessageHandler<MultiB
         throw new IllegalArgumentException("ERROR: Structure: "+structure.getClass().getName()+" is not registered!");
     }
 
-    public boolean attemptCreate(World world, int x, int y, int z, ForgeDirection side){
+    public boolean attemptCreate(EntityPlayer player, World world, int x, int y, int z, ForgeDirection side){
         if (world.isRemote)
             return false;
         BlockData blockData = atLocation(world, x, y, z);
@@ -61,6 +62,9 @@ public final class MultiBlockStructureRegistry implements IMessageHandler<MultiB
             return false;
         for (IMultiBlockStructure multiBlock : multiBlockStructures.values()){
             if (multiBlock.getTriggerBlock().equals(blockData)){
+                if (multiBlock instanceof AbstractAdvancedMultiBlockStructure && !((AbstractAdvancedMultiBlockStructure) multiBlock).canCreate((EntityPlayerMP) player)){
+                    continue;
+                }
                 if (tryCreateStructure(multiBlock, world, x, y, z, side, false)) {
                     return true;
                 }
@@ -132,6 +136,8 @@ public final class MultiBlockStructureRegistry implements IMessageHandler<MultiB
             }
         }
         if (leftBottomCorner != null && areBlocksAtRightPlace(multiBlock.getStructure(), world, newX, newY, newZ, side)){
+            if (multiBlock instanceof AbstractAdvancedMultiBlockStructure && !((AbstractAdvancedMultiBlockStructure) multiBlock).areSecondaryConditionsMet(world, new BlockLoc(newX, newY, newZ), side))
+                return false;
             if (multiBlock.replaceUponCreated() != null) {
                 BlockStructure main = multiBlock.getStructure();
                 replaceAll(main, world, newX, newY, newZ, side, main.newBlockStructureWithSameDimensions(multiBlock.replaceUponCreated()));
