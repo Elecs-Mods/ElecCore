@@ -6,6 +6,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 import elec332.core.api.wrench.IRightClickCancel;
 import elec332.core.api.wrench.IWrenchable;
 import elec332.core.helper.RegisterHelper;
+import elec332.core.util.BlockSide;
 import elec332.core.util.DirectionHelper;
 import elec332.core.util.IComparatorOverride;
 import elec332.core.util.IRedstoneHandler;
@@ -68,14 +69,14 @@ public class BlockTileBase extends Block implements IWrenchable, ITileEntityProv
     @Override
     public TileEntity createNewTileEntity(World world, int metadata) {
         try {
-            return (TileEntity) this.tileClass.newInstance();
+            return this.tileClass.newInstance();
         } catch (Exception ex) {
             return null;
         }
     }
 
     @Override
-    public ItemStack ItemDropped() {
+    public ItemStack ItemDropped(World world, int x, int y, int z) {
         return new ItemStack(this);
     }
 
@@ -235,9 +236,5 @@ public class BlockTileBase extends Block implements IWrenchable, ITileEntityProv
         if (this.textureName != null)
             return textureName;
         return modID + ":" + blockName;
-    }
-
-    public enum BlockSide{
-        LEFT, BACK, RIGHT
     }
 }
