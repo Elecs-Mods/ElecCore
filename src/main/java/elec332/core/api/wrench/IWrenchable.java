@@ -9,7 +9,8 @@ import net.minecraftforge.common.util.ForgeDirection;
  */
 public interface IWrenchable{
 
-    public ItemStack ItemDropped();
+    public ItemStack ItemDropped(World world, int x, int y, int z);
 
     public void onWrenched(World world, int x, int y, int z, ForgeDirection direction);
+
 }
