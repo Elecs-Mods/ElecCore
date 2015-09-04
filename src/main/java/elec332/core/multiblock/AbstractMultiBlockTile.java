@@ -17,7 +17,7 @@ import java.util.List;
 /**
  * Created by Elec332 on 28-7-2015.
  */
-public class AbstractMultiBlockTile extends TileBase implements IMultiBlockTile, IInventoryTile, WailaCompatHandler.IWailaInfoTile{
+public abstract class AbstractMultiBlockTile extends TileBase implements IMultiBlockTile, IInventoryTile, WailaCompatHandler.IWailaInfoTile{
 
     public AbstractMultiBlockTile(MultiBlockRegistry registry){
         super();
