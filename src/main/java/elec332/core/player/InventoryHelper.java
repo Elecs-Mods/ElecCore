@@ -46,7 +46,7 @@ public class InventoryHelper {
         }
         while (true) {
             int slot = getEmptySlot(inventory, start, end);
-            if (slot != -1) {
+            if (slot != -1 && inventory.isItemValidForSlot(slot, itemstack)) {
                 if (itemstack.stackSize <= maxStack) {
                     inventory.setInventorySlotContents(slot, itemstack.copy());
                     inventory.markDirty();

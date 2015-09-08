@@ -15,10 +15,7 @@ import elec332.core.helper.MCModInfo;
 import elec332.core.helper.ModInfoHelper;
 import elec332.core.modBaseUtils.ModBase;
 import elec332.core.modBaseUtils.ModInfo;
-import elec332.core.network.NetworkHandler;
-import elec332.core.network.PacketSyncWidget;
-import elec332.core.network.PacketTileDataToServer;
-import elec332.core.network.PacketWidgetDataToServer;
+import elec332.core.network.*;
 import elec332.core.proxies.CommonProxy;
 import elec332.core.server.ServerHelper;
 import org.apache.logging.log4j.Logger;
@@ -31,7 +28,7 @@ import java.util.LinkedHashMap;
  * Created by Elec332.
  */
 @Mod(modid = ModInfo.MODID_CORE, name = ModInfo.MODNAME_CORE, dependencies = "required-after:Forge@[10.13.0.1230,)",
-acceptedMinecraftVersions = ModInfo.ACCEPTEDMCVERSIONS, version = "#ELECCORE_VER#", useMetadata = true, canBeDeactivated = false)
+acceptedMinecraftVersions = ModInfo.ACCEPTEDMCVERSIONS, version = "1.5", useMetadata = true, canBeDeactivated = false)
 public class ElecCore extends ModBase{
 
 	public static LinkedHashMap<String, ArrayList> Updates = new LinkedHashMap<String, ArrayList>();
@@ -62,6 +59,7 @@ public class ElecCore extends ModBase{
 		networkHandler.registerClientPacket(PacketSyncWidget.class);
 		networkHandler.registerServerPacket(PacketTileDataToServer.class);
 		networkHandler.registerServerPacket(PacketWidgetDataToServer.class);
+		networkHandler.registerClientPacket(PacketReRenderBlock.class);
 		logger = event.getModLog();
 		compatHandler = new ElecCoreCompatHandler(config, logger);
 

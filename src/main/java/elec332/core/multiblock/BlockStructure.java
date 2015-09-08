@@ -33,6 +33,8 @@ public final class BlockStructure {
                         i++;
                         allBlocks.remove(blockData);
                         allBlocks.put(blockData, i);
+                    } else if (blockData != null){
+                        structure[l][w][h] = blockData;
                     } else {
                         structure[l][w][h] = new BlockData(null);
                     }

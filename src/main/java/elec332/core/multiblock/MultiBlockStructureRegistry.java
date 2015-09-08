@@ -182,7 +182,7 @@ public final class MultiBlockStructureRegistry implements IMessageHandler<MultiB
                 @Override
                 public void forPos(int length, int width, int height) {
                     BlockLoc translated = getTranslated(x, y, z, side, length, width, height);
-                    if (!atLocation(translated, world).equals(multiBlock.getStructure()[length][width][height]) || hasMultiBlock(translated, world)){
+                    if (!multiBlock.getStructure()[length][width][height].equals(atLocation(translated, world)) || hasMultiBlock(translated, world)){
                         throw new RuntimeException("INVALID");
                     }
                 }

@@ -2,13 +2,14 @@ package elec332.core.multiblock;
 
 import elec332.core.minetweaker.MineTweakerHelper;
 import net.minecraft.block.Block;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.oredict.OreDictionary;
 
 /**
  * Created by Elec332 on 26-7-2015.
  */
-public final class BlockData {
+public class BlockData {
 
     public BlockData(Block block){
         this(block, 0);
@@ -42,6 +43,6 @@ public final class BlockData {
 
     @Override
     public boolean equals(Object obj) {
-        return obj instanceof BlockData && ((BlockData) obj).block == block && checkMeta(obj);
+        return obj instanceof BlockData && (((BlockData) obj).block == block || ((BlockData) obj).block == Blocks.air && block == null || ((BlockData) obj).block == null && block == Blocks.air) && checkMeta(obj);
     }
 }

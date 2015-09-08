@@ -82,7 +82,7 @@ public class BasicInventory implements IInventory {
             return true;
         if (itemStack.getItem() == stackInSlot.getItem() && itemStack.getItemDamage() == stackInSlot.getItemDamage()){
             int j = itemStack.stackSize+stackInSlot.stackSize;
-            if (j > 64)
+            if (j > getInventoryStackLimit())
                 return false;
             if (!itemStack.hasTagCompound() && !stackInSlot.hasTagCompound() || ignoreNBT)
                 return true;

@@ -5,6 +5,7 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import elec332.core.main.ElecCore;
 import elec332.core.network.IElecCoreNetworkTile;
+import elec332.core.network.PacketReRenderBlock;
 import elec332.core.network.PacketTileDataToServer;
 import elec332.core.server.ServerHelper;
 import elec332.core.util.BlockLoc;
@@ -171,6 +172,14 @@ public class TileBase extends TileEntity implements IElecCoreNetworkTile{
 
     protected void setMetaForFacingOnPlacement(EntityLivingBase entityLivingBase){
         setBlockMetadataWithNotify(DirectionHelper.getDirectionNumberOnPlacement(entityLivingBase));
+    }
+
+    public void reRenderBlock(){
+        if (!worldObj.isRemote){
+            ServerHelper.instance.sendMessageToAllPlayersWatchingBlock(worldObj, xCoord, zCoord, new PacketReRenderBlock(this), ElecCore.networkHandler);
+        } else {
+            worldObj.markBlockRangeForRenderUpdate(xCoord, yCoord, zCoord, xCoord, yCoord, zCoord);
+        }
     }
 
     //NETWORK///////////////////////

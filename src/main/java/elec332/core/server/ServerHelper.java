@@ -6,7 +6,9 @@ import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.LoaderState;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent;
+import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import elec332.core.main.ElecCore;
+import elec332.core.network.NetworkHandler;
 import elec332.core.player.PlayerHelper;
 import elec332.core.util.EventHelper;
 import elec332.core.util.NBTHelper;
@@ -126,6 +128,11 @@ public class ServerHelper {
             }
         }
         return ret;
+    }
+
+    public void sendMessageToAllPlayersWatchingBlock(World world, int x, int z, IMessage message, NetworkHandler networkHandler){
+        for (EntityPlayerMP player : getAllPlayersWatchingBlock(world, x, z))
+            networkHandler.getNetworkWrapper().sendTo(message, player);
     }
 
     public MinecraftServer getMinecraftServer(){
