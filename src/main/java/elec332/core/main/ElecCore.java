@@ -28,7 +28,7 @@ import java.util.LinkedHashMap;
  * Created by Elec332.
  */
 @Mod(modid = ModInfo.MODID_CORE, name = ModInfo.MODNAME_CORE, dependencies = "required-after:Forge@[10.13.0.1230,)",
-acceptedMinecraftVersions = ModInfo.ACCEPTEDMCVERSIONS, version = "1.5", useMetadata = true, canBeDeactivated = false)
+acceptedMinecraftVersions = ModInfo.ACCEPTEDMCVERSIONS, version = "#ELECCORE_VER#", useMetadata = true, canBeDeactivated = false)
 public class ElecCore extends ModBase{
 
 	public static LinkedHashMap<String, ArrayList> Updates = new LinkedHashMap<String, ArrayList>();
