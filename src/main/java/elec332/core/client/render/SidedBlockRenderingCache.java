@@ -31,16 +31,16 @@ public final class SidedBlockRenderingCache {
     private final ITextureHandler textureHandler;
     private IIcon[][][] icons;
 
-    public IIcon getIconForWorldRendering(IBlockAccess iba, int x, int y, int z, int side){
+    public final IIcon getIconForWorldRendering(IBlockAccess iba, int x, int y, int z, int side){
         final int meta = iba.getBlockMetadata(x, y, z);
         return textureHandler.getIconForWorldRendering(iba, x, y, z, side, meta, this);
     }
 
-    public IIcon getIconForInventoryRendering(int type, int side) {
-        return getIconDirectly(type, 0, side);
+    public final IIcon getIconForInventoryRendering(int type, int side) {
+        return getIconDirectly(type, 0, DirectionHelper.ROTATION_MATRIX_YAW[2][side]);
     }
 
-    public void registerTextures(IIconRegister register){
+    public final void registerTextures(IIconRegister register){
         for (int i = 0; i < types; i++) {
             for (int j = 0; j < states; j++) {
                 for (BlockSide side : BlockSide.values()) {
