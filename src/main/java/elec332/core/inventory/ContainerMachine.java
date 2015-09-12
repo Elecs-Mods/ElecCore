@@ -28,7 +28,7 @@ public class ContainerMachine extends BaseContainer {
         return tileWithSlots;
     }
 
-    @Override
+    /*@Override
     public void addPlayerInventoryToContainer() {
         this.playerInvIndexStart = inventorySlots.size();
         super.addPlayerInventoryToContainer();
@@ -53,7 +53,7 @@ public class ContainerMachine extends BaseContainer {
                 }
             }
             this.lastProgressBarStatus = tileWithSlots.getProgress();
-        }*/
+        }*//*
     }
 
     @Override
@@ -118,5 +118,5 @@ public class ContainerMachine extends BaseContainer {
          //   if (tileWithSlots != null)
         //        tileWithSlots.setProgress(value);
         //}
-    }
+    }*/
 }
