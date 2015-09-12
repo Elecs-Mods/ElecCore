@@ -24,8 +24,10 @@ public class PacketReRenderBlock extends AbstractPacketTileAction {
 
     @Override
     public void processPacket(TileEntity tile, int id, NBTTagCompound message, MessageContext ctx) {
-        tile.readFromNBT(message);
-        tile.getWorldObj().markBlockRangeForRenderUpdate(tile.xCoord, tile.yCoord, tile.zCoord, tile.xCoord, tile.yCoord, tile.zCoord);
+        if (tile != null) {
+            tile.readFromNBT(message);
+            tile.getWorldObj().markBlockRangeForRenderUpdate(tile.xCoord, tile.yCoord, tile.zCoord, tile.xCoord, tile.yCoord, tile.zCoord);
+        }
     }
 
 }
