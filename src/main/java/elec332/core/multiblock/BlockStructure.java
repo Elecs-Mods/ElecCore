@@ -3,6 +3,7 @@ package elec332.core.multiblock;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import net.minecraft.item.ItemStack;
+import elec332.core.world.location.BlockData;
 
 import java.util.List;
 import java.util.Map;

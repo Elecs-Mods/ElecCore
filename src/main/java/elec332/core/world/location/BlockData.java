@@ -1,4 +1,4 @@
-package elec332.core.multiblock;
+package elec332.core.world.location;
 
 import elec332.core.minetweaker.MineTweakerHelper;
 import net.minecraft.block.Block;
@@ -9,7 +9,7 @@ import net.minecraftforge.oredict.OreDictionary;
 /**
  * Created by Elec332 on 26-7-2015.
  */
-public class BlockData {
+public final class BlockData implements IBlockDataEqualiser{
 
     public BlockData(Block block){
         this(block, 0);
@@ -43,6 +43,12 @@ public class BlockData {
 
     @Override
     public boolean equals(Object obj) {
-        return obj instanceof BlockData && (((BlockData) obj).block == block || ((BlockData) obj).block == Blocks.air && block == null || ((BlockData) obj).block == null && block == Blocks.air) && checkMeta(obj);
+        return obj instanceof BlockData && blocksEqual((BlockData) obj);
     }
+
+    @Override
+    public boolean blocksEqual(BlockData blockData) {
+        return (blockData.block == block || blockData.block == Blocks.air && block == null || blockData.block == null && block == Blocks.air) && checkMeta(blockData);
+    }
+
 }

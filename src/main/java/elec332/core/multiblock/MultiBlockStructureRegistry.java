@@ -9,6 +9,7 @@ import cpw.mods.fml.relauncher.Side;
 import elec332.core.network.AbstractMessage;
 import elec332.core.server.ServerHelper;
 import elec332.core.util.BlockLoc;
+import elec332.core.world.location.BlockData;
 import elec332.core.util.NBTHelper;
 import elec332.core.world.WorldHelper;
 import net.minecraft.block.Block;
