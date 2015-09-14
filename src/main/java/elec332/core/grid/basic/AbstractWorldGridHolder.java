@@ -171,42 +171,21 @@ public abstract class AbstractWorldGridHolder<A extends AbstractWorldGridHolder<
     private void onServerTickInternal(){
         ElecCore.systemPrintDebug("Tick! " + world.provider.dimensionId);
         if (!pending.isEmpty() && pending.size() == oldInt) {
-               /*List<PowerTile> tr = new ArrayList<PowerTile>();
-               for (PowerTile powerTile : pending)
-                    tr.add(powerTile);
-                for (PowerTile powerTile : tr)
-                    addTile(powerTile);
-                pending.removeAll(tr);
-                EFlux.logger.info("TickStuffPendingDone");*/
-            for (T powerTile : pending){
+            for (T powerTile = pending.poll(); powerTile != null; powerTile = pending.poll()){
                 addTile(powerTile);
             }
             pending.clear();
         }
-            /*if (!pendingRemovals.isEmpty()){
-                List<PowerTile> tr = new ArrayList<PowerTile>();
-                for (PowerTile powerTile : pendingRemovals){
-                    powerTile.toGo--;
-                    if (getTile(powerTile.getLocation()) == null){
-                        powerTile.toGo = 0;
-                        if (!tr.contains(powerTile))
-                            removeTile(powerTile);
-                    }
-                    if (powerTile.toGo <= 0)
-                        tr.add(powerTile);
-                }
-                pendingRemovals.removeAll(tr);
-            }*/
         this.oldInt = pending.size();
         for (int i = 0; i < grids.size(); i++){
             try {
                 grids.get(i).onTick();
             } catch (Throwable t){
+                t.printStackTrace();
                 //throw new RuntimeException(t);
             }
             ElecCore.systemPrintDebug(i);
         }
-
     }
 
     public T getPowerTile(BlockLoc loc){
