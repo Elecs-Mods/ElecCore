@@ -75,18 +75,23 @@ public abstract class AbstractDynamicMultiBlockWorldHolder<A extends AbstractDyn
             setMultiBlock((IDynamicMultiBlockTile) tile, newM);
             for (ForgeDirection direction : ForgeDirection.VALID_DIRECTIONS) {
                 TileEntity possTile = WorldHelper.getTileAt(world, loc.atSide(direction));
-                if (possTile != null && isTileValid(possTile) && possTile instanceof IDynamicMultiBlockTile) {
+                if (possTile != null && possTile instanceof IDynamicMultiBlockTile && isTileValid(possTile)) {
                     BlockLoc fromPossTile = new BlockLoc(possTile);
                     if (!registeredTiles.contains(fromPossTile)) {
                         continue;
                     }
-                    //    pending.fill(fromPossTile);
-                    //    break;
-                    //}
                     if (canConnect(tile, direction, possTile)) {
                         M mb = getMultiBlock((IDynamicMultiBlockTile) possTile);
+                        if (mb != null && mb.getClass() != newM.getClass())
+                            throw new RuntimeException("Weird mess of multiblock types.");
+                        if (mb == null) {
+                            System.out.println("Something weird was detected, fixing now...");
+                            M weirdM = registerGrid(newMultiBlock(possTile));
+                            setMultiBlock((IDynamicMultiBlockTile)possTile, weirdM);
+                            mb = getMultiBlock((IDynamicMultiBlockTile) possTile);
+                        }
                         if (mb == null)
-                            continue;
+                            throw new RuntimeException("I have no idea what kind of weird stuff happened here...");
                         for (BlockLoc mbLoc : mb.getAllLocations()) {
                             setMultiBlock((IDynamicMultiBlockTile) WorldHelper.getTileAt(world, mbLoc), newM);
                         }
@@ -103,7 +108,7 @@ public abstract class AbstractDynamicMultiBlockWorldHolder<A extends AbstractDyn
         } else if (!world.isRemote){
             System.out.println("-----");
             for (int i = 0; i < 100; i++) {
-                System.out.println("ERROR!!!");
+                System.out.println("ERROR!!!  Tile at "+new BlockLoc(tile)+" is trying to register whilst already being registered!");
             }
             System.out.println("-----");
         }
