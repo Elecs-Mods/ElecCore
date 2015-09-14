@@ -12,7 +12,9 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
+import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.ForgeChunkManager;
+import net.minecraftforge.common.network.DimensionMessageHandler;
 
 /**
  * Created by Elec332 on 20-3-2015.
@@ -64,6 +66,15 @@ public class WorldHelper {
     }
 
     public static int getDimID(World world){
+        if (world == null)
+            throw new IllegalArgumentException("Cannot fetch the Dimension-ID from a null world!");
+        if (world.provider == null){
+            for (Integer i : DimensionManager.getIDs()){
+                if (DimensionManager.getWorld(i) == world)
+                    return i;
+            }
+            throw new RuntimeException("Unable to determine the dimension of world: "+ world);
+        }
         return world.provider.dimensionId;
     }
 
