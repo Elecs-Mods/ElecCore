@@ -22,10 +22,10 @@ public class BasicInventory implements IInventory {
         this.tile = tile;
     }
 
-    public BasicInventory(String p_i1561_1_, int p_i1561_3_) {
-        this.inventoryTitle = p_i1561_1_;
-        this.slotsCount = p_i1561_3_;
-        this.inventoryContents = new ItemStack[p_i1561_3_];
+    public BasicInventory(String name, int slotsCount) {
+        this.inventoryTitle = name;
+        this.slotsCount = slotsCount;
+        this.inventoryContents = new ItemStack[slotsCount];
     }
 
     public ItemStack getStackInSlot(int slotID) {
