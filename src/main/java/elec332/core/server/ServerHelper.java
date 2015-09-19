@@ -24,9 +24,12 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.event.world.WorldEvent;
+import org.apache.commons.io.FileUtils;
 
+import java.io.EOFException;
 import java.io.File;
 import java.io.IOException;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -280,11 +283,25 @@ public class ServerHelper {
         if (file == null)
             return null;
         try {
-            if (!file.exists()) {
+            try {
+                if (!file.exists()) {
+                    createFile(file);
+                    return new NBTTagCompound();
+                }
+                return CompressedStreamTools.read(file);
+            } catch (EOFException e) {
+                ElecCore.logger.error("Error reading NBT files, something weird must have happened when you last shutdown MC, unfortunately, some game data will be lost. Fixing file now....");
+                String date = Calendar.getInstance().getTime().toString();
+                String ext = file.getName().split(".")[1];
+                File newFile = new File(file.getCanonicalPath().replace(ext, "-" + date + ext));
+                FileUtils.moveFile(file, newFile);
+                if (!file.delete()){
+                    ElecCore.logger.error("Error deleting file: "+file.getCanonicalPath()+", please remove it yourself.");
+                    throw new IOException();
+                }
                 createFile(file);
                 return new NBTTagCompound();
             }
-            return CompressedStreamTools.read(file);
         } catch (IOException e){
             //Bad luck for you
             e.printStackTrace();
