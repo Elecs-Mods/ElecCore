@@ -12,6 +12,7 @@ import org.lwjgl.opengl.GL11;
  */
 public class InventoryRenderHelper {
 
+    @Deprecated
     public static void bindTexture(ResourceLocation rl){
         Minecraft.getMinecraft().renderEngine.bindTexture(rl);
     }

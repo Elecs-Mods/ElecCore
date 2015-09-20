@@ -12,6 +12,16 @@ import net.minecraftforge.fluids.Fluid;
  */
 public class RenderHelper {
 
+    public static final float renderUnit = 1/16f;
+
+    public static void bindBlockTextures(){
+        bindTexture(getBlocksResourceLocation());
+    }
+
+    public static void bindTexture(ResourceLocation rl){
+        Minecraft.getMinecraft().renderEngine.bindTexture(rl);
+    }
+
     public static IIcon checkIcon(IIcon icon) {
         if (icon == null)
             return getMissingTextureIcon();
