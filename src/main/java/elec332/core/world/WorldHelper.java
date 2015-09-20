@@ -5,16 +5,15 @@ import elec332.core.util.BlockLoc;
 import net.minecraft.block.Block;
 import net.minecraft.entity.effect.EntityLightningBolt;
 import net.minecraft.entity.item.EntityItem;
-import net.minecraft.entity.item.EntityTNTPrimed;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.ChunkCoordIntPair;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.ForgeChunkManager;
-import net.minecraftforge.common.network.DimensionMessageHandler;
 
 /**
  * Created by Elec332 on 20-3-2015.
@@ -78,15 +77,15 @@ public class WorldHelper {
         return world.provider.dimensionId;
     }
 
-    public static int getBlockMeta(World world, BlockLoc blockLoc){
+    public static int getBlockMeta(IBlockAccess world, BlockLoc blockLoc){
         return world.getBlockMetadata(blockLoc.xCoord, blockLoc.yCoord, blockLoc.zCoord);
     }
 
-    public static TileEntity getTileAt(World world, BlockLoc loc){
+    public static TileEntity getTileAt(IBlockAccess world, BlockLoc loc){
         return world.getTileEntity(loc.xCoord, loc.yCoord, loc.zCoord);
     }
 
-    public static Block getBlockAt(World world, BlockLoc loc){
+    public static Block getBlockAt(IBlockAccess world, BlockLoc loc){
         return world.getBlock(loc.xCoord, loc.yCoord, loc.zCoord);
     }
 
