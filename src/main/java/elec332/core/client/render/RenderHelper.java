@@ -1,6 +1,7 @@
 package elec332.core.client.render;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import cpw.mods.fml.client.registry.ClientRegistry;
 import cpw.mods.fml.client.registry.RenderingRegistry;
 import net.minecraft.block.Block;
@@ -15,6 +16,7 @@ import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.fluids.Fluid;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Elec332 on 31-7-2015.
@@ -25,6 +27,7 @@ public class RenderHelper {
     private static List<Block> itemRenders = Lists.newArrayList();
     private static List<Block> blockRenders = Lists.newArrayList();
     private static List<Class<? extends TileEntity>> tileRenders = Lists.newArrayList();
+    private static Map<Block, Integer> renderData = Maps.newHashMap();
 
     public static <A extends AbstractBlockRenderer> A registerBlockRenderer(A renderer){
         if (renderer == null)
@@ -44,9 +47,14 @@ public class RenderHelper {
                 throw new IllegalArgumentException("Renderer already registered for "+renderer.tileClass);
         }
         if (renderer.isISBRH()){
-            renderer.setRenderID(RenderingRegistry.getNextAvailableRenderId());
-            RenderingRegistry.registerBlockHandler(renderer);
+            if (renderer.renderID != -1){
+                throw new UnsupportedOperationException();
+            }
+            int r = RenderingRegistry.getNextAvailableRenderId();
+            renderer.renderID = r;
+            RenderingRegistry.registerBlockHandler(r, renderer);
             blockRenders.add(renderer.block);
+            renderData.put(renderer.block, r);
         }
         if (renderer.isItemRenderer()){
             MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(renderer.block), renderer);
@@ -57,6 +65,10 @@ public class RenderHelper {
             tileRenders.add(renderer.tileClass);
         }
         return renderer;
+    }
+
+    public static int getRenderID(Block block){
+        return renderData.get(block);
     }
 
     public static void bindBlockTextures(){

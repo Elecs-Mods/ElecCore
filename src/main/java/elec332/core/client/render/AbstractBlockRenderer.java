@@ -1,6 +1,8 @@
 package elec332.core.client.render;
 
 import cpw.mods.fml.client.registry.ISimpleBlockRenderingHandler;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.Tessellator;
@@ -13,6 +15,7 @@ import net.minecraftforge.client.IItemRenderer;
 /**
  * Created by Elec332 on 22-9-2015.
  */
+@SideOnly(Side.CLIENT)
 public abstract class AbstractBlockRenderer extends TileEntitySpecialRenderer implements ISimpleBlockRenderingHandler, IItemRenderer {
 
     public AbstractBlockRenderer(Block block){
@@ -31,14 +34,8 @@ public abstract class AbstractBlockRenderer extends TileEntitySpecialRenderer im
     protected final Block block;
     final Class<? extends TileEntity> tileClass;
 
-    private int renderID = -1;
+    int renderID = -1;
     private final Tessellator tessellator = Tessellator.instance;
-
-    final void setRenderID(int renderID) {
-        if (this.renderID != -1)
-            throw new IllegalAccessError();
-        this.renderID = renderID;
-    }
 
     @Override
     public final boolean handleRenderType(ItemStack item, ItemRenderType type) {
@@ -70,7 +67,7 @@ public abstract class AbstractBlockRenderer extends TileEntitySpecialRenderer im
     }
 
     protected boolean validForRendering(int i){
-        return i == getRenderId();
+        return i == renderID;
     }
 
     @Override
