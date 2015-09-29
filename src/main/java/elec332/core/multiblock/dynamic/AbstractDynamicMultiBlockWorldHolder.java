@@ -106,11 +106,9 @@ public abstract class AbstractDynamicMultiBlockWorldHolder<A extends AbstractDyn
                 }
             }
         } else if (!world.isRemote){
-            System.out.println("-----");
-            for (int i = 0; i < 100; i++) {
-                System.out.println("ERROR!!!  Tile at "+new BlockLoc(tile)+" is trying to register whilst already being registered!");
-            }
-            System.out.println("-----");
+            System.out.println("------------------------------------");
+            System.out.println("ERROR!!!  Tile at "+new BlockLoc(tile)+" is trying to register whilst already being registered!");
+            System.out.println("------------------------------------");
         }
     }
 
