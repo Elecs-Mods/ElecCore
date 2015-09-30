@@ -8,6 +8,7 @@ import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import elec332.core.compat.ElecCoreCompatHandler;
+import elec332.core.effects.AbilityHandler;
 import elec332.core.handler.FMLEventHandler;
 import elec332.core.handler.TickHandler;
 import elec332.core.helper.FileHelper;
@@ -79,6 +80,7 @@ public class ElecCore extends ModBase{
     public void init(FMLInitializationEvent event) {
 		loadConfiguration();
 		compatHandler.init();
+		AbilityHandler.instance.init();
 		notifyEvent(event);
     }
 
