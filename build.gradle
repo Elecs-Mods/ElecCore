@@ -52,7 +52,7 @@ minecraft {
     replace "#ELECCORE_VER#", (config.mod_version+"."+(System.env.DRONE_BUILD_NUMBER ?: "9999.custom"))
 	
 	replaceIn "effects/api/ElecCoreAbilitiesAPIVersion.java"
-    replace "#API_VER#", config.abilityAPI_version)
+    replace "#API_VER#", (config.abilityAPI_version)
 }
 
 dependencies {
