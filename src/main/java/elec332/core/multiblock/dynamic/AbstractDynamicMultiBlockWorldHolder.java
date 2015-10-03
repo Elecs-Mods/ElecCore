@@ -119,10 +119,12 @@ public abstract class AbstractDynamicMultiBlockWorldHolder<A extends AbstractDyn
         if (m != null) {
             List<BlockLoc> vec3List = Lists.newArrayList();
             vec3List.addAll(m.getAllLocations());
-            vec3List.remove(new BlockLoc(tile));
+            //vec3List.remove(new BlockLoc(tile));
             m.onTileRemoved(tile);
+            m.invalidate();
             removeGrid(m);
-            registeredTiles.remove(new BlockLoc(tile));
+            //registeredTiles.remove(new BlockLoc(tile));
+            registeredTiles.removeAll(vec3List);
             for (BlockLoc vec : vec3List) {
                 TileEntity mbTile = WorldHelper.getTileAt(world, vec);
                 if (mbTile != null) {
