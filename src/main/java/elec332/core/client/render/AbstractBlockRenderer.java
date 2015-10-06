@@ -58,7 +58,7 @@ public abstract class AbstractBlockRenderer extends TileEntitySpecialRenderer im
 
     @Override
     public final boolean renderWorldBlock(IBlockAccess world, int x, int y, int z, Block block, int modelId, RenderBlocks renderer) {
-        return validForRendering(modelId) && doRenderInWorld(world, x, y, z, renderer, 0, false);
+        return validForRendering(modelId) && doRenderInWorld(world, x, y, z, null, renderer, 0, false);
     }
 
     @Override
@@ -77,15 +77,15 @@ public abstract class AbstractBlockRenderer extends TileEntitySpecialRenderer im
 
     @Override
     public final void renderTileEntityAt(TileEntity tile, double x, double y, double z, float partialTicks) {
-        doRenderInWorld(tile.getWorldObj(), x, y, z, RenderBlocks.getInstance(), partialTicks, true);
+        doRenderInWorld(tile.getWorldObj(), x, y, z, tile, RenderBlocks.getInstance(), partialTicks, true);
     }
 
-    private boolean doRenderInWorld(IBlockAccess world, double x, double y, double z, RenderBlocks renderer, float partialTicks, boolean tesr){
+    private boolean doRenderInWorld(IBlockAccess world, double x, double y, double z, TileEntity tile, RenderBlocks renderer, float partialTicks, boolean tesr){
         tessellator.setColorRGBA_F(1, 1, 1, 1);
-        return renderBlockAt(world, x, y, z, renderer, partialTicks, tesr);
+        return renderBlockAt(world, x, y, z, tile, renderer, partialTicks, tesr);
     }
 
-    protected abstract boolean renderBlockAt(IBlockAccess world, double x, double y, double z, RenderBlocks renderer, float partialTicks, boolean tesr);
+    protected abstract boolean renderBlockAt(IBlockAccess world, double x, double y, double z, TileEntity tile, RenderBlocks renderer, float partialTicks, boolean tesr);
 
     protected abstract void renderItem(ItemStack stack, ItemRenderType renderType, RenderBlocks renderer);
 
