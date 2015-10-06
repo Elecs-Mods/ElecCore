@@ -34,16 +34,24 @@ public abstract class AbstractCompatHandler {
         compatHandlers.add(handler);
     }
 
-    public final void init(){
+    public void init(){
         locked = true;
         for (ICompatHandler handler : compatHandlers){
             if (compatEnabled(handler.getType(), handler.compatEnabled(), handler.getName())) {
+                logger.info(getLoadingMessage(handler));
                 handler.init();
-                logger.info("Loading compat handler for: "+handler.getName());
             } else {
-                logger.info(handler.getName()+" was not detected, skipping compat handler for it.");
+                logger.info(getHandlerNotLoaded(handler));
             }
         }
+    }
+
+    protected String getLoadingMessage(ICompatHandler handler){
+        return "Loading compat handler for: "+handler.getName();
+    }
+
+    protected String getHandlerNotLoaded(ICompatHandler handler){
+        return handler.getName()+" was not detected, skipping compat handler for it.";
     }
 
     /**
