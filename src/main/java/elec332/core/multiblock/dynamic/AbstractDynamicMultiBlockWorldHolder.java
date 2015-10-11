@@ -62,6 +62,10 @@ public abstract class AbstractDynamicMultiBlockWorldHolder<A extends AbstractDyn
     public abstract M newMultiBlock(TileEntity tile);
 
     public void addTile(TileEntity tile){
+        addTile(tile, false);
+    }
+
+    private void addTile(TileEntity tile, boolean recreate){
         if (tile== null){
             System.out.println("ERROR, NULL TILE!");
             return;
@@ -92,10 +96,10 @@ public abstract class AbstractDynamicMultiBlockWorldHolder<A extends AbstractDyn
                         }
                         if (mb == null)
                             throw new RuntimeException("I have no idea what kind of weird stuff happened here...");
-                        for (BlockLoc mbLoc : mb.getAllLocations()) {
-                            setMultiBlock((IDynamicMultiBlockTile) WorldHelper.getTileAt(world, mbLoc), newM);
-                        }
                         if (!newM.equals(mb)) {
+                            for (BlockLoc mbLoc : mb.getAllLocations()) {
+                                setMultiBlock((IDynamicMultiBlockTile) WorldHelper.getTileAt(world, mbLoc), newM);
+                            }
                             newM.mergeWith(mb);
                             mb.invalidate();
                             removeGrid(mb);
@@ -131,6 +135,7 @@ public abstract class AbstractDynamicMultiBlockWorldHolder<A extends AbstractDyn
                     setMultiBlock((IDynamicMultiBlockTile)mbTile, null);
                 }
             }
+            vec3List.remove(new BlockLoc(tile));
             for (BlockLoc vec : vec3List) {
                 TileEntity tileEntity1 = WorldHelper.getTileAt(world, vec);
                 addTile(tileEntity1);
