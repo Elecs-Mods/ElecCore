@@ -11,8 +11,8 @@ public interface IDynamicMultiBlockTile<M extends AbstractDynamicMultiBlock> {
 
     public M getMultiBlock();
 
-    public void setSafeData(NBTTagCompound tag);
+    public void setSaveData(NBTTagCompound tag);
 
-    public NBTTagCompound getSafeData(NBTTagCompound tag);
+    public NBTTagCompound getSaveData();
 
 }
