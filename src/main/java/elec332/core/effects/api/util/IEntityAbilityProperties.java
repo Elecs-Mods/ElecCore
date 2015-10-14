@@ -24,6 +24,8 @@ public interface IEntityAbilityProperties extends IExtendedEntityProperties {
 
     public WrappedAbility getEffect(String effect);
 
+    public void readFromPacket(IAbilityPacket packet);
+
     @Override
     public void saveNBTData(NBTTagCompound compound);
 

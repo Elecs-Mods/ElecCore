@@ -3,6 +3,7 @@ package elec332.core.effects;
 import com.google.common.collect.Lists;
 import elec332.core.effects.api.ability.Ability;
 import elec332.core.effects.api.ability.WrappedAbility;
+import elec332.core.effects.api.util.IAbilityPacket;
 import elec332.core.effects.api.util.IEntityAbilityProperties;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -23,25 +24,35 @@ public final class EntityAbilityProperties implements IEntityAbilityProperties {
     }
 
     private EntityLivingBase entity;
-    private List<WrappedAbility> activeEffects;
+    private World world;
+    protected List<WrappedAbility> activeEffects;
     private List<WrappedAbility> toRemove;
 
+
     public void updateEffects(){
-        checkRemove();
         for (WrappedAbility effect : activeEffects){
             effect.onUpdate(entity);
         }
+        checkRemove();
     }
 
     public void addEffect(WrappedAbility effect){
-        if (effect != null) {
-            WrappedAbility q = getEffect(effect.getAbility());
+        _addEffect(effect, true);
+    }
+
+    private void _addEffect(WrappedAbility ability, boolean add){
+        if (ability != null) {
+            if (!world.isRemote){
+                sendPacketAbility(ability, IAbilityPacket.PacketType.ADD);
+            }
+            WrappedAbility q = getEffect(ability.getAbility());
             if (q != null && q.getDuration() > 0){
-                q.mergeWith(effect);
+                q.mergeWith(ability);
                 return;
             }
-            activeEffects.add(effect);
-            effect.onActivated(entity);
+            activeEffects.add(ability);
+            if (add)
+                ability.onActivated(entity);
         }
     }
 
@@ -50,6 +61,9 @@ public final class EntityAbilityProperties implements IEntityAbilityProperties {
     }
 
     public void removeEffect(Ability ability){
+        if (!world.isRemote){
+            sendPacketAbility(new WrappedAbility(ability, 0), IAbilityPacket.PacketType.REMOVE);
+        }
         _removeEffect(getEffect(ability));
     }
 
@@ -72,6 +86,23 @@ public final class EntityAbilityProperties implements IEntityAbilityProperties {
         return null;
     }
 
+    @Override
+    public void readFromPacket(IAbilityPacket packet) {
+        switch (packet.getPacketType()){
+            case ADD:
+                addEffect(packet.getAbility());
+                break;
+            case SYNC:
+                _addEffect(packet.getAbility(), false);
+                break;
+            case REMOVE:
+                removeEffect(packet.getAbility());
+                break;
+            default:
+                throw new IllegalArgumentException();
+        }
+    }
+
 
     @Override
     public void saveNBTData(NBTTagCompound compound) {
@@ -91,6 +122,7 @@ public final class EntityAbilityProperties implements IEntityAbilityProperties {
     @Override
     public void loadNBTData(NBTTagCompound compound) {
         NBTTagList list = compound.getTagList("activeEffects", 10);
+        activeEffects.clear();
         for (int i = 0; i < list.tagCount(); i++) {
             activeEffects.add(WrappedAbility.readEffectFromNBT(list.getCompoundTagAt(i)));
         }
@@ -100,6 +132,7 @@ public final class EntityAbilityProperties implements IEntityAbilityProperties {
     @Override
     public void init(Entity entity, World world) {
         this.entity = (EntityLivingBase) entity;
+        this.world = world;
     }
 
     private void checkRemove(){
@@ -109,6 +142,10 @@ public final class EntityAbilityProperties implements IEntityAbilityProperties {
             }
             toRemove.clear();
         }
+    }
+
+    private void sendPacketAbility(WrappedAbility ability, IAbilityPacket.PacketType packetType){
+        AbilityHandler.instance.syncAbilityDataToClient(entity, ability, packetType);
     }
 
 }

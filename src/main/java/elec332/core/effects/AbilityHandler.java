@@ -4,12 +4,21 @@ import com.google.common.collect.Maps;
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.LoaderState;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.gameevent.PlayerEvent;
 import elec332.core.effects.api.ElecCoreAbilitiesAPI;
 import elec332.core.effects.api.ability.Ability;
 import elec332.core.effects.api.IElecCoreAbilitiesAPI;
+import elec332.core.effects.api.ability.WrappedAbility;
+import elec332.core.effects.api.util.AbilityHelper;
+import elec332.core.effects.api.util.IAbilityPacket;
 import elec332.core.effects.defaultabilities.*;
+import elec332.core.effects.network.PacketSyncAbilities;
+import elec332.core.main.ElecCore;
+import elec332.core.server.ServerHelper;
 import elec332.core.util.EventHelper;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.IExtendedEntityProperties;
 import net.minecraftforge.event.entity.EntityEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
@@ -51,7 +60,7 @@ public final class AbilityHandler implements IElecCoreAbilitiesAPI {
 
     @Override
     public boolean willBeActivated() {
-        if (Loader.instance().isInState(LoaderState.PREINITIALIZATION))
+        if (!Loader.instance().hasReachedState(LoaderState.INITIALIZATION))
             throw new IllegalAccessError();
         return shouldActivate;
     }
@@ -61,6 +70,15 @@ public final class AbilityHandler implements IElecCoreAbilitiesAPI {
             EventHelper.registerHandlerForge(new EffectsTickHandler());
             EventHelper.registerHandlerForge(new EffectsSyncHandler());
             initDefaultAbilities();
+            ElecCore.networkHandler.registerClientPacket(PacketSyncAbilities.class);
+        }
+    }
+
+    public void syncAbilityDataToClient(EntityLivingBase entity, WrappedAbility ability, IAbilityPacket.PacketType packetType){
+        NBTTagCompound toSend = new NBTTagCompound();
+        ability.writeToNBT(toSend);
+        for (EntityPlayerMP player : ServerHelper.instance.getAllPlayersWatchingBlock(entity.worldObj, (int) entity.posX, (int) entity.posZ)) {
+            ElecCore.networkHandler.getNetworkWrapper().sendTo(new PacketSyncAbilities(entity, toSend, packetType), player);
         }
     }
 
@@ -82,6 +100,30 @@ public final class AbilityHandler implements IElecCoreAbilitiesAPI {
         public void onEntityConstructing(EntityEvent.EntityConstructing event){
             if (event.entity instanceof EntityLivingBase)
                 event.entity.registerExtendedProperties(ElecCoreAbilitiesAPI.PROPERTIES_NAME, new EntityAbilityProperties());
+        }
+
+        @SubscribeEvent
+        public void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent event) {
+            syncEffects(event.player);
+        }
+
+        @SubscribeEvent
+        public void onPlayerChangeDimension(PlayerEvent.PlayerChangedDimensionEvent event) {
+            syncEffects(event.player);
+        }
+
+        @SubscribeEvent
+        public void onPlayerSpawn(PlayerEvent.PlayerRespawnEvent event) {
+            syncEffects(event.player);
+        }
+
+        private void syncEffects(EntityLivingBase entity){
+            EntityAbilityProperties properties = (EntityAbilityProperties) AbilityHelper.getHandler(entity);
+            if (properties == null)
+                throw new RuntimeException();
+            for (WrappedAbility ability : properties.activeEffects){
+                AbilityHandler.instance.syncAbilityDataToClient(entity, ability, IAbilityPacket.PacketType.SYNC);
+            }
         }
 
     }

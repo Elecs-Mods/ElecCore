@@ -13,8 +13,8 @@ public class CategoryAsConfig extends Configuration {
         this.m = ma;
     }
 
-    String name;
-    Configuration m;
+    private String name;
+    private Configuration m;
 
     public ConfigCategory getCategory(String category) {
         return m.getCategory(name + "." + category);
@@ -27,4 +27,5 @@ public class CategoryAsConfig extends Configuration {
     public void load(){
         m.load();
     }
+
 }

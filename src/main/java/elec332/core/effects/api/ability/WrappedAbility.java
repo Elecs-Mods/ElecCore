@@ -48,7 +48,7 @@ public final class WrappedAbility {
     }
 
     public WrappedAbility copyOf(){
-        return new WrappedAbility(ability, strength, duration);
+        return new WrappedAbility(ability, duration, strength);
     }
 
     public Ability getAbility() {
@@ -84,7 +84,7 @@ public final class WrappedAbility {
         String s = tagCompound.getString("ability");
         Ability ability = ElecCoreAbilitiesAPI.getApi().getEffectFromName(s);
         if (ability != null){
-            return new WrappedAbility(ability, tagCompound.getInteger("strength"), tagCompound.getInteger("duration"));
+            return new WrappedAbility(ability, tagCompound.getInteger("duration"), tagCompound.getInteger("strength"));
         }
         return null;
     }
