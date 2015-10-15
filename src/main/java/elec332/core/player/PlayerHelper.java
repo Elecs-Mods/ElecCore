@@ -3,9 +3,11 @@ package elec332.core.player;
 import elec332.core.main.ElecCore;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.util.Vec3;
 
 import java.util.UUID;
 
@@ -13,6 +15,23 @@ import java.util.UUID;
  * Created by Elec332 on 19-3-2015.
  */
 public class PlayerHelper {
+
+    public static double getBlockReachDistance(EntityPlayerMP player){
+        return player.theItemInWorldManager.getBlockReachDistance();
+    }
+
+    public static Vec3 getCorrectedHeadVec(EntityPlayer player) {
+        Vec3 v = Vec3.createVectorHelper(player.posX, player.posY, player.posZ);
+        if(player.worldObj.isRemote) {
+            v.yCoord += (player.getEyeHeight() - player.getDefaultEyeHeight());
+        } else {
+            v.yCoord += player.getEyeHeight();
+            if(player instanceof EntityPlayerMP && player.isSneaking()) {
+                v.yCoord -= 0.08D;
+            }
+        }
+        return v;
+    }
 
     public static UUID getPlayerUUID(EntityPlayer player){
         return player.getGameProfile().getId();
