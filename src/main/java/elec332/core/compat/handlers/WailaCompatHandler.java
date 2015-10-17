@@ -22,9 +22,10 @@ public class WailaCompatHandler implements IWailaDataProvider {
     }
 
     public static void register(IWailaRegistrar registrar){
-        registrar.registerHeadProvider(registry, IWailaInfoTile.class);
+        //registrar.registerHeadProvider(registry, IWailaInfoTile.class);
         registrar.registerBodyProvider(registry, IWailaInfoTile.class);
-        registrar.registerTailProvider(registry, IWailaInfoTile.class);
+        //registrar.registerTailProvider(registry, IWailaInfoTile.class);
+        registrar.registerNBTProvider(registry, IWailaInfoTile.class);
     }
 
     @Override
@@ -52,12 +53,18 @@ public class WailaCompatHandler implements IWailaDataProvider {
 
     @Override
     public NBTTagCompound getNBTData(EntityPlayerMP player, TileEntity te, NBTTagCompound tag, World world, int x, int y, int z) {
+        System.out.println("Main NBT request received");
+        if (te instanceof IWailaInfoTile && tag != null){
+            return ((IWailaInfoTile) te).getWailaTag(player, te, tag, world, x, y, z);
+        }
         return tag;
     }
 
     public static interface IWailaInfoTile {
 
         public List<String> getWailaBody(ItemStack itemStack, List<String> currentTip, IWailaDataAccessor accessor, IWailaConfigHandler config);
+
+        public NBTTagCompound getWailaTag(EntityPlayerMP player, TileEntity tile, NBTTagCompound tag, World world, int x, int y, int z);
 
     }
 

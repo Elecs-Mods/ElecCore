@@ -8,10 +8,12 @@ import elec332.core.world.WorldHelper;
 import mcp.mobius.waila.api.IWailaConfigHandler;
 import mcp.mobius.waila.api.IWailaDataAccessor;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.Container;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.World;
 
 import java.util.List;
 
@@ -60,6 +62,12 @@ public abstract class AbstractMultiBlock extends IMultiBlock implements IInvento
     public List<String> getWailaBody(ItemStack itemStack, List<String> currentTip, IWailaDataAccessor accessor, IWailaConfigHandler config) {
         return currentTip;
     }
+
+    @Override
+    public NBTTagCompound getWailaTag(EntityPlayerMP player, TileEntity tile, NBTTagCompound tag, World world, int x, int y, int z){
+        return tag;
+    }
+
 
     public final boolean openGui(EntityPlayer player, Object mod, int ID){
         player.openGui(mod, ID, getWorldObj(), getLocation().xCoord, getLocation().yCoord, getLocation().zCoord);

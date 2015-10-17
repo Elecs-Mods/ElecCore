@@ -7,9 +7,12 @@ import elec332.core.main.ElecCore;
 import mcp.mobius.waila.api.IWailaConfigHandler;
 import mcp.mobius.waila.api.IWailaDataAccessor;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.Container;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import java.util.List;
@@ -157,5 +160,13 @@ public abstract class AbstractMultiBlockTile extends TileBase implements IMultiB
             return getMultiBlock().getWailaBody(itemStack, currentTip, accessor, config);
         return currentTip;
     }
+
+    @Override
+    public NBTTagCompound getWailaTag(EntityPlayerMP player, TileEntity tile, NBTTagCompound tag, World world, int x, int y, int z){
+        if (getMultiBlock() != null)
+            return getMultiBlock().getWailaTag(player, tile, tag, world, x, y, z);
+        return tag;
+    }
+
 
 }
