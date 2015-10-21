@@ -1,5 +1,6 @@
 package elec332.core.effects;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.LoaderState;
@@ -23,6 +24,7 @@ import net.minecraftforge.common.IExtendedEntityProperties;
 import net.minecraftforge.event.entity.EntityEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -63,6 +65,24 @@ public final class AbilityHandler implements IElecCoreAbilitiesAPI {
         if (!Loader.instance().hasReachedState(LoaderState.INITIALIZATION))
             throw new IllegalAccessError();
         return shouldActivate;
+    }
+
+    @Override
+    public boolean isRegistered(Ability ability) {
+        if (ability == null){
+            return false;
+        }
+        for (Map.Entry<String, Ability> entry : effectMap.entrySet()){
+            if (entry.getKey().equals(ability.getName()) && entry.getValue() == ability){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public List<Ability> getRegisteredAbilities(){
+        return ImmutableList.copyOf(effectMap.values());
     }
 
     public void init(){

@@ -1,7 +1,9 @@
 package elec332.core.config;
 
 import com.google.common.collect.Lists;
+import elec332.core.java.ReflectionHelper;
 import net.minecraftforge.common.config.Configuration;
+import org.lwjgl.Sys;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -44,7 +46,7 @@ public class ConfigWrapper {
         for (Class<?> clazz : obj.getClass().getDeclaredClasses()){
             if (!clazz.isInterface()){
                 try {
-                    registerConfig(clazz.getConstructor().newInstance());
+                    registerConfigWithInnerClasses(clazz.getConstructor().newInstance());
                 } catch (Exception e){
                     throw new RuntimeException("Error registering config: "+clazz.getName());
                 }
@@ -65,6 +67,31 @@ public class ConfigWrapper {
         }
         for (Object o : instances){
             Class objClass = o.getClass();
+            String classCategory = Configuration.CATEGORY_GENERAL;
+            if (objClass.isAnnotationPresent(Configurable.Class.class)){
+                Configurable.Class configClass = (Configurable.Class) objClass.getAnnotation(Configurable.Class.class);
+                if (configClass.inherit() == Configurable.Inherit.TRUE){
+                    Class[] classes = ReflectionHelper.getAllTillMainClass(objClass);
+                    String s = "";
+                    for (Class clazz : classes){
+                        if (clazz.isAnnotationPresent(Configurable.Class.class)){
+                            if (!s.equals("")){
+                                s += ".";
+                            }
+                            String s1 = ((Configurable.Class) clazz.getAnnotation(Configurable.Class.class)).category();
+                            s += s1.equals(Configuration.CATEGORY_GENERAL)?clazz.getSimpleName():s1;
+                        }
+                    }
+                    classCategory = s;
+                } else {
+                    classCategory = configClass.category();
+                }
+                String comment = configClass.comment();
+                //classCategory = classCategory.toLowerCase();
+                if (!comment.equals("")) {
+                    configuration.setCategoryComment(classCategory, comment);
+                }
+            }
             for (Field field : objClass.getDeclaredFields()){
                 try {
                     boolean oldAccess = field.isAccessible();
@@ -72,15 +99,19 @@ public class ConfigWrapper {
                     if (field.isAnnotationPresent(Configurable.class)) {
                         Configurable configurable = field.getAnnotation(Configurable.class);
                         Object oldValue = field.get(o);
+                        String category = configurable.category();
+                        if (category.equals(Configuration.CATEGORY_GENERAL)){
+                            category = classCategory;
+                        }
                         if (field.getType().isAssignableFrom(Integer.TYPE)) {
-                            field.set(o, configuration.getInt(field.getName(), configurable.category(), (Integer) oldValue, configurable.minValue(), configurable.maxValue(), configurable.comment()));
+                            field.set(o, configuration.getInt(field.getName(), category, (Integer) oldValue, configurable.minValue(), configurable.maxValue(), configurable.comment()));
                         } else if (field.getType().isAssignableFrom(Boolean.TYPE)) {
-                            field.set(o, configuration.getBoolean(field.getName(), configurable.category(), (Boolean) oldValue, configurable.comment()));
+                            field.set(o, configuration.getBoolean(field.getName(), category, (Boolean) oldValue, configurable.comment()));
                         } else if (field.getType().isAssignableFrom(String.class)){
                             if (configurable.validStrings().length > 0)
-                                field.set(o, configuration.getString(field.getName(), configurable.category(), (String) oldValue, configurable.comment(), configurable.validStrings()));
+                                field.set(o, configuration.getString(field.getName(), category, (String) oldValue, configurable.comment(), configurable.validStrings()));
                             else
-                                field.set(o, configuration.getString(field.getName(), configurable.category(), (String) oldValue, configurable.comment()));
+                                field.set(o, configuration.getString(field.getName(), category, (String) oldValue, configurable.comment()));
                         }
                     }
                     field.setAccessible(oldAccess);
@@ -104,6 +135,7 @@ public class ConfigWrapper {
                 }
             }
         }
+
         configuration.save();
     }
 

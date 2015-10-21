@@ -69,7 +69,9 @@ public class Ability {
         return maxLevel;
     }
 
-
+    public Color getRenderColor() {
+        return renderColor;
+    }
 
     public enum Type{
         GOOD, NEUTRAL, BAD

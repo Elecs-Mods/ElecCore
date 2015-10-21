@@ -15,7 +15,8 @@ import java.util.List;
 public abstract class AbstractCompatHandler {
 
     public AbstractCompatHandler(Configuration config, Logger logger){
-        config.getCategory("compat").setComment("Sets if compat for the mod will be enabled, FALSE = always disabled, AUTO = enabled if mod is loaded, TRUE = always enabled (Not recommended, will crash if said mod isn't loaded)");
+        if (config != null)
+            config.getCategory("compat").setComment("Sets if compat for the mod will be enabled, FALSE = always disabled, AUTO = enabled if mod is loaded, TRUE = always enabled (Not recommended, will crash if said mod isn't loaded)");
         this.configuration = config;
         this.logger = logger;
         this.compatHandlers = Lists.newArrayList();
@@ -85,7 +86,7 @@ public abstract class AbstractCompatHandler {
     }
 
     protected final CompatEnabled isConfigEnabled(String name, CompatEnabled def){
-        return CompatEnabled.valueOf(configuration.getString(name, "compat", def.toString(), "", new String[]{CompatEnabled.FALSE.toString(), CompatEnabled.AUTO.toString(), CompatEnabled.TRUE.toString()}));
+        return configuration != null ? CompatEnabled.valueOf(configuration.getString(name, "compat", def.toString(), "", new String[]{CompatEnabled.FALSE.toString(), CompatEnabled.AUTO.toString(), CompatEnabled.TRUE.toString()})) : CompatEnabled.AUTO;
     }
 
     protected static boolean isAPILoaded(String name){

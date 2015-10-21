@@ -26,4 +26,22 @@ public @interface Configurable {
 
     boolean enabledByDefault() default true;
 
+
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target(ElementType.TYPE)
+    public @interface Class{
+
+        String category() default Configuration.CATEGORY_GENERAL;
+
+        String comment() default "";
+
+        /* No Booleans allowed :( */
+        Inherit inherit() default Inherit.TRUE;
+
+    }
+
+    public enum Inherit{
+        TRUE, FALSE
+    }
+
 }

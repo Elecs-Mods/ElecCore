@@ -1,13 +1,15 @@
 package elec332.core.effects.api;
 
+import com.google.common.collect.ImmutableList;
 import elec332.core.effects.api.ability.Ability;
+
+import java.util.List;
 
 /**
  * Created by Elec332 on 27-9-2015.
  */
 public final class ElecCoreAbilitiesAPI {
 
-    public static final ElecCoreAbilitiesAPI i = new ElecCoreAbilitiesAPI();
     private static final IElecCoreAbilitiesAPI api;
     public static final String PROPERTIES_NAME = "ElecCoreEffects";
 
@@ -30,7 +32,7 @@ public final class ElecCoreAbilitiesAPI {
         api = a;
     }
 
-    public static class NullAPI implements IElecCoreAbilitiesAPI {
+    private static class NullAPI implements IElecCoreAbilitiesAPI {
 
         private NullAPI(){
         }
@@ -51,6 +53,16 @@ public final class ElecCoreAbilitiesAPI {
         @Override
         public boolean willBeActivated() {
             return false;
+        }
+
+        @Override
+        public boolean isRegistered(Ability ability) {
+            return false;
+        }
+
+        @Override
+        public List<Ability> getRegisteredAbilities() {
+            return ImmutableList.of();
         }
 
     }
