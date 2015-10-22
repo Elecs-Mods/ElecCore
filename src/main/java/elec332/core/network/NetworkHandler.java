@@ -8,23 +8,37 @@ import cpw.mods.fml.relauncher.Side;
 import elec332.core.main.ElecCore;
 
 import java.lang.reflect.Modifier;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.TypeVariable;
 import java.util.List;
 
 /**
  * Created by Elec332 on 23-2-2015.
  */
 public class NetworkHandler {
+
     public NetworkHandler(String channelName){
-        this.channelName = channelName.toLowerCase();
-        this.networkWrapper = new SimpleNetworkWrapper(this.channelName);
+        this(channelName, 0);
     }
 
-    String channelName;
-    int i = 0;
+    public NetworkHandler(String channelName, int start){
+        if (start < 0)
+            throw new IllegalArgumentException();
+        this.channelName = channelName.toLowerCase();
+        this.networkWrapper = new SimpleNetworkWrapper(this.channelName);
+        this.i = start;
+    }
 
-    SimpleNetworkWrapper networkWrapper;
+    public void setMessageIndex(int newIndex){
+        if (newIndex >= i) {
+            this.i = newIndex;
+            return;
+        }
+        throw new IllegalArgumentException();
+    }
+
+    private String channelName;
+    private int i;
+
+    private SimpleNetworkWrapper networkWrapper;
 
     public void registerServerPacket(Class<? extends AbstractPacket> packetClass){
         register(packetClass, Side.SERVER);
@@ -46,7 +60,6 @@ public class NetworkHandler {
         networkWrapper.registerMessage(messageHandler, messageType, i, side);
         ++i;
     }
-
 
     public void registerPacket(Class packetClass, Side side){
         if (checkValidity(packetClass)){
