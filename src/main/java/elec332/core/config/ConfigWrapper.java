@@ -1,5 +1,6 @@
 package elec332.core.config;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import elec332.core.java.ReflectionHelper;
 import net.minecraftforge.common.config.Configuration;
@@ -19,12 +20,14 @@ public class ConfigWrapper {
         this.instances = Lists.newArrayList();
         this.hasInit = false;
         this.categoryDataList = Lists.newArrayList();
+        this.categories = Lists.newArrayList();
     }
 
     private Configuration configuration;
     private List<Object> instances;
     private boolean hasInit;
     private List<CategoryData> categoryDataList;
+    private List<String> categories;
 
     public void registerConfig(Object o){
         if (!hasInit)
@@ -38,7 +41,21 @@ public class ConfigWrapper {
                 throw new IllegalArgumentException();
         }
         this.categoryDataList.add(new CategoryData(category, description));
+        addRegisteredCategory(category);
         return this;
+    }
+
+    private void addRegisteredCategory(String category){
+        if (!categories.contains(category.toLowerCase()))
+            this.categories.add(category.toLowerCase());
+    }
+
+    public List<String> getRegisteredCategories() {
+        return ImmutableList.copyOf(categories);
+    }
+
+    public boolean hasBeenLoaded() {
+        return hasInit;
     }
 
     public void registerConfigWithInnerClasses(Object obj){
@@ -103,6 +120,7 @@ public class ConfigWrapper {
                         if (category.equals(Configuration.CATEGORY_GENERAL)){
                             category = classCategory;
                         }
+                        addRegisteredCategory(category);
                         if (field.getType().isAssignableFrom(Integer.TYPE)) {
                             field.set(o, configuration.getInt(field.getName(), category, (Integer) oldValue, configurable.minValue(), configurable.maxValue(), configurable.comment()));
                         } else if (field.getType().isAssignableFrom(Boolean.TYPE)) {

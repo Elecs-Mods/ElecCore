@@ -1,5 +1,6 @@
 package elec332.core.util;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.ModAPIManager;
@@ -28,7 +29,7 @@ public abstract class AbstractCompatHandler {
     private final Logger logger;
     private List<ICompatHandler> compatHandlers;
     private boolean locked;
-    private static final String[] possibleOptions = new String[]{CompatEnabled.FALSE.toString(), CompatEnabled.AUTO.toString(), CompatEnabled.TRUE.toString()};
+    protected static final String[] possibleOptions = new String[]{CompatEnabled.FALSE.toString(), CompatEnabled.AUTO.toString(), CompatEnabled.TRUE.toString()};
 
     public void addHandler(ICompatHandler handler){
         if (locked)
@@ -42,6 +43,18 @@ public abstract class AbstractCompatHandler {
 
     public boolean addCategoryComment(){
         return true;
+    }
+
+    protected List<ICompatHandler> getCompatHandlers(){
+        return ImmutableList.copyOf(compatHandlers);
+    }
+
+    protected ICompatHandler forMod(String mod){
+        for (ICompatHandler compatHandler : compatHandlers){
+            if (compatHandler.getName().equals(mod))
+                return compatHandler;
+        }
+        return null;
     }
 
     public void init(){
