@@ -1,4 +1,4 @@
-package elec332.core.util;
+package elec332.core.java;
 
 import java.util.Map;
 
