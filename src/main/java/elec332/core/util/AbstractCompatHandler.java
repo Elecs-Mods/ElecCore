@@ -111,7 +111,7 @@ public abstract class AbstractCompatHandler {
         return false;
     }
 
-    private enum CompatEnabled{
+    public enum CompatEnabled{
         FALSE, AUTO, TRUE
     }
 
