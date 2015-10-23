@@ -15,8 +15,8 @@ import java.util.List;
 public abstract class AbstractCompatHandler {
 
     public AbstractCompatHandler(Configuration config, Logger logger){
-        if (config != null)
-            config.getCategory("compat").setComment("Sets if compat for the mod will be enabled, FALSE = always disabled, AUTO = enabled if mod is loaded, TRUE = always enabled (Not recommended, will crash if said mod isn't loaded)");
+        if (config != null && addCategoryComment())
+            config.getCategory(getCompatCategory()).setComment("Sets if compat for the mod will be enabled, FALSE = always disabled, AUTO = enabled if mod is loaded, TRUE = always enabled (Not recommended, will crash if said mod isn't loaded)");
         this.configuration = config;
         this.logger = logger;
         this.compatHandlers = Lists.newArrayList();
@@ -24,15 +24,24 @@ public abstract class AbstractCompatHandler {
         loadList();
     }
 
-    private final Configuration configuration;
+    protected final Configuration configuration;
     private final Logger logger;
     private List<ICompatHandler> compatHandlers;
     private boolean locked;
+    private static final String[] possibleOptions = new String[]{CompatEnabled.FALSE.toString(), CompatEnabled.AUTO.toString(), CompatEnabled.TRUE.toString()};
 
     public void addHandler(ICompatHandler handler){
         if (locked)
             throw new RuntimeException("A mod attempted to register a CompatHandler too late!");
         compatHandlers.add(handler);
+    }
+
+    public String getCompatCategory(){
+        return "compat";
+    }
+
+    public boolean addCategoryComment(){
+        return true;
     }
 
     public void init(){
@@ -86,7 +95,12 @@ public abstract class AbstractCompatHandler {
     }
 
     protected final CompatEnabled isConfigEnabled(String name, CompatEnabled def){
-        return configuration != null ? CompatEnabled.valueOf(configuration.getString(name, "compat", def.toString(), "", new String[]{CompatEnabled.FALSE.toString(), CompatEnabled.AUTO.toString(), CompatEnabled.TRUE.toString()})) : CompatEnabled.AUTO;
+        CompatEnabled enabled = getIsCompatEnabled(name, def);
+        return enabled == null ? CompatEnabled.AUTO : enabled;
+    }
+
+    protected CompatEnabled getIsCompatEnabled(String mod, CompatEnabled defaultValue){
+        return configuration != null ? CompatEnabled.valueOf(configuration.getString(mod, getCompatCategory(), defaultValue.toString(), "", possibleOptions)) : CompatEnabled.AUTO;
     }
 
     protected static boolean isAPILoaded(String name){
