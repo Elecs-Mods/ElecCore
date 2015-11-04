@@ -53,7 +53,6 @@ public class WailaCompatHandler implements IWailaDataProvider {
 
     @Override
     public NBTTagCompound getNBTData(EntityPlayerMP player, TileEntity te, NBTTagCompound tag, World world, int x, int y, int z) {
-        System.out.println("Main NBT request received");
         if (te instanceof IWailaInfoTile && tag != null){
             return ((IWailaInfoTile) te).getWailaTag(player, te, tag, world, x, y, z);
         }
