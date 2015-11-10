@@ -125,7 +125,7 @@ public abstract class AbstractDynamicMultiBlockWorldHolder<A extends AbstractDyn
             vec3List.addAll(m.getAllLocations());
             //vec3List.remove(new BlockLoc(tile));
             m.onTileRemoved(tile);
-            m.invalidate();
+            //m.invalidate();
             removeGrid(m);
             //registeredTiles.remove(new BlockLoc(tile));
             registeredTiles.removeAll(vec3List);

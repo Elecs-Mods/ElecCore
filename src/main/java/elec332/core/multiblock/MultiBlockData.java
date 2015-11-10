@@ -86,7 +86,7 @@ public final class MultiBlockData {
                 public void run() {
                     IMultiBlock.tileEntityValidate(tile, multiBlock, registry);
                 }
-            });
+            }, getTileEntityWorld());
         //}
     }
 

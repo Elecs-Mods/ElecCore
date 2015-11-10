@@ -33,14 +33,14 @@ public class TileBase extends TileEntity implements IElecCoreNetworkTile{
     @Override
     public void validate() {
         super.validate();
-        ElecCore.tickHandler.registerCall(new IRunOnce() {
+        ElecCore.tickHandler.registerCall(new Runnable() {
             @Override
             public void run() {
                 if (getWorldObj().blockExists(xCoord, yCoord, zCoord)) {
                     onTileLoaded();
                 }
             }
-        });
+        }, getWorldObj());
     }
 
 

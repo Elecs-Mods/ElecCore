@@ -61,7 +61,7 @@ public abstract class AbstractMultiBlockTile extends TileBase implements IMultiB
                         getMultiBlock().readFromNBT(tagCompound);
                 }
             }
-        });
+        }, getWorldObj());
     }
 
     /**
