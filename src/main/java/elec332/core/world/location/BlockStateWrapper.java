@@ -1,9 +1,8 @@
 package elec332.core.world.location;
 
-import elec332.core.minetweaker.MineTweakerHelper;
+import elec332.core.util.MineTweakerHelper;
 import elec332.core.world.WorldHelper;
 import net.minecraft.block.Block;
-import net.minecraft.block.state.BlockState;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;

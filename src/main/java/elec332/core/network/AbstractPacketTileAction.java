@@ -27,7 +27,7 @@ public abstract class AbstractPacketTileAction extends AbstractPacket {
     }
 
     @Override
-    public IMessage onMessage(AbstractPacket message, MessageContext ctx) {
+    public IMessage onMessageThreadSafe(AbstractPacket message, MessageContext ctx) {
         BlockLoc loc = new BlockLoc(message.networkPackageObject);
         int i = message.networkPackageObject.getInteger("id");
         NBTTagCompound data = message.networkPackageObject.getCompoundTag("data");

@@ -11,6 +11,7 @@ import java.util.List;
 /**
  * Created by Elec332 on 12-4-2015.
  */
+@Deprecated
 public class NBTHelper {
 
     public static void save(NBTTagCompound tagCompound, Object object){

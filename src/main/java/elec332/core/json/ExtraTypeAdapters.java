@@ -5,7 +5,7 @@ import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
-import elec332.core.minetweaker.MineTweakerHelper;
+import elec332.core.util.MineTweakerHelper;
 import elec332.core.util.NBT;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;

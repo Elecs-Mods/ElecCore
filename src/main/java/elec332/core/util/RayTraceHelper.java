@@ -1,6 +1,5 @@
 package elec332.core.util;
 
-import elec332.core.player.PlayerHelper;
 import elec332.core.world.WorldHelper;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayerMP;

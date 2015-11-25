@@ -4,9 +4,9 @@ import elec332.core.compat.ElecCoreCompatHandler;
 import elec332.core.effects.AbilityHandler;
 import elec332.core.handler.FMLEventHandler;
 import elec332.core.handler.TickHandler;
-import elec332.core.helper.FileHelper;
-import elec332.core.helper.MCModInfo;
-import elec332.core.helper.ModInfoHelper;
+import elec332.core.util.FileHelper;
+import elec332.core.util.MCModInfo;
+import elec332.core.util.ModInfoHelper;
 import elec332.core.modBaseUtils.ModBase;
 import elec332.core.modBaseUtils.ModInfo;
 import elec332.core.network.*;
@@ -29,12 +29,14 @@ import java.util.LinkedHashMap;
  * Created by Elec332.
  */
 @Mod(modid = ModInfo.MODID_CORE, name = ModInfo.MODNAME_CORE, dependencies = "required-after:Forge@[10.13.0.1230,)",
-acceptedMinecraftVersions = ModInfo.ACCEPTEDMCVERSIONS, version = "2", useMetadata = true, canBeDeactivated = false)
+acceptedMinecraftVersions = ModInfo.ACCEPTEDMCVERSIONS, version = ElecCore.ElecCoreVersion, useMetadata = true, canBeDeactivated = false)
 public class ElecCore extends ModBase{
+
+	public static final String ElecCoreVersion = "#ELECCORE_VER#";
 
 	public static LinkedHashMap<String, ArrayList> Updates = new LinkedHashMap<String, ArrayList>();
 	public static ArrayList<String> outdatedModList = new ArrayList<String>();
-	public static boolean Debug;
+	public static boolean debug;
 	//EXP	
 
 	
@@ -67,11 +69,11 @@ public class ElecCore extends ModBase{
 		//runUpdateCheck(event, "https://raw.githubusercontent.com/Elecs-Mods/ElecCore/master/build.properties");
 		FMLCommonHandler.instance().bus().register(new FMLEventHandler());
 		FMLCommonHandler.instance().bus().register(tickHandler);
-		Debug = config.isEnabled("Debug", false);
+		debug = config.isEnabled("debug", false);
 		ServerHelper.instance.load();
 
-		MCModInfo.CreateMCModInfoElec(event, "Provides core functionality for Elec's Mods",
-				"-", "assets/elec332/logo.png",	new String[]{"Elec332"});
+		MCModInfo.createMCModInfoElec(event, "Provides core functionality for Elec's Mods",
+				"-", "assets/elec332/logo.png", new String[]{"Elec332"});
 		notifyEvent(event);
 	}
 
@@ -90,7 +92,7 @@ public class ElecCore extends ModBase{
 	}
 
 	public static void systemPrintDebug(Object s){
-		if (Debug)
+		if (debug)
 			System.out.println(s);
 	}
 

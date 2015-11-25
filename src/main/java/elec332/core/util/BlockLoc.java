@@ -49,7 +49,7 @@ public class BlockLoc extends BlockPos {
         this.zCoord = zCoord;
     }
 
-    public BlockLoc atSide(ForgeDirection direction){
+    public BlockLoc atSide(EnumFacing direction){
         return new BlockLoc(xCoord+direction.offsetX, yCoord+direction.offsetY, zCoord+direction.offsetZ);
     }
 

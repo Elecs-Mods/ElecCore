@@ -3,6 +3,7 @@ package elec332.core.modBaseUtils;
 /**
  * Created by Elec332.
  */
+@Deprecated
 public class ModInfo {
 	
 	public static final String DEPENDENCIES = "required-after:Forge@[10.13.0.1230,);required-after:ElecCore";

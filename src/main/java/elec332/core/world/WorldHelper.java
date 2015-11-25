@@ -1,9 +1,8 @@
 package elec332.core.world;
 
-import elec332.core.player.PlayerHelper;
+import elec332.core.util.PlayerHelper;
 import elec332.core.util.BlockLoc;
 import net.minecraft.block.Block;
-import net.minecraft.block.state.BlockState;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.effect.EntityLightningBolt;
 import net.minecraft.entity.item.EntityItem;

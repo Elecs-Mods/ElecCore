@@ -18,4 +18,5 @@ public class ElecCTab {
 	        return Item.getItemFromBlock(Blocks.anvil);
 	    }
 	};
+
 }

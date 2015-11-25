@@ -71,7 +71,7 @@ public class NetworkHandler {
 
     private boolean checkValidity(Class packet){
         if (isValidPacket(packet)){
-            if (ElecCore.Debug)
+            if (ElecCore.debug)
                 ElecCore.instance.info("Validated packet: "+packet.getName());
             return true;
         }

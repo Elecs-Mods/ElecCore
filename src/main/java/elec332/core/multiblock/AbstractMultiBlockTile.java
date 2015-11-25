@@ -1,7 +1,7 @@
 package elec332.core.multiblock;
 
-import elec332.core.baseclasses.tileentity.IInventoryTile;
-import elec332.core.baseclasses.tileentity.TileBase;
+import elec332.core.tile.IInventoryTile;
+import elec332.core.tile.TileBase;
 import elec332.core.compat.handlers.WailaCompatHandler;
 import elec332.core.main.ElecCore;
 import mcp.mobius.waila.api.ITaggedList;
@@ -9,15 +9,11 @@ import mcp.mobius.waila.api.IWailaConfigHandler;
 import mcp.mobius.waila.api.IWailaDataAccessor;
 import mcp.mobius.waila.api.IWailaDataAccessorServer;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.Container;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.world.World;
-
-import java.util.List;
 
 /**
  * Created by Elec332 on 28-7-2015.

@@ -22,7 +22,7 @@ public class PacketTileDataToServer extends AbstractPacket {
     }
 
     @Override
-    public IMessage onMessage(AbstractPacket message, MessageContext ctx) {
+    public IMessage onMessageThreadSafe(AbstractPacket message, MessageContext ctx) {
         int ID = message.networkPackageObject.getInteger("PacketId");
         EntityPlayerMP sender = ctx.getServerHandler().playerEntity;
         IElecCoreNetworkTile tile = (IElecCoreNetworkTile) WorldHelper.getTileAt(sender.worldObj, new BlockLoc(message.networkPackageObject));

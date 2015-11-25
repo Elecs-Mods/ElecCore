@@ -5,6 +5,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent;
 import elec332.core.main.ElecCore;
 import elec332.core.util.IRunOnce;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.relauncher.Side;
 
 import java.util.ArrayDeque;
 import java.util.Queue;
@@ -57,6 +58,21 @@ public class TickHandler {
             registerCallServer(runnable);
         } else {
             registerCallClient(runnable);
+        }
+    }
+
+    @SuppressWarnings("deprecation")
+    public void registerCall(Runnable runnable, Side side){
+        if (side == null){
+            registerCall(runnable);
+            return;
+        }
+        if (side.isServer()){
+            registerCallServer(runnable);
+        } else if (side.isClient()){
+            registerCallClient(runnable);
+        } else {
+            throw new IllegalArgumentException();
         }
     }
 

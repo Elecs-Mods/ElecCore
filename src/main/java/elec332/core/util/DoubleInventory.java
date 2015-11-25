@@ -1,6 +1,5 @@
 package elec332.core.util;
 
-import elec332.core.player.InventoryHelper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;

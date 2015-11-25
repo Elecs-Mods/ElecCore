@@ -1,8 +1,8 @@
 package elec332.core.modBaseUtils;
 
 import elec332.core.config.ConfigCore;
-import elec332.core.helper.LogHelper;
-import elec332.core.helper.ModInfoHelper;
+import elec332.core.util.LogHelper;
+import elec332.core.util.ModInfoHelper;
 import elec332.core.main.ElecCore;
 import net.minecraft.launchwrapper.Launch;
 import net.minecraftforge.common.config.Configuration;
@@ -19,7 +19,14 @@ import java.util.ArrayList;
 /**
  * Created by Elec332.
  */
+@Deprecated
 public abstract class ModBase extends LogHelper {
+
+    public ModBase(){
+        for (int i = 0; i < 39; i++) {
+            error("MOD " + modID() + " IS USING OUTDATED MODBASE CLASS!");
+        }
+    }
 
     protected abstract File configFile();
 

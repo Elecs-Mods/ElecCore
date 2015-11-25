@@ -6,6 +6,7 @@ import net.minecraftforge.fml.common.FMLCommonHandler;
 /**
  * Created by Elec332 on 12-5-2015.
  */
+@Deprecated
 public class EventHelper {
 
     public static void registerHandler(Handler side, Object reg){

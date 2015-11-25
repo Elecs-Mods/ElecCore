@@ -4,7 +4,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import elec332.core.main.ElecCore;
 import elec332.core.network.NetworkHandler;
-import elec332.core.player.PlayerHelper;
+import elec332.core.util.PlayerHelper;
 import elec332.core.util.EventHelper;
 import elec332.core.util.NBTHelper;
 import elec332.core.world.WorldHelper;

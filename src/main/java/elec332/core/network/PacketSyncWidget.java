@@ -23,7 +23,7 @@ public class PacketSyncWidget extends AbstractPacket {
     }
 
     @Override
-    public IMessage onMessage(AbstractPacket message, MessageContext ctx) {
+    public IMessage onMessageThreadSafe(AbstractPacket message, MessageContext ctx) {
         NBTTagCompound data = message.networkPackageObject.getCompoundTag("data");
         NBTTagCompound containerData = message.networkPackageObject.getCompoundTag("containerData");
         Container openContainer = Minecraft.getMinecraft().thePlayer.openContainer;

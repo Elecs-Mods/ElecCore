@@ -8,6 +8,7 @@ import java.lang.annotation.Target;
 /**
  * Created by Elec332 on 12-4-2015.
  */
+@Deprecated
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
 public @interface NBTData {

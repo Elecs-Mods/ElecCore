@@ -1,5 +1,6 @@
 package elec332.core.network;
 
+import elec332.core.main.ElecCore;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
@@ -32,5 +33,18 @@ public abstract class AbstractPacket implements IMessage, IMessageHandler<Abstra
     public NBTTagCompound networkPackageObject;
 
     @Override
-    public abstract IMessage onMessage(AbstractPacket message, MessageContext ctx);
+    public IMessage onMessage(final AbstractPacket message, final MessageContext ctx) {
+        ElecCore.tickHandler.registerCall(new Runnable() {
+            @Override
+            public void run() {
+                Object o = onMessageThreadSafe(message, ctx);
+                if (o != null)
+                    throw new RuntimeException();
+            }
+        }, ctx.side);
+        return null;
+    }
+
+    public abstract IMessage onMessageThreadSafe(AbstractPacket message, MessageContext ctx);
+
 }

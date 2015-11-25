@@ -47,11 +47,11 @@ public final class SidedBlockRenderingCache{}/* {
         return getIconForInventoryRendering(type, side);
     }
 
-    public IIcon getIconForBlockFacing(int requestedSide, ForgeDirection directionBlockIsFacing){
+    public IIcon getIconForBlockFacing(int requestedSide, EnumFacing directionBlockIsFacing){
         return getIconForBlockFacing(requestedSide, directionBlockIsFacing, 0);
     }
 
-    public IIcon getIconForBlockFacing(int requestedSide, ForgeDirection directionBlockIsFacing, int type){
+    public IIcon getIconForBlockFacing(int requestedSide, ForgEnumFacingectionBlockIsFacing, int type){
         return getIconForBlockFacing(requestedSide, directionBlockIsFacing, type, 0);
     }
 

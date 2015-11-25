@@ -25,7 +25,7 @@ public class PacketSyncAbilities extends AbstractPacket implements IAbilityPacke
     }
 
     @Override
-    public IMessage onMessage(AbstractPacket message, MessageContext ctx) {
+    public IMessage onMessageThreadSafe(AbstractPacket message, MessageContext ctx) {
         EntityAbilityProperties prop = (EntityAbilityProperties) Minecraft.getMinecraft().theWorld.getEntityByID(message.networkPackageObject.getInteger("EntityDataIDToSender")).getExtendedProperties(ElecCoreAbilitiesAPI.PROPERTIES_NAME);
         ability = WrappedAbility.readEffectFromNBT(message.networkPackageObject);
         packetType = IAbilityPacket.PacketType.valueOf(message.networkPackageObject.getString("type"));
