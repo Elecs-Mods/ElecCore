@@ -2,7 +2,6 @@ package elec332.core.multiblock;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import cpw.mods.fml.common.Loader;
 import elec332.core.network.NetworkHandler;
 import elec332.core.registry.AbstractWorldRegistryHolder;
 import elec332.core.registry.IWorldRegistry;
@@ -10,8 +9,9 @@ import elec332.core.util.BlockLoc;
 import elec332.core.util.EventHelper;
 import elec332.core.world.WorldHelper;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraftforge.fml.common.Loader;
 
 import java.util.HashMap;
 import java.util.List;
@@ -128,7 +128,7 @@ public final class MultiBlockRegistry extends AbstractWorldRegistryHolder<MultiB
             this.activeMultiBlocks.add(multiBlock);
         }
 
-        protected void createNewMultiBlock(IMultiBlockStructure multiBlockStructure, BlockLoc bottomLeft, List<BlockLoc> allLocations, World world, ForgeDirection facing){
+        protected void createNewMultiBlock(IMultiBlockStructure multiBlockStructure, BlockLoc bottomLeft, List<BlockLoc> allLocations, World world, EnumFacing facing){
             Class<? extends IMultiBlock> clazz = registry.get(multiBlockStructure.getClass());
             IMultiBlock multiBlock;
             try {

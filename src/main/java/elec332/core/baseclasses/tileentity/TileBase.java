@@ -1,8 +1,6 @@
 package elec332.core.baseclasses.tileentity;
 
 import com.google.common.collect.Lists;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import elec332.core.main.ElecCore;
 import elec332.core.network.IElecCoreNetworkTile;
 import elec332.core.network.PacketReRenderBlock;
@@ -10,7 +8,7 @@ import elec332.core.network.PacketTileDataToServer;
 import elec332.core.server.ServerHelper;
 import elec332.core.util.BlockLoc;
 import elec332.core.util.DirectionHelper;
-import elec332.core.util.IRunOnce;
+import elec332.core.world.WorldHelper;
 import net.minecraft.block.Block;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -20,15 +18,18 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
+import net.minecraft.server.gui.IUpdatePlayerListBox;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.ArrayList;
 
 /**
  * Created by Elec332 on 8-4-2015.
  */
-public class TileBase extends TileEntity implements IElecCoreNetworkTile{
+public class TileBase extends TileEntity implements IElecCoreNetworkTile, IUpdatePlayerListBox {
 
     @Override
     public void validate() {
@@ -36,11 +37,11 @@ public class TileBase extends TileEntity implements IElecCoreNetworkTile{
         ElecCore.tickHandler.registerCall(new Runnable() {
             @Override
             public void run() {
-                if (getWorldObj().blockExists(xCoord, yCoord, zCoord)) {
+                if (WorldHelper.chunkExists(worldObj, getPos())) {
                     onTileLoaded();
                 }
             }
-        }, getWorldObj());
+        }, getWorld());
     }
 
 
@@ -97,17 +98,33 @@ public class TileBase extends TileEntity implements IElecCoreNetworkTile{
     public void onTileUnloaded(){
     }
 
-    public void notifyNeighboursOfDataChange(){
-        this.markDirty();
-        this.worldObj.notifyBlockChange(xCoord, yCoord, zCoord, blockType);
+    @SuppressWarnings("deprecation")
+    public final void update(){
+        if (canUpdate())
+            updateEntity();
     }
 
-    public ForgeDirection getTileFacing(){
+    @Deprecated
+    public void updateEntity() {
+    }
+
+    @Deprecated
+    public boolean canUpdate() {
+        return true;
+    }
+
+    public void notifyNeighboursOfDataChange(){
+        this.markDirty();
+        this.worldObj.notifyNeighborsOfStateChange(getPos(), blockType);
+    }
+
+    public EnumFacing getTileFacing(){
         return DirectionHelper.getDirectionFromNumber(getBlockMetadata());
     }
 
+    @Deprecated
     public BlockLoc myLocation(){
-        return new BlockLoc(this.xCoord, this.yCoord, this.zCoord);
+        return new BlockLoc(getPos());
     }
 
     public boolean timeCheck() {
@@ -115,7 +132,7 @@ public class TileBase extends TileEntity implements IElecCoreNetworkTile{
     }
 
     protected void setBlockMetadataWithNotify(int meta){
-        this.worldObj.setBlockMetadataWithNotify(xCoord, yCoord, zCoord, meta, 2);
+        this.worldObj.setBlockState(getPos(), getBlockType().getStateFromMeta(meta), 2);
         notifyNeighboursOfDataChange();
     }
 
@@ -145,7 +162,7 @@ public class TileBase extends TileEntity implements IElecCoreNetworkTile{
 
     }
 
-    public boolean onBlockActivated(EntityPlayer player, int side, float hitX, float hitY, float hitZ) {
+    public boolean onBlockActivated(EntityPlayer player, EnumFacing side, float hitX, float hitY, float hitZ) {
         return false;
     }
 
@@ -153,12 +170,12 @@ public class TileBase extends TileEntity implements IElecCoreNetworkTile{
         return Lists.newArrayList(itemStackFromNBTTile());
     }
 
-    public void onWrenched(ForgeDirection forgeDirection) {
-        DirectionHelper.setFacing_YAW(worldObj, xCoord, yCoord, zCoord, forgeDirection);
+    public void onWrenched(EnumFacing forgeDirection) {
+        DirectionHelper.setFacing_YAW(worldObj, getPos(), forgeDirection);
     }
 
     public boolean openGui(EntityPlayer player, Object mod, int guiID){
-        player.openGui(mod, guiID, worldObj, xCoord, yCoord, zCoord);
+        player.openGui(mod, guiID, worldObj, getPos().getX(), getPos().getY(), getPos().getZ());
         return true;
     }
 
@@ -176,16 +193,16 @@ public class TileBase extends TileEntity implements IElecCoreNetworkTile{
 
     public void reRenderBlock(){
         if (!worldObj.isRemote){
-            ServerHelper.instance.sendMessageToAllPlayersWatchingBlock(worldObj, xCoord, zCoord, new PacketReRenderBlock(this), ElecCore.networkHandler);
+            ServerHelper.instance.sendMessageToAllPlayersWatchingBlock(worldObj, getPos(), new PacketReRenderBlock(this), ElecCore.networkHandler);
         } else {
-            worldObj.markBlockRangeForRenderUpdate(xCoord, yCoord, zCoord, xCoord, yCoord, zCoord);
+            WorldHelper.markBlockForRenderUpdate(worldObj, getPos());
         }
     }
 
     //NETWORK///////////////////////
 
     public void syncData(){
-        this.worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+        this.worldObj.markBlockForUpdate(getPos());
     }
 
     @SideOnly(Side.CLIENT)
@@ -197,26 +214,26 @@ public class TileBase extends TileEntity implements IElecCoreNetworkTile{
     }
 
     public void sendPacket(int ID, NBTTagCompound data){
-        for (EntityPlayerMP player : ServerHelper.instance.getAllPlayersWatchingBlock(worldObj, this.xCoord, this.zCoord))
+        for (EntityPlayerMP player : ServerHelper.instance.getAllPlayersWatchingBlock(worldObj, getPos()))
             sendPacketTo(player, ID, data);
     }
 
     public void sendPacketTo(EntityPlayerMP player, int ID, NBTTagCompound data){
-        player.playerNetServerHandler.sendPacket(new S35PacketUpdateTileEntity(this.xCoord, this.yCoord, this.zCoord, ID, data));
+        player.playerNetServerHandler.sendPacket(new S35PacketUpdateTileEntity(getPos(), ID, data));
     }
 
     @Override
     public Packet getDescriptionPacket() {
         NBTTagCompound nbtTag = new NBTTagCompound();
         writeToNBT(nbtTag);
-        return new S35PacketUpdateTileEntity(this.xCoord, this.yCoord, this.zCoord, 0, nbtTag);
+        return new S35PacketUpdateTileEntity(getPos(), 0, nbtTag);
     }
 
     @Override
     public void onDataPacket(NetworkManager net, S35PacketUpdateTileEntity packet) {
-        if (packet.func_148853_f() == 0)
-            readFromNBT(packet.func_148857_g());
-        else onDataPacket(packet.func_148853_f(), packet.func_148857_g());
+        if (packet.getTileEntityType() == 0)
+            readFromNBT(packet.getNbtCompound());
+        else onDataPacket(packet.getTileEntityType(), packet.getNbtCompound());
     }
 
     public void onDataPacket(int id, NBTTagCompound tag){

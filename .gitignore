@@ -1,10 +1,29 @@
-.gradle/
+*.db
 build/
 build.bat
-*.db
-eclipse/
-out/
-*.iws
+
+# eclipse
+bin
+*.launch
+.settings
+.metadata
+.classpath
+.project
+
+
+# idea
+out
 *.ipr
+*.iws
 *.iml
-src/main/resources/META-INF/eleccore_at.cfg
+.idea
+
+# gradle
+build
+.gradle
+
+# other
+eclipse
+run
+
+setup.bat

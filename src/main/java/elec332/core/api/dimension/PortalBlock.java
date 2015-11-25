@@ -1,28 +1,12 @@
 package elec332.core.api.dimension;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-import elec332.core.helper.RegisterHelper;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockPortal;
-import net.minecraft.block.material.Material;
-import net.minecraft.client.renderer.texture.IIconRegister;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.init.Blocks;
-import net.minecraft.util.ChunkCoordinates;
-import net.minecraft.util.Direction;
-import net.minecraft.world.World;
-
-import java.util.Random;
-
 /**
  * Created by Elec332 on 23-1-2015.
  */
 
-public class PortalBlock extends BlockPortal{
+public class PortalBlock{}/* extends BlockPortal{
     public PortalBlock(String name, Block frameBlock, int DimID) {
-        this.setBlockName(name);
+        this.setUnlocalizedName(name);
         //this.setTickRandomly(true);
         this.setBlockUnbreakable();
         this.DimID = DimID;
@@ -74,7 +58,7 @@ public class PortalBlock extends BlockPortal{
     }
 
     @Override
-    public void onEntityCollidedWithBlock(World world, int x, int y, int z, Entity par5Entity){
+    public void onEntityCollidedWithBlock(World world, BlockPos pos, Entity par5Entity){
         if(par5Entity.ridingEntity == null && par5Entity.riddenByEntity == null && par5Entity instanceof EntityPlayerMP) {
             EntityPlayerMP thePlayer = (EntityPlayerMP) par5Entity;
             if (hasToBeSneaking){
@@ -262,5 +246,5 @@ public class PortalBlock extends BlockPortal{
 
         }
     }
-}
+}*/
 

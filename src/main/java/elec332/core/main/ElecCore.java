@@ -1,12 +1,5 @@
 package elec332.core.main;
 
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.Mod;
-import cpw.mods.fml.common.Mod.EventHandler;
-import cpw.mods.fml.common.SidedProxy;
-import cpw.mods.fml.common.event.FMLInitializationEvent;
-import cpw.mods.fml.common.event.FMLPostInitializationEvent;
-import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import elec332.core.compat.ElecCoreCompatHandler;
 import elec332.core.effects.AbilityHandler;
 import elec332.core.handler.FMLEventHandler;
@@ -19,6 +12,13 @@ import elec332.core.modBaseUtils.ModInfo;
 import elec332.core.network.*;
 import elec332.core.proxies.CommonProxy;
 import elec332.core.server.ServerHelper;
+import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.Mod.EventHandler;
+import net.minecraftforge.fml.common.SidedProxy;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import org.apache.logging.log4j.Logger;
 
 import java.io.File;
@@ -29,7 +29,7 @@ import java.util.LinkedHashMap;
  * Created by Elec332.
  */
 @Mod(modid = ModInfo.MODID_CORE, name = ModInfo.MODNAME_CORE, dependencies = "required-after:Forge@[10.13.0.1230,)",
-acceptedMinecraftVersions = ModInfo.ACCEPTEDMCVERSIONS, version = "#ELECCORE_VER#", useMetadata = true, canBeDeactivated = false)
+acceptedMinecraftVersions = ModInfo.ACCEPTEDMCVERSIONS, version = "2", useMetadata = true, canBeDeactivated = false)
 public class ElecCore extends ModBase{
 
 	public static LinkedHashMap<String, ArrayList> Updates = new LinkedHashMap<String, ArrayList>();

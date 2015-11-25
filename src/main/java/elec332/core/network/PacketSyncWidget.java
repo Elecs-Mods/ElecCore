@@ -1,8 +1,8 @@
 package elec332.core.network;
 
-import cpw.mods.fml.common.network.simpleimpl.IMessage;
-import cpw.mods.fml.common.network.simpleimpl.MessageContext;
-import cpw.mods.fml.relauncher.Side;
+import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
+import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+import net.minecraftforge.fml.relauncher.Side;
 import elec332.core.inventory.IWidgetContainer;
 import elec332.core.inventory.widget.Widget;
 import elec332.core.util.NBTHelper;

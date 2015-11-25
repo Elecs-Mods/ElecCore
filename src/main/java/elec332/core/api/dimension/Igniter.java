@@ -3,15 +3,8 @@ package elec332.core.api.dimension;
 /**
  * Created by Elec332 on 29-1-2015.
  */
-import elec332.core.helper.RegisterHelper;
-import net.minecraft.block.material.Material;
-import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.world.World;
 
-public class Igniter extends Item {
+public class Igniter{}/* extends Item {
     public Igniter(CreativeTabs cTab, int DimID, String name) {
         this.setUnlocalizedName(name);
         this.setCreativeTab(cTab);
@@ -34,4 +27,4 @@ public class Igniter extends Item {
         }
         return false;
     }
-}
+}*/

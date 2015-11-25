@@ -2,11 +2,6 @@ package elec332.core.server;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import cpw.mods.fml.common.Loader;
-import cpw.mods.fml.common.LoaderState;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.common.gameevent.PlayerEvent;
-import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import elec332.core.main.ElecCore;
 import elec332.core.network.NetworkHandler;
 import elec332.core.player.PlayerHelper;
@@ -20,10 +15,16 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.management.PlayerManager;
+import net.minecraft.util.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.event.world.WorldEvent;
+import net.minecraftforge.fml.common.Loader;
+import net.minecraftforge.fml.common.LoaderState;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.PlayerEvent;
+import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import org.apache.commons.io.FileUtils;
 
 import java.io.EOFException;
@@ -120,12 +121,16 @@ public class ServerHelper {
         return null;
     }
 
+    public List<EntityPlayerMP> getAllPlayersWatchingBlock(World world, BlockPos pos){
+        return getAllPlayersWatchingBlock(world, pos.getX(), pos.getZ());
+    }
+
     public List<EntityPlayerMP> getAllPlayersWatchingBlock(World world, int x, int z){
         List<EntityPlayerMP> ret = Lists.newArrayList();
         if (world instanceof WorldServer) {
             PlayerManager playerManager = ((WorldServer) world).getPlayerManager();
             for (EntityPlayerMP player : getOnlinePlayers()) {
-                Chunk chunk = world.getChunkFromBlockCoords(x, z);
+                Chunk chunk = world.getChunkFromChunkCoords(x >> 4, z >> 4);
                 if (playerManager.isPlayerWatchingChunk(player, chunk.xPosition, chunk.zPosition))
                     ret.add(player);
             }
@@ -133,8 +138,8 @@ public class ServerHelper {
         return ret;
     }
 
-    public void sendMessageToAllPlayersWatchingBlock(World world, int x, int z, IMessage message, NetworkHandler networkHandler){
-        for (EntityPlayerMP player : getAllPlayersWatchingBlock(world, x, z))
+    public void sendMessageToAllPlayersWatchingBlock(World world, BlockPos pos, IMessage message, NetworkHandler networkHandler){
+        for (EntityPlayerMP player : getAllPlayersWatchingBlock(world, pos))
             networkHandler.getNetworkWrapper().sendTo(message, player);
     }
 

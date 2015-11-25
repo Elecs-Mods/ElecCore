@@ -69,13 +69,13 @@ public class InventoryHelper {
         if (first == null || second == null) {
             return first == second;
         }
-        if (first.stackTagCompound == null || first.stackTagCompound.hasNoTags()) {
-            return second.stackTagCompound == null || second.stackTagCompound.hasNoTags();
+        if (first.getTagCompound() == null || first.getTagCompound().hasNoTags()) {
+            return second.getTagCompound() == null || second.getTagCompound().hasNoTags();
         }
-        if (second.stackTagCompound == null || second.stackTagCompound.hasNoTags()) {
+        if (second.getTagCompound() == null || second.getTagCompound().hasNoTags()) {
             return false;
         }
-        return first.stackTagCompound.equals(second.stackTagCompound);
+        return first.getTagCompound().equals(second.getTagCompound());
     }
 
     public static boolean areEqualNoSizeNoNBT(ItemStack first, ItemStack second) {

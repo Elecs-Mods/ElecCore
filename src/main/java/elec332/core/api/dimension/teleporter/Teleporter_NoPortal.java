@@ -1,13 +1,9 @@
 package elec332.core.api.dimension.teleporter;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.world.Teleporter;
-import net.minecraft.world.WorldServer;
-
 /**
  * Created by Elec332 on 24-1-2015.
  */
-public class Teleporter_NoPortal extends Teleporter {
+public class Teleporter_NoPortal{}/* extends Teleporter {
     public Teleporter_NoPortal(WorldServer world){
         super(world);
     }
@@ -17,4 +13,4 @@ public class Teleporter_NoPortal extends Teleporter {
     {
 
     }
-}
+}*/

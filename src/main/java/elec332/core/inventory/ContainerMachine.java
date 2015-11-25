@@ -1,10 +1,6 @@
 package elec332.core.inventory;
 
-import elec332.core.inventory.slot.SlotOutput;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.ICrafting;
-import net.minecraft.inventory.Slot;
-import net.minecraft.item.ItemStack;
 
 /**
  * Created by Elec332 on 5-5-2015.

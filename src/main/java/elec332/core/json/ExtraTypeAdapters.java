@@ -5,15 +5,14 @@ import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
-import cpw.mods.fml.common.registry.GameRegistry;
 import elec332.core.minetweaker.MineTweakerHelper;
 import elec332.core.util.NBT;
 import net.minecraft.init.Items;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.*;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 
 import java.io.IOException;
 import java.util.List;
@@ -93,7 +92,7 @@ public class ExtraTypeAdapters {
                     }
                     NBTTagCompound tagCompound = (NBTTagCompound)value.copy();
                     out.beginObject();
-                    for (Object obj : tagCompound.func_150296_c()){
+                    for (Object obj : tagCompound.getKeySet()){
                         String s = (String) obj;
                         out.name(s);
                         handleOut(out, tagCompound.getTag(s).getId(), tagCompound.getTag(s));
@@ -176,22 +175,22 @@ public class ExtraTypeAdapters {
                     out.beginObject();
                     //out.name("id").value(i);
                     if (BYTE.equals(i)){
-                        out.name(BYTE.toString()).value(((NBTTagByte)nbtBase).func_150290_f());
+                        out.name(BYTE.toString()).value(((NBTTagByte)nbtBase).getByte());
                     } else if (SHORT.equals(i)){
-                        out.name(SHORT.toString()).value(((NBTTagShort)nbtBase).func_150289_e());
+                        out.name(SHORT.toString()).value(((NBTTagShort)nbtBase).getShort());
                     } else if (INT.equals(i)){
-                        out.name(INT.toString()).value(((NBTTagInt)nbtBase).func_150287_d());
+                        out.name(INT.toString()).value(((NBTTagInt)nbtBase).getInt());
                     } else if (LONG.equals(i)){
-                        out.name(LONG.toString()).value(((NBTTagLong)nbtBase).func_150291_c());
+                        out.name(LONG.toString()).value(((NBTTagLong)nbtBase).getLong());
                     } else if (FLOAT.equals(i)){
-                        out.name(FLOAT.toString()).value(((NBTTagFloat)nbtBase).func_150288_h());
+                        out.name(FLOAT.toString()).value(((NBTTagFloat)nbtBase).getFloat());
                     } else if (DOUBLE.equals(i)){
-                        out.name(DOUBLE.toString()).value(((NBTTagDouble)nbtBase).func_150286_g());
+                        out.name(DOUBLE.toString()).value(((NBTTagDouble)nbtBase).getDouble());
                     } else if (BYTE_ARRAY.equals(i)){
                         out.name(BYTE_ARRAY.toString());
-                        JsonHandler.getGson().toJson(((NBTTagByteArray)nbtBase).func_150292_c(), byte[].class, out);
+                        JsonHandler.getGson().toJson(((NBTTagByteArray)nbtBase).getByteArray(), byte[].class, out);
                     } else if (STRING.equals(i)){
-                        out.name(STRING.toString()).value(((NBTTagString)nbtBase).func_150285_a_());
+                        out.name(STRING.toString()).value(((NBTTagString)nbtBase).getString());
                     } else if (LIST.equals(i)){
                         NBTTagList tagList = (NBTTagList) nbtBase;
                         out.name(LIST.toString());
@@ -212,7 +211,7 @@ public class ExtraTypeAdapters {
                         write(out, (NBTTagCompound) nbtBase);
                     } else if (INT_ARRAY.equals(i)){
                         out.name(INT_ARRAY.toString());
-                        JsonHandler.getGson().toJson(((NBTTagIntArray)nbtBase).func_150302_c(), int[].class, out);
+                        JsonHandler.getGson().toJson(((NBTTagIntArray)nbtBase).getIntArray(), int[].class, out);
                     }
                     out.endObject();
                 }

@@ -1,7 +1,7 @@
 package elec332.core.util;
 
-import cpw.mods.fml.common.FMLCommonHandler;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 
 /**
  * Created by Elec332 on 12-5-2015.

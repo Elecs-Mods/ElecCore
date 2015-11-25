@@ -1,29 +1,26 @@
 package elec332.core.baseclasses.tileentity;
 
-import cpw.mods.fml.common.registry.GameRegistry;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import elec332.core.api.wrench.IRightClickCancel;
 import elec332.core.api.wrench.IWrenchable;
 import elec332.core.helper.RegisterHelper;
-import elec332.core.util.BlockSide;
-import elec332.core.util.DirectionHelper;
 import elec332.core.util.IComparatorOverride;
 import elec332.core.util.IRedstoneHandler;
+import elec332.core.world.WorldHelper;
 import net.minecraft.block.Block;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
-import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.IIcon;
+import net.minecraft.util.BlockPos;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Elec332 on 30-4-2015.
@@ -35,13 +32,13 @@ public class BlockTileBase extends Block implements IWrenchable, ITileEntityProv
         setResistance(4.5F);
         setHardness(2.0F);
         setStepSound(soundTypeStone);
-        this.setBlockName(modID + "." + blockName);
+        this.setUnlocalizedName(modID + "." + blockName);
         this.tileClass = tileClass;
         this.blockName = blockName;
         this.modID = modID;
     }
 
-    public IIcon[][] icons = new IIcon[2][6];
+   // public IIcon[][] icons = new IIcon[2][6];
     private Class<? extends TileEntity> tileClass;
     private String blockName;
     private String modID;
@@ -57,13 +54,13 @@ public class BlockTileBase extends Block implements IWrenchable, ITileEntityProv
     }
 
     @Override
-    public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int side, float hitX, float hitY, float hitZ) {
+    public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumFacing side, float hitX, float hitY, float hitZ) {
         if (player.getHeldItem() != null && player.getHeldItem().getItem() instanceof IRightClickCancel)
             return false;
-        TileEntity tile = world.getTileEntity(x, y, z);
+        TileEntity tile = WorldHelper.getTileAt(world, pos);
         if (tile instanceof TileBase)
             return ((TileBase) tile).onBlockActivated(player, side, hitX, hitY, hitZ);
-        return super.onBlockActivated(world, x, y, z, player, side, hitX, hitY, hitZ);
+        return super.onBlockActivated(world, pos, state, player, side, hitX, hitY, hitZ);
     }
 
     @Override
@@ -76,93 +73,93 @@ public class BlockTileBase extends Block implements IWrenchable, ITileEntityProv
     }
 
     @Override
-    public ItemStack ItemDropped(World world, int x, int y, int z) {
+    public ItemStack ItemDropped(World world, BlockPos pos) {
         return new ItemStack(this);
     }
 
     @Override
-    public boolean canBeReplacedByLeaves(IBlockAccess world, int x, int y, int z) {
+    public boolean canBeReplacedByLeaves(IBlockAccess world, BlockPos pos) {
         return false;
     }
 
     @Override
-    public void onWrenched(World world, int i, int i1, int i2, ForgeDirection forgeDirection) {
-        TileEntity tile = world.getTileEntity(i, i1, i2);
+    public void onWrenched(World world, BlockPos pos, EnumFacing forgeDirection) {
+        TileEntity tile = WorldHelper.getTileAt(world, pos);
         if (tile instanceof TileBase)
             ((TileBase) tile).onWrenched(forgeDirection);
     }
 
     @Override
-    public void onBlockPlacedBy(World world, int x, int y, int z, EntityLivingBase entityLiving, ItemStack stack) {
-        TileEntity tile = world.getTileEntity(x, y, z);
+    public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state, EntityLivingBase entityLiving, ItemStack stack) {
+        TileEntity tile = WorldHelper.getTileAt(world, pos);
         if (tile instanceof TileBase)
             ((TileBase) tile).onBlockPlacedBy(entityLiving, stack);
-        super.onBlockPlacedBy(world, x, y, z, entityLiving, stack);
+        super.onBlockPlacedBy(world, pos, state, entityLiving, stack);
     }
 
     @Override
-    public void onNeighborBlockChange(World world, int x, int y, int z, Block block) {
-        TileEntity tile = world.getTileEntity(x, y, z);
+    public void onNeighborBlockChange(World world, BlockPos pos, IBlockState state, Block neighbor) {
+        TileEntity tile = WorldHelper.getTileAt(world, pos);
         if (tile instanceof TileBase)
-            ((TileBase) tile).onNeighborBlockChange(block);
-        super.onNeighborBlockChange(world, x, y, z, block);
+            ((TileBase) tile).onNeighborBlockChange(neighbor);
+        super.onNeighborBlockChange(world, pos, state, neighbor);
     }
 
     @Override
-    public void onBlockAdded(World world, int x, int y, int z) {
-        TileEntity tile = world.getTileEntity(x, y, z);
+    public void onBlockAdded(World world, BlockPos pos, IBlockState state) {
+        TileEntity tile = WorldHelper.getTileAt(world, pos);
         if (tile instanceof TileBase)
             ((TileBase) tile).onBlockAdded();
-        super.onBlockAdded(world, x, y, z);
+        super.onBlockAdded(world, pos, state);
     }
 
 
     @Override
-    public void breakBlock(World world, int x, int y, int z, Block block, int meta) {
-        TileEntity tile = world.getTileEntity(x, y, z);
+    public void breakBlock(World world, BlockPos pos, IBlockState state) {
+        TileEntity tile = WorldHelper.getTileAt(world, pos);
         if (tile instanceof TileBase)
             ((TileBase) tile).onBlockRemoved();
-        super.breakBlock(world, x, y, z, block, meta);
+        super.breakBlock(world, pos, state);
     }
 
     @Override
-    public int getLightValue(IBlockAccess world, int x, int y, int z) {
-        TileEntity tile = world.getTileEntity(x, y, z);
+    public int getLightValue(IBlockAccess world, BlockPos pos) {
+        TileEntity tile = WorldHelper.getTileAt(world, pos);
         if (tile instanceof TileBase)
             return ((TileBase) tile).getLightValue();
-        return super.getLightValue(world, x, y, z);
+        return super.getLightValue(world, pos);
     }
 
     @Override
-    public int getLightOpacity(IBlockAccess world, int x, int y, int z) {
-        TileEntity tile = world.getTileEntity(x, y, z);
+    public int getLightOpacity(IBlockAccess world, BlockPos pos) {
+        TileEntity tile = WorldHelper.getTileAt(world, pos);
         if (tile instanceof TileBase)
             return ((TileBase) tile).getLightOpacity();
-        return super.getLightOpacity(world, x, y, z);
+        return super.getLightOpacity(world, pos);
     }
 
     @Override
-    public ArrayList<ItemStack> getDrops(World world, int x, int y, int z, int metadata, int fortune) {
-        TileEntity tile = world.getTileEntity(x, y, z);
+    public List<ItemStack> getDrops(IBlockAccess world, BlockPos pos, IBlockState state, int fortune) {
+        TileEntity tile = WorldHelper.getTileAt(world, pos);
         if (tile instanceof TileBase)
             return ((TileBase) tile).getDrops(fortune);
-        return super.getDrops(world, x, y, z, metadata, fortune);
+        return super.getDrops(world, pos, state, fortune);
     }
 
     @Override
-    public int isProvidingWeakPower(IBlockAccess world, int x, int y, int z, int side) {
-        TileEntity tile = world.getTileEntity(x, y, z);
+    public int isProvidingWeakPower(IBlockAccess world, BlockPos pos, IBlockState state, EnumFacing side) {
+        TileEntity tile = WorldHelper.getTileAt(world, pos);
         if (tile instanceof IRedstoneHandler)
             return ((IRedstoneHandler) tile).isProvidingWeakPower(side);
-        return super.isProvidingWeakPower(world, x, y, z, side);
+        return super.isProvidingWeakPower(world, pos, state, side);
     }
 
     @Override
-    public boolean canConnectRedstone(IBlockAccess world, int x, int y, int z, int direction) {
-        TileEntity tile = world.getTileEntity(x, y, z);
+    public boolean canConnectRedstone(IBlockAccess world, BlockPos pos, EnumFacing direction) {
+        TileEntity tile = WorldHelper.getTileAt(world, pos);
         if (tile instanceof IRedstoneHandler)
             return ((IRedstoneHandler) tile).canConnectRedstone(direction);
-        return super.canConnectRedstone(world, x, y, z, direction);
+        return super.canConnectRedstone(world, pos, direction);
     }
 
     @Override
@@ -171,13 +168,13 @@ public class BlockTileBase extends Block implements IWrenchable, ITileEntityProv
     }
 
     @Override
-    public int getComparatorInputOverride(World world, int x, int y, int z, int side) {
-        TileEntity tile = world.getTileEntity(x, y, z);
+    public int getComparatorInputOverride(World world, BlockPos pos) {
+        TileEntity tile = WorldHelper.getTileAt(world, pos);
         if (tile instanceof IComparatorOverride)
-            return ((IComparatorOverride) tile).getComparatorInputOverride(side);
-        return super.getComparatorInputOverride(world, x, y, z, side);
+            return ((IComparatorOverride) tile).getComparatorInputOverride();
+        return super.getComparatorInputOverride(world, pos);
     }
-
+/*
     @Override
     @SideOnly(Side.CLIENT)
     public IIcon getIcon(int side, int meta) {
@@ -236,5 +233,5 @@ public class BlockTileBase extends Block implements IWrenchable, ITileEntityProv
         if (this.textureName != null)
             return textureName;
         return modID + ":" + blockName;
-    }
+    }*/
 }

@@ -1,6 +1,6 @@
 package elec332.core.effects.defaultabilities;
 
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import elec332.core.effects.api.ability.Ability;
 import elec332.core.effects.api.util.AbilityHelper;
 import elec332.core.util.EventHelper;

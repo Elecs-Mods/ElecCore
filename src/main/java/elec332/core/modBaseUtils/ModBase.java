@@ -1,14 +1,14 @@
 package elec332.core.modBaseUtils;
 
-import cpw.mods.fml.common.event.FMLInitializationEvent;
-import cpw.mods.fml.common.event.FMLPostInitializationEvent;
-import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import elec332.core.config.ConfigCore;
 import elec332.core.helper.LogHelper;
 import elec332.core.helper.ModInfoHelper;
 import elec332.core.main.ElecCore;
 import net.minecraft.launchwrapper.Launch;
 import net.minecraftforge.common.config.Configuration;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
 import java.io.BufferedReader;
 import java.io.File;

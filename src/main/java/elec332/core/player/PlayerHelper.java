@@ -21,16 +21,16 @@ public class PlayerHelper {
     }
 
     public static Vec3 getCorrectedHeadVec(EntityPlayer player) {
-        Vec3 v = Vec3.createVectorHelper(player.posX, player.posY, player.posZ);
+        double yCoord = player.posY;
         if(player.worldObj.isRemote) {
-            v.yCoord += (player.getEyeHeight() - player.getDefaultEyeHeight());
+            yCoord += (player.getEyeHeight() - player.getDefaultEyeHeight());
         } else {
-            v.yCoord += player.getEyeHeight();
+            yCoord += player.getEyeHeight();
             if(player instanceof EntityPlayerMP && player.isSneaking()) {
-                v.yCoord -= 0.08D;
+                yCoord -= 0.08D;
             }
         }
-        return v;
+        return new Vec3(player.posX, yCoord, player.posZ);
     }
 
     public static UUID getPlayerUUID(EntityPlayer player){

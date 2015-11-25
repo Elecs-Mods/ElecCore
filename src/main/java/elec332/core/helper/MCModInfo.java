@@ -1,8 +1,8 @@
 package elec332.core.helper;
 
 import com.google.common.collect.Lists;
-import cpw.mods.fml.common.ModMetadata;
-import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.ModMetadata;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
 /**
  * Created by Elec332.

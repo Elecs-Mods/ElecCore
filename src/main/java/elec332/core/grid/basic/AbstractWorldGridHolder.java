@@ -5,16 +5,17 @@ import com.google.common.collect.Maps;
 import elec332.core.main.ElecCore;
 import elec332.core.registry.IWorldRegistry;
 import elec332.core.util.BlockLoc;
+import elec332.core.world.WorldHelper;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
-import net.minecraftforge.common.util.ForgeDirection;
 
 import java.util.*;
 
 /**
  * Created by Elec332 on 3-8-2015.
  */
-public abstract class AbstractWorldGridHolder<A extends AbstractWorldGridHolder<A, G, T, W>, G extends AbstractCableGrid<G, T, W, A>, T extends AbstractGridTile<G, T, W, A>, W extends AbstractWiringTypeHelper> implements IWorldRegistry{
+public abstract class AbstractWorldGridHolder<A extends AbstractWorldGridHolder<A, G, T, W>, G extends AbstractCableGrid<G, T, W, A>, T extends AbstractGridTile<G, T, W, A>, W extends IWiringTypeHelper> implements IWorldRegistry{
 
     public AbstractWorldGridHolder(World world, W wiringHelper){
         this.world = world;
@@ -56,9 +57,9 @@ public abstract class AbstractWorldGridHolder<A extends AbstractWorldGridHolder<
         if(!world.isRemote) {
             ElecCore.systemPrintDebug("Processing tile at " + powerTile.getLocation().toString());
             TileEntity theTile = powerTile.getTile();
-            for (ForgeDirection direction : ForgeDirection.VALID_DIRECTIONS) {
+            for (EnumFacing direction : EnumFacing.VALUES) {
                 ElecCore.systemPrintDebug("Processing tile at " + powerTile.getLocation().toString() + " for side " + direction.toString());
-                TileEntity possTile = world.getTileEntity(theTile.xCoord + direction.offsetX, theTile.yCoord + direction.offsetY, theTile.zCoord + direction.offsetZ);
+                TileEntity possTile = WorldHelper.getTileAt(world, theTile.getPos().offset(direction));
                 if (possTile != null && wiringHelper.isTileValid(possTile)) {
                     T powerTile1 = getPowerTile(genCoords(possTile));
                     if (powerTile1 == null || !powerTile1.hasInit()) {
@@ -76,27 +77,27 @@ public abstract class AbstractWorldGridHolder<A extends AbstractWorldGridHolder<
         }
     }
 
-    private boolean canConnect(T powerTile1, ForgeDirection direction, T powerTile2){
+    private boolean canConnect(T powerTile1, EnumFacing direction, T powerTile2){
         TileEntity mainTile = powerTile1.getTile();
         boolean flag1 = false;
         boolean flag2 = false;
-        if (powerTile1.getConnectType() == powerTile2.getConnectType() && (powerTile1.getConnectType() == AbstractWiringTypeHelper.ConnectType.SEND || powerTile1.getConnectType() == AbstractWiringTypeHelper.ConnectType.RECEIVE))
+        if (powerTile1.getConnectType() == powerTile2.getConnectType() && (powerTile1.getConnectType() == IWiringTypeHelper.ConnectType.SEND || powerTile1.getConnectType() == IWiringTypeHelper.ConnectType.RECEIVE))
             return false; //We don't want to receivers or 2 sources connecting, do we?
-        if (powerTile1.getConnectType() == AbstractWiringTypeHelper.ConnectType.CONNECTOR && powerTile2.getConnectType() == AbstractWiringTypeHelper.ConnectType.CONNECTOR){
+        if (powerTile1.getConnectType() == IWiringTypeHelper.ConnectType.CONNECTOR && powerTile2.getConnectType() == IWiringTypeHelper.ConnectType.CONNECTOR){
             return wiringHelper.canTransmitterConnectTo(mainTile, powerTile2.getTile()) && wiringHelper.canTransmitterConnectTo(mainTile, direction) && canConnectFromSide(direction.getOpposite(), powerTile2);
-        } else if (powerTile1.getConnectType() == AbstractWiringTypeHelper.ConnectType.CONNECTOR){
+        } else if (powerTile1.getConnectType() == IWiringTypeHelper.ConnectType.CONNECTOR){
             return canConnectFromSide(direction.getOpposite(), powerTile2);
         } else {
-            if (powerTile1.getConnectType() == AbstractWiringTypeHelper.ConnectType.SEND_RECEIVE){
+            if (powerTile1.getConnectType() == IWiringTypeHelper.ConnectType.SEND_RECEIVE){
                 if (wiringHelper.canSourceProvideTo(mainTile, direction))
                     flag1 = canConnectFromSide(direction.getOpposite(), powerTile2);
                 if (wiringHelper.canReceiverReceiveFrom(mainTile, direction))
                     flag2 = canConnectFromSide(direction.getOpposite(), powerTile2);
                 return flag1 || flag2;
-            } else if (powerTile1.getConnectType() == AbstractWiringTypeHelper.ConnectType.RECEIVE){
+            } else if (powerTile1.getConnectType() == IWiringTypeHelper.ConnectType.RECEIVE){
                 if (wiringHelper.canReceiverReceiveFrom(mainTile, direction))
                     return canConnectFromSide(direction.getOpposite(), powerTile2);
-            } else if (powerTile1.getConnectType() == AbstractWiringTypeHelper.ConnectType.SEND){
+            } else if (powerTile1.getConnectType() == IWiringTypeHelper.ConnectType.SEND){
                 if (wiringHelper.canSourceProvideTo(mainTile, direction))
                     return canConnectFromSide(direction.getOpposite(), powerTile2);
             }
@@ -104,7 +105,7 @@ public abstract class AbstractWorldGridHolder<A extends AbstractWorldGridHolder<
         }
     }
 
-    private boolean canConnectFromSide(ForgeDirection direction, T powerTile2){
+    private boolean canConnectFromSide(EnumFacing direction, T powerTile2){
         TileEntity secondTile = powerTile2.getTile();
         boolean flag1 = false;
         boolean flag2 = false;
@@ -169,7 +170,7 @@ public abstract class AbstractWorldGridHolder<A extends AbstractWorldGridHolder<
     }
 
     private void onServerTickInternal(){
-        ElecCore.systemPrintDebug("Tick! " + world.provider.dimensionId);
+        ElecCore.systemPrintDebug("Tick! " + WorldHelper.getDimID(world));
         if (!pending.isEmpty() && pending.size() == oldInt) {
             for (T powerTile = pending.poll(); powerTile != null; powerTile = pending.poll()){
                 addTile(powerTile);
@@ -197,7 +198,7 @@ public abstract class AbstractWorldGridHolder<A extends AbstractWorldGridHolder<
     }
 
     private TileEntity getTile(BlockLoc vec){
-        return world.getTileEntity(vec.xCoord, vec.yCoord, vec.zCoord);
+        return WorldHelper.getTileAt(world, vec);
     }
 
     @Override

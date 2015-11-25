@@ -4,7 +4,6 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import elec332.core.java.ReflectionHelper;
 import net.minecraftforge.common.config.Configuration;
-import org.lwjgl.Sys;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;

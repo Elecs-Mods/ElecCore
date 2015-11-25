@@ -4,8 +4,8 @@ import com.google.common.base.Strings;
 import elec332.core.main.ElecCore;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
-import net.minecraftforge.common.util.ForgeDirection;
 
 /**
  * Created by Elec332 on 28-7-2015.
@@ -20,7 +20,7 @@ public final class MultiBlockData {
     private final MultiBlockRegistry registry;
     private final IMultiBlockTile tile;
     private IMultiBlock multiBlock = null;
-    private ForgeDirection mbFacing = null;
+    private EnumFacing mbFacing = null;
     private boolean valid = false;
     private String structureID = "";
 
@@ -29,7 +29,7 @@ public final class MultiBlockData {
     }
 
     private World getTileEntityWorld(){
-        return getTileEntity().getWorldObj();
+        return getTileEntity().getWorld();
     }
 
     public void writeToNBT(NBTTagCompound tagCompound) {
@@ -42,12 +42,12 @@ public final class MultiBlockData {
     public void readFromNBT(NBTTagCompound tagCompound) {
         String s = tagCompound.getString("facing_MBS");
         if (!Strings.isNullOrEmpty(s))
-            this.mbFacing = ForgeDirection.valueOf(s);
+            this.mbFacing = EnumFacing.valueOf(s);
         this.valid = tagCompound.getBoolean("valid_MBS");
         this.structureID = tagCompound.getString("structure_MBS");
     }
 
-    public void setMultiBlock(IMultiBlock multiBlock, ForgeDirection facing, String structureID) {
+    public void setMultiBlock(IMultiBlock multiBlock, EnumFacing facing, String structureID) {
         this.multiBlock = multiBlock;
         this.mbFacing = facing;
         this.valid = true;
@@ -71,7 +71,7 @@ public final class MultiBlockData {
         return structureID;
     }
 
-    public ForgeDirection getFacing() {
+    public EnumFacing getFacing() {
         return mbFacing;
     }
 

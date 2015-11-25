@@ -3,8 +3,8 @@ package elec332.core.multiblock;
 import com.google.common.collect.ImmutableList;
 import elec332.core.util.BlockLoc;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
-import net.minecraftforge.common.util.ForgeDirection;
 
 import java.util.List;
 import java.util.UUID;
@@ -18,7 +18,7 @@ public abstract class IMultiBlock {
         this.identifier = UUID.randomUUID();
     }
 
-    public final void initMain(BlockLoc location, ForgeDirection facing, List<BlockLoc> allMultiBlockLocations, MultiBlockRegistry.MultiBlockWorldRegistry registry, String structureID){
+    public final void initMain(BlockLoc location, EnumFacing facing, List<BlockLoc> allMultiBlockLocations, MultiBlockRegistry.MultiBlockWorldRegistry registry, String structureID){
         if (this.loc != null)
             throw new RuntimeException();
         this.loc = location;
@@ -32,7 +32,7 @@ public abstract class IMultiBlock {
 
     private final UUID identifier;
     private BlockLoc loc;
-    private ForgeDirection facing;
+    private EnumFacing facing;
     private List<BlockLoc> allMultiBlockLocations;
     private MultiBlockRegistry.MultiBlockWorldRegistry multiBlockRegistry;
     private State multiBlockState;
@@ -46,7 +46,7 @@ public abstract class IMultiBlock {
         return this.loc;
     }
 
-    public final ForgeDirection getMultiBlockFacing(){
+    public final EnumFacing getMultiBlockFacing(){
         return this.facing;
     }
 

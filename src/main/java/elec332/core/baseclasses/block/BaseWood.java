@@ -1,14 +1,9 @@
 package elec332.core.baseclasses.block;
 
-import cpw.mods.fml.common.event.FMLPreInitializationEvent;
-import net.minecraft.block.material.Material;
-import net.minecraft.world.IBlockAccess;
-import net.minecraftforge.common.util.ForgeDirection;
-
 /**
  * Created by Elec332 on 19-12-2014.
  */
-public class BaseWood extends BaseBlock {
+public class BaseWood{}/* extends BaseBlock {
 
     public BaseWood(String blockName, String modID){
         super(Material.wood, blockName, modID);
@@ -47,4 +42,4 @@ public class BaseWood extends BaseBlock {
     public boolean isWood(IBlockAccess world, int x, int y, int z) {
         return true;
     }
-}
+}*/

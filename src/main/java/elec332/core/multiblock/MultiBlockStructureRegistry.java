@@ -2,16 +2,12 @@ package elec332.core.multiblock;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import cpw.mods.fml.common.network.simpleimpl.IMessage;
-import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
-import cpw.mods.fml.common.network.simpleimpl.MessageContext;
-import cpw.mods.fml.relauncher.Side;
 import elec332.core.network.AbstractMessage;
 import elec332.core.server.ServerHelper;
 import elec332.core.util.BlockLoc;
-import elec332.core.world.location.BlockData;
 import elec332.core.util.NBTHelper;
 import elec332.core.world.WorldHelper;
+import elec332.core.world.location.BlockStateWrapper;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
@@ -19,9 +15,14 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.BlockPos;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
+import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
+import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+import net.minecraftforge.fml.relauncher.Side;
 
 import java.util.List;
 import java.util.Map;
@@ -55,10 +56,10 @@ public final class MultiBlockStructureRegistry implements IMessageHandler<MultiB
         throw new IllegalArgumentException("ERROR: Structure: "+structure.getClass().getName()+" is not registered!");
     }
 
-    public boolean attemptCreate(EntityPlayer player, World world, int x, int y, int z, ForgeDirection side){
+    public boolean attemptCreate(EntityPlayer player, World world, BlockPos pos, EnumFacing side){
         if (world.isRemote)
             return false;
-        BlockData blockData = atLocation(world, x, y, z);
+        BlockStateWrapper blockData = atLocation(world, pos);
         if (blockData == null)
             return false;
         for (IMultiBlockStructure multiBlock : multiBlockStructures.values()){
@@ -66,7 +67,7 @@ public final class MultiBlockStructureRegistry implements IMessageHandler<MultiB
                 if (multiBlock instanceof AbstractAdvancedMultiBlockStructure && !((AbstractAdvancedMultiBlockStructure) multiBlock).canCreate((EntityPlayerMP) player)){
                     continue;
                 }
-                if (tryCreateStructure(multiBlock, world, x, y, z, side, false)) {
+                if (tryCreateStructure(multiBlock, world, pos, side, false)) {
                     return true;
                 }
             }
@@ -74,30 +75,33 @@ public final class MultiBlockStructureRegistry implements IMessageHandler<MultiB
         return false;
     }
 
-    protected boolean attemptReCreate(String s, TileEntity tile, ForgeDirection facing){
-        return tryCreateStructure(multiBlockStructures.get(s), tile.getWorldObj(), tile.xCoord, tile.yCoord, tile.zCoord, facing, true);
+    protected boolean attemptReCreate(String s, TileEntity tile, EnumFacing facing){
+        return tryCreateStructure(multiBlockStructures.get(s), tile.getWorld(), tile.getPos(), facing, true);
     }
 
-    private boolean tryCreateStructure(IMultiBlockStructure multiBlock, World world, int x, int y, int z, ForgeDirection side, boolean recreate){
-        if (side == ForgeDirection.UNKNOWN || side == ForgeDirection.UP || side == ForgeDirection.DOWN)
+    private boolean tryCreateStructure(IMultiBlockStructure multiBlock, World world, BlockPos pos, EnumFacing side, boolean recreate){
+        if (side == null || side == EnumFacing.UP || side == EnumFacing.DOWN)
             return false;
-        BlockData leftBottomCorner = null;
+        BlockStateWrapper leftBottomCorner = null;
+        final int x = pos.getX();
+        final int y = pos.getY();
+        final int z = pos.getZ();
         int newX = x;
         int newY = y;
         int newZ = z;
-        BlockData temp1;
-        //for (BlockData data : multiBlock.getStructure().getBlockTypes())
+        BlockStateWrapper temp1;
+        //for (BlockStateWrapper data : multiBlock.getStructure().getBlockTypes())
         //    System.out.println(data.toString());
         xLoop:
         for (int i = 0; i < multiBlock.getStructure().getHn()+1; i++) {
-            if (side == ForgeDirection.NORTH || side == ForgeDirection.EAST) {
+            if (side == EnumFacing.NORTH || side == EnumFacing.EAST) {
                 temp1 = atLocation(world, newX + 1, y, z);
                 //System.out.println("ScanningX_NE: "+newX+","+newY+","+newZ+" contains: "+temp1);
                 if (temp1 != null && multiBlock.getStructure().getBlockTypes().contains(temp1)) {
                     newX++;
                     continue;
                 }
-            } else if (side == ForgeDirection.SOUTH || side == ForgeDirection.WEST){
+            } else if (side == EnumFacing.SOUTH || side == EnumFacing.WEST){
                 temp1 = atLocation(world, newX - 1, y, z);
                 //System.out.println("ScanningX_SW: "+newX+","+newY+","+newZ+" contains: "+temp1);
                 if (temp1 != null && multiBlock.getStructure().getBlockTypes().contains(temp1)) {
@@ -113,14 +117,14 @@ public final class MultiBlockStructureRegistry implements IMessageHandler<MultiB
                     continue;
                 newY++;
                 for (int k = 0; k < multiBlock.getStructure().getHn() + 1; k++) {
-                    if (side == ForgeDirection.NORTH || side == ForgeDirection.WEST) {
+                    if (side == EnumFacing.NORTH || side == EnumFacing.WEST) {
                         temp1 = atLocation(world, newX, newY, newZ - 1);
                         //System.out.println("ScanningZ_NW: "+newX+","+newY+","+newZ+" contains: "+temp1);
                         if (temp1 != null && multiBlock.getStructure().getBlockTypes().contains(temp1)) {
                             newZ--;
                             continue;
                         }
-                    } else if (side == ForgeDirection.EAST || side == ForgeDirection.SOUTH){
+                    } else if (side == EnumFacing.EAST || side == EnumFacing.SOUTH){
                         temp1 = atLocation(world, newX, newY, newZ + 1);
                         //System.out.println("ScanningZ_ES: "+newX+","+newY+","+newZ+" contains: "+temp1);
                         if (temp1 != null && multiBlock.getStructure().getBlockTypes().contains(temp1)) {
@@ -154,7 +158,7 @@ public final class MultiBlockStructureRegistry implements IMessageHandler<MultiB
         return false;
     }
 
-    private List<BlockLoc> getAllMultiBlockLocations(final BlockStructure multiBlock, final int x, final int y, final int z, final ForgeDirection side){
+    private List<BlockLoc> getAllMultiBlockLocations(final BlockStructure multiBlock, final int x, final int y, final int z, final EnumFacing side){
         final List<BlockLoc> ret = Lists.newArrayList();
         multiBlock.startLoop(new BlockStructure.IPositionCall() {
             @Override
@@ -165,25 +169,29 @@ public final class MultiBlockStructureRegistry implements IMessageHandler<MultiB
         return ret;
     }
 
-    private void replaceAll(final BlockStructure multiBlock, final World world, final int x, final int y, final int z, final ForgeDirection side, final BlockStructure toReplace){
+    private void replaceAll(BlockStructure multiBlock, World world, int x, int y, int z, EnumFacing side, BlockStructure toReplace){
+        replaceAll(multiBlock, world, new BlockPos(x, y, z), side, toReplace);
+    }
+
+    private void replaceAll(final BlockStructure multiBlock, final World world, final BlockPos pos, final EnumFacing side, final BlockStructure toReplace){
         multiBlock.startLoop(new BlockStructure.IPositionCall() {
             @Override
             public void forPos(int length, int width, int height) {
-                BlockLoc loc = getTranslated(x, y, z, side, length, width, height);
-                BlockData data = toReplace.getStructure()[length][width][height];
-                world.setBlockToAir(loc.xCoord, loc.yCoord, loc.zCoord);
-                world.setBlock(loc.xCoord, loc.yCoord, loc.zCoord, data.block, data.meta, 3);
+                BlockLoc loc = getTranslated(pos, side, length, width, height);
+                BlockStateWrapper data = toReplace.getStructure()[length][width][height];
+                world.setBlockToAir(loc);
+                world.setBlockState(loc, data.getBlockState(), 3);
             }
         });
     }
 
-    private boolean areBlocksAtRightPlace(final BlockStructure multiBlock, final World world, final int x, final int y, final int z, final ForgeDirection side){
+    private boolean areBlocksAtRightPlace(final BlockStructure multiBlock, final World world, final int x, final int y, final int z, final EnumFacing side){
         try {
             multiBlock.startLoop(new BlockStructure.IPositionCall() {
                 @Override
                 public void forPos(int length, int width, int height) {
                     BlockLoc translated = getTranslated(x, y, z, side, length, width, height);
-                    if (!multiBlock.getStructure()[length][width][height].equals(atLocation(translated, world)) || hasMultiBlock(translated, world)){
+                    if (!multiBlock.getStructure()[length][width][height].equals(atLocation(world, translated)) || hasMultiBlock(translated, world)){
                         throw new RuntimeException("INVALID");
                     }
                 }
@@ -207,20 +215,24 @@ public final class MultiBlockStructureRegistry implements IMessageHandler<MultiB
         return false;
     }
 
-    protected static BlockLoc getTranslated(int x, int y, int z, ForgeDirection side, int length, int width, int height){
+    protected static BlockLoc getTranslated(BlockPos pos, EnumFacing side, int length, int width, int height){
+        return getTranslated(pos.getX(), pos.getY(), pos.getZ(), side, length, width, height);
+    }
+
+    protected static BlockLoc getTranslated(int x, int y, int z, EnumFacing side, int length, int width, int height){
         int newX;
         int newY;
         int newZ;
-        if (side == ForgeDirection.NORTH){
+        if (side == EnumFacing.NORTH){
             newX = x - length;
             newZ = z + width;
-        } else if (side == ForgeDirection.EAST){
+        } else if (side == EnumFacing.EAST){
             newX = x - width;
             newZ = z - length;
-        } else if (side == ForgeDirection.SOUTH){
+        } else if (side == EnumFacing.SOUTH){
             newX = x + length;
             newZ = z - width;
-        } else if (side == ForgeDirection.WEST){
+        } else if (side == EnumFacing.WEST){
             newX = x + width;
             newZ = z + length;
         } else throw new IllegalArgumentException("Cannot process side: "+side);
@@ -229,16 +241,16 @@ public final class MultiBlockStructureRegistry implements IMessageHandler<MultiB
         return new BlockLoc(newX, newY, newZ);
     }
 
-    private BlockData atLocation(BlockLoc loc, IBlockAccess world){
-        return atLocation(world, loc.xCoord, loc.yCoord, loc.zCoord);
+    private BlockStateWrapper atLocation(IBlockAccess world, int x, int y, int z){
+        return atLocation(world, new BlockPos(x, y, z));
     }
 
-    private BlockData atLocation(IBlockAccess world, int x, int y, int z){
-        Block block = world.getBlock(x, y, z);
-        int meta = world.getBlockMetadata(x, y, z);
+    private BlockStateWrapper atLocation(IBlockAccess world, BlockPos pos){
+        Block block = WorldHelper.getBlockAt(world, pos);
+        int meta = WorldHelper.getBlockMeta(world, pos);
         if (block == null || block == Blocks.air)
-            return new BlockData(null);
-        return new BlockData(block, meta);
+            return new BlockStateWrapper((Block)null);
+        return new BlockStateWrapper(block, meta);
     }
 
     public static final class SyncMultiBlockPacket extends AbstractMessage {
@@ -247,7 +259,7 @@ public final class MultiBlockStructureRegistry implements IMessageHandler<MultiB
             super(null);
         }
 
-        private SyncMultiBlockPacket(IMultiBlockStructure multiBlock, int x, int y, int z, ForgeDirection side, MultiBlockStructureRegistry structureRegistry){
+        private SyncMultiBlockPacket(IMultiBlockStructure multiBlock, int x, int y, int z, EnumFacing side, MultiBlockStructureRegistry structureRegistry){
             super(new NBTHelper().addToTag(x, "x").addToTag(y, "y").addToTag(z, "z").addToTag(side.toString(), "side").addToTag(structureRegistry.getIdentifier(multiBlock), "mbs").toNBT());
         }
 
@@ -256,7 +268,7 @@ public final class MultiBlockStructureRegistry implements IMessageHandler<MultiB
     @Override
     public IMessage onMessage(SyncMultiBlockPacket message, MessageContext ctx) {
         NBTTagCompound tag = message.networkPackageObject;
-        tryCreateStructure(multiBlockStructures.get(tag.getString("mbs")), Minecraft.getMinecraft().theWorld, tag.getInteger("x"), tag.getInteger("y"), tag.getInteger("z"), ForgeDirection.valueOf(tag.getString("side")), false);
+        tryCreateStructure(multiBlockStructures.get(tag.getString("mbs")), Minecraft.getMinecraft().theWorld, new BlockPos(tag.getInteger("x"), tag.getInteger("y"), tag.getInteger("z")), EnumFacing.valueOf(tag.getString("side")), false);
         return null;
     }
 

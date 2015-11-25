@@ -1,17 +1,9 @@
 package elec332.core.api.dimension.teleporter;
 
-import net.minecraft.block.Block;
-import net.minecraft.entity.Entity;
-import net.minecraft.init.Blocks;
-import net.minecraft.util.MathHelper;
-import net.minecraft.world.WorldServer;
-
-import java.util.Random;
-
 /**
  * Created by Elec332 on 23-1-2015.
  */
-public class Teleporter extends net.minecraft.world.Teleporter {
+public class Teleporter{}/* extends net.minecraft.world.Teleporter {
     private final WorldServer worldServer;
     private final Random random;
 
@@ -262,4 +254,4 @@ public class Teleporter extends net.minecraft.world.Teleporter {
 
     public void removeStalePortalLocations(long l) {
     }
-}
+}*/

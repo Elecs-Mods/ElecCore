@@ -1,16 +1,9 @@
 package elec332.core.client.render;
 
-import elec332.core.util.BlockSide;
-import elec332.core.util.DirectionHelper;
-import net.minecraft.client.renderer.texture.IIconRegister;
-import net.minecraft.util.IIcon;
-import net.minecraft.world.IBlockAccess;
-import net.minecraftforge.common.util.ForgeDirection;
-
 /**
  * Created by Elec332 on 2-9-2015.
  */
-public final class SidedBlockRenderingCache {
+public final class SidedBlockRenderingCache{}/* {
 
     public SidedBlockRenderingCache(ITextureHandler textureHandler){
         this(textureHandler, 1);
@@ -78,4 +71,4 @@ public final class SidedBlockRenderingCache {
 
     }
 
-}
+}*/

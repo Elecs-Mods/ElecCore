@@ -5,8 +5,10 @@ import elec332.core.baseclasses.tileentity.TileBase;
 import elec332.core.compat.handlers.WailaCompatHandler;
 import elec332.core.util.BlockLoc;
 import elec332.core.world.WorldHelper;
+import mcp.mobius.waila.api.ITaggedList;
 import mcp.mobius.waila.api.IWailaConfigHandler;
 import mcp.mobius.waila.api.IWailaDataAccessor;
+import mcp.mobius.waila.api.IWailaDataAccessorServer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.Container;
@@ -41,7 +43,7 @@ public abstract class AbstractMultiBlock extends IMultiBlock implements IInvento
     }
 
     public BlockLoc getBlockLocAtTranslatedPos(int length, int width, int height){
-        return MultiBlockStructureRegistry.getTranslated(getLocation().xCoord, getLocation().yCoord, getLocation().zCoord, getMultiBlockFacing(), length, width, height);
+        return MultiBlockStructureRegistry.getTranslated(getLocation(), getMultiBlockFacing(), length, width, height);
     }
 
     public TileEntity getTileAtTranslatedPos(int length, int width, int height){
@@ -59,18 +61,18 @@ public abstract class AbstractMultiBlock extends IMultiBlock implements IInvento
     }
 
     @Override
-    public List<String> getWailaBody(ItemStack itemStack, List<String> currentTip, IWailaDataAccessor accessor, IWailaConfigHandler config) {
+    public ITaggedList.ITipList getWailaBody(ItemStack itemStack, ITaggedList.ITipList currentTip, IWailaDataAccessor accessor, IWailaConfigHandler config) {
         return currentTip;
     }
 
     @Override
-    public NBTTagCompound getWailaTag(EntityPlayerMP player, TileEntity tile, NBTTagCompound tag, World world, int x, int y, int z){
+    public NBTTagCompound getWailaTag(TileEntity te, NBTTagCompound tag, IWailaDataAccessorServer accessor){
         return tag;
     }
 
 
     public final boolean openGui(EntityPlayer player, Object mod, int ID){
-        player.openGui(mod, ID, getWorldObj(), getLocation().xCoord, getLocation().yCoord, getLocation().zCoord);
+        player.openGui(mod, ID, getWorldObj(), getLocation().getX(), getLocation().getY(), getLocation().getZ());
         return true;
     }
 

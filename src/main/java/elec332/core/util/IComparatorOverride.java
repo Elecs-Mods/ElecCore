@@ -5,6 +5,6 @@ package elec332.core.util;
  */
 public interface IComparatorOverride {
 
-    public int getComparatorInputOverride(int side);
+    public int getComparatorInputOverride();
 
 }

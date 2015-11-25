@@ -6,8 +6,8 @@ import elec332.core.registry.IWorldRegistry;
 import elec332.core.util.BlockLoc;
 import elec332.core.world.WorldHelper;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
-import net.minecraftforge.common.util.ForgeDirection;
 
 import java.util.ArrayDeque;
 import java.util.List;
@@ -57,7 +57,7 @@ public abstract class AbstractDynamicMultiBlockWorldHolder<A extends AbstractDyn
 
     public abstract boolean isTileValid(TileEntity tile);
 
-    public abstract boolean canConnect(TileEntity main, ForgeDirection direction, TileEntity otherTile);
+    public abstract boolean canConnect(TileEntity main, EnumFacing direction, TileEntity otherTile);
 
     public abstract M newMultiBlock(TileEntity tile);
 
@@ -77,8 +77,8 @@ public abstract class AbstractDynamicMultiBlockWorldHolder<A extends AbstractDyn
             registeredTiles.add(loc);
             M newM = registerGrid(newMultiBlock(tile));
             setMultiBlock((IDynamicMultiBlockTile) tile, newM);
-            for (ForgeDirection direction : ForgeDirection.VALID_DIRECTIONS) {
-                TileEntity possTile = WorldHelper.getTileAt(world, loc.atSide(direction));
+            for (EnumFacing direction : EnumFacing.VALUES) {
+                TileEntity possTile = WorldHelper.getTileAt(world, loc.offset(direction));
                 if (possTile != null && possTile instanceof IDynamicMultiBlockTile && isTileValid(possTile)) {
                     BlockLoc fromPossTile = new BlockLoc(possTile);
                     if (!registeredTiles.contains(fromPossTile)) {

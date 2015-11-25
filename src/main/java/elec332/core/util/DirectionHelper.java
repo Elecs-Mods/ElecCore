@@ -1,20 +1,21 @@
 package elec332.core.util;
 
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.util.BlockPos;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
-import net.minecraftforge.common.util.ForgeDirection;
 
 /**
  * Created by Elec332 on 2-4-2015.
  */
 public class DirectionHelper {
 
-    public static ForgeDirection getFacingOnPlacement(EntityLivingBase entityLivingBase){
+    public static EnumFacing getFacingOnPlacement(EntityLivingBase entityLivingBase){
         return getDirectionFromNumber(getDirectionNumberOnPlacement(entityLivingBase));
     }
 
-    public static int getNumberForDirection(ForgeDirection forgeDirection){
+    public static int getNumberForDirection(EnumFacing forgeDirection){
         switch (forgeDirection){
             case NORTH:
                 return 0;
@@ -29,68 +30,68 @@ public class DirectionHelper {
         }
     }
 
-    public static ForgeDirection getDirectionFromNumber(int i){
+    public static EnumFacing getDirectionFromNumber(int i){
         switch (i){
             case 0:
-                return ForgeDirection.NORTH;
+                return EnumFacing.NORTH;
             case 1:
-                return ForgeDirection.EAST;
+                return EnumFacing.EAST;
             case 2:
-                return ForgeDirection.SOUTH;
+                return EnumFacing.SOUTH;
             case 3:
-                return ForgeDirection.WEST;
+                return EnumFacing.WEST;
             default:
-                return ForgeDirection.UNKNOWN;
+                return null;
         }
     }
 
-    public static ForgeDirection rotateLeft(ForgeDirection direction){
+    public static EnumFacing rotateLeft(EnumFacing direction){
         switch (direction){
             case NORTH:
-                return ForgeDirection.EAST;
+                return EnumFacing.EAST;
             case EAST:
-                return ForgeDirection.SOUTH;
+                return EnumFacing.SOUTH;
             case SOUTH:
-                return ForgeDirection.WEST;
+                return EnumFacing.WEST;
             case WEST:
-                return ForgeDirection.NORTH;
+                return EnumFacing.NORTH;
             default:
                 return direction;
         }
     }
 
-    public static ForgeDirection rotateRight(ForgeDirection direction){
+    public static EnumFacing rotateRight(EnumFacing direction){
         switch (direction){
             case NORTH:
-                return ForgeDirection.WEST;
+                return EnumFacing.WEST;
             case WEST:
-                return ForgeDirection.SOUTH;
+                return EnumFacing.SOUTH;
             case SOUTH:
-                return ForgeDirection.EAST;
+                return EnumFacing.EAST;
             case EAST:
-                return ForgeDirection.NORTH;
+                return EnumFacing.NORTH;
             default:
                 return direction;
         }
     }
 
     @Deprecated
-    public static ForgeDirection getOppositeSide(ForgeDirection direction){
+    public static EnumFacing getOppositeSide(EnumFacing direction){
         switch (direction){
             case SOUTH:
-                return ForgeDirection.NORTH;
+                return EnumFacing.NORTH;
             case WEST:
-                return ForgeDirection.EAST;
+                return EnumFacing.EAST;
             case NORTH:
-                return ForgeDirection.SOUTH;
+                return EnumFacing.SOUTH;
             case EAST:
-                return ForgeDirection.WEST;
+                return EnumFacing.WEST;
             case UP:
-                return ForgeDirection.DOWN;
+                return EnumFacing.DOWN;
             case DOWN:
-                return ForgeDirection.UP;
+                return EnumFacing.UP;
             default:
-                return ForgeDirection.UNKNOWN;
+                return null;
         }
     }
 
@@ -105,8 +106,10 @@ public class DirectionHelper {
         return MathHelper.floor_double((double) (entityLivingBase.rotationYaw * 4.0F / 360.0F) + 0.5D) & 3;
     }
 
-    public static void setFacing_YAW(World world, int i, int i1, int i2, ForgeDirection forgeDirection) {
-        world.markBlockForUpdate(i, i1, i2);
-        world.setBlockMetadataWithNotify(i, i1, i2, getNumberForDirection(forgeDirection), 2);
+    @Deprecated
+    public static void setFacing_YAW(World world, BlockPos blockPos, EnumFacing forgeDirection) {
+        world.markBlockForUpdate(blockPos);
+        //world.setBlockMetadataWithNotify(i, i1, i2, getNumberForDirection(forgeDirection), 2);
+        throw new UnsupportedOperationException();
     }
 }

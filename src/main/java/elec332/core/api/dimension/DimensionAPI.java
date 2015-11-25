@@ -1,13 +1,9 @@
 package elec332.core.api.dimension;
 
-import net.minecraftforge.common.DimensionManager;
-
-import java.util.HashMap;
-
 /**
  * Created by Elec332 on 29-1-2015.
  */
-public class DimensionAPI {
+public class DimensionAPI {/*
 
     static HashMap<Integer, PortalBlock> Registry = new HashMap<Integer, PortalBlock>();
 
@@ -25,5 +21,5 @@ public class DimensionAPI {
 
     public static PortalBlock getPortalFromDIM(int DimID){
         return Registry.get(DimID);
-    }
+    }*/
 }

@@ -4,16 +4,18 @@ import elec332.core.baseclasses.tileentity.IInventoryTile;
 import elec332.core.baseclasses.tileentity.TileBase;
 import elec332.core.compat.handlers.WailaCompatHandler;
 import elec332.core.main.ElecCore;
+import mcp.mobius.waila.api.ITaggedList;
 import mcp.mobius.waila.api.IWailaConfigHandler;
 import mcp.mobius.waila.api.IWailaDataAccessor;
+import mcp.mobius.waila.api.IWailaDataAccessorServer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.Container;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
-import net.minecraftforge.common.util.ForgeDirection;
 
 import java.util.List;
 
@@ -35,7 +37,7 @@ public abstract class AbstractMultiBlockTile extends TileBase implements IMultiB
     }
 
     @Override
-    public boolean onBlockActivated(EntityPlayer player, int side, float hitX, float hitY, float hitZ) {
+    public boolean onBlockActivated(EntityPlayer player, EnumFacing side, float hitX, float hitY, float hitZ) {
         return getMultiBlock() == null ? super.onBlockActivated(player, side, hitX, hitY, hitZ) : getMultiBlock().onAnyBlockActivated(player);
     }
 
@@ -61,7 +63,7 @@ public abstract class AbstractMultiBlockTile extends TileBase implements IMultiB
                         getMultiBlock().readFromNBT(tagCompound);
                 }
             }
-        }, getWorldObj());
+        }, getWorld());
     }
 
     /**
@@ -72,7 +74,7 @@ public abstract class AbstractMultiBlockTile extends TileBase implements IMultiB
      * @param structure  The identifier of the multiblock-structure -Save this value to NBT aswell!
      */
     @Override
-    public void setMultiBlock(IMultiBlock multiBlock, ForgeDirection facing, String structure) {
+    public void setMultiBlock(IMultiBlock multiBlock, EnumFacing facing, String structure) {
         multiBlockData.setMultiBlock(multiBlock, facing, structure);
     }
 
@@ -112,7 +114,7 @@ public abstract class AbstractMultiBlockTile extends TileBase implements IMultiB
      * @return The facing of the multiblock
      */
     @Override
-    public ForgeDirection getMultiBlockFacing() {
+    public EnumFacing getMultiBlockFacing() {
         return multiBlockData.getFacing();
     }
 
@@ -155,16 +157,16 @@ public abstract class AbstractMultiBlockTile extends TileBase implements IMultiB
     }
 
     @Override
-    public List<String> getWailaBody(ItemStack itemStack, List<String> currentTip, IWailaDataAccessor accessor, IWailaConfigHandler config) {
+    public ITaggedList.ITipList getWailaBody(ItemStack itemStack, ITaggedList.ITipList currentTip, IWailaDataAccessor accessor, IWailaConfigHandler config) {
         if (getMultiBlock() != null)
             return getMultiBlock().getWailaBody(itemStack, currentTip, accessor, config);
         return currentTip;
     }
 
     @Override
-    public NBTTagCompound getWailaTag(EntityPlayerMP player, TileEntity tile, NBTTagCompound tag, World world, int x, int y, int z){
+    public NBTTagCompound getWailaTag(TileEntity tile, NBTTagCompound tag, IWailaDataAccessorServer accessor){
         if (getMultiBlock() != null)
-            return getMultiBlock().getWailaTag(player, tile, tag, world, x, y, z);
+            return getMultiBlock().getWailaTag(tile, tag, accessor);
         return tag;
     }
 

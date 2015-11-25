@@ -1,6 +1,6 @@
 package elec332.core.helper;
 
-import cpw.mods.fml.common.FMLLog;
+import net.minecraftforge.fml.common.FMLLog;
 import elec332.core.config.ConfigCore;
 import org.apache.logging.log4j.Level;
 

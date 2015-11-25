@@ -6,6 +6,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.IChatComponent;
 
 /**
  * Created by Elec332 on 4-5-2015.
@@ -28,10 +30,12 @@ public class BasicInventory implements IInventory {
         this.inventoryContents = new ItemStack[slotsCount];
     }
 
+    @Override
     public ItemStack getStackInSlot(int slotID) {
         return slotID >= 0 && slotID < this.inventoryContents.length ? this.inventoryContents[slotID] : null;
     }
 
+    @Override
     public ItemStack decrStackSize(int slotID, int size) {
         if (this.inventoryContents[slotID] != null) {
             ItemStack itemstack;
@@ -55,6 +59,7 @@ public class BasicInventory implements IInventory {
         }
     }
 
+    @Override
     public ItemStack getStackInSlotOnClosing(int slotID) {
         //if (this.inventoryContents[slotID] != null) {
         //    ItemStack itemstack = this.inventoryContents[slotID];
@@ -66,6 +71,7 @@ public class BasicInventory implements IInventory {
         //
     }
 
+    @Override
     public void setInventorySlotContents(int slotID, ItemStack stack) {
         this.inventoryContents[slotID] = stack;
         if (stack != null && stack.stackSize > this.getInventoryStackLimit()) {
@@ -92,37 +98,73 @@ public class BasicInventory implements IInventory {
         return false;
     }
 
+    @Override
     public int getSizeInventory() {
         return this.slotsCount;
     }
 
-    public String getInventoryName() {
+    @Override
+    public String getCommandSenderName() {
         return this.inventoryTitle;
     }
 
-    public boolean hasCustomInventoryName() {
+    @Override
+    public boolean hasCustomName() {
         return false;
     }
 
+    @Override
     public int getInventoryStackLimit() {
         return 64;
     }
 
+    @Override
     public void markDirty() {
         if (tile != null)
             tile.markDirty();
     }
 
+    @Override
     public boolean isUseableByPlayer(EntityPlayer player) {
         return true;
     }
 
-    public void openInventory() {}
+    @Override
+    public void openInventory(EntityPlayer player) {}
 
-    public void closeInventory() {}
+    @Override
+    public void closeInventory(EntityPlayer player) {}
 
+    @Override
     public boolean isItemValidForSlot(int id, ItemStack stack) {
         return true;
+    }
+
+    @Override
+    public IChatComponent getDisplayName() {
+        return new ChatComponentText(getCommandSenderName());
+    }
+
+    @Override
+    public int getField(int id) {
+        return 0;
+    }
+
+    @Override
+    public void setField(int id, int value) {
+
+    }
+
+    @Override
+    public int getFieldCount() {
+        return 0;
+    }
+
+    @Override
+    public void clear() {
+        for (int i = 0; i < inventoryContents.length; i++) {
+            inventoryContents[i] = null;
+        }
     }
 
     public void readFromNBT(NBTTagCompound compound) {

@@ -7,6 +7,7 @@ import net.minecraft.item.Item;
 /**
  * Created by Elec332.
  */
+@Deprecated
 public class basicItem extends Item{
 	
 	public static Item Item;
@@ -16,7 +17,7 @@ public class basicItem extends Item{
 		SetStack(item, MaxStackSize);
 		item.setCreativeTab(ElecCTab.ElecTab);
 		item.setUnlocalizedName("Elec." + Itemname);
-		item.setTextureName("Elec:" + Itemname);
+		//item.setTextureName("Elec:" + Itemname);
 		RegisterHelper.registerItem(item, Itemname);
 	}
 	

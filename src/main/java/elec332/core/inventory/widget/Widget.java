@@ -1,8 +1,6 @@
 package elec332.core.inventory.widget;
 
 import com.google.common.collect.Lists;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import elec332.core.client.render.InventoryRenderHelper;
 import elec332.core.inventory.IWidgetContainer;
 import elec332.core.inventory.tooltip.ToolTip;
@@ -15,6 +13,8 @@ import net.minecraft.inventory.Container;
 import net.minecraft.inventory.ICrafting;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.List;
 

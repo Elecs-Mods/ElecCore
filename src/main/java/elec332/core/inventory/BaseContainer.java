@@ -68,10 +68,10 @@ public class BaseContainer extends Container implements IWidgetContainer{
     }
 
     @Override
-    public void addCraftingToCrafters(ICrafting iCrafting) {
+    public void onCraftGuiOpened(ICrafting iCrafting) {
         for (Widget widget : widgets)
             widget.initWidget(iCrafting);
-        super.addCraftingToCrafters(iCrafting);
+        super.onCraftGuiOpened(iCrafting);
     }
 
     @Override

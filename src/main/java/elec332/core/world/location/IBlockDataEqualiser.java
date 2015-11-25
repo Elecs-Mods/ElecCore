@@ -5,6 +5,6 @@ package elec332.core.world.location;
  */
 public interface IBlockDataEqualiser {
 
-    public boolean blocksEqual(BlockData blockData);
+    public boolean blocksEqual(BlockStateWrapper blockData);
 
 }

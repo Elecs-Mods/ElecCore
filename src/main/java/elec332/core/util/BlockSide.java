@@ -1,10 +1,11 @@
 package elec332.core.util;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
 /**
  * Created by Elec332 on 2-9-2015.
  */
+@Deprecated
 public enum BlockSide {
 
     DOWN(0), UP(1), FRONT(2), BACK(3), RIGHT(4), LEFT(5);
@@ -19,8 +20,8 @@ public enum BlockSide {
         return side;
     }
 
-    public ForgeDirection getDefaultDirection(){
-        return ForgeDirection.getOrientation(getDefaultSide());
+    public EnumFacing getDefaultDirection(){
+        return EnumFacing.getFront(side);
     }
 
 }

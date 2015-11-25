@@ -4,6 +4,7 @@ import elec332.core.player.InventoryHelper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.IChatComponent;
 
 import java.util.List;
 
@@ -76,13 +77,13 @@ public class DoubleInventory<I1 extends IInventory, I2 extends IInventory> imple
     }
 
     @Override
-    public String getInventoryName() {
-        return inventory1.getInventoryName()+" & "+inventory2.getInventoryName();
+    public String getCommandSenderName() {
+        return inventory1.getCommandSenderName()+" & "+inventory2.getCommandSenderName();
     }
 
     @Override
-    public boolean hasCustomInventoryName() {
-        return inventory1.hasCustomInventoryName() || inventory2.hasCustomInventoryName();
+    public boolean hasCustomName() {
+        return inventory1.hasCustomName() || inventory2.hasCustomName();
     }
 
     @Override
@@ -102,15 +103,15 @@ public class DoubleInventory<I1 extends IInventory, I2 extends IInventory> imple
     }
 
     @Override
-    public void openInventory() {
-        inventory1.openInventory();
-        inventory2.openInventory();
+    public void openInventory(EntityPlayer player) {
+        inventory1.openInventory(player);
+        inventory2.openInventory(player);
     }
 
     @Override
-    public void closeInventory() {
-        inventory1.closeInventory();
-        inventory2.closeInventory();
+    public void closeInventory(EntityPlayer player) {
+        inventory1.closeInventory(player);
+        inventory2.closeInventory(player);
     }
 
     @Override
@@ -120,6 +121,40 @@ public class DoubleInventory<I1 extends IInventory, I2 extends IInventory> imple
         } else {
             return inventory2.isItemValidForSlot(slot - size1, stack);
         }
+    }
+
+    /**
+     * New 1.8 stuff.
+     */
+
+    @Override
+    public IChatComponent getDisplayName() {
+        return null; //TODO
+    }
+
+    @Override
+    public int getField(int id) {
+        return id < inventory1.getFieldCount() ? inventory1.getField(id) : inventory2.getField(id - inventory1.getFieldCount());
+    }
+
+    @Override
+    public void setField(int id, int value) {
+        if (id < inventory1.getFieldCount()){
+            inventory1.setField(id, value);
+        } else {
+            inventory2.setField(id - inventory1.getFieldCount(), value);
+        }
+    }
+
+    @Override
+    public int getFieldCount() {
+        return inventory1.getFieldCount() + inventory2.getFieldCount();
+    }
+
+    @Override
+    public void clear() {
+        inventory1.clear();
+        inventory2.clear();
     }
 
     public I1 getFirstInventory(){

@@ -71,7 +71,7 @@ public class WidgetButton extends Widget {
     @Override
     public void draw(Gui gui, int guiX, int guiY, int mouseX, int mouseY) {
         if (!isHidden()) {
-            FontRenderer fontrenderer = Minecraft.getMinecraft().fontRenderer;
+            FontRenderer fontrenderer = Minecraft.getMinecraft().fontRendererObj;
             bindTexture(buttonTextures);
             GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
             boolean hovering = isMouseOver(mouseX, mouseY);

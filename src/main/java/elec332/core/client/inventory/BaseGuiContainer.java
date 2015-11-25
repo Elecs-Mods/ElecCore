@@ -6,6 +6,8 @@ import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.RenderHelper;
 import org.lwjgl.opengl.GL11;
 
+import java.io.IOException;
+
 /**
  * Created by Elec332 on 4-4-2015.
  */
@@ -18,7 +20,7 @@ public abstract class BaseGuiContainer extends GuiContainer implements IResource
     protected BaseContainer container;
 
     @Override
-    protected void mouseClicked(int mouseX, int mouseY, int button) {
+    protected void mouseClicked(int mouseX, int mouseY, int button) throws IOException{
         for (Widget widget : container.getWidgets()){
             if (!widget.isHidden() && widget.isMouseOver(translatedMouseX(mouseX), translatedMouseY(mouseY)) && widget.mouseClicked(translatedMouseX(mouseX), translatedMouseY(mouseY), button))
                 return;

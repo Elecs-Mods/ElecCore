@@ -9,6 +9,7 @@ import net.minecraft.nbt.NBTTagList;
 /**
  * Created by Elec332 on 30-3-2015.
  */
+@Deprecated
 public abstract class BaseTileWithInventory extends TileBase implements IInventory {
 
     public BaseTileWithInventory(int size){
@@ -101,7 +102,7 @@ public abstract class BaseTileWithInventory extends TileBase implements IInvento
      * Returns the name of the inventory
      */
     @Override
-    public String getInventoryName() {
+    public String getCommandSenderName() {
         return this.hasCustomInventoryName()?this.customInventoryName:standardInventoryName();
     }
 
@@ -162,7 +163,7 @@ public abstract class BaseTileWithInventory extends TileBase implements IInvento
      * Do not make give this method the name canInteractWith because it clashes with Container
      */
     public boolean isUseableByPlayer(EntityPlayer p_70300_1_) {
-        return this.worldObj.getTileEntity(this.xCoord, this.yCoord, this.zCoord) == this && p_70300_1_.getDistanceSq((double)this.xCoord + 0.5D, (double)this.yCoord + 0.5D, (double)this.zCoord + 0.5D) <= 64.0D;
+        return this.worldObj.getTileEntity(getPos()) == this && p_70300_1_.getDistanceSq((double)this.pos.getX() + 0.5D, (double)this.pos.getY() + 0.5D, (double)this.pos.getZ() + 0.5D) <= 64.0D;
     }
 
     public void openInventory() {

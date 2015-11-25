@@ -2,12 +2,14 @@ package elec332.core.baseclasses.block;
 
 //import codechicken.nei.api.ItemInfo;
 
-import cpw.mods.fml.common.Loader;
 import elec332.core.helper.RegisterHelper;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockCrops;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.item.Item;
+import net.minecraft.util.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.Loader;
 
 /**
  * Created by Elec332 on 28-12-2014.
@@ -17,8 +19,8 @@ public class BaseCrop extends BlockCrops {
         super();
         //this.setMaxDamage(0);
         //this.setHasSubtypes(true);
-        this.setBlockName(modID + "." + blockName + "cropBlock");
-        this.setBlockTextureName(modID + ":" + blockName);
+        this.setUnlocalizedName(modID + "." + blockName + "cropBlock");
+        //this.setBlockTextureName(modID + ":" + blockName);
         RegisterHelper.registerBlock(this, blockName + "cropBlock");
         //if (Integration.NEIIntegration)
             //ItemInfo.hiddenItems.add(new ItemStack(this));
@@ -50,19 +52,19 @@ public class BaseCrop extends BlockCrops {
 
 
     @Override
-    public boolean canBlockStay(World world, int x, int y, int z) {
+    public boolean canBlockStay(World world, BlockPos pos, IBlockState state) {
         boolean AgriCraft = Loader.isModLoaded("AgriCraft");
-        return !AgriCraft && super.canBlockStay(world, x, y, z);
+        return !AgriCraft && super.canBlockStay(world, pos, state);
     }
 
     @Override
-    protected Item func_149866_i()
+    protected Item getSeed()
     {
         return seed;
     }
 
     @Override
-    protected Item func_149865_P()
+    protected Item getCrop()
     {
         return crop;
     }

@@ -1,7 +1,7 @@
 package elec332.core.minetweaker;
 
-import cpw.mods.fml.common.registry.GameData;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.fml.common.registry.GameData;
 import net.minecraftforge.oredict.OreDictionary;
 
 import java.io.File;
@@ -38,7 +38,7 @@ public class MineTweakerHelper {
     }
 
     public static String getItemRegistryName(ItemStack stack){
-        return GameData.getItemRegistry().getNameForObject(stack.getItem());
+        return GameData.getItemRegistry().getNameForObject(stack.getItem()).toString();
     }
 
     public static void reloadMineTweakerScripts(){

@@ -1,16 +1,17 @@
 package elec332.core.api.wrench;
 
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.BlockPos;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
-import net.minecraftforge.common.util.ForgeDirection;
 
 /**
  * Created by Elec332 on 5-2-2015.
  */
 public interface IWrenchable{
 
-    public ItemStack ItemDropped(World world, int x, int y, int z);
+    public ItemStack ItemDropped(World world, BlockPos pos);
 
-    public void onWrenched(World world, int x, int y, int z, ForgeDirection direction);
+    public void onWrenched(World world, BlockPos pos, EnumFacing direction);
 
 }

@@ -1,13 +1,18 @@
 package elec332.core.world;
 
-import cpw.mods.fml.common.IWorldGenerator;
-import cpw.mods.fml.common.registry.GameRegistry;
+import com.google.common.base.Predicate;
 import elec332.core.util.WorldGenInfo;
 import net.minecraft.block.Block;
+import net.minecraft.block.state.BlockState;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.state.pattern.BlockHelper;
 import net.minecraft.init.Blocks;
+import net.minecraft.util.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.feature.WorldGenMinable;
 import net.minecraftforge.common.config.Configuration;
+import net.minecraftforge.fml.common.IWorldGenerator;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 
 import java.io.File;
 import java.util.Random;
@@ -20,6 +25,8 @@ public abstract class WorldGen implements IWorldGenerator {
     public WorldGen(File configFile){
         this.configuration = new Configuration(configFile);
     }
+
+    public static final Predicate<IBlockState> STONE, NETHERRACK, ENDSTONE;
 
     private Configuration configuration;
 
@@ -46,7 +53,7 @@ public abstract class WorldGen implements IWorldGenerator {
                 int xCoord = chunkX*16 + random.nextInt(16);
                 int yCoord = random.nextInt(info.yLevelMax); //Max Y value, should we make this configurable aswell?
                 int zCoord = chunkZ*16 + random.nextInt(16);
-                (new WorldGenMinable(info.block, info.meta, info.getClusterSize(), Blocks.end_stone)).generate(world, random, xCoord, yCoord, zCoord);
+                (new WorldGenMinable(info.block.getStateFromMeta(info.meta), info.getClusterSize(), ENDSTONE)).generate(world, random, new BlockPos(xCoord, yCoord, zCoord));
             }
         }
     }
@@ -57,7 +64,7 @@ public abstract class WorldGen implements IWorldGenerator {
                 int xCoord = chunkX*16 + random.nextInt(16);
                 int yCoord = random.nextInt(info.yLevelMax); //Max Y value, should we make this configurable aswell?
                 int zCoord = chunkZ*16 + random.nextInt(16);
-                (new WorldGenMinable(info.block, info.meta, info.getClusterSize(), Blocks.netherrack)).generate(world, random, xCoord, yCoord, zCoord);
+                (new WorldGenMinable(info.block.getStateFromMeta(info.meta), info.getClusterSize(), NETHERRACK)).generate(world, random, new BlockPos(xCoord, yCoord, zCoord));
             }
         }
     }
@@ -68,8 +75,16 @@ public abstract class WorldGen implements IWorldGenerator {
                 int xCoord = chunkX*16 + random.nextInt(16);
                 int yCoord = random.nextInt(info.yLevelMax); //Max Y value, should we make this configurable aswell?
                 int zCoord = chunkZ*16 + random.nextInt(16);
-                (new WorldGenMinable(info.block, info.meta, info.getClusterSize(), Blocks.stone)).generate(world, random, xCoord, yCoord, zCoord);
+                (new WorldGenMinable(info.block.getStateFromMeta(info.meta), info.getClusterSize(), STONE)).generate(world, random, new BlockPos(xCoord, yCoord, zCoord));
             }
         }
     }
+
+
+    static {
+        STONE = BlockHelper.forBlock(Blocks.stone);
+        NETHERRACK = BlockHelper.forBlock(Blocks.netherrack);
+        ENDSTONE = BlockHelper.forBlock(Blocks.end_stone);
+    }
+
 }

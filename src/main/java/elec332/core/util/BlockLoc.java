@@ -1,16 +1,43 @@
 package elec332.core.util;
 
+import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.BlockPos;
 import net.minecraft.util.Vec3;
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.Vec3i;
 
 /**
  * Created by Elec332 on 23-4-2015.
  */
-public class BlockLoc {
+@Deprecated
+public class BlockLoc extends BlockPos {
 
-    public BlockLoc(TileEntity tileEntity){
+    public BlockLoc(TileEntity tile){
+        this(tile.getPos());
+    }
+
+    public BlockLoc(int x, int y, int z) {
+        super(x, y, z);
+    }
+
+    public BlockLoc(double x, double y, double z) {
+        super(x, y, z);
+    }
+
+    public BlockLoc(Entity source) {
+        this(source.posX, source.posY, source.posZ);
+    }
+
+    public BlockLoc(Vec3 source) {
+        this(source.xCoord, source.yCoord, source.zCoord);
+    }
+
+    public BlockLoc(Vec3i source) {
+        this(source.getX(), source.getY(), source.getZ());
+    }
+
+    /*public BlockLoc(TileEntity tileEntity){
         xCoord = tileEntity.xCoord;
         yCoord = tileEntity.yCoord;
         zCoord = tileEntity.zCoord;
@@ -61,21 +88,19 @@ public class BlockLoc {
 
     public Vec3 toVec3(){
         return Vec3.createVectorHelper(xCoord, yCoord, zCoord);
-    }
+    }*/
 
     public BlockLoc(NBTTagCompound tagCompound){
-        this.xCoord = (int)tagCompound.getDouble("xCoord");
-        this.yCoord = (int)tagCompound.getDouble("yCoord");
-        this.zCoord = (int)tagCompound.getDouble("zCoord");
+        this((int)tagCompound.getDouble("xCoord"), tagCompound.getDouble("yCoord"), tagCompound.getDouble("zCoord"));
     }
 
     public NBTTagCompound toNBT(NBTTagCompound tagCompound){
-        tagCompound.setDouble("xCoord", xCoord);
-        tagCompound.setDouble("yCoord", yCoord);
-        tagCompound.setDouble("zCoord", zCoord);
+        tagCompound.setDouble("xCoord", getX());
+        tagCompound.setDouble("yCoord", getY());
+        tagCompound.setDouble("zCoord", getZ());
         return tagCompound;
     }
-
+/*
     @Override
     public boolean equals(Object obj) {
         return obj instanceof BlockLoc && ((BlockLoc)obj).zCoord == zCoord && ((BlockLoc)obj).yCoord == yCoord && ((BlockLoc)obj).xCoord == xCoord;
@@ -89,5 +114,5 @@ public class BlockLoc {
     @Override
     public int hashCode() {
         return (xCoord+yCoord+zCoord);
-    }
+    }*/
 }

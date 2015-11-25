@@ -19,7 +19,7 @@ public class BaseSeed extends ItemSeeds {
         block.seed(this);
         block.crop(cropItem);
         this.setUnlocalizedName(modID + "." + name + "seed");
-        this.setTextureName(modID + ":" + name + ".seed");
+        //this.setTextureName(modID + ":" + name + ".seed");
         //this.setMaxDamage(0);
         //this.setHasSubtypes(true);
         RegisterHelper.registerItem(this, name + "seed");

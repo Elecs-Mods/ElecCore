@@ -2,10 +2,10 @@ package elec332.core.util;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-import cpw.mods.fml.common.Loader;
-import cpw.mods.fml.common.ModAPIManager;
-import cpw.mods.fml.common.ModContainer;
 import net.minecraftforge.common.config.Configuration;
+import net.minecraftforge.fml.common.Loader;
+import net.minecraftforge.fml.common.ModAPIManager;
+import net.minecraftforge.fml.common.ModContainer;
 import org.apache.logging.log4j.Logger;
 
 import java.util.List;

@@ -16,11 +16,11 @@ import java.util.UUID;
 public abstract class AbstractDynamicMultiBlock<A extends AbstractDynamicMultiBlockWorldHolder<A, M>, M extends AbstractDynamicMultiBlock<A, M>> {
 
     public AbstractDynamicMultiBlock(TileEntity tile, A worldHolder){
-        if (tile == null || !worldHolder.isTileValid(tile) || !(tile instanceof IDynamicMultiBlockTile) || tile.getWorldObj() == null)
+        if (tile == null || !worldHolder.isTileValid(tile) || !(tile instanceof IDynamicMultiBlockTile) || tile.getWorld() == null)
             throw new IllegalArgumentException("Invalid tile!");
         this.identifier = UUID.randomUUID();
         this.hash = new Random().nextInt(Integer.MAX_VALUE);
-        this.world = tile.getWorldObj();
+        this.world = tile.getWorld();
         this.allLocations = Lists.newArrayList();
         this.allLocations.add(new BlockLoc(tile));
     }

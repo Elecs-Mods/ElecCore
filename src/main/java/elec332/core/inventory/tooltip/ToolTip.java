@@ -1,8 +1,8 @@
 package elec332.core.inventory.tooltip;
 
 import com.google.common.collect.Lists;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import elec332.core.client.render.InventoryRenderHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -34,7 +34,7 @@ public class ToolTip{
 
     @SideOnly(Side.CLIENT)
     public void renderTooltip(int mouseX, int mouseY, int guiLeft, int guiTop){
-        FontRenderer fontRenderer = Minecraft.getMinecraft().fontRenderer;
+        FontRenderer fontRenderer = Minecraft.getMinecraft().fontRendererObj;
         if (!tooltip.isEmpty()) {
             GL11.glDisable(GL12.GL_RESCALE_NORMAL);
             RenderHelper.disableStandardItemLighting();

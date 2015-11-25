@@ -2,10 +2,10 @@ package elec332.core.effects;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
-import cpw.mods.fml.common.Loader;
-import cpw.mods.fml.common.LoaderState;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.common.gameevent.PlayerEvent;
+import net.minecraftforge.fml.common.Loader;
+import net.minecraftforge.fml.common.LoaderState;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.PlayerEvent;
 import elec332.core.effects.api.ElecCoreAbilitiesAPI;
 import elec332.core.effects.api.ability.Ability;
 import elec332.core.effects.api.IElecCoreAbilitiesAPI;

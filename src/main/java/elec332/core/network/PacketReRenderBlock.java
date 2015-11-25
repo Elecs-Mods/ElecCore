@@ -1,6 +1,7 @@
 package elec332.core.network;
 
-import cpw.mods.fml.common.network.simpleimpl.MessageContext;
+import elec332.core.world.WorldHelper;
+import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 
@@ -26,7 +27,7 @@ public class PacketReRenderBlock extends AbstractPacketTileAction {
     public void processPacket(TileEntity tile, int id, NBTTagCompound message, MessageContext ctx) {
         if (tile != null) {
             tile.readFromNBT(message);
-            tile.getWorldObj().markBlockRangeForRenderUpdate(tile.xCoord, tile.yCoord, tile.zCoord, tile.xCoord, tile.yCoord, tile.zCoord);
+            WorldHelper.markBlockForRenderUpdate(tile.getWorld(), tile.getPos());
         }
     }
 

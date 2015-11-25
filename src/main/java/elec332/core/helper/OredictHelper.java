@@ -52,7 +52,7 @@ public class OredictHelper {
     }
 
     public static int getOreID(ItemStack stack){
-        return OreDictionary.getOreID(stack);
+        return OreDictionary.getOreID(getOreName(stack));
     }
 
     static {

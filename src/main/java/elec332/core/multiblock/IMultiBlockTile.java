@@ -1,6 +1,6 @@
 package elec332.core.multiblock;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
 /**
  * Created by Elec332 on 27-7-2015.
@@ -14,7 +14,7 @@ public interface IMultiBlockTile {
      * @param facing The facing of the multiblock -Save this value to NBT!
      * @param structure The identifier of the multiblock-structure -Save this value to NBT aswell!
      */
-    public void setMultiBlock(IMultiBlock multiBlock, ForgeDirection facing, String structure);
+    public void setMultiBlock(IMultiBlock multiBlock, EnumFacing facing, String structure);
 
     /**
      * When an multiblock becomes invalid, this method will get called, use it
@@ -42,7 +42,7 @@ public interface IMultiBlockTile {
      *
      * @return The facing of the multiblock
      */
-    public ForgeDirection getMultiBlockFacing();
+    public EnumFacing getMultiBlockFacing();
 
     /**
      * Returns the multiblock this tile belongs too, can be null

@@ -1,14 +1,13 @@
 package elec332.core.inventory.widget;
 
 import elec332.core.client.inventory.IResourceLocationProvider;
-import elec332.core.client.render.InventoryRenderHelper;
 import elec332.core.client.render.RenderHelper;
 import elec332.core.inventory.tooltip.ToolTip;
 import net.minecraft.client.gui.Gui;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.ICrafting;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.IIcon;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTank;
 import org.lwjgl.opengl.GL11;
@@ -66,12 +65,12 @@ public class FluidTankWidget extends Widget {
             return;
         if (fluidStack == null || fluidStack.getFluid() == null || fluidStack.amount <= 0)
             return;
-        IIcon fluidIcon = RenderHelper.getFluidTexture(fluidStack.getFluid(), false);
+        TextureAtlasSprite fluidIcon = RenderHelper.getFluidTexture(fluidStack.getFluid(), false);
         float scale = fluidStack.amount / (float) capacity;
         bindTexture(RenderHelper.getBlocksResourceLocation());
         for (int col = 0; col < width / 16; col++) {
             for (int row = 0; row <= height / 16; row++) {
-                gui.drawTexturedModelRectFromIcon(guiX + x + col * 16, guiY + y + row * 16 - 1, fluidIcon, 16, 16);
+                gui.drawTexturedModalRect(guiX + x + col * 16, guiY + y + row * 16 - 1, fluidIcon, 16, 16);
             }
         }
         GL11.glColor4f(1, 1, 1, 1);

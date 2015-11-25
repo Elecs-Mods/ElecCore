@@ -2,8 +2,9 @@ package elec332.core.multiblock;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import elec332.core.world.location.BlockStateWrapper;
+import net.minecraft.block.Block;
 import net.minecraft.item.ItemStack;
-import elec332.core.world.location.BlockData;
 
 import java.util.List;
 import java.util.Map;
@@ -18,14 +19,14 @@ public final class BlockStructure {
         this.length = length;
         this.width = width;
         this.height = height;
-        this.structure = new BlockData[length][width][height];
+        this.structure = new BlockStateWrapper[length][width][height];
         this.allBlocks = Lists.newArrayList();
         this.blockTypes = Lists.newArrayList();
-        Map<BlockData, Integer> allBlocks = Maps.newHashMap();
+        Map<BlockStateWrapper, Integer> allBlocks = Maps.newHashMap();
         for (int l = 0; l < length; l++) {
             for (int w = 0; w < width; w++) {
                 for (int h = 0; h < height; h++) {
-                    BlockData blockData = data.getBlockAtPos(l, w, h);
+                    BlockStateWrapper blockData = data.getBlockAtPos(l, w, h);
                     if (blockData != null && blockData.block != null) {
                         structure[l][w][h] = blockData;
                         if (allBlocks.get(blockData) == null)
@@ -37,12 +38,12 @@ public final class BlockStructure {
                     } else if (blockData != null){
                         structure[l][w][h] = blockData;
                     } else {
-                        structure[l][w][h] = new BlockData(null);
+                        structure[l][w][h] = new BlockStateWrapper((Block)null);
                     }
                 }
             }
         }
-        for (BlockData blockData : allBlocks.keySet()){
+        for (BlockStateWrapper blockData : allBlocks.keySet()){
             int i = allBlocks.get(blockData);
             ItemStack stack = new ItemStack(blockData.block, i, blockData.meta);
             this.allBlocks.add(stack);
@@ -50,16 +51,16 @@ public final class BlockStructure {
         }
     }
 
-    private BlockData[][][] structure;
+    private BlockStateWrapper[][][] structure;
     private List<ItemStack> allBlocks;
-    private List<BlockData> blockTypes;
+    private List<BlockStateWrapper> blockTypes;
     private final int hn;
     private final int length;
     private final int width;
     private final int height;
 
     public static interface IStructureFiller{
-        public BlockData getBlockAtPos(int length, int width, int height);
+        public BlockStateWrapper getBlockAtPos(int length, int width, int height);
     }
 
     protected static interface IPositionCall{
@@ -80,7 +81,7 @@ public final class BlockStructure {
         }
     }
 
-    public BlockData[][][] getStructure() {
+    public BlockStateWrapper[][][] getStructure() {
         return structure;
     }
 
@@ -88,7 +89,7 @@ public final class BlockStructure {
         return allBlocks;
     }
 
-    public List<BlockData> getBlockTypes() {
+    public List<BlockStateWrapper> getBlockTypes() {
         return blockTypes;
     }
 

@@ -4,5 +4,5 @@
 @API(owner = ElecCoreAbilitiesAPI.owner, apiVersion = ElecCoreAbilitiesAPI.version, provides = ElecCoreAbilitiesAPI.provides)
 package elec332.core.effects.api.ability;
 
-import cpw.mods.fml.common.API;
 import elec332.core.effects.api.ElecCoreAbilitiesAPI;
+import net.minecraftforge.fml.common.API;

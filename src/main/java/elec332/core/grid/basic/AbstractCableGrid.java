@@ -3,8 +3,9 @@ package elec332.core.grid.basic;
 import elec332.core.main.ElecCore;
 import elec332.core.registry.AbstractWorldRegistryHolder;
 import elec332.core.util.BlockLoc;
+import elec332.core.world.WorldHelper;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
-import net.minecraftforge.common.util.ForgeDirection;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,8 +14,9 @@ import java.util.UUID;
 /**
  * Created by Elec332 on 3-8-2015.
  */
-public abstract class AbstractCableGrid<G extends AbstractCableGrid<G, T, W, A>, T extends AbstractGridTile<G, T, W, A>, W extends AbstractWiringTypeHelper, A extends AbstractWorldGridHolder<A, G, T, W>>{
-    public AbstractCableGrid(World world, T p, ForgeDirection direction, W wiringHelper, AbstractWorldRegistryHolder<A> worldGridHolder){
+public abstract class AbstractCableGrid<G extends AbstractCableGrid<G, T, W, A>, T extends AbstractGridTile<G, T, W, A>, W extends IWiringTypeHelper, A extends AbstractWorldGridHolder<A, G, T, W>>{
+
+    public AbstractCableGrid(World world, T p, EnumFacing direction, W wiringHelper, AbstractWorldRegistryHolder<A> worldGridHolder){
         acceptors = new ArrayList<GridData>();
         providers = new ArrayList<GridData>();
         locations = new ArrayList<BlockLoc>();
@@ -50,7 +52,7 @@ public abstract class AbstractCableGrid<G extends AbstractCableGrid<G, T, W, A>,
 
     @SuppressWarnings("unchecked")
     public final G mergeGrids(G grid){
-        if (this.world.provider.dimensionId != grid.world.provider.dimensionId)
+        if (WorldHelper.getDimID(world) != WorldHelper.getDimID(grid.world))
             throw new RuntimeException();
         if (this.equals(grid))
             return (G)this;
@@ -109,19 +111,19 @@ public abstract class AbstractCableGrid<G extends AbstractCableGrid<G, T, W, A>,
     }
 
     public static class GridData {
-        public GridData(BlockLoc blockLoc, ForgeDirection direction){
+        public GridData(BlockLoc blockLoc, EnumFacing direction){
             this.loc = blockLoc;
             this.direction = direction;
         }
 
         private BlockLoc loc;
-        private ForgeDirection direction;
+        private EnumFacing direction;
 
         public BlockLoc getLoc() {
             return loc;
         }
 
-        public ForgeDirection getDirection() {
+        public EnumFacing getDirection() {
             return direction;
         }
 
@@ -132,7 +134,7 @@ public abstract class AbstractCableGrid<G extends AbstractCableGrid<G, T, W, A>,
 
         @Override
         public boolean equals(Object obj) {
-            return obj instanceof GridData && ((GridData) obj).loc.equals(loc) && ((GridData) obj).direction.equals(direction);
+            return obj instanceof GridData && ((GridData) obj).loc.equals(loc) && ((GridData) obj).direction == (direction);
         }
     }
 }

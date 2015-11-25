@@ -1,7 +1,10 @@
 package elec332.core.world.location;
 
 import elec332.core.minetweaker.MineTweakerHelper;
+import elec332.core.world.WorldHelper;
 import net.minecraft.block.Block;
+import net.minecraft.block.state.BlockState;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.oredict.OreDictionary;
@@ -9,13 +12,17 @@ import net.minecraftforge.oredict.OreDictionary;
 /**
  * Created by Elec332 on 26-7-2015.
  */
-public final class BlockData implements IBlockDataEqualiser{
+public final class BlockStateWrapper implements IBlockDataEqualiser {
 
-    public BlockData(Block block){
+    public BlockStateWrapper(Block block){
         this(block, 0);
     }
 
-    public BlockData(Block block, int meta){
+    public BlockStateWrapper(IBlockState state){
+        this(state.getBlock(), WorldHelper.getBlockMeta(state));
+    }
+
+    public BlockStateWrapper(Block block, int meta){
         this.block = block;
         this.meta = meta;
     }
@@ -25,6 +32,10 @@ public final class BlockData implements IBlockDataEqualiser{
 
     public ItemStack toItemStack(){
         return new ItemStack(block, 1, meta);
+    }
+
+    public IBlockState getBlockState(){
+        return block.getStateFromMeta(meta);
     }
 
     @Override
@@ -43,11 +54,11 @@ public final class BlockData implements IBlockDataEqualiser{
 
     @Override
     public boolean equals(Object obj) {
-        return obj instanceof BlockData && blocksEqual((BlockData) obj);
+        return obj instanceof BlockStateWrapper && blocksEqual((BlockStateWrapper) obj);
     }
 
     @Override
-    public boolean blocksEqual(BlockData blockData) {
+    public boolean blocksEqual(BlockStateWrapper blockData) {
         return (blockData.block == block || blockData.block == Blocks.air && block == null || blockData.block == null && block == Blocks.air) && checkMeta(blockData);
     }
 
