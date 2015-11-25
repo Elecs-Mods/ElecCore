@@ -1,9 +1,9 @@
 package elec332.core.util;
 
-import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.item.crafting.IRecipe;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 
 /**
  * Created by Elec332 on 3-1-2015.

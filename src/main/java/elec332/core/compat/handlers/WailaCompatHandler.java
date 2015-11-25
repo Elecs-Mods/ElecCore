@@ -1,14 +1,9 @@
 package elec332.core.compat.handlers;
 
 import mcp.mobius.waila.api.*;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.BlockPos;
-import net.minecraft.world.World;
-
-import java.util.List;
 
 /**
  * Created by Elec332 on 15-8-2015.

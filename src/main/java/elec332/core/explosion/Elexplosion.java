@@ -1,6 +1,5 @@
 package elec332.core.explosion;
 
-import elec332.core.util.BlockLoc;
 import elec332.core.world.WorldHelper;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;

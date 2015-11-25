@@ -1,9 +1,9 @@
 package elec332.core.multiblock;
 
-import elec332.core.tile.IInventoryTile;
-import elec332.core.tile.TileBase;
 import elec332.core.compat.handlers.WailaCompatHandler;
 import elec332.core.main.ElecCore;
+import elec332.core.tile.IInventoryTile;
+import elec332.core.tile.TileBase;
 import mcp.mobius.waila.api.ITaggedList;
 import mcp.mobius.waila.api.IWailaConfigHandler;
 import mcp.mobius.waila.api.IWailaDataAccessor;

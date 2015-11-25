@@ -1,6 +1,10 @@
 package elec332.core.module;
 
 import com.google.common.collect.ImmutableList;
+import elec332.core.module.annotations.ElecModule;
+import elec332.core.module.annotations.ModuleProxy;
+import elec332.core.module.event.SetupModuleEvent;
+import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.common.DummyModContainer;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Mod;
@@ -9,10 +13,6 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.relauncher.Side;
-import elec332.core.module.annotations.ElecModule;
-import elec332.core.module.annotations.ModuleProxy;
-import elec332.core.module.event.SetupModuleEvent;
-import net.minecraftforge.common.config.Configuration;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;

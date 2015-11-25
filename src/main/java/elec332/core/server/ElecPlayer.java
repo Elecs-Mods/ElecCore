@@ -1,15 +1,11 @@
 package elec332.core.server;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import elec332.core.helper.ArrayHelper;
-import elec332.core.helper.StringHelper;
 import elec332.core.util.NBTHelper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 

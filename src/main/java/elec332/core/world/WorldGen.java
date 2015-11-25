@@ -3,7 +3,6 @@ package elec332.core.world;
 import com.google.common.base.Predicate;
 import elec332.core.util.WorldGenInfo;
 import net.minecraft.block.Block;
-import net.minecraft.block.state.BlockState;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.block.state.pattern.BlockHelper;
 import net.minecraft.init.Blocks;

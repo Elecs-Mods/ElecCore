@@ -1,7 +1,5 @@
 package elec332.core.effects.network;
 
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import elec332.core.effects.EntityAbilityProperties;
 import elec332.core.effects.api.ElecCoreAbilitiesAPI;
 import elec332.core.effects.api.ability.WrappedAbility;
@@ -11,6 +9,8 @@ import elec332.core.util.NBTHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
+import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
 /**
  * Created by Elec332 on 27-9-2015.
