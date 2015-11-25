@@ -10,6 +10,17 @@ import elec332.core.util.BlockLoc;
 import elec332.core.util.DirectionHelper;
 import elec332.core.world.WorldHelper;
 import net.minecraft.block.Block;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.NetworkManager;
+import net.minecraft.network.Packet;
+import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.ITickable;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -87,7 +98,13 @@ public class TileBase extends TileEntity implements IElecCoreNetworkTile, ITicka
     public void onTileUnloaded(){
     }
 
+    /*
+     * These 2 seem to switch sometimes, lets add them both for now -_-
+     */
 
+    public final void tick(){
+        update();
+    }
 
     @SuppressWarnings("deprecation")
     public final void update(){
