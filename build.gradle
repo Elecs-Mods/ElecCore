@@ -54,7 +54,7 @@ minecraft {
 	replaceIn "effects/api/ElecCoreAbilitiesAPIVersion.java"
     replace "#API_VER#", (config.abilityAPI_version)
 	
-	mappings = "snapshot_20151122"
+	mappings = config.mappings
 }
 
 dependencies {
