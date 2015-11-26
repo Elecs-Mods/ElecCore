@@ -12,6 +12,7 @@ import elec332.core.server.ServerHelper;
 import elec332.core.util.FileHelper;
 import elec332.core.util.MCModInfo;
 import elec332.core.util.ModInfoHelper;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
@@ -37,7 +38,11 @@ public class ElecCore extends ModBase{
 	public static LinkedHashMap<String, ArrayList> Updates = new LinkedHashMap<String, ArrayList>();
 	public static ArrayList<String> outdatedModList = new ArrayList<String>();
 	public static boolean debug;
-	//EXP	
+	//EXP
+
+	public ElecCore(){
+		MinecraftForge.EVENT_BUS.register(new elec332.core.client.model.EventHandler());
+	}
 
 	
 	//END_EXP	
