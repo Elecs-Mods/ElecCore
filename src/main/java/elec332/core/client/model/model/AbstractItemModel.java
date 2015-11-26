@@ -11,7 +11,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 
-import javax.vecmath.Vector3f;
+import org.lwjgl.util.vector.Vector3f;
 import java.util.List;
 
 /**
@@ -61,7 +61,7 @@ public abstract class AbstractItemModel implements IItemModel {
     }
 
     static {
-        DEFAULT_ITEM_TRANSFORM = new ItemCameraTransforms(new ItemTransformVec3f(new Vector3f(-90, 0, 0), applyTranslationScale(new Vector3f(0, 1, -3)), new Vector3f(0.55f, 0.55f, 0.55f)), new ItemTransformVec3f(new Vector3f(0, -135, 25), applyTranslationScale(new Vector3f(0, 4, 2)), new Vector3f(1.7f, 1.7f, 1.7f)), ItemTransformVec3f.DEFAULT, ItemTransformVec3f.DEFAULT);
+        DEFAULT_ITEM_TRANSFORM = new ItemCameraTransforms(new ItemTransformVec3f(new Vector3f(-90, 0, 0), applyTranslationScale(new Vector3f(0, 1, -3)), new Vector3f(0.55f, 0.55f, 0.55f)), new ItemTransformVec3f(new Vector3f(0, -135, 25), applyTranslationScale(new Vector3f(0, 4, 2)), new Vector3f(1.7f, 1.7f, 1.7f)), ItemTransformVec3f.DEFAULT, ItemTransformVec3f.DEFAULT, ItemTransformVec3f.DEFAULT, ItemTransformVec3f.DEFAULT);
         EMPTY_LIST = ImmutableList.of();
     }
 

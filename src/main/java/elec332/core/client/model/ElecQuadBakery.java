@@ -18,7 +18,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-import javax.vecmath.Vector3f;
+import org.lwjgl.util.vector.Vector3f;
 import java.util.EnumMap;
 import java.util.List;
 
@@ -49,7 +49,7 @@ public class ElecQuadBakery {
     public BakedQuad bakeQuad(Vector3f v1, Vector3f v2, TextureAtlasSprite texture, EnumFacing facing){
         BlockFaceUV bfuv = new BlockFaceUV(new float[]{0,0,16,16}, 0); //What's this?
         BlockPartFace bpf = new BlockPartFace(facing, -1, null, bfuv);
-        return faceBakery.makeBakedQuad(v1, v2, bpf, texture, facing, ModelRotation.X0_Y0, null, true, true);
+        return faceBakery.makeBakedQuad(v1, v2, bpf, texture, facing, ModelRotation.X0_Y0, (BlockPartRotation)null, true, true);
     }
 
     public List<BakedQuad> getGeneralItemQuads(TextureAtlasSprite... textures){
