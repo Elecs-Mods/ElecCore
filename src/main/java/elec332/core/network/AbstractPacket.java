@@ -33,6 +33,7 @@ public abstract class AbstractPacket implements IMessage, IMessageHandler<Abstra
     public NBTTagCompound networkPackageObject;
 
     @Override
+    @Deprecated //Warning, not thread safe!
     public IMessage onMessage(final AbstractPacket message, final MessageContext ctx) {
         ElecCore.tickHandler.registerCall(new Runnable() {
             @Override

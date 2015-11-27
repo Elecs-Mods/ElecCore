@@ -17,7 +17,7 @@ import java.util.List;
 @SuppressWarnings("deprecation")
 public abstract class AbstractBlockModel implements IBlockModel {
 
-    private static final ImmutableList<BakedQuad> EMPTY_LIST;
+    protected static final ImmutableList<BakedQuad> EMPTY_LIST;
 
     @Override
     public ISmartBlockModel handleBlockState(IBlockState state) {

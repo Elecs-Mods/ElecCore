@@ -7,6 +7,7 @@ import net.minecraft.block.Block;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemBlock;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.client.model.ModelLoader;
@@ -115,10 +116,10 @@ public final class RenderingRegistry {
                 if (item instanceof INoJsonItem){
                     ResourceLocation s = (ResourceLocation) GameData.getItemRegistry().getNameForObject(item);
                     set.remove(new ModelResourceLocation(s, "inventory"));
-                } /*else if (item instanceof ItemBlock){
+                } else if (item instanceof ItemBlock){
                     ResourceLocation s = (ResourceLocation) GameData.getBlockRegistry().getNameForObject(((ItemBlock) item).getBlock());
                     set.remove(new ModelResourceLocation(s, "inventory"));
-                }*/
+                }
             }
         } catch (Exception e1){
             e1.printStackTrace();

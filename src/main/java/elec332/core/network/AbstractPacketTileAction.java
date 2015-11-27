@@ -5,6 +5,7 @@ import elec332.core.util.NBTHelper;
 import elec332.core.world.WorldHelper;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.BlockPos;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import net.minecraftforge.fml.relauncher.Side;
@@ -23,14 +24,15 @@ public abstract class AbstractPacketTileAction extends AbstractPacket {
     }
 
     public AbstractPacketTileAction(TileEntity tile, NBTTagCompound message, int id){
-        super(new NBTHelper(new BlockLoc(tile).toNBT(new NBTTagCompound())).addToTag(message, "data").addToTag(id, "id").toNBT());
+        super(new NBTHelper().addToTag(message, "data").addToTag(id, "id").addToTag(tile.getPos()).toNBT());
     }
 
     @Override
     public IMessage onMessageThreadSafe(AbstractPacket message, MessageContext ctx) {
-        BlockLoc loc = new BlockLoc(message.networkPackageObject);
-        int i = message.networkPackageObject.getInteger("id");
-        NBTTagCompound data = message.networkPackageObject.getCompoundTag("data");
+        NBTHelper tag = new NBTHelper(message.networkPackageObject);
+        BlockPos loc = tag.getPos();
+        int i = tag.getInteger("id");
+        NBTTagCompound data = tag.getCompoundTag("data");
         if (ctx.side == Side.CLIENT)
             return processClient(loc, i, data, ctx);
         processPacket(WorldHelper.getTileAt(ctx.getServerHandler().playerEntity.getServerForPlayer(), loc), i, data, ctx);
@@ -38,7 +40,7 @@ public abstract class AbstractPacketTileAction extends AbstractPacket {
     }
 
     @SideOnly(Side.CLIENT)
-    private IMessage processClient(BlockLoc loc, int id, NBTTagCompound data, MessageContext ctx){
+    private IMessage processClient(BlockPos loc, int id, NBTTagCompound data, MessageContext ctx){
         processPacket(WorldHelper.getTileAt(net.minecraft.client.Minecraft.getMinecraft().theWorld, loc), id, data, ctx);
         return null;
     }

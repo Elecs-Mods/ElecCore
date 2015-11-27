@@ -1,6 +1,7 @@
 package elec332.core.world;
 
 import elec332.core.util.BlockLoc;
+import elec332.core.util.NBTHelper;
 import elec332.core.util.PlayerHelper;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
@@ -34,15 +35,15 @@ public class WorldHelper {
         worldObj.createExplosion(null, xCoord, yCoord, zCoord, force*4, true);
     }
 
-    public static ForgeChunkManager.Ticket requestTicket(World world, BlockLoc loc, Object modInstance){
+    public static ForgeChunkManager.Ticket requestTicket(World world, BlockPos loc, Object modInstance){
         ForgeChunkManager.Ticket ticket = ForgeChunkManager.requestTicket(modInstance, world, ForgeChunkManager.Type.NORMAL);
         if (ticket != null){
-            loc.toNBT(ticket.getModData());
+            new NBTHelper(ticket.getModData()).addToTag(loc);
         }
         return ticket;
     }
 
-    public static ChunkCoordIntPair fromBlockLoc(BlockLoc loc){
+    public static ChunkCoordIntPair fromBlockLoc(BlockPos loc){
         return new ChunkCoordIntPair(loc.getX() >> 4, loc.getZ() >> 4);
     }
 
@@ -50,7 +51,7 @@ public class WorldHelper {
         ForgeChunkManager.forceChunk(ticket, fromBlockLoc(new BlockLoc(ticket.getModData())));
     }
 
-    public static void dropStack(World world, BlockLoc blockLoc, ItemStack stack){
+    public static void dropStack(World world, BlockPos blockLoc, ItemStack stack){
         dropStack(world, blockLoc.getX(), blockLoc.getY(), blockLoc.getZ(), stack);
     }
 

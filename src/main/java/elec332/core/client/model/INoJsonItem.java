@@ -1,5 +1,6 @@
 package elec332.core.client.model;
 
+import elec332.core.client.model.model.IItemModel;
 import elec332.core.client.model.model.IModelAndTextureLoader;
 import net.minecraft.item.Item;
 import net.minecraftforge.client.model.ISmartItemModel;
@@ -12,6 +13,6 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public interface INoJsonItem extends IModelAndTextureLoader {
 
     @SideOnly(Side.CLIENT)
-    public ISmartItemModel getItemModel(Item item, int meta);
+    public IItemModel getItemModel(Item item, int meta);
 
 }

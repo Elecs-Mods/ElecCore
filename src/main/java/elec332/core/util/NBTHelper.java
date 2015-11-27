@@ -3,6 +3,7 @@ package elec332.core.util;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.util.BlockPos;
 
 import java.util.List;
 
@@ -12,15 +13,15 @@ import java.util.List;
 public class NBTHelper {
 
     public NBTHelper(){
-        this.tagCompound = new NBTTagCompound();
+        this(new NBTTagCompound());
+    }
+
+    public NBTHelper(NBTHelper mainTag){
+        this(mainTag.tagCompound);
     }
 
     public NBTHelper(NBTTagCompound tagCompound){
         this.tagCompound = tagCompound;
-    }
-
-    public NBTHelper(NBTHelper mainTag){
-
     }
 
     private NBTTagCompound tagCompound;
@@ -65,9 +66,21 @@ public class NBTHelper {
         return this;
     }
 
+    public NBTHelper addToTag(BlockPos pos){
+        return addToTag(pos, "blockLoc");
+    }
+
+    public NBTHelper addToTag(BlockPos pos, String s){
+        return addToTag(pos.toLong(), s);
+    }
+
     public NBTHelper addToTag(Long l, String s){
         tagCompound.setLong(s, l);
         return this;
+    }
+
+    public NBTHelper addToTag(NBTHelper nbt, String s){
+        return addToTag(nbt.tagCompound, s);
     }
 
     public NBTHelper addToTag(NBTBase nbtBase, String s){
@@ -75,7 +88,32 @@ public class NBTHelper {
         return this;
     }
 
+    /*
+     * Readers
+     */
+
+    public BlockPos getPos(){
+        return getPos("blockLoc");
+    }
+
+    public BlockPos getPos(String s){
+        return BlockPos.fromLong(getLong(s));
+    }
+
+    public long getLong(String s){
+        return tagCompound.getLong(s);
+    }
+
+    public int getInteger(String s){
+        return tagCompound.getInteger(s);
+    }
+
+    public NBTTagCompound getCompoundTag(String s){
+        return tagCompound.getCompoundTag(s);
+    }
+
     public NBTTagCompound toNBT(){
         return this.tagCompound;
     }
+
 }

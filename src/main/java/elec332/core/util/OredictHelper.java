@@ -43,16 +43,20 @@ public class OredictHelper {
         return ingotName.replace("ingot", "");
     }
 
-    public static boolean oreExists(ItemStack stack){
-        return OreDictionary.getOres(getOreName(stack)).size() > 0;
+    public static boolean isOre(ItemStack stack){
+        return getOreIDs(stack).length > 0;
     }
 
-    public static String getOreName(ItemStack stack){
-        return OreDictionary.getOreName(getOreID(stack));
+    public static List<String> getOreNames(ItemStack stack){
+        List<String> ret = Lists.newArrayList();
+        for (int i : getOreIDs(stack)){
+            ret.add(OreDictionary.getOreName(i));
+        }
+        return ret;
     }
 
-    public static int getOreID(ItemStack stack){
-        return OreDictionary.getOreID(getOreName(stack));
+    public static int[] getOreIDs(ItemStack stack){
+        return OreDictionary.getOreIDs(stack);
     }
 
     static {

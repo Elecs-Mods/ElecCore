@@ -20,8 +20,8 @@ import java.util.List;
 @SuppressWarnings("deprecation")
 public abstract class AbstractItemModel implements IItemModel {
 
-    private static final ItemCameraTransforms DEFAULT_ITEM_TRANSFORM;
-    private static final ImmutableList<BakedQuad> EMPTY_LIST;
+    protected static final ItemCameraTransforms DEFAULT_ITEM_TRANSFORM;
+    protected static final ImmutableList<BakedQuad> EMPTY_LIST;
 
     @Override
     public List<BakedQuad> getFaceQuads(EnumFacing facing) {
@@ -39,7 +39,11 @@ public abstract class AbstractItemModel implements IItemModel {
     }
 
     @Override
-    public boolean isBuiltInRenderer() {
+    public final boolean isBuiltInRenderer() {
+        return isItemTESR();
+    }
+
+    public boolean isItemTESR(){
         return false;
     }
 
