@@ -6,6 +6,7 @@ import elec332.core.util.LogHelper;
 import elec332.core.util.ModInfoHelper;
 import net.minecraft.launchwrapper.Launch;
 import net.minecraftforge.common.config.Configuration;
+import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
@@ -23,9 +24,9 @@ import java.util.ArrayList;
 public abstract class ModBase extends LogHelper {
 
     public ModBase(){
-        for (int i = 0; i < 39; i++) {
-            error("MOD " + modID() + " IS USING OUTDATED MODBASE CLASS!");
-        }
+        //for (int i = 0; i < 39; i++) {
+            error("MOD " + Loader.instance().activeModContainer().getModId() + " IS USING OUTDATED MODBASE CLASS!");
+        //}
     }
 
     protected abstract File configFile();

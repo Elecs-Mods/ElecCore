@@ -41,10 +41,13 @@ public class ElecCore extends ModBase{
 	//EXP
 
 	public ElecCore(){
-		MinecraftForge.EVENT_BUS.register(new elec332.core.client.model.EventHandler());
+		if (!init)
+			//DoStuff
+		init = true;
 	}
 
-	
+	private boolean init;
+
 	//END_EXP	
 	
 	@SidedProxy(clientSide = ModInfo.CLIENTPROXY, serverSide = ModInfo.COMMONPROXY)
@@ -59,6 +62,7 @@ public class ElecCore extends ModBase{
 
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
+		MinecraftForge.EVENT_BUS.register(new elec332.core.client.model.EventHandler());
 		this.cfgFile = FileHelper.getConfigFileElec(event);
 		this.ModID = ModInfoHelper.getModID(event);
 		loadConfiguration();

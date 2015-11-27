@@ -1,24 +1,26 @@
 package elec332.core.loader;
 
-import elec332.core.asm.ASM;
+import elec332.core.asm.ASMLoader;
 import elec332.core.main.ElecCore;
-import net.minecraftforge.fml.common.DummyModContainer;
-import net.minecraftforge.fml.relauncher.IFMLCallHook;
 import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Map;
 
 /**
  * Created by Elec332 on 18-11-2015.
  */
-public class ElecCoreLoader extends DummyModContainer implements IFMLLoadingPlugin, IFMLCallHook {
+public class ElecCoreLoader implements IFMLLoadingPlugin {
 
     public ElecCoreLoader(){
-        if (ElecCore.logger == null){
-            ElecCore.logger = LogManager.getLogger("ElecCoreLoader");
+        if (logger == null){
+            logger = LogManager.getLogger("ElecCoreLoader");
         }
     }
+
+    public static Logger logger;
+    public static boolean isObfuscated;
 
     /**
      * Return a list of classes that implements the IClassTransformer interface
@@ -28,7 +30,7 @@ public class ElecCoreLoader extends DummyModContainer implements IFMLLoadingPlug
     @Override
     public String[] getASMTransformerClass() {
         return new String[]{
-                ASM.class.getCanonicalName()
+                ASMLoader.class.getCanonicalName()
         };
     }
 
@@ -44,7 +46,6 @@ public class ElecCoreLoader extends DummyModContainer implements IFMLLoadingPlug
      */
     @Override
     public String getModContainerClass() {
-
         return null;
     }
 
@@ -57,7 +58,7 @@ public class ElecCoreLoader extends DummyModContainer implements IFMLLoadingPlug
      */
     @Override
     public String getSetupClass() {
-        return getClass().getCanonicalName();
+        return null;
     }
 
     /**
@@ -71,7 +72,7 @@ public class ElecCoreLoader extends DummyModContainer implements IFMLLoadingPlug
      */
     @Override
     public void injectData(Map<String, Object> data) {
-
+        isObfuscated = !((Boolean) data.get("runtimeDeobfuscationEnabled"));
     }
 
     /**
@@ -85,15 +86,4 @@ public class ElecCoreLoader extends DummyModContainer implements IFMLLoadingPlug
         return null;
     }
 
-    /**
-     * Computes a result, or throws an exception if unable to do so.
-     *
-     * @return computed result
-     * @throws Exception if unable to compute a result
-     */
-    @Override
-    public Void call() throws Exception {
-
-        return null;
-    }
 }
