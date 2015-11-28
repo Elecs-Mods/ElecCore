@@ -43,7 +43,7 @@ public class MinecraftTransformer extends AbstractASMClassTransformer {
             if (ASMHelper.isType(ain, AbstractInsnNode.LDC_INSN) && ((LdcInsnNode)ain).cst.toString().equals("Loading Item Renderer")){
                 LineNumberNode line = ASMHelper.findFirstLineAfter(ain);
                 if (line != null){
-                    ASMHelper.removeInsnUntil(instructions, line.getNext(), line.line + 3);
+                    ASMHelper.removeInsnUntil(instructions, line.getNext(), line.line + 4);
                     instructions.insert(line, new MethodInsnNode(Opcodes.INVOKESTATIC, ASMLoader.getAsmHooksClassClient(), "initItemRender", "()V", false));
                     return;
                 }
@@ -62,7 +62,7 @@ public class MinecraftTransformer extends AbstractASMClassTransformer {
                     if (label != null) {
                         AbstractInsnNode ain2 = label.getNext().getNext().getNext();
                         AbstractInsnNode ain3 = ASMHelper.removeInsnNodes(instructions, ain2, 8);
-                        instructions.insertBefore(ain3, new MethodInsnNode(Opcodes.INVOKESTATIC, ASMLoader.getAsmHooksClassClient(), "newBlockRendererDispatcher", "()Lnet/minecraft/client/renderer/BlockRendererDispatcher;", false));
+                        instructions.insertBefore(ain3, new MethodInsnNode(Opcodes.INVOKESTATIC, ASMLoader.getAsmHooksClassClient(), "newBlockRendererDispatcher", ASMHelper.getDescription("()Lnet/minecraft/client/renderer/BlockRendererDispatcher;"), false));
                         return;
                     }
                 }

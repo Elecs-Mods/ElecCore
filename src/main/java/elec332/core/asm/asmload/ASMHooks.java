@@ -26,6 +26,7 @@ public final class ASMHooks {
             mc.renderItem = new RenderItem(mc.renderEngine, mc.modelManager);
             mc.renderManager = new RenderManager(mc.renderEngine, mc.renderItem);
             mc.itemRenderer = new ElecItemRenderer(mc);
+            mc.mcResourceManager.registerReloadListener(mc.renderItem);
             TileEntityItemStackRenderer.instance = new ElecTileEntityItemStackRenderer();
         }
 
