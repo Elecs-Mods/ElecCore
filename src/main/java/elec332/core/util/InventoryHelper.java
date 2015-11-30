@@ -13,6 +13,13 @@ import java.util.List;
  */
 public class InventoryHelper {
 
+    /*
+     * I don't want to depend on MC methods where possible.
+     */
+    public static ItemStack copyStack(ItemStack stack){
+        return stack == null ? null : stack.copy();
+    }
+
     public static boolean addItemToInventory(IInventory inventory, ItemStack itemstack) {
         int invSize = getMainInventorySize(inventory);
         return addItemToInventory(inventory, itemstack, 0, invSize);

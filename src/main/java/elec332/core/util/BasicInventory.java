@@ -14,10 +14,13 @@ import net.minecraft.util.IChatComponent;
  */
 public class BasicInventory implements IInventory {
 
-    private String inventoryTitle;
-    private int slotsCount;
-    protected ItemStack[] inventoryContents;
-    private TileEntity tile;
+    public static BasicInventory copyOf(IInventory inventory){
+        BasicInventory ret = new BasicInventory(inventory.getCommandSenderName(), inventory.getSizeInventory());
+        for (int i = 0; i < inventory.getSizeInventory(); i++) {
+            ret.setInventorySlotContents(i, InventoryHelper.copyStack(inventory.getStackInSlot(i)));
+        }
+        return ret;
+    }
 
     public BasicInventory(String s, int i, TileEntity tile){
         this(s, i);
@@ -29,6 +32,11 @@ public class BasicInventory implements IInventory {
         this.slotsCount = slotsCount;
         this.inventoryContents = new ItemStack[slotsCount];
     }
+
+    private String inventoryTitle;
+    private int slotsCount;
+    protected ItemStack[] inventoryContents;
+    private TileEntity tile;
 
     @Override
     public ItemStack getStackInSlot(int slotID) {
@@ -191,4 +199,18 @@ public class BasicInventory implements IInventory {
         }
         compound.setTag("Items", nbttaglist);
     }
+
+    public void copyTo(IInventory inv){
+        if (inv.getSizeInventory() < getSizeInventory()){
+            throw new IllegalArgumentException();
+        }
+        for (int i = 0; i < inv.getSizeInventory(); i++) {
+            ItemStack stack = null;
+            if (i < getSizeInventory()){
+                stack = InventoryHelper.copyStack(getStackInSlot(i));
+            }
+            inv.setInventorySlotContents(i, stack);
+        }
+    }
+
 }
