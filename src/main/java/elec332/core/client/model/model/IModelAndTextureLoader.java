@@ -1,7 +1,9 @@
 package elec332.core.client.model.model;
 
+import elec332.core.client.model.ElecModelBakery;
 import elec332.core.client.model.ElecQuadBakery;
 import elec332.core.client.model.RenderingRegistry;
+import elec332.core.client.model.template.ElecTemplateBakery;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -18,7 +20,7 @@ public interface IModelAndTextureLoader {
      * @param quadBakery The QuadBakery.
      */
     @SideOnly(Side.CLIENT)
-    public void registerModels(ElecQuadBakery quadBakery, RenderingRegistry renderingRegistry);
+    public void registerModels(ElecQuadBakery quadBakery, ElecModelBakery modelBakery, ElecTemplateBakery templateBakery);
 
     /**
      * A helper method to prevent you from having to hook into the event,
@@ -27,6 +29,6 @@ public interface IModelAndTextureLoader {
      * @param textureMap The TextureMap.
      */
     @SideOnly(Side.CLIENT)
-    public void registerTextures(TextureMap textureMap, RenderingRegistry renderingRegistry);
+    public void registerTextures(TextureMap textureMap);
 
 }

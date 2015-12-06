@@ -4,6 +4,7 @@ import elec332.core.client.model.model.IBlockModel;
 import elec332.core.client.model.model.IModelAndTextureLoader;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.resources.model.IBakedModel;
+import net.minecraft.item.Item;
 import net.minecraft.util.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraftforge.fml.relauncher.Side;
@@ -31,6 +32,6 @@ public interface INoJsonBlock extends IModelAndTextureLoader {
      * @return The model to render when the block is not placed.
      */
     @SideOnly(Side.CLIENT)
-    public IBakedModel getBlockModel();
+    public IBakedModel getBlockModel(Item item, int meta);
 
 }

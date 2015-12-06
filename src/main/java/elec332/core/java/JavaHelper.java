@@ -7,6 +7,13 @@ import java.util.List;
  */
 public class JavaHelper {
 
+    public static List<String> replaceAll(List<String> list, String initial, String replace){
+        for (int i = 0; i < list.size(); i++) {
+            list.add(i, list.get(i).replace(initial, replace));
+        }
+        return list;
+    }
+
     public static <O> boolean hasAtLeastOneMatch(List<O> list1, List<O> list2){
         for (O o : list1){
             if (list2.contains(o))

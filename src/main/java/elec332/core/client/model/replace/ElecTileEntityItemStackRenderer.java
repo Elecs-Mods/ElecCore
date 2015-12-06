@@ -23,7 +23,7 @@ public class ElecTileEntityItemStackRenderer extends TileEntityItemStackRenderer
         if (item instanceof INoJsonItem){
             model = ((INoJsonItem) item).getItemModel(itemStackIn.getItem(), itemStackIn.getItemDamage());
         } else if (item instanceof ItemBlock && ((ItemBlock) item).getBlock() instanceof INoJsonBlock){
-            model = ((INoJsonBlock) ((ItemBlock) item).getBlock()).getBlockModel();
+            model = ((INoJsonBlock) ((ItemBlock) item).getBlock()).getBlockModel(itemStackIn.getItem(), itemStackIn.getItemDamage());
         }
         if (model != null && model.isBuiltInRenderer()){
             model.getGeneralQuads(); //See TESRItemModel

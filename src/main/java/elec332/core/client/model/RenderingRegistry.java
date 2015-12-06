@@ -3,6 +3,7 @@ package elec332.core.client.model;
 import elec332.core.client.model.model.IModelAndTextureLoader;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import elec332.core.client.model.template.ElecTemplateBakery;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.resources.model.ModelResourceLocation;
@@ -77,13 +78,13 @@ public final class RenderingRegistry {
 
     protected void invokeEvent(TextureStitchEvent.Pre event){
         for (IModelAndTextureLoader loader : mtLoaders){
-            loader.registerTextures(event.map, this);
+            loader.registerTextures(event.map);
         }
     }
 
     protected void invokeEvent(ReplaceJsonEvent event){
         for (IModelAndTextureLoader loader : mtLoaders){
-            loader.registerModels(event.quadBakery, this);
+            loader.registerModels(event.quadBakery, event.modelBakery, event.templateBakery);
         }
     }
 
@@ -130,29 +131,29 @@ public final class RenderingRegistry {
         instance = new RenderingRegistry();
         instance.registerModelTextureLoader(new IModelAndTextureLoader() {
             @Override
-            public void registerModels(ElecQuadBakery quadBakery, RenderingRegistry renderingRegistry) {
+            public void registerModels(ElecQuadBakery quadBakery, ElecModelBakery modelBakery, ElecTemplateBakery templateBakery) {
                 for (Item item : Util.getItemIterator()){
                     if (item instanceof IModelAndTextureLoader){
-                        ((IModelAndTextureLoader) item).registerModels(quadBakery, renderingRegistry);
+                        ((IModelAndTextureLoader) item).registerModels(quadBakery, modelBakery, templateBakery);
                     }
                 }
                 for (Block block : Util.getBlockIterator()){
                     if (block instanceof IModelAndTextureLoader){
-                        ((IModelAndTextureLoader) block).registerModels(quadBakery, renderingRegistry);
+                        ((IModelAndTextureLoader) block).registerModels(quadBakery, modelBakery, templateBakery);
                     }
                 }
             }
 
             @Override
-            public void registerTextures(TextureMap textureMap, RenderingRegistry renderingRegistry) {
+            public void registerTextures(TextureMap textureMap) {
                 for (Item item : Util.getItemIterator()){
                     if (item instanceof IModelAndTextureLoader){
-                        ((IModelAndTextureLoader) item).registerTextures(textureMap, renderingRegistry);
+                        ((IModelAndTextureLoader) item).registerTextures(textureMap);
                     }
                 }
                 for (Block block : Util.getBlockIterator()){
                     if (block instanceof IModelAndTextureLoader){
-                        ((IModelAndTextureLoader) block).registerTextures(textureMap, renderingRegistry);
+                        ((IModelAndTextureLoader) block).registerTextures(textureMap);
                     }
                 }
             }

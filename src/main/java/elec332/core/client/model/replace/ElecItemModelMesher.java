@@ -23,7 +23,7 @@ public class ElecItemModelMesher extends ItemModelMesherForge {
         if (item instanceof INoJsonItem){
             return ((INoJsonItem) item).getItemModel(item, meta);
         } else if (item instanceof ItemBlock && ((ItemBlock) item).getBlock() instanceof INoJsonBlock){
-            return ((INoJsonBlock) ((ItemBlock) item).getBlock()).getBlockModel();
+            return ((INoJsonBlock) ((ItemBlock) item).getBlock()).getBlockModel(item, meta);
         }
         return super.getItemModel(item, meta);
     }

@@ -1,5 +1,6 @@
 package elec332.core.client.model;
 
+import elec332.core.client.model.template.ElecTemplateBakery;
 import net.minecraftforge.fml.common.eventhandler.Event;
 
 /**
@@ -7,12 +8,14 @@ import net.minecraftforge.fml.common.eventhandler.Event;
  */
 public class ReplaceJsonEvent extends Event {
 
-    public ReplaceJsonEvent(ElecQuadBakery quadBakery, RenderingRegistry renderingRegistry){
+    public ReplaceJsonEvent(ElecQuadBakery quadBakery, ElecModelBakery modelBakery, ElecTemplateBakery templateBakery){
         this.quadBakery = quadBakery;
-        this.renderingRegistry = renderingRegistry;
+        this.modelBakery = modelBakery;
+        this.templateBakery = templateBakery;
     }
 
     public final ElecQuadBakery quadBakery;
-    public final RenderingRegistry renderingRegistry;
+    public final ElecModelBakery modelBakery;
+    public final ElecTemplateBakery templateBakery;
 
 }
