@@ -1,5 +1,6 @@
 package elec332.core.util;
 
+import net.minecraft.client.resources.model.ModelRotation;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
@@ -42,6 +43,19 @@ public class DirectionHelper {
                 return EnumFacing.WEST;
             default:
                 return null;
+        }
+    }
+
+    public static ModelRotation getRotationFromFacing(EnumFacing facing){
+        switch (facing){
+            case EAST:
+                return ModelRotation.X0_Y90;
+            case SOUTH:
+                return ModelRotation.X0_Y180;
+            case WEST:
+                return ModelRotation.X0_Y270;
+            default:
+                return ModelRotation.X0_Y0;
         }
     }
 

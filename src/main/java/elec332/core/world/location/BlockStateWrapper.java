@@ -56,6 +56,10 @@ public final class BlockStateWrapper implements IBlockDataEqualiser {
         return obj instanceof BlockStateWrapper && blocksEqual((BlockStateWrapper) obj);
     }
 
+    public boolean blocksEqual(IBlockState blockState){
+        return block == blockState.getBlock() && meta == WorldHelper.getBlockMeta(blockState);
+    }
+
     @Override
     public boolean blocksEqual(BlockStateWrapper blockData) {
         return (blockData.block == block || blockData.block == Blocks.air && block == null || blockData.block == null && block == Blocks.air) && checkMeta(blockData);

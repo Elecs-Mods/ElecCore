@@ -56,7 +56,7 @@ public class ElecModelBakery {
     }
 
     public IBlockModel forTemplate(IModelTemplate template){
-        return forTemplateOverrideQuads(template, template.getSidedQuads(), template.getGeneralQuads());
+        return forTemplate(template, null);
     }
 
     public IBlockModel forTemplate(IModelTemplate template, ModelRotation rotation){
@@ -64,16 +64,7 @@ public class ElecModelBakery {
     }
 
     public IBlockModel forTemplateOverrideQuads(IModelTemplate template, @Nullable ITemplateSidedMap sidedQuads, @Nullable List<IQuadTemplate> generalQuads){
-        if (sidedQuads == null){
-            sidedQuads = ElecTemplateBakery.instance.newQuadSidedMap();
-        }
-        if (generalQuads == null){
-            generalQuads = ImmutableList.of();
-        }
-        DefaultBakedModel ret = _forTemplateNoQuadsB(template);
-        ret.setGeneralQuads(quadBakery.bakeQuads(generalQuads));
-        ret.setSidedQuads(quadBakery.bakeQuads(sidedQuads));
-        return (IBlockModel) ret;
+        return forTemplateOverrideQuads(template, null, sidedQuads, generalQuads);
     }
 
     public IBlockModel forTemplateOverrideQuads(IModelTemplate template, ModelRotation rotation, @Nullable ITemplateSidedMap sidedQuads, @Nullable List<IQuadTemplate> generalQuads){

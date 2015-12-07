@@ -57,11 +57,7 @@ public class ElecQuadBakery {
      * @return The ISidedMap with the baked quads.
      */
     public ISidedMap bakeQuads(ITemplateSidedMap from){
-        ISidedMap ret = newSidedMap();
-        for (EnumFacing facing : EnumFacing.VALUES){
-            ret.setQuadsForSide(facing, bakeQuads(from.getForSide(facing)));
-        }
-        return ret;
+        return bakeQuads(from, null);
     }
 
     /**
@@ -86,11 +82,7 @@ public class ElecQuadBakery {
      * @return A new list with the baked quads.
      */
     public List<BakedQuad> bakeQuads(List<IQuadTemplate> from){
-        ImmutableList.Builder<BakedQuad> builder = new ImmutableList.Builder<BakedQuad>();
-        for (IQuadTemplate quadTemplate : from){
-            builder.add(bakeQuad(quadTemplate));
-        }
-        return builder.build();
+        return bakeQuads(from, null);
     }
 
     /**
@@ -103,7 +95,7 @@ public class ElecQuadBakery {
     public List<BakedQuad> bakeQuads(List<IQuadTemplate> from, ModelRotation rotation){
         ImmutableList.Builder<BakedQuad> builder = new ImmutableList.Builder<BakedQuad>();
         for (IQuadTemplate quadTemplate : from){
-            builder.add(bakeQuad(quadTemplate, rotation));
+            builder.add(bakeQuad(quadTemplate, rotation == null ? quadTemplate.getRotation() : rotation));
         }
         return builder.build();
     }
