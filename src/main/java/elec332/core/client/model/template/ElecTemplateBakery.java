@@ -21,7 +21,7 @@ public final class ElecTemplateBakery {
 
     @Nonnull
     public MutableModelTemplate newDefaultBlockTemplate(TextureAtlasSprite... textures){
-        return newDefaultItemTemplate().setSidedQuads(newQuadSidedMap(textures));
+        return newDefaultBlockTemplate().setSidedQuads(newQuadSidedMap(textures));
     }
 
     @Nonnull

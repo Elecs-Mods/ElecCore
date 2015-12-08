@@ -74,10 +74,10 @@ public class ElecModelBakery {
         if (generalQuads == null){
             generalQuads = ImmutableList.of();
         }
-        DefaultBakedModel ret = _forTemplateNoQuadsB(template);
+        BakedBlockModel ret = _forTemplateNoQuadsB(template);
         ret.setGeneralQuads(quadBakery.bakeQuads(generalQuads, rotation));
         ret.setSidedQuads(quadBakery.bakeQuads(sidedQuads, rotation));
-        return (IBlockModel) ret;
+        return ret;
     }
 
     public IBlockModel forTemplateNoQuadsB(IModelTemplate template){
@@ -106,7 +106,7 @@ public class ElecModelBakery {
     }
 
     public IItemModel itemModelForTextures(IModelTemplate template, TextureAtlasSprite... textures){
-        return (IItemModel) ((DefaultBakedModel) _forTemplateNoQuadsI(template)).setGeneralQuads(quadBakery.getGeneralItemQuads(textures));
+        return (IItemModel) _forTemplateNoQuadsI(template).setGeneralQuads(quadBakery.getGeneralItemQuads(textures));
     }
 
     private BakedItemModel _forTemplateNoQuadsI(IModelTemplate template){
@@ -144,12 +144,12 @@ public class ElecModelBakery {
         private final TextureAtlasSprite texture;
         private final ItemCameraTransforms ict;
 
-        private DefaultBakedModel setSidedQuads(@Nonnull ElecQuadBakery.ISidedMap sidedQuads){
+        DefaultBakedModel setSidedQuads(@Nonnull ElecQuadBakery.ISidedMap sidedQuads){
             this.sidedQuads = sidedQuads;
             return this;
         }
 
-        private DefaultBakedModel setGeneralQuads(@Nonnull List<BakedQuad> quads){
+        DefaultBakedModel setGeneralQuads(@Nonnull List<BakedQuad> quads){
             this.generalQuads = quads;
             return this;
         }

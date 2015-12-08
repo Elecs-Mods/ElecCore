@@ -127,7 +127,7 @@ public class RenderHelper {
     }
 
     public static TextureAtlasSprite getMissingTextureIcon(){
-        return ((TextureMap) Minecraft.getMinecraft().getTextureManager().getTexture(getBlocksResourceLocation())).getAtlasSprite("missingno");
+        return Minecraft.getMinecraft().getTextureMapBlocks().getMissingSprite();//((TextureMap) Minecraft.getMinecraft().getTextureManager().getTexture(getBlocksResourceLocation())).getAtlasSprite("missingno");
     }
 
     public static TextureAtlasSprite getIconFrom(ResourceLocation rl){

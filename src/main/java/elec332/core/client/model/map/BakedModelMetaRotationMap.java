@@ -92,7 +92,7 @@ public class BakedModelMetaRotationMap<M extends IBakedModel> extends AbstractMo
     public M forMetaAndRotation(int meta, ModelRotation rotation) throws RotationNotSupportedException {
         Map<ModelRotation, M> map = this.map.get(meta);
         if (map == null){
-            throw new IllegalArgumentException("There is model for meta "+meta);
+            throw new IllegalArgumentException("There is no model for meta "+meta);
         }
         checkRotation(rotation);
         return map.get(rotation);

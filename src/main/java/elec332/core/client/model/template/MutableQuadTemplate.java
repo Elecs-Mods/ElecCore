@@ -103,7 +103,7 @@ public class MutableQuadTemplate implements IQuadTemplate {
 
     @Override
     public TextureAtlasSprite getTexture() {
-        return texture;
+        return RenderHelper.checkIcon(texture);
     }
 
     @Override

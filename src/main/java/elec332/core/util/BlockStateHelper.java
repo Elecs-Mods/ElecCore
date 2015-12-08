@@ -2,7 +2,9 @@ package elec332.core.util;
 
 import com.google.common.collect.Maps;
 import net.minecraft.block.Block;
+import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyEnum;
+import net.minecraft.block.state.BlockState;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.IStringSerializable;
 
@@ -14,6 +16,10 @@ import java.util.Map;
 public class BlockStateHelper {
 
     public static final PropertyEnum<EnumMeta> TYPE = PropertyEnum.create("meta", EnumMeta.class);
+
+    public static BlockState createBlockState(Block block){
+        return new BlockState(block, TYPE);
+    }
 
     public static IBlockState setDefaultMetaState(Block block){
         return block.getBlockState().getBaseState().withProperty(TYPE, EnumMeta.META_0);

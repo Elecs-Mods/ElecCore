@@ -169,7 +169,7 @@ public class ElecQuadBakery {
 
         @Override
         public void setQuadsForSide(EnumFacing side, List<BakedQuad> newQuads){
-
+            quads.put(side, newQuads);
         }
 
         @Override
