@@ -21,7 +21,7 @@ public class EventHandler {
     private static boolean init;
 
     @SubscribeEvent(priority = EventPriority.HIGH)
-    public void onTextureStitch(TextureStitchEvent.Pre event){
+    public void onTextureStitch(TextureStitchEvent event){
         RenderingRegistry.instance().invokeEvent(event);
     }
 
