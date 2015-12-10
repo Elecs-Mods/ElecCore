@@ -6,6 +6,7 @@ import net.minecraft.util.ResourceLocation;
 /**
  * Created by Elec332 on 31-7-2015.
  */
+@Deprecated
 public class InventoryRenderHelper {
 
     @Deprecated

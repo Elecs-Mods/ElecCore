@@ -2,10 +2,15 @@ package elec332.core.client.render;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import elec332.core.client.ElecTessellator;
+import elec332.core.client.ITessellator;
+import elec332.core.client.RenderBlocks;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.particle.EntityFX;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.entity.player.EntityPlayer;
@@ -30,7 +35,26 @@ public class RenderHelper {
     private static List<Block> blockRenders = Lists.newArrayList();
     private static List<Class<? extends TileEntity>> tileRenders = Lists.newArrayList();
     private static Map<Block, Integer> renderData = Maps.newHashMap();
-    private static Tessellator tessellator = Tessellator.getInstance();
+    private static Tessellator mcTessellator = Tessellator.getInstance();
+    private static ITessellator tessellator;
+    private static Minecraft mc;
+    private static RenderBlocks renderBlocks;
+
+    public static ITessellator forWorldRenderer(WorldRenderer renderer){
+        return new ElecTessellator(renderer);
+    }
+
+    public static RenderBlocks getBlockRenderer(){
+        return renderBlocks;
+    }
+
+    public static FontRenderer getMinecraftFontrenderer(){
+        return mc.fontRendererObj;
+    }
+
+    public static ITessellator getTessellator(){
+        return tessellator;
+    }
 
     @Deprecated
     public static <A extends AbstractBlockRenderer> A registerBlockRenderer(A renderer){
@@ -94,13 +118,11 @@ public class RenderHelper {
     }
 
     public static void drawQuad(Vec3 v1, Vec3 v2, Vec3 v3, Vec3 v4){
-        throw new IllegalAccessError();
-    }/*
-        tessellator.getWorldRenderer().addVertexWithUV(v1.xCoord, v1.yCoord, v1.zCoord, 0, 0);
-        tessellator.getWorldRenderer().addVertexWithUV(v2.xCoord, v2.yCoord, v2.zCoord, 1, 0);
-        tessellator.getWorldRenderer().addVertexWithUV(v3.xCoord, v3.yCoord, v3.zCoord, 1, 1);
-        tessellator.getWorldRenderer().addVertexWithUV(v4.xCoord, v4.yCoord, v4.zCoord, 0, 1);
-    }*/
+        tessellator.addVertexWithUV(v1.xCoord, v1.yCoord, v1.zCoord, 0, 0);
+        tessellator.addVertexWithUV(v2.xCoord, v2.yCoord, v2.zCoord, 1, 0);
+        tessellator.addVertexWithUV(v3.xCoord, v3.yCoord, v3.zCoord, 1, 1);
+        tessellator.addVertexWithUV(v4.xCoord, v4.yCoord, v4.zCoord, 0, 1);
+    }
 
     public static Vec3 multiply(Vec3 original, double m){
         return new Vec3(original.xCoord * m, original.yCoord * m, original.zCoord * m);
@@ -140,6 +162,12 @@ public class RenderHelper {
 
     public void spawnParticle(EntityFX particle){
         Minecraft.getMinecraft().effectRenderer.addEffect(particle);
+    }
+
+    static {
+        tessellator = new ElecTessellator();
+        mc = Minecraft.getMinecraft();
+        renderBlocks = new RenderBlocks();
     }
 
 }

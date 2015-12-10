@@ -5,7 +5,7 @@ import net.minecraft.client.renderer.Tessellator;
 /**
  * Created by Elec332 on 25-11-2015.
  */
-public interface ITesselator {
+public interface ITessellator {
 
     public void setBrightness(int brightness);
 
@@ -19,8 +19,8 @@ public interface ITesselator {
 
     public void setColorRGBA(int i1, int i2, int i3, int i4);
 
-    public void addVertexWithUV(float x, float y, float z, float u, float v);
+    public void addVertexWithUV(double x, double y, double z, double u, double v);
 
-    public Tessellator getTesselator();
+    public Tessellator getMCTessellator();
 
 }

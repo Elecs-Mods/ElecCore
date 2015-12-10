@@ -169,13 +169,13 @@ public final class RenderingRegistry {
             @Override
             public void registerModels(ElecQuadBakery quadBakery, ElecModelBakery modelBakery, ElecTemplateBakery templateBakery) {
                 for (Item item : Util.getItemIterator()){
-                    if (item instanceof ITextureLoader){
-                        ((IModelAndTextureLoader) item).registerModels(quadBakery, modelBakery, templateBakery);
+                    if (item instanceof IModelLoader){
+                        ((IModelLoader) item).registerModels(quadBakery, modelBakery, templateBakery);
                     }
                 }
                 for (Block block : Util.getBlockIterator()){
-                    if (block instanceof ITextureLoader){
-                        ((IModelAndTextureLoader) block).registerModels(quadBakery, modelBakery, templateBakery);
+                    if (block instanceof IModelLoader){
+                        ((IModelLoader) block).registerModels(quadBakery, modelBakery, templateBakery);
                     }
                 }
             }
@@ -183,13 +183,13 @@ public final class RenderingRegistry {
             @Override
             public void registerTextures(IIconRegistrar iconRegistrar) {
                 for (Item item : Util.getItemIterator()){
-                    if (item instanceof IModelLoader){
-                        ((IModelAndTextureLoader) item).registerTextures(iconRegistrar);
+                    if (item instanceof ITextureLoader){
+                        ((ITextureLoader) item).registerTextures(iconRegistrar);
                     }
                 }
                 for (Block block : Util.getBlockIterator()){
-                    if (block instanceof IModelLoader){
-                        ((IModelAndTextureLoader) block).registerTextures(iconRegistrar);
+                    if (block instanceof ITextureLoader){
+                        ((ITextureLoader) block).registerTextures(iconRegistrar);
                     }
                 }
             }

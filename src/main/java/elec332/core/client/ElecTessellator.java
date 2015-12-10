@@ -1,6 +1,6 @@
 package elec332.core.client;
 
-import elec332.core.client.ITesselator;
+import elec332.core.client.render.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
@@ -8,14 +8,22 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 /**
  * Created by Elec332 on 25-11-2015.
  */
-public class ElecTesselator implements ITesselator {
+public class ElecTessellator implements ITessellator {
 
-    public ElecTesselator(){
-        tesselator = Tessellator.getInstance();
-        worldRenderer = tesselator.getWorldRenderer();
+    public ElecTessellator(){
+        this(Tessellator.getInstance());
     }
 
-    private final Tessellator tesselator;
+    public ElecTessellator(Tessellator tessellator){
+        this(tessellator.getWorldRenderer());
+        this.tessellator = tessellator;
+    }
+
+    public ElecTessellator(WorldRenderer worldRenderer){
+        this.worldRenderer = worldRenderer;
+    }
+
+    private Tessellator tessellator;
     private final WorldRenderer worldRenderer;
     private int brightness1, brightness2;
     private int color1, color2, color3, color4;
@@ -52,26 +60,28 @@ public class ElecTesselator implements ITesselator {
     }
 
     public void startDrawingWorldBlock(){
-        worldRenderer.func_181668_a(7, DefaultVertexFormats.BLOCK);
+        worldRenderer.begin(7, DefaultVertexFormats.BLOCK);
     }
 
     public void startDrawingGui(){
-        worldRenderer.func_181668_a(7, DefaultVertexFormats.field_181707_g);
+        worldRenderer.begin(7, DefaultVertexFormats.POSITION_TEX);
     }
 
-    public void addVertexWithUV(float x, float y, float z, float u, float v){
-        worldRenderer.func_181662_b(x, y, z);
+    public void addVertexWithUV(double x, double y, double z, double u, double v){
+        worldRenderer.pos(x, y, z);
         drawColor();
-        worldRenderer.func_181673_a(u, v);
-        worldRenderer.func_181671_a(brightness1, brightness2);
-        worldRenderer.func_181675_d();
+        worldRenderer.tex(u, v);
+        worldRenderer.lightmap(brightness1, brightness2);
+        worldRenderer.endVertex();
     }
 
-    public Tessellator getTesselator(){
-        return tesselator;
+    public Tessellator getMCTessellator(){
+        if (tessellator == null)
+            throw new IllegalStateException();
+        return tessellator;
     }
 
     private void drawColor(){
-        worldRenderer.func_181669_b(color1, color2, color3, color4);
+        worldRenderer.color(color1, color2, color3, color4);
     }
 }
