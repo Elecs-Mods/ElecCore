@@ -3,6 +3,7 @@ package elec332.core.asm;
 import com.google.common.collect.Lists;
 import com.google.common.reflect.ClassPath;
 import elec332.core.asm.asmload.ASMHooks;
+import elec332.core.loader.ElecCoreLoader;
 import net.minecraft.launchwrapper.IClassTransformer;
 
 import java.lang.reflect.Modifier;
@@ -16,6 +17,7 @@ public final class ASMLoader implements IClassTransformer {
 
     public ASMLoader(){
         try {
+            ElecCoreLoader.logger.info("Initialising ASM...");
             Set<ClassPath.ClassInfo> list = ClassPath.from(getClass().getClassLoader()).getTopLevelClasses("elec332.core.asm.asmload");
             for (ClassPath.ClassInfo classInfo : list){
                 Class clazz = classInfo.load();
