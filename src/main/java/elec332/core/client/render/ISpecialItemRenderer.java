@@ -1,4 +1,4 @@
-package elec332.core.client.model;
+package elec332.core.client.render;
 
 import net.minecraft.item.ItemStack;
 

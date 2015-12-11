@@ -1,10 +1,9 @@
 package elec332.core.network;
 
 import elec332.core.world.WorldHelper;
-import net.minecraft.client.Minecraft;
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
 /**
  * Created by Elec332 on 4-9-2015.

@@ -1,4 +1,4 @@
-package elec332.core.client.model;
+package elec332.core.client;
 
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;

@@ -1,7 +1,7 @@
 package elec332.core.client.model.replace;
 
-import elec332.core.client.model.ISpecialItemRenderer;
 import elec332.core.client.model.RenderingRegistry;
+import elec332.core.client.render.ISpecialItemRenderer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.renderer.GlStateManager;

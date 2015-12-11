@@ -1,11 +1,14 @@
 package elec332.core.client.model;
 
-import elec332.core.client.ITextureLoader;
-import elec332.core.client.model.model.IModelAndTextureLoader;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import elec332.core.client.IIconRegistrar;
+import elec332.core.client.ITextureLoader;
+import elec332.core.client.model.model.IModelAndTextureLoader;
 import elec332.core.client.model.model.IModelLoader;
 import elec332.core.client.model.template.ElecTemplateBakery;
+import elec332.core.client.render.ISpecialBlockRenderer;
+import elec332.core.client.render.ISpecialItemRenderer;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;

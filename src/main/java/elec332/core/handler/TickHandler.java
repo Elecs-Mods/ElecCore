@@ -1,10 +1,9 @@
 package elec332.core.handler;
 
+import elec332.core.main.ElecCore;
+import net.minecraft.world.World;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
-import elec332.core.main.ElecCore;
-import elec332.core.util.IRunOnce;
-import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 
 import java.util.ArrayDeque;

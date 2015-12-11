@@ -1,7 +1,6 @@
 package elec332.core.loader;
 
 import elec332.core.asm.ASMLoader;
-import elec332.core.main.ElecCore;
 import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

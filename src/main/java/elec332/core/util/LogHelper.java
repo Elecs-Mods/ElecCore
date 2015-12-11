@@ -1,7 +1,7 @@
 package elec332.core.util;
 
-import net.minecraftforge.fml.common.FMLLog;
 import elec332.core.config.ConfigCore;
+import net.minecraftforge.fml.common.FMLLog;
 import org.apache.logging.log4j.Level;
 
 /**

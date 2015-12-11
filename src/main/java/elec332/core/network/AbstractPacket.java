@@ -1,12 +1,12 @@
 package elec332.core.network;
 
 import elec332.core.main.ElecCore;
+import io.netty.buffer.ByteBuf;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
-import io.netty.buffer.ByteBuf;
-import net.minecraft.nbt.NBTTagCompound;
 
 /**
  * Created by Elec332 on 23-2-2015.

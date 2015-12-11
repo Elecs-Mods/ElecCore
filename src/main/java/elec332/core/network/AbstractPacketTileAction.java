@@ -1,6 +1,5 @@
 package elec332.core.network;
 
-import elec332.core.util.BlockLoc;
 import elec332.core.util.NBTHelper;
 import elec332.core.world.WorldHelper;
 import net.minecraft.nbt.NBTTagCompound;

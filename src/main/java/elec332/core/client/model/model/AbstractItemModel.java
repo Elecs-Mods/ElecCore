@@ -10,8 +10,8 @@ import net.minecraft.client.resources.model.IBakedModel;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
-
 import org.lwjgl.util.vector.Vector3f;
+
 import java.util.List;
 
 /**

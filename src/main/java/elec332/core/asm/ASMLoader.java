@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.google.common.reflect.ClassPath;
 import elec332.core.asm.asmload.ASMHooks;
 import net.minecraft.launchwrapper.IClassTransformer;
+
 import java.lang.reflect.Modifier;
 import java.util.List;
 import java.util.Set;

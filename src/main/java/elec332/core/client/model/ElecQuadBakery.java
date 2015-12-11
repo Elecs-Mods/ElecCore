@@ -5,7 +5,10 @@ import com.google.common.collect.Maps;
 import elec332.core.client.model.template.ElecTemplateBakery;
 import elec332.core.client.model.template.IQuadTemplate;
 import elec332.core.client.model.template.ITemplateSidedMap;
-import net.minecraft.client.renderer.block.model.*;
+import net.minecraft.client.renderer.block.model.BakedQuad;
+import net.minecraft.client.renderer.block.model.BlockFaceUV;
+import net.minecraft.client.renderer.block.model.BlockPartFace;
+import net.minecraft.client.renderer.block.model.FaceBakery;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.resources.model.ModelRotation;
@@ -19,7 +22,6 @@ import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-
 import org.lwjgl.util.vector.Vector3f;
 
 import javax.annotation.Nonnull;

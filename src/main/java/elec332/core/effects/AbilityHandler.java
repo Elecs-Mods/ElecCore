@@ -2,13 +2,9 @@ package elec332.core.effects;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
-import net.minecraftforge.fml.common.Loader;
-import net.minecraftforge.fml.common.LoaderState;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.PlayerEvent;
 import elec332.core.effects.api.ElecCoreAbilitiesAPI;
-import elec332.core.effects.api.ability.Ability;
 import elec332.core.effects.api.IElecCoreAbilitiesAPI;
+import elec332.core.effects.api.ability.Ability;
 import elec332.core.effects.api.ability.WrappedAbility;
 import elec332.core.effects.api.util.AbilityHelper;
 import elec332.core.effects.api.util.IAbilityPacket;
@@ -23,6 +19,10 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.IExtendedEntityProperties;
 import net.minecraftforge.event.entity.EntityEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
+import net.minecraftforge.fml.common.Loader;
+import net.minecraftforge.fml.common.LoaderState;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.PlayerEvent;
 
 import java.util.List;
 import java.util.Map;

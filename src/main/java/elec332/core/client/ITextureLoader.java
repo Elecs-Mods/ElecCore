@@ -1,6 +1,5 @@
 package elec332.core.client;
 
-import elec332.core.client.model.IIconRegistrar;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 

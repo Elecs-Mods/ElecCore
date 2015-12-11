@@ -2,7 +2,6 @@ package elec332.core.client.model.replace;
 
 import elec332.core.client.model.INoJsonBlock;
 import elec332.core.client.model.INoJsonItem;
-import elec332.core.client.model.model.IItemModel;
 import net.minecraft.client.renderer.tileentity.TileEntityItemStackRenderer;
 import net.minecraft.client.resources.model.IBakedModel;
 import net.minecraft.item.Item;

@@ -1,7 +1,7 @@
 package elec332.core.client.model.replace;
 
-import elec332.core.client.model.INoJsonItem;
 import elec332.core.client.model.INoJsonBlock;
+import elec332.core.client.model.INoJsonItem;
 import net.minecraft.client.resources.model.IBakedModel;
 import net.minecraft.client.resources.model.ModelManager;
 import net.minecraft.item.Item;

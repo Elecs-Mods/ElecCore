@@ -1,6 +1,5 @@
 package elec332.core.client;
 
-import elec332.core.client.render.RenderHelper;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;

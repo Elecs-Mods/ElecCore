@@ -1,9 +1,8 @@
 package elec332.core.client.model.template;
 
 import com.google.common.collect.Lists;
+import elec332.core.client.RenderHelper;
 import elec332.core.client.model.ElecModelBakery;
-import elec332.core.client.model.ElecQuadBakery;
-import elec332.core.client.render.RenderHelper;
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.util.EnumFacing;

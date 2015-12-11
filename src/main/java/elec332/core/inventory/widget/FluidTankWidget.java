@@ -1,7 +1,7 @@
 package elec332.core.inventory.widget;
 
+import elec332.core.client.RenderHelper;
 import elec332.core.client.inventory.IResourceLocationProvider;
-import elec332.core.client.render.RenderHelper;
 import elec332.core.inventory.tooltip.ToolTip;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;

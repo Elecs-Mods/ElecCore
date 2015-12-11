@@ -1,6 +1,6 @@
 package elec332.core.client.model.template;
 
-import elec332.core.client.render.RenderHelper;
+import elec332.core.client.RenderHelper;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.ModelRotation;
 import net.minecraft.util.EnumFacing;

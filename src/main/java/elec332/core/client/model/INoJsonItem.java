@@ -3,7 +3,6 @@ package elec332.core.client.model;
 import elec332.core.client.model.model.IItemModel;
 import elec332.core.client.model.model.IModelAndTextureLoader;
 import net.minecraft.item.Item;
-import net.minecraftforge.client.model.ISmartItemModel;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 

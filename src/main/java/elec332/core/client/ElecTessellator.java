@@ -1,6 +1,5 @@
 package elec332.core.client;
 
-import elec332.core.client.render.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;

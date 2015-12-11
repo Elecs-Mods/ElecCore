@@ -1,14 +1,14 @@
 package elec332.core.network;
 
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
-import net.minecraftforge.fml.relauncher.Side;
 import elec332.core.inventory.IWidgetContainer;
 import elec332.core.inventory.widget.Widget;
 import elec332.core.util.NBTHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.inventory.Container;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
+import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+import net.minecraftforge.fml.relauncher.Side;
 
 /**
  * Created by Elec332 on 31-7-2015.

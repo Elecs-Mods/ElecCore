@@ -3,10 +3,7 @@ package elec332.core.asm.asmload;
 import elec332.core.asm.ASMHelper;
 import elec332.core.asm.ASMLoader;
 import elec332.core.asm.AbstractASMClassTransformer;
-import net.minecraft.client.renderer.ItemModelMesher;
-import net.minecraftforge.fml.common.FMLCommonHandler;
 import org.objectweb.asm.Opcodes;
-import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.*;
 
 /**

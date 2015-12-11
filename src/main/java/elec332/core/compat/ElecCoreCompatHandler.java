@@ -1,8 +1,8 @@
 package elec332.core.compat;
 
-import net.minecraftforge.fml.common.event.FMLInterModComms;
 import elec332.core.util.AbstractCompatHandler;
 import net.minecraftforge.common.config.Configuration;
+import net.minecraftforge.fml.common.event.FMLInterModComms;
 import org.apache.logging.log4j.Logger;
 
 /**

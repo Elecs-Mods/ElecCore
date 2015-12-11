@@ -7,11 +7,8 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.registry.GameData;
-import sun.security.pkcs11.P11Util;
 
 import javax.annotation.Nonnull;
-import java.util.Collections;
-import java.util.Iterator;
 
 /**
  * Created by Elec332 on 17-11-2015.
