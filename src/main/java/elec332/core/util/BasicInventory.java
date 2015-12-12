@@ -15,7 +15,7 @@ import net.minecraft.util.IChatComponent;
 public class BasicInventory implements IInventory {
 
     public static BasicInventory copyOf(IInventory inventory){
-        BasicInventory ret = new BasicInventory(inventory.getCommandSenderName(), inventory.getSizeInventory());
+        BasicInventory ret = new BasicInventory(inventory.getName(), inventory.getSizeInventory());
         for (int i = 0; i < inventory.getSizeInventory(); i++) {
             ret.setInventorySlotContents(i, InventoryHelper.copyStack(inventory.getStackInSlot(i)));
         }
@@ -68,7 +68,7 @@ public class BasicInventory implements IInventory {
     }
 
     @Override
-    public ItemStack getStackInSlotOnClosing(int slotID) {
+    public ItemStack removeStackFromSlot(int slotID) {
         //if (this.inventoryContents[slotID] != null) {
         //    ItemStack itemstack = this.inventoryContents[slotID];
         //    this.inventoryContents[slotID] = null;
@@ -112,7 +112,7 @@ public class BasicInventory implements IInventory {
     }
 
     @Override
-    public String getCommandSenderName() {
+    public String getName() {
         return this.inventoryTitle;
     }
 
@@ -150,7 +150,7 @@ public class BasicInventory implements IInventory {
 
     @Override
     public IChatComponent getDisplayName() {
-        return new ChatComponentText(getCommandSenderName());
+        return new ChatComponentText(getName());
     }
 
     @Override

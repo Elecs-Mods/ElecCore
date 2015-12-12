@@ -56,7 +56,7 @@ public class WorldHelper {
     }
 
     public static void dropStack(World world, int x, int y, int z, ItemStack itemStack){
-        if (!world.isRemote && world.getGameRules().getGameRuleBooleanValue("doTileDrops")){
+        if (!world.isRemote && world.getGameRules().getBoolean("doTileDrops")){
             float f = 0.7F;
             double d0 = (double)(world.rand.nextFloat() * f) + (double)(1.0F - f) * 0.5D;
             double d1 = (double)(world.rand.nextFloat() * f) + (double)(1.0F - f) * 0.5D;

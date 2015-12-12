@@ -1,7 +1,7 @@
 package elec332.core.inventory.widget;
 
 import com.google.common.collect.Lists;
-import elec332.core.client.render.InventoryRenderHelper;
+import elec332.core.client.RenderHelper;
 import elec332.core.inventory.IWidgetContainer;
 import elec332.core.inventory.tooltip.ToolTip;
 import elec332.core.main.ElecCore;
@@ -103,7 +103,7 @@ public class Widget {
 
     @SideOnly(Side.CLIENT)
     protected void bindTexture(ResourceLocation resourceLocation){
-        InventoryRenderHelper.bindTexture(resourceLocation);
+        RenderHelper.bindTexture(resourceLocation);
     }
 
     public Widget setHidden(boolean hidden) {

@@ -145,11 +145,11 @@ public class BlockTileBase extends Block implements IWrenchable, ITileEntityProv
     }
 
     @Override
-    public int isProvidingWeakPower(IBlockAccess world, BlockPos pos, IBlockState state, EnumFacing side) {
+    public int getWeakPower(IBlockAccess world, BlockPos pos, IBlockState state, EnumFacing side) {
         TileEntity tile = WorldHelper.getTileAt(world, pos);
         if (tile instanceof IRedstoneHandler)
             return ((IRedstoneHandler) tile).isProvidingWeakPower(side);
-        return super.isProvidingWeakPower(world, pos, state, side);
+        return super.getWeakPower(world, pos, state, side);
     }
 
     @Override

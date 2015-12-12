@@ -77,7 +77,7 @@ public abstract class BaseTileWithInventory extends TileBase implements IInvento
      * When some containers are closed they call this on each slot, then drop whatever it returns as an EntityItem -
      * like when you close a workbench GUI.
      */
-    public ItemStack getStackInSlotOnClosing(int p_70304_1_) {
+    public ItemStack removeStackFromSlot(int p_70304_1_) {
         if (this.inventoryContent[p_70304_1_] != null) {
             ItemStack itemstack = this.inventoryContent[p_70304_1_];
             this.inventoryContent[p_70304_1_] = null;
@@ -102,7 +102,7 @@ public abstract class BaseTileWithInventory extends TileBase implements IInvento
      * Returns the name of the inventory
      */
     @Override
-    public String getCommandSenderName() {
+    public String getName() {
         return this.hasCustomInventoryName()?this.customInventoryName:standardInventoryName();
     }
 

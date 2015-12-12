@@ -179,7 +179,7 @@ public class ElecModelBakery {
         }
 
         @Override
-        public TextureAtlasSprite getTexture() {
+        public TextureAtlasSprite getParticleTexture() {
             return this.texture;
         }
 
