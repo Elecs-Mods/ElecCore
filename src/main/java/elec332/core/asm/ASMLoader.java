@@ -17,7 +17,6 @@ public final class ASMLoader implements IClassTransformer {
 
     public ASMLoader(){
         try {
-            ElecCoreLoader.logger.info("Initialising ASM...");
             Set<ClassPath.ClassInfo> list = ClassPath.from(getClass().getClassLoader()).getTopLevelClasses("elec332.core.asm.asmload");
             for (ClassPath.ClassInfo classInfo : list){
                 Class clazz = classInfo.load();

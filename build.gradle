@@ -82,6 +82,13 @@ processResources
     }
 }
 
+jar {
+        manifest {
+        attributes 'FMLCorePlugin': 'elec332.core.loader.ElecCoreLoader',
+                   'FMLCorePluginContainsFMLMod': 'true'
+    }
+}
+
 tasks.build.dependsOn('deobfJar')
 
 task deobfJar(type: Jar) { // Generate deobfuscated
