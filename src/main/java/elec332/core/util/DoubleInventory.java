@@ -58,11 +58,11 @@ public class DoubleInventory<I1 extends IInventory, I2 extends IInventory> imple
     }
 
     @Override
-    public ItemStack getStackInSlotOnClosing(int i) {
+    public ItemStack removeStackFromSlot(int i) {
         if (i < size1) {
-            return inventory1.getStackInSlotOnClosing(i);
+            return inventory1.removeStackFromSlot(i);
         } else {
-            return inventory2.getStackInSlotOnClosing(i - size1);
+            return inventory2.removeStackFromSlot(i - size1);
         }
     }
 
@@ -76,8 +76,8 @@ public class DoubleInventory<I1 extends IInventory, I2 extends IInventory> imple
     }
 
     @Override
-    public String getCommandSenderName() {
-        return inventory1.getCommandSenderName()+" & "+inventory2.getCommandSenderName();
+    public String getName() {
+        return inventory1.getName()+" & "+inventory2.getName();
     }
 
     @Override
