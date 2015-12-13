@@ -55,7 +55,7 @@ public class ASMHelper {
     }
 
     @Nullable
-    public LineNumberNode removeInsnUntilNextLabel(InsnList insnList, AbstractInsnNode from){
+    public static LineNumberNode removeInsnUntilNextLabel(InsnList insnList, AbstractInsnNode from){
         LineNumberNode to = findFirstLineAfter(from);
         if (to != null) {
             return removeInsnUntil(insnList, from, to.line);

@@ -44,7 +44,7 @@ public class TickHandler {
         ElecCore.logger.info("##############################################");
         ElecCore.logger.info("## Error, someone is using an unsafe method!##");
         ElecCore.logger.info("##############################################");
-        ElecCore.logger.info("Source: "+runnable.getClass().getCanonicalName());
+        ElecCore.logger.info("Source: "+runnable.getClass().toString());
     }
 
     @SuppressWarnings("deprecation")

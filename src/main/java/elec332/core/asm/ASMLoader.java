@@ -16,7 +16,8 @@ public final class ASMLoader implements IClassTransformer {
 
     public ASMLoader(){
         try {
-            Set<ClassPath.ClassInfo> list = ClassPath.from(getClass().getClassLoader()).getTopLevelClasses("elec332.core.asm.asmload");
+            List<ClassPath.ClassInfo> list = Lists.newArrayList(ClassPath.from(getClass().getClassLoader()).getTopLevelClasses("elec332.core.asm.asmload"));
+            list.addAll(ClassPath.from(getClass().getClassLoader()).getTopLevelClasses("elec332.asmload"));
             for (ClassPath.ClassInfo classInfo : list){
                 Class clazz = classInfo.load();
                 if (clazz.isInterface() || Modifier.isAbstract(clazz.getModifiers()))

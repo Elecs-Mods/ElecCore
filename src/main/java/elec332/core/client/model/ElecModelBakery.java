@@ -193,10 +193,10 @@ public class ElecModelBakery {
     static {
         EMPTY_LIST = ImmutableList.of();
         quadBakery = ElecQuadBakery.instance;
-        defaultBlockTemplate = ElecTemplateBakery.instance.newDefaultBlockTemplate();
-        defaultItemTemplate = ElecTemplateBakery.instance.newDefaultItemTemplate();
         DEFAULT_ITEM = new ItemCameraTransforms(new ItemTransformVec3f(new Vector3f(-90, 0, 0), applyTranslationScale(new Vector3f(0, 1, -3)), new Vector3f(0.55f, 0.55f, 0.55f)), new ItemTransformVec3f(new Vector3f(0, -135, 25), applyTranslationScale(new Vector3f(0, 4, 2)), new Vector3f(1.7f, 1.7f, 1.7f)), ItemTransformVec3f.DEFAULT, ItemTransformVec3f.DEFAULT, ItemTransformVec3f.DEFAULT, ItemTransformVec3f.DEFAULT);
         DEFAULT_BLOCK = new ItemCameraTransforms(new ItemTransformVec3f(new Vector3f(10, -45, 170), applyTranslationScale(new Vector3f(0, 1.5f, -2.75f)), new Vector3f(0.375f, 0.375f, 0.375f)), ItemTransformVec3f.DEFAULT, ItemTransformVec3f.DEFAULT, ItemTransformVec3f.DEFAULT, ItemTransformVec3f.DEFAULT, ItemTransformVec3f.DEFAULT);
+        defaultBlockTemplate = ElecTemplateBakery.instance.newDefaultBlockTemplate();
+        defaultItemTemplate = ElecTemplateBakery.instance.newDefaultItemTemplate();
     }
 
     private static Vector3f applyTranslationScale(Vector3f vec){
