@@ -26,6 +26,7 @@ public class ElecTileEntityItemStackRenderer extends TileEntityItemStackRenderer
         }
         if (model != null && model.isBuiltInRenderer()){
             model.getGeneralQuads(); //See TESRItemModel
+            return;
         }
 
         super.renderByItem(itemStackIn);

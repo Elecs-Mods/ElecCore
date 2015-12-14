@@ -58,7 +58,7 @@ minecraft {
 }
 
 dependencies {
-	compile "mcp.mobius.waila:Waila:${config.WAILA_version}" //_${config.minecraft_version}"
+	compile "mcp.mobius.waila:Waila:${config.WAILA_version}_${config.minecraft_version}"
 	compile "codechicken:NotEnoughItems:${config.NEI_version}:dev"//${config.minecraft_version}-${config.NEI_version}:dev"
 }
 
@@ -83,12 +83,13 @@ processResources
 }
 
 jar {
-        manifest {
+    manifest {
         attributes 'FMLCorePlugin': 'elec332.core.loader.ElecCoreLoader',
-                   'FMLCorePluginContainsFMLMod': 'true'
+                   'FMLCorePluginContainsFMLMod': 'true',
 				   'FMLAT': 'eleccore_at.cfg'
-    }
+	}
 }
+
 
 tasks.build.dependsOn('deobfJar')
 

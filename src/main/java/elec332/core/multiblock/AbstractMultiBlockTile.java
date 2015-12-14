@@ -4,16 +4,19 @@ import elec332.core.compat.handlers.WailaCompatHandler;
 import elec332.core.main.ElecCore;
 import elec332.core.tile.IInventoryTile;
 import elec332.core.tile.TileBase;
-import mcp.mobius.waila.api.ITaggedList;
 import mcp.mobius.waila.api.IWailaConfigHandler;
 import mcp.mobius.waila.api.IWailaDataAccessor;
-import mcp.mobius.waila.api.IWailaDataAccessorServer;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.Container;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.world.World;
+
+import java.util.List;
 
 /**
  * Created by Elec332 on 28-7-2015.
@@ -153,16 +156,16 @@ public abstract class AbstractMultiBlockTile extends TileBase implements IMultiB
     }
 
     @Override
-    public ITaggedList.ITipList getWailaBody(ItemStack itemStack, ITaggedList.ITipList currentTip, IWailaDataAccessor accessor, IWailaConfigHandler config) {
+    public List<String> getWailaBody(ItemStack itemStack, List<String> currentTip, IWailaDataAccessor accessor, IWailaConfigHandler config) {
         if (getMultiBlock() != null)
             return getMultiBlock().getWailaBody(itemStack, currentTip, accessor, config);
         return currentTip;
     }
 
     @Override
-    public NBTTagCompound getWailaTag(TileEntity tile, NBTTagCompound tag, IWailaDataAccessorServer accessor){
+    public NBTTagCompound getWailaTag(EntityPlayerMP player, TileEntity te, NBTTagCompound tag, World world, BlockPos pos){
         if (getMultiBlock() != null)
-            return getMultiBlock().getWailaTag(tile, tag, accessor);
+            return getMultiBlock().getWailaTag(player, te, tag, world, pos);
         return tag;
     }
 

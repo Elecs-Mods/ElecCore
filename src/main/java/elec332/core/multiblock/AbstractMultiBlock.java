@@ -5,15 +5,18 @@ import elec332.core.tile.IInventoryTile;
 import elec332.core.tile.TileBase;
 import elec332.core.util.BlockLoc;
 import elec332.core.world.WorldHelper;
-import mcp.mobius.waila.api.ITaggedList;
 import mcp.mobius.waila.api.IWailaConfigHandler;
 import mcp.mobius.waila.api.IWailaDataAccessor;
-import mcp.mobius.waila.api.IWailaDataAccessorServer;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.Container;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.BlockPos;
+import net.minecraft.world.World;
+
+import java.util.List;
 
 /**
  * Created by Elec332 on 28-7-2015.
@@ -57,12 +60,12 @@ public abstract class AbstractMultiBlock extends IMultiBlock implements IInvento
     }
 
     @Override
-    public ITaggedList.ITipList getWailaBody(ItemStack itemStack, ITaggedList.ITipList currentTip, IWailaDataAccessor accessor, IWailaConfigHandler config) {
+    public List<String> getWailaBody(ItemStack itemStack, List<String> currentTip, IWailaDataAccessor accessor, IWailaConfigHandler config) {
         return currentTip;
     }
 
     @Override
-    public NBTTagCompound getWailaTag(TileEntity te, NBTTagCompound tag, IWailaDataAccessorServer accessor){
+    public NBTTagCompound getWailaTag(EntityPlayerMP player, TileEntity te, NBTTagCompound tag, World world, BlockPos pos){
         return tag;
     }
 

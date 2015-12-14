@@ -7,7 +7,6 @@ import net.minecraft.launchwrapper.IClassTransformer;
 
 import java.lang.reflect.Modifier;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Created by Elec332 on 18-11-2015.
