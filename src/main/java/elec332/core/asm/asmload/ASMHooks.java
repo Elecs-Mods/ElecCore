@@ -1,13 +1,9 @@
 package elec332.core.asm.asmload;
 
-import elec332.core.client.model.replace.ElecBlockRendererDispatcher;
-import elec332.core.client.model.replace.ElecItemModelMesher;
-import elec332.core.client.model.replace.ElecItemRenderer;
-import elec332.core.client.model.replace.ElecTileEntityItemStackRenderer;
+import elec332.core.client.model.replace.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BlockRendererDispatcher;
 import net.minecraft.client.renderer.ItemModelMesher;
-import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.tileentity.TileEntityItemStackRenderer;
 import net.minecraftforge.fml.relauncher.Side;
@@ -23,7 +19,7 @@ public final class ASMHooks {
 
         public static void initItemRender(){
             Minecraft mc = Minecraft.getMinecraft();
-            mc.renderItem = new RenderItem(mc.renderEngine, mc.modelManager);
+            mc.renderItem = new ElecRenderItem(mc.renderEngine, mc.modelManager);
             mc.renderManager = new RenderManager(mc.renderEngine, mc.renderItem);
             mc.itemRenderer = new ElecItemRenderer(mc);
             mc.mcResourceManager.registerReloadListener(mc.renderItem);

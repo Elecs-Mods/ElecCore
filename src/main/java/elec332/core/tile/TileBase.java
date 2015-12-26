@@ -98,16 +98,9 @@ public class TileBase extends TileEntity implements IElecCoreNetworkTile, ITicka
     public void onTileUnloaded(){
     }
 
-    /*
-     * These 2 seem to switch sometimes, lets add them both for now -_-
-     */
-
-    public final void tick(){
-        update();
-    }
-
     @SuppressWarnings("deprecation")
-    public final void update(){
+    @Override
+    public void update(){
         if (canUpdate())
             updateEntity();
     }
@@ -174,6 +167,9 @@ public class TileBase extends TileEntity implements IElecCoreNetworkTile, ITicka
         return false;
     }
 
+    public void onBlockClicked(EntityPlayer player){
+    }
+
     public ArrayList<ItemStack> getDrops(int fortune){
         return Lists.newArrayList(itemStackFromNBTTile());
     }
@@ -210,7 +206,7 @@ public class TileBase extends TileEntity implements IElecCoreNetworkTile, ITicka
     //NETWORK///////////////////////
 
     public void syncData(){
-        this.worldObj.markBlockForUpdate(getPos());
+        WorldHelper.markBlockForUpdate(worldObj, pos);
     }
 
     @SideOnly(Side.CLIENT)

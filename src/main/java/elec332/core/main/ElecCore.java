@@ -12,7 +12,6 @@ import elec332.core.server.ServerHelper;
 import elec332.core.util.FileHelper;
 import elec332.core.util.MCModInfo;
 import elec332.core.util.ModInfoHelper;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
@@ -62,7 +61,6 @@ public class ElecCore extends ModBase{
 
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
-		MinecraftForge.EVENT_BUS.register(new elec332.core.client.model.EventHandler());
 		this.cfgFile = FileHelper.getConfigFileElec(event);
 		this.ModID = ModInfoHelper.getModID(event);
 		loadConfiguration();
@@ -80,6 +78,8 @@ public class ElecCore extends ModBase{
 		FMLCommonHandler.instance().bus().register(tickHandler);
 		debug = config.isEnabled("debug", false);
 		ServerHelper.instance.load();
+
+		proxy.preInitRendering();
 
 		MCModInfo.createMCModInfoElec(event, "Provides core functionality for Elec's Mods",
 				"-", "assets/elec332/logo.png", new String[]{"Elec332"});

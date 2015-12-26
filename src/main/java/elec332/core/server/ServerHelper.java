@@ -143,6 +143,23 @@ public class ServerHelper {
             networkHandler.getNetworkWrapper().sendTo(message, player);
     }
 
+    public List<EntityPlayerMP> getAllPlayersInDimension(int dimension){
+        List<EntityPlayerMP> ret = Lists.newArrayList();
+        for (EntityPlayerMP player : getOnlinePlayers()){
+            if (WorldHelper.getDimID(player.worldObj) == dimension){
+                ret.add(player);
+            }
+        }
+        return ret;
+    }
+
+    public void sendMessageToAllPlayersInDimension(int dimension, IMessage message, NetworkHandler networkHandler){
+        System.out.println(getAllPlayersInDimension(dimension).size());
+        for (EntityPlayerMP playerMP : getAllPlayersInDimension(dimension)){
+            networkHandler.getNetworkWrapper().sendTo(message, playerMP);
+        }
+    }
+
     public MinecraftServer getMinecraftServer(){
         return MinecraftServer.getServer();
     }

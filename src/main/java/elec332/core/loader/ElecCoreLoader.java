@@ -1,6 +1,5 @@
 package elec332.core.loader;
 
-import elec332.core.asm.ASMLoader;
 import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -29,7 +28,7 @@ public class ElecCoreLoader implements IFMLLoadingPlugin {
     @Override
     public String[] getASMTransformerClass() {
         return new String[]{
-                ASMLoader.class.getCanonicalName()
+                //ASMLoader.class.getCanonicalName()
         };
     }
 

@@ -22,9 +22,9 @@ public abstract class AbstractBlockRenderer implements ISpecialBlockRenderer {
             ITessellator tessellator = RenderHelper.forWorldRenderer(renderer);
             tessellator.setBrightness(state.getBlock().getMixedBrightnessForBlock(iba, blockPosIn));
             RenderBlocks renderBlocks = RenderHelper.getBlockRenderer().setTessellator(tessellator);
-            net.minecraft.client.renderer.RenderHelper.disableStandardItemLighting();
+//            net.minecraft.client.renderer.RenderHelper.disableStandardItemLighting();
             tessellator.setColorRGBA_F(1, 1, 1, 1);
-            RenderHelper.bindBlockTextures();
+//            RenderHelper.bindBlockTextures();
             renderBlock(iba, state, blockPosIn, renderBlocks, tessellator, renderer);
             renderBlocks.resetTessellator();
             return true;

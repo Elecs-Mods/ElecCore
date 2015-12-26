@@ -23,6 +23,10 @@ import net.minecraftforge.common.ForgeChunkManager;
  */
 public class WorldHelper {
 
+    public static void markBlockForUpdate(World world, BlockPos pos){
+        world.markBlockForUpdate(pos);
+    }
+
     public static boolean chunkExists(World world, BlockPos pos){
         return world.getChunkProvider().chunkExists(pos.getX() >> 4, pos.getZ() >> 4);
     }

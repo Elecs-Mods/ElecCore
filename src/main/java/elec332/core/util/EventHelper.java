@@ -27,7 +27,7 @@ public class EventHelper {
 
     public static void registerHandlerForgeAndFML(Object reg){
         registerHandlerForge(reg);
-        registerHandlerFML(reg);
+       // registerHandlerFML(reg);
     }
 
     public static void registerHandlerForge(Object reg){

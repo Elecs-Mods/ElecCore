@@ -62,6 +62,14 @@ public class BlockTileBase extends Block implements IWrenchable, ITileEntityProv
     }
 
     @Override
+    public void onBlockClicked(World world, BlockPos pos, EntityPlayer playerIn) {
+        TileEntity tile = WorldHelper.getTileAt(world, pos);
+        if (tile instanceof TileBase)
+            ((TileBase) tile).onBlockClicked(playerIn);
+        super.onBlockClicked(world, pos, playerIn);
+    }
+
+    @Override
     public TileEntity createNewTileEntity(World world, int metadata) {
         try {
             return this.tileClass.newInstance();

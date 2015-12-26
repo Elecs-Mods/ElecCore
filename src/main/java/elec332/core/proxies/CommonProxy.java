@@ -9,6 +9,9 @@ public class CommonProxy {
 		return false;
 	}
 
+	public void preInitRendering(){
+	}
+
 	public void addPersonalMessageToPlayer(String s){
 	}
 

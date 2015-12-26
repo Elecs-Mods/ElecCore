@@ -80,6 +80,7 @@ public class RenderBlocks {
     public RenderBlocks() {
         this.minecraftRB = Minecraft.getMinecraft();
         this.tessellator = RenderHelper.getTessellator();
+        setRenderBounds(0, 0, 0, 1, 1, 1);
     }
 
     public RenderBlocks setTessellator(ITessellator tessellator){
