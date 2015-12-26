@@ -84,9 +84,9 @@ processResources
 
 jar {
     manifest {
-        attributes //'FMLCorePlugin': 'elec332.core.loader.ElecCoreLoader',
+         //'FMLCorePlugin': 'elec332.core.loader.ElecCoreLoader',
                    //'FMLCorePluginContainsFMLMod': 'true',
-				   'FMLAT': 'eleccore_at.cfg'
+		attributes		   'FMLAT': 'eleccore_at.cfg'
 	}
 }
 
