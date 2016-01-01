@@ -6,6 +6,8 @@ import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 /**
  * Created by Elec332 on 2-4-2015.
@@ -46,6 +48,7 @@ public class DirectionHelper {
         }
     }
 
+    @SideOnly(Side.CLIENT)
     public static ModelRotation getRotationFromFacing(EnumFacing facing){
         switch (facing){
             case EAST:

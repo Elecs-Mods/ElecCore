@@ -2,6 +2,7 @@ package elec332.core.proxies;
 
 import elec332.core.asm.asmload.ASMHooks;
 import elec332.core.client.model.ElecResourceManager;
+import elec332.core.main.ElecCore;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BlockRendererDispatcher;
 import net.minecraft.client.renderer.entity.RenderItem;
@@ -28,6 +29,12 @@ public class ClientProxy extends CommonProxy {
 
 	@Override
 	public void preInitRendering() {
+		if (!(minecraft.mcResourceManager instanceof SimpleReloadableResourceManager)){
+			ElecCore.logger.error("Someone replaced the resource manager, but it doesn't extend SimpleResourceManager!");
+			ElecCore.logger.error("This is an severe error, forge will crash further down the line, exiting minecraft now!");
+			ElecCore.logger.error("Source: "+minecraft.mcResourceManager.getClass().getCanonicalName());
+			throw new RuntimeException("Class: "+minecraft.mcResourceManager.getClass().getCanonicalName()+" is not a valid replacement for the vanilla resource manager.");
+		}
 		ElecResourceManager newResourceManager = new ElecResourceManager((SimpleReloadableResourceManager) minecraft.mcResourceManager);
 		newResourceManager.addListenHook(new RenderReplacer());
 		minecraft.mcResourceManager = newResourceManager;

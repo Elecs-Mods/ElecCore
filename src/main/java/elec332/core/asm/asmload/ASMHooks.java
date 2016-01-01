@@ -19,19 +19,19 @@ public final class ASMHooks {
 
         public static void initItemRender(){
             Minecraft mc = Minecraft.getMinecraft();
-            mc.renderItem = new ElecRenderItem(mc.renderEngine, mc.modelManager);
+            mc.renderItem = new ElecRenderItem(mc.renderItem);
             mc.renderManager = new RenderManager(mc.renderEngine, mc.renderItem);
-            mc.itemRenderer = new ElecItemRenderer(mc);
+            mc.itemRenderer = new ElecItemRenderer(mc.itemRenderer);
             mc.mcResourceManager.registerReloadListener(mc.renderItem);
             TileEntityItemStackRenderer.instance = new ElecTileEntityItemStackRenderer();
         }
 
         public static ItemModelMesher newModelMesher(){
-            return new ElecItemModelMesher(Minecraft.getMinecraft().modelManager);
+            return new ElecItemModelMesher(Minecraft.getMinecraft().renderItem.itemModelMesher);
         }
 
         public static BlockRendererDispatcher newBlockRendererDispatcher(){
-            return new ElecBlockRendererDispatcher(Minecraft.getMinecraft().modelManager.getBlockModelShapes(), Minecraft.getMinecraft().gameSettings);
+            return new ElecBlockRendererDispatcher(Minecraft.getMinecraft().blockRenderDispatcher);
         }
 
     }

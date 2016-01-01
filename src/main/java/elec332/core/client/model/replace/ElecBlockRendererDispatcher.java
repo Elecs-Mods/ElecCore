@@ -4,12 +4,14 @@ import elec332.core.client.model.INoJsonBlock;
 import elec332.core.client.model.RenderingRegistry;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.renderer.BlockModelRenderer;
 import net.minecraft.client.renderer.BlockModelShapes;
 import net.minecraft.client.renderer.BlockRendererDispatcher;
 import net.minecraft.client.renderer.WorldRenderer;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.client.resources.model.IBakedModel;
 import net.minecraft.client.resources.model.WeightedBakedModel;
-import net.minecraft.client.settings.GameSettings;
 import net.minecraft.crash.CrashReport;
 import net.minecraft.crash.CrashReportCategory;
 import net.minecraft.util.BlockPos;
@@ -23,9 +25,12 @@ import net.minecraft.world.WorldType;
  */
 public class ElecBlockRendererDispatcher extends BlockRendererDispatcher {
 
-    public ElecBlockRendererDispatcher(BlockModelShapes bms, GameSettings settings) {
-        super(bms, settings);
+    public ElecBlockRendererDispatcher(BlockRendererDispatcher blockRendererDispatcher) {
+        super(blockRendererDispatcher.blockModelShapes, blockRendererDispatcher.gameSettings);
+        this.blockRendererDispatcher = blockRendererDispatcher;
     }
+
+    private final BlockRendererDispatcher blockRendererDispatcher;
 
     public boolean renderBlock(IBlockState state, BlockPos pos, IBlockAccess world, WorldRenderer renderer) {
         try {
@@ -34,11 +39,11 @@ public class ElecBlockRendererDispatcher extends BlockRendererDispatcher {
             }
         } catch (Throwable throwable) {
             CrashReport crashreport = CrashReport.makeCrashReport(throwable, "Tesselating block in world");
-            CrashReportCategory crashreportcategory = crashreport.makeCategory("Block being tesselated");
+            CrashReportCategory crashreportcategory = crashreport.makeCategory("Block being tesselated - ISBHR");
             CrashReportCategory.addBlockInfo(crashreportcategory, pos, state.getBlock(), state.getBlock().getMetaFromState(state));
             throw new ReportedException(crashreport);
         }
-        return super.renderBlock(state, pos, world, renderer);
+        return blockRendererDispatcher.renderBlock(state, pos, world, renderer);
     }
 
     @SuppressWarnings("deprecation")
@@ -70,6 +75,38 @@ public class ElecBlockRendererDispatcher extends BlockRendererDispatcher {
         }
 
         return ibakedmodel;
+    }
+
+    /* Link-through */
+
+    @Override
+    public BlockModelShapes getBlockModelShapes() {
+        return blockRendererDispatcher.getBlockModelShapes();
+    }
+
+    @Override
+    public void renderBlockDamage(IBlockState state, BlockPos pos, TextureAtlasSprite texture, IBlockAccess blockAccess) {
+        blockRendererDispatcher.renderBlockDamage(state, pos, texture, blockAccess);
+    }
+
+    @Override
+    public BlockModelRenderer getBlockModelRenderer() {
+        return blockRendererDispatcher.getBlockModelRenderer();
+    }
+
+    @Override
+    public void renderBlockBrightness(IBlockState state, float brightness) {
+        blockRendererDispatcher.renderBlockBrightness(state, brightness);
+    }
+
+    @Override
+    public boolean isRenderTypeChest(Block block, int i) {
+        return blockRendererDispatcher.isRenderTypeChest(block, i);
+    }
+
+    @Override
+    public void onResourceManagerReload(IResourceManager resourceManager) {
+        blockRendererDispatcher.onResourceManagerReload(resourceManager);
     }
 
 }

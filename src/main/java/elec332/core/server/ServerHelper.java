@@ -165,7 +165,11 @@ public class ServerHelper {
     }
 
     public boolean isValid(){
-        return getMinecraftServer() != null;
+        boolean ret = getMinecraftServer() != null;
+        if (!ret){
+            ElecCore.logger.error("Someone tried to access the server whilst it was in an invalid state!");
+        }
+        return ret;
     }
 
     public static boolean isServer(World world){

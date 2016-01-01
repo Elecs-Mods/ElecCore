@@ -20,13 +20,16 @@ import javax.annotation.Nullable;
  */
 public class ElecItemRenderer extends ItemRenderer {
 
-    public ElecItemRenderer(Minecraft mc) {
-        super(mc);
+    public ElecItemRenderer(ItemRenderer itemRenderer) {
+        super(itemRenderer.mc);
+        this.itemRenderer = itemRenderer;
     }
+
+    private final ItemRenderer itemRenderer;
 
     @Override
     public void renderItem(EntityLivingBase entityIn, ItemStack heldStack, ItemCameraTransforms.TransformType p_178099_3_) {
-        super.renderItem(entityIn, heldStack, p_178099_3_);
+        itemRenderer.renderItem(entityIn, heldStack, p_178099_3_);
     }
 
     @Override
@@ -67,7 +70,7 @@ public class ElecItemRenderer extends ItemRenderer {
                 }
             }
         }
-        super.renderItemInFirstPerson(partialTickTime);
+        itemRenderer.renderItemInFirstPerson(partialTickTime);
     }
 
     @Nullable
@@ -75,6 +78,28 @@ public class ElecItemRenderer extends ItemRenderer {
         if (stack == null || stack.getItem() == null || !RenderingRegistry.instance().hasSpecialFirstPersonRenderer(stack.getItem()))
             return null;
         return RenderingRegistry.instance().getRendererFor(stack.getItem());
+    }
+
+    /* Link-through */
+
+    @Override
+    public void renderOverlays(float partialTicks) {
+        itemRenderer.renderOverlays(partialTicks);
+    }
+
+    @Override
+    public void updateEquippedItem() {
+        itemRenderer.updateEquippedItem();
+    }
+
+    @Override
+    public void resetEquippedProgress() {
+        itemRenderer.resetEquippedProgress();
+    }
+
+    @Override
+    public void resetEquippedProgress2() {
+        itemRenderer.resetEquippedProgress2();
     }
 
 }

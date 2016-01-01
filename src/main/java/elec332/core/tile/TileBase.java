@@ -7,6 +7,7 @@ import elec332.core.network.PacketReRenderBlock;
 import elec332.core.network.PacketTileDataToServer;
 import elec332.core.server.ServerHelper;
 import elec332.core.util.BlockLoc;
+import elec332.core.util.BlockStateHelper;
 import elec332.core.util.DirectionHelper;
 import elec332.core.world.WorldHelper;
 import net.minecraft.block.Block;
@@ -192,7 +193,7 @@ public class TileBase extends TileEntity implements IElecCoreNetworkTile, ITicka
     }
 
     protected void setMetaForFacingOnPlacement(EntityLivingBase entityLivingBase){
-        setBlockMetadataWithNotify(DirectionHelper.getDirectionNumberOnPlacement(entityLivingBase));
+        WorldHelper.setBlockState(worldObj, pos, getBlockType().getBlockState().getBaseState().withProperty(BlockStateHelper.FACING_NORMAL.getProperty(), DirectionHelper.getDirectionFromNumber(DirectionHelper.getDirectionNumberOnPlacement(entityLivingBase))), 2);
     }
 
     public void reRenderBlock(){

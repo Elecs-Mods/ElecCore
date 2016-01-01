@@ -1,52 +1,72 @@
 package elec332.core.client.model;
 
 import com.google.common.collect.Lists;
-import net.minecraft.client.resources.IReloadableResourceManager;
+import net.minecraft.client.resources.IResource;
 import net.minecraft.client.resources.IResourceManagerReloadListener;
+import net.minecraft.client.resources.IResourcePack;
 import net.minecraft.client.resources.SimpleReloadableResourceManager;
+import net.minecraft.util.ResourceLocation;
 
+import java.io.IOException;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by Elec332 on 26-12-2015.
  */
-public final class ElecResourceManager extends SimpleReloadableResourceManager {
+public final class ElecResourceManager extends SimpleReloadableResourceManager implements IElecResourceManager {
 
     public ElecResourceManager(SimpleReloadableResourceManager resourceManager) {
         super(resourceManager.rmMetadataSerializer);
-        this.domainResourceManagers = resourceManager.domainResourceManagers;
-        this.reloadListeners = resourceManager.reloadListeners;
-        this.setResourceDomains = resourceManager.setResourceDomains;
-
+        this.resourceManager = resourceManager;
         this.hooks = Lists.newArrayList();
     }
 
-    private final List<IResourceHook> hooks;
+    private final SimpleReloadableResourceManager resourceManager;
+    private final List<IElecResourceManager.IResourceHook> hooks;
 
-    public void addListenHook(IResourceHook hook){
+    public void addListenHook(IElecResourceManager.IResourceHook hook){
         hooks.add(hook);
     }
 
     @Override
     public void registerReloadListener(IResourceManagerReloadListener reloadListener) {
         boolean register = true;
-        for (IResourceHook hook : hooks){
+        for (IElecResourceManager.IResourceHook hook : hooks){
             if (!hook.onRegister(this, reloadListener)){
                 register = false;
             }
         }
         if (register) {
-            System.out.println("registering: "+reloadListener.getClass());
-            super.registerReloadListener(reloadListener);
-        } else {
-            System.out.println("Not registering: "+reloadListener.getClass());
+            resourceManager.registerReloadListener(reloadListener);
         }
     }
 
-    public interface IResourceHook {
+    /* Link-through */
 
-        public boolean onRegister(IReloadableResourceManager resourceManager, IResourceManagerReloadListener listener);
+    @Override
+    public void reloadResources(List<IResourcePack> resourcePacks) {
+        resourceManager.reloadResources(resourcePacks);
+    }
 
+    @Override
+    public Set<String> getResourceDomains() {
+        return resourceManager.getResourceDomains();
+    }
+
+    @Override
+    public IResource getResource(ResourceLocation location) throws IOException {
+        return resourceManager.getResource(location);
+    }
+
+    @Override
+    public List<IResource> getAllResources(ResourceLocation location) throws IOException {
+        return resourceManager.getAllResources(location);
+    }
+
+    @Override
+    public void reloadResourcePack(IResourcePack resourcePack) {
+        resourceManager.reloadResourcePack(resourcePack);
     }
 
 }

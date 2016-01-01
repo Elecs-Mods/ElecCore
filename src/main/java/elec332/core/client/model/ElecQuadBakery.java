@@ -1,5 +1,6 @@
 package elec332.core.client.model;
 
+import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 import elec332.core.client.model.template.ElecTemplateBakery;
@@ -72,7 +73,7 @@ public class ElecQuadBakery {
     public ISidedMap bakeQuads(ITemplateSidedMap from, ModelRotation rotation){
         ISidedMap ret = newSidedMap();
         for (EnumFacing facing : EnumFacing.VALUES){
-            ret.setQuadsForSide(facing, bakeQuads(from.getForSide(facing), rotation));
+            ret.setQuadsForSide(rotation == null ? facing : rotation.rotate(facing), bakeQuads(from.getForSide(facing), rotation));
         }
         return ret;
     }
@@ -142,7 +143,7 @@ public class ElecQuadBakery {
     public List<BakedQuad> getGeneralItemQuads(TextureAtlasSprite... textures){
         ImmutableList.Builder<BakedQuad> builder = ImmutableList.builder();
         for (int i = 0; i < textures.length; i++) {
-            builder.addAll(dummy.getQuadsForSprite(i, textures[i], DefaultVertexFormats.ITEM, TRSRTransformation.identity()));
+            builder.addAll(dummy.getQuadsForSprite(i, textures[i], DefaultVertexFormats.ITEM, Optional.of(TRSRTransformation.identity())));
         }
         return builder.build();
     }

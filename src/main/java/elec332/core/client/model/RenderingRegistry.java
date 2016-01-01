@@ -2,6 +2,7 @@ package elec332.core.client.model;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import elec332.core.client.IIconRegistrar;
 import elec332.core.client.ITextureLoader;
 import elec332.core.client.model.model.IModelAndTextureLoader;
@@ -9,6 +10,7 @@ import elec332.core.client.model.model.IModelLoader;
 import elec332.core.client.model.template.ElecTemplateBakery;
 import elec332.core.client.render.ISpecialBlockRenderer;
 import elec332.core.client.render.ISpecialItemRenderer;
+import elec332.core.main.ElecCore;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
@@ -18,7 +20,6 @@ import net.minecraft.item.ItemBlock;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.client.model.ModelLoader;
-import net.minecraftforge.fml.common.registry.GameData;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -125,7 +126,28 @@ public final class RenderingRegistry {
             modifier.setInt(field, i);
             @SuppressWarnings("unchecked")
             Set<ModelResourceLocation> set = (Set<ModelResourceLocation>) field.get(modelLoader);
-            for (Block block : Util.getBlockIterator()){
+            Set<ModelResourceLocation> toRemove = Sets.newHashSet();
+            for (ModelResourceLocation rl : set){
+                String name = rl.toString().split("#")[0];
+                Item item = Item.getByNameOrId(name);
+                if (item == null){
+                    Block block = Block.getBlockFromName(name);
+                    if (block == null){
+                        ElecCore.logger.error("Error finding object: "+name);
+                    }
+                    if (block instanceof INoJsonBlock){
+                        toRemove.add(rl);
+                    }
+                } else {
+                    if (item instanceof INoJsonItem){
+                        toRemove.add(rl);
+                    } else if (item instanceof ItemBlock && ((ItemBlock) item).getBlock() instanceof INoJsonBlock){
+                        toRemove.add(rl);
+                    }
+                }
+            }
+            set.removeAll(toRemove);
+            /*for (Block block : Util.getBlockIterator()){
                 if (block instanceof INoJsonBlock) {
                     ResourceLocation s = (ResourceLocation) GameData.getBlockRegistry().getNameForObject(block);
                     set.remove(new ModelResourceLocation(s, "normal"));
@@ -139,7 +161,7 @@ public final class RenderingRegistry {
                     ResourceLocation s = (ResourceLocation) GameData.getBlockRegistry().getNameForObject(((ItemBlock) item).getBlock());
                     set.remove(new ModelResourceLocation(s, "inventory"));
                 }
-            }
+            }*/
         } catch (Exception e1){
             e1.printStackTrace();
         }

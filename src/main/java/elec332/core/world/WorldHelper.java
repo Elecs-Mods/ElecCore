@@ -23,6 +23,10 @@ import net.minecraftforge.common.ForgeChunkManager;
  */
 public class WorldHelper {
 
+    public static void setBlockState(World world, BlockPos pos, IBlockState state, int flags){
+        world.setBlockState(pos, state, flags);
+    }
+
     public static void markBlockForUpdate(World world, BlockPos pos){
         world.markBlockForUpdate(pos);
     }
