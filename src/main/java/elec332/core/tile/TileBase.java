@@ -11,6 +11,7 @@ import elec332.core.util.BlockStateHelper;
 import elec332.core.util.DirectionHelper;
 import elec332.core.world.WorldHelper;
 import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -20,8 +21,10 @@ import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
+import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -115,6 +118,11 @@ public class TileBase extends TileEntity implements IElecCoreNetworkTile, ITicka
         return true;
     }
 
+    @Override
+    public boolean shouldRefresh(World world, BlockPos pos, IBlockState oldState, IBlockState newSate) {
+        return oldState.getBlock() != newSate.getBlock();
+    }
+
     public void notifyNeighboursOfDataChange(){
         this.markDirty();
         this.worldObj.notifyNeighborsOfStateChange(getPos(), blockType);
@@ -155,9 +163,9 @@ public class TileBase extends TileEntity implements IElecCoreNetworkTile, ITicka
     }
 
     public void onBlockPlacedBy(EntityLivingBase entityLiving, ItemStack stack) {
+        setMetaForFacingOnPlacement(entityLiving);
         if (stack.hasTagCompound())
             readItemStackNBT(stack.getTagCompound());
-        setMetaForFacingOnPlacement(entityLiving);
     }
 
     public void onNeighborBlockChange(Block block) {

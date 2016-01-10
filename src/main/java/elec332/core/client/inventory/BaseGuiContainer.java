@@ -3,6 +3,7 @@ package elec332.core.client.inventory;
 import elec332.core.inventory.BaseContainer;
 import elec332.core.inventory.widget.Widget;
 import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import org.lwjgl.opengl.GL11;
 
@@ -60,6 +61,7 @@ public abstract class BaseGuiContainer extends GuiContainer implements IResource
             if (!widget.isHidden())
                 widget.draw(this, k, l, translatedMouseX(mouseX), translatedMouseY(mouseY));
         }
+        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
     }
 
     private int translatedMouseX(int mouseX){

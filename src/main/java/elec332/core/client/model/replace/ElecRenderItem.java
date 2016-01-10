@@ -25,8 +25,9 @@ public class ElecRenderItem extends RenderItem {
     public ElecRenderItem(RenderItem renderItem) {
         super(renderItem.textureManager, renderItem.itemModelMesher.getModelManager());
         this.itemModelMesher = ASMHooks.Client.newModelMesher();
-        renderItem.itemModelMesher = itemModelMesher;
+        renderItem.itemModelMesher = this.itemModelMesher;
         this.renderItem = renderItem;
+        this.renderItem.registerItems();
     }
 
     private final RenderItem renderItem;

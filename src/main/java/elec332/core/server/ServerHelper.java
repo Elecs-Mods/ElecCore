@@ -19,6 +19,7 @@ import net.minecraft.util.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.chunk.Chunk;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.LoaderState;
@@ -27,6 +28,8 @@ import net.minecraftforge.fml.common.gameevent.PlayerEvent;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import org.apache.commons.io.FileUtils;
 
+import javax.annotation.Nonnull;
+import javax.xml.bind.SchemaOutputResolver;
 import java.io.EOFException;
 import java.io.File;
 import java.io.IOException;
@@ -43,7 +46,7 @@ public class ServerHelper {
     public static final ServerHelper instance = new ServerHelper();
 
     private ServerHelper(){
-        EventHelper.registerHandlerForgeAndFML(new EventHandler());
+        MinecraftForge.EVENT_BUS.register(new EventHandler());
         this.playerData = Maps.newHashMap();
         this.worldData = Maps.newHashMap();
         this.extendedPropertiesList = Maps.newHashMap();
@@ -75,7 +78,7 @@ public class ServerHelper {
         return getPlayer(PlayerHelper.getPlayerUUID(player));
     }
 
-    public ElecPlayer getPlayer(UUID uuid){
+    public ElecPlayer getPlayer(@Nonnull UUID uuid){
         if (isValid())
             return playerData.get(uuid);
         return null;

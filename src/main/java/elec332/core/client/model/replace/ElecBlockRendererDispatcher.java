@@ -39,11 +39,11 @@ public class ElecBlockRendererDispatcher extends BlockRendererDispatcher {
             }
         } catch (Throwable throwable) {
             CrashReport crashreport = CrashReport.makeCrashReport(throwable, "Tesselating block in world");
-            CrashReportCategory crashreportcategory = crashreport.makeCategory("Block being tesselated - ISBHR");
+            CrashReportCategory crashreportcategory = crashreport.makeCategory("Block being tesselated" + (state.getBlock().getRenderType() == RenderingRegistry.SPECIAL_BLOCK_RENDERER_ID ? " - ISBHR" : ""));
             CrashReportCategory.addBlockInfo(crashreportcategory, pos, state.getBlock(), state.getBlock().getMetaFromState(state));
             throw new ReportedException(crashreport);
         }
-        return blockRendererDispatcher.renderBlock(state, pos, world, renderer);
+        return super.renderBlock(state, pos, world, renderer);
     }
 
     @SuppressWarnings("deprecation")

@@ -34,11 +34,11 @@ public class ElecItemRenderer extends ItemRenderer {
 
     @Override
     public void renderItemInFirstPerson(float partialTickTime) {
-        ISpecialItemRenderer renderer = getRendererFor(itemToRender);
+        ISpecialItemRenderer renderer = getRendererFor(itemRenderer.itemToRender);
         if (renderer != null){
-            if (renderer.shouldUseSpecialRendererInFirstPerson(itemToRender)) {
-                if (!renderer.shouldRendererHelpOut(itemToRender)){
-                    renderer.renderInFirstPerson(itemToRender, partialTickTime);
+            if (renderer.shouldUseSpecialRendererInFirstPerson(itemRenderer.itemToRender)) {
+                if (!renderer.shouldRendererHelpOut(itemRenderer.itemToRender)){
+                    renderer.renderInFirstPerson(itemRenderer.itemToRender, partialTickTime);
                     return;
                 } else {
                     EntityPlayerSP player = Minecraft.getMinecraft().thePlayer;
@@ -60,7 +60,7 @@ public class ElecItemRenderer extends ItemRenderer {
                     GlStateManager.enableRescaleNormal();
                     GlStateManager.pushMatrix();
 
-                    renderer.renderInFirstPerson(itemToRender, partialTickTime);
+                    renderer.renderInFirstPerson(itemRenderer.itemToRender, partialTickTime);
 
                     //renderItem(player, this.itemToRender, ItemCameraTransforms.TransformType.FIRST_PERSON);
                     GlStateManager.popMatrix();

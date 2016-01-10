@@ -38,7 +38,7 @@ public class BlockTileBase extends Block implements IWrenchable, ITileEntityProv
 
    // public IIcon[][] icons = new IIcon[2][6];
     private Class<? extends TileEntity> tileClass;
-    private String blockName;
+    public final String blockName;
     private String modID;
 
     public BlockTileBase registerTile(){

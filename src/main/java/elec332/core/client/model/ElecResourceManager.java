@@ -20,6 +20,9 @@ public final class ElecResourceManager extends SimpleReloadableResourceManager i
         super(resourceManager.rmMetadataSerializer);
         this.resourceManager = resourceManager;
         this.hooks = Lists.newArrayList();
+        this.setResourceDomains = resourceManager.setResourceDomains;
+        this.reloadListeners = resourceManager.reloadListeners;
+        this.domainResourceManagers = resourceManager.domainResourceManagers;
     }
 
     private final SimpleReloadableResourceManager resourceManager;

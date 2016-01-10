@@ -24,9 +24,8 @@ public class ElecItemModelMesher extends ItemModelMesherForge {
         this.itemModelMesher = modelMesher;
     }
 
+    @SuppressWarnings("all")
     private final ItemModelMesher itemModelMesher;
-
-    /* Link-through */
 
     @Override
     protected IBakedModel getItemModel(Item item, int meta) {
@@ -38,6 +37,8 @@ public class ElecItemModelMesher extends ItemModelMesherForge {
         return super.getItemModel(item, meta); //temModelMesher.getItemModel(item, meta); Impossible... :(
     }
 
+    /* Link-through */
+/*
     @Override
     public void register(Item item, ItemMeshDefinition definition) {
         itemModelMesher.register(item, definition);
@@ -72,6 +73,6 @@ public class ElecItemModelMesher extends ItemModelMesherForge {
     public TextureAtlasSprite getParticleIcon(Item item, int meta) {
         return itemModelMesher.getParticleIcon(item, meta);
     }
-
+*/
 
 }
