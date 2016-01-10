@@ -2,12 +2,15 @@ package elec332.core.client.model.map;
 
 import com.google.common.collect.Maps;
 import net.minecraft.client.resources.model.IBakedModel;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.Map;
 
 /**
  * Created by Elec332 on 6-12-2015.
  */
+@SideOnly(Side.CLIENT)
 public class BakedModelMetaMap<M extends IBakedModel> implements IBakedModelMetaMap<M> {
 
     public BakedModelMetaMap(){

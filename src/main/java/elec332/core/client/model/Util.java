@@ -7,12 +7,15 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.registry.GameData;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nonnull;
 
 /**
  * Created by Elec332 on 17-11-2015.
  */
+@SideOnly(Side.CLIENT)
 public class Util {
 
     public static Iterable<Block> getBlockIterator(){

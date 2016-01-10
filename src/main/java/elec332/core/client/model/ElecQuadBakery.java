@@ -32,6 +32,7 @@ import java.util.List;
 /**
  * Created by Elec332 on 15-11-2015.
  */
+@SideOnly(Side.CLIENT)
 public class ElecQuadBakery {
 
     protected static final ElecQuadBakery instance = new ElecQuadBakery();

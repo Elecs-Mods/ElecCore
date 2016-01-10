@@ -2,12 +2,15 @@ package elec332.core.client.model.template;
 
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.util.EnumFacing;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nonnull;
 
 /**
  * Created by Elec332 on 6-12-2015.
  */
+@SideOnly(Side.CLIENT)
 public final class ElecTemplateBakery {
 
     public static final ElecTemplateBakery instance = new ElecTemplateBakery();

@@ -4,6 +4,8 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import net.minecraft.client.resources.model.IBakedModel;
 import net.minecraft.client.resources.model.ModelRotation;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.List;
 import java.util.Map;
@@ -11,6 +13,7 @@ import java.util.Map;
 /**
  * Created by Elec332 on 6-12-2015.
  */
+@SideOnly(Side.CLIENT)
 public class BakedModelMetaRotationMap<M extends IBakedModel> extends AbstractModelRotationMap<M> implements IBakedModelMetaRotationMap<M> {
 
     public BakedModelMetaRotationMap(){

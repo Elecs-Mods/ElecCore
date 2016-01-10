@@ -5,6 +5,8 @@ import elec332.core.inventory.widget.Widget;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.opengl.GL11;
 
 import java.io.IOException;
@@ -12,7 +14,9 @@ import java.io.IOException;
 /**
  * Created by Elec332 on 4-4-2015.
  */
+@SideOnly(Side.CLIENT)
 public abstract class BaseGuiContainer extends GuiContainer implements IResourceLocationProvider{
+
     public BaseGuiContainer(BaseContainer container) {
         super(container);
         this.container = container;

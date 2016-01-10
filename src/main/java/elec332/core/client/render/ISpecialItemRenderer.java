@@ -1,10 +1,13 @@
 package elec332.core.client.render;
 
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 /**
  * Created by Elec332 on 19-11-2015.
  */
+@SideOnly(Side.CLIENT)
 public interface ISpecialItemRenderer {
 
     /**

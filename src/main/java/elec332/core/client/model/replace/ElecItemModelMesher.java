@@ -12,11 +12,14 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.client.ItemModelMesherForge;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 /**
  * Created by Elec332 on 19-11-2015.
  */
 @SuppressWarnings("deprecation")
+@SideOnly(Side.CLIENT)
 public class ElecItemModelMesher extends ItemModelMesherForge {
 
     public ElecItemModelMesher(ItemModelMesher modelMesher) {

@@ -19,6 +19,8 @@ import net.minecraft.client.resources.model.ModelRotation;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
 import net.minecraftforge.client.model.ISmartBlockModel;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.util.vector.Vector3f;
 
 import javax.annotation.Nonnull;
@@ -29,6 +31,7 @@ import java.util.List;
  * Created by Elec332 on 5-12-2015.
  */
 @SuppressWarnings("deprecation")
+@SideOnly(Side.CLIENT)
 public class ElecModelBakery {
 
     protected static final ElecModelBakery instance = new ElecModelBakery();

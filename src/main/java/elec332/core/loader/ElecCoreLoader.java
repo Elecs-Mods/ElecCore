@@ -9,7 +9,7 @@ import java.util.Map;
 /**
  * Created by Elec332 on 18-11-2015.
  */
-public class ElecCoreLoader implements IFMLLoadingPlugin {
+public class ElecCoreLoader{}/* implements IFMLLoadingPlugin {
 
     public ElecCoreLoader(){
         if (logger == null){
@@ -24,7 +24,7 @@ public class ElecCoreLoader implements IFMLLoadingPlugin {
      * Return a list of classes that implements the IClassTransformer interface
      *
      * @return a list of classes that implements the IClassTransformer interface
-     */
+     *
     @Override
     public String[] getASMTransformerClass() {
         return new String[]{
@@ -41,7 +41,7 @@ public class ElecCoreLoader implements IFMLLoadingPlugin {
      * sorting behaviour.
      * All other mod behaviours are available however- this container can receive and handle
      * normal loading events
-     */
+     *
     @Override
     public String getModContainerClass() {
         return null;
@@ -53,7 +53,7 @@ public class ElecCoreLoader implements IFMLLoadingPlugin {
      * run <strong>prior</strong> to Minecraft starting, so it CANNOT operate on minecraft
      * itself. The game will deliberately crash if this code is detected to trigger a
      * minecraft class loading (TODO: implement crash ;) )
-     */
+     *
     @Override
     public String getSetupClass() {
         return null;
@@ -67,7 +67,7 @@ public class ElecCoreLoader implements IFMLLoadingPlugin {
      * "coremodLocation" : the file this coremod loaded from,
      *
      * @param data
-     */
+     *
     @Override
     public void injectData(Map<String, Object> data) {
         isObfuscated = !((Boolean) data.get("runtimeDeobfuscationEnabled"));
@@ -78,10 +78,10 @@ public class ElecCoreLoader implements IFMLLoadingPlugin {
      * so ensure your ATs conform to the new srgnames scheme.
      *
      * @return the name of an access transformer class or null if none is provided
-     */
+     *
     @Override
     public String getAccessTransformerClass() {
         return null;
     }
 
-}
+}*/

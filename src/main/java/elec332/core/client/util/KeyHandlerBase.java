@@ -14,7 +14,9 @@ import java.util.ArrayList;
 /**
  * Created by Elec332 on 6-3-2015.
  */
+@SideOnly(Side.CLIENT)
 public abstract class KeyHandlerBase {
+
     ArrayList<KeyBinding> keyBindings;
     ArrayList<String> keyBindingNames;
     protected static KeyHandlerBase KHB;
@@ -56,7 +58,6 @@ public abstract class KeyHandlerBase {
         return null;
     }
 
-
-
     public abstract void performAction(KeyBinding key);
+
 }

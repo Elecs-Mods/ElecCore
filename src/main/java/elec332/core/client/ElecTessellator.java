@@ -3,10 +3,13 @@ package elec332.core.client;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 /**
  * Created by Elec332 on 25-11-2015.
  */
+@SideOnly(Side.CLIENT)
 public class ElecTessellator implements ITessellator {
 
     public ElecTessellator(){

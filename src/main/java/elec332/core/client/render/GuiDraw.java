@@ -2,10 +2,13 @@ package elec332.core.client.render;
 
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 /**
  * Created by Elec332 on 12-12-2015.
  */
+@SideOnly(Side.CLIENT)
 public class GuiDraw {
 
     private static final GuiDrawGui gui;

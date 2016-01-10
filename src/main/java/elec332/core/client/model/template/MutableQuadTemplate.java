@@ -4,6 +4,8 @@ import elec332.core.client.RenderHelper;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.ModelRotation;
 import net.minecraft.util.EnumFacing;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.util.vector.Vector3f;
 
 import javax.annotation.Nonnull;
@@ -11,6 +13,7 @@ import javax.annotation.Nonnull;
 /**
  * Created by Elec332 on 6-12-2015.
  */
+@SideOnly(Side.CLIENT)
 public class MutableQuadTemplate implements IQuadTemplate {
 
     @Nonnull

@@ -15,8 +15,10 @@ import java.util.regex.Pattern;
  */
 public class ASMHelper {
 
+    private static boolean isObfuscated;
+
     public static String getClassName(String deobf){
-        if (ElecCoreLoader.isObfuscated)
+        if (isObfuscated)
             return FMLDeobfuscatingRemapper.INSTANCE.unmap(deobf.replace('.', '/')).replace('/', '.');
         return deobf;
     }
@@ -25,7 +27,7 @@ public class ASMHelper {
      * Thanks to squeek502 for this method
      */
     public static String getDescription(String deobf){
-        if (ElecCoreLoader.isObfuscated){
+        if (isObfuscated){
             Matcher classNameMatcher = Pattern.compile("L([^;]+);").matcher(deobf);
             StringBuffer obfDescBuffer = new StringBuffer(deobf.length());
             while (classNameMatcher.find()) {

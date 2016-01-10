@@ -10,6 +10,8 @@ import net.minecraft.client.resources.model.IBakedModel;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.util.vector.Vector3f;
 
 import java.util.List;
@@ -18,6 +20,7 @@ import java.util.List;
  * Created by Elec332 on 21-11-2015.
  */
 @SuppressWarnings("deprecation")
+@SideOnly(Side.CLIENT)
 public abstract class AbstractItemModel implements IItemModel {
 
     protected static final ItemCameraTransforms DEFAULT_ITEM_TRANSFORM;

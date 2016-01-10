@@ -6,6 +6,8 @@ import elec332.core.client.model.ElecModelBakery;
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.util.EnumFacing;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -14,6 +16,7 @@ import java.util.List;
  * Created by Elec332 on 5-12-2015.
  */
 @SuppressWarnings("deprecation")
+@SideOnly(Side.CLIENT)
 public class MutableModelTemplate implements IModelTemplate {
 
     @Nonnull

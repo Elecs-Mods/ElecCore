@@ -11,7 +11,7 @@ import org.objectweb.asm.tree.ClassNode;
 public abstract class AbstractASMClassTransformer implements IASMClassTransformer {
 
     public AbstractASMClassTransformer(){
-        ElecCoreLoader.logger.info("Loaded ASM Transformer: "+getClass().getCanonicalName());
+        //ElecCoreLoader.logger.info("Loaded ASM Transformer: "+getClass().getCanonicalName());
     }
 
     @Override

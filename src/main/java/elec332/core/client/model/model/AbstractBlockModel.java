@@ -8,6 +8,8 @@ import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.model.ISmartBlockModel;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.List;
 
@@ -15,6 +17,7 @@ import java.util.List;
  * Created by Elec332 on 15-11-2015.
  */
 @SuppressWarnings("deprecation")
+@SideOnly(Side.CLIENT)
 public abstract class AbstractBlockModel implements IBlockModel {
 
     protected static final ImmutableList<BakedQuad> EMPTY_LIST;

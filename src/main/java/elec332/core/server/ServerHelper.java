@@ -33,10 +33,8 @@ import javax.xml.bind.SchemaOutputResolver;
 import java.io.EOFException;
 import java.io.File;
 import java.io.IOException;
-import java.util.Calendar;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * Created by Elec332 on 28-5-2015.
@@ -107,7 +105,7 @@ public class ServerHelper {
 
     @SuppressWarnings("unchecked")
     public List<EntityPlayerMP> getOnlinePlayers(){
-        return (List<EntityPlayerMP>) getMinecraftServer().getConfigurationManager().playerEntityList;
+        return getMinecraftServer().getConfigurationManager().playerEntityList;
     }
 
     public boolean isPlayerOnline(UUID uuid){
@@ -309,6 +307,8 @@ public class ServerHelper {
     }
 
     public static NBTTagCompound fromFile(File file){
+        System.out.println(Calendar.getInstance().getTime().toInstant().toString());
+
         if (file == null)
             return null;
         try {
@@ -320,14 +320,14 @@ public class ServerHelper {
                 return CompressedStreamTools.read(file);
             } catch (EOFException e) {
                 ElecCore.logger.error("Error reading NBT files, something weird must have happened when you last shutdown MC, unfortunately, some game data will be lost. Fixing file now....");
-                String date = Calendar.getInstance().getTime().toString();
-                String ext = file.getName().split(".")[1];
-                File newFile = new File(file.getCanonicalPath().replace(ext, "-" + date + ext));
+                String date = (new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss")).format(new Date());
+                String ext = file.getName().replace('.', ' ').split(" ")[1];
+                File newFile = new File(file.getCanonicalPath().replace("."+ext, "-" + date + "."+ext));
                 FileUtils.moveFile(file, newFile);
-                if (!file.delete()){
-                    ElecCore.logger.error("Error deleting file: "+file.getCanonicalPath()+", please remove it yourself.");
-                    throw new IOException();
-                }
+                //if (!file.delete()){
+                //    ElecCore.logger.error("Error deleting file: "+file.getCanonicalPath()+", please remove it yourself.");
+                //   throw new IOException();
+                //}
                 createFile(file);
                 return new NBTTagCompound();
             }

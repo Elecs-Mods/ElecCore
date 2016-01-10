@@ -19,10 +19,13 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.util.ReportedException;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.WorldType;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 /**
  * Created by Elec332 on 15-11-2015.
  */
+@SideOnly(Side.CLIENT)
 public class ElecBlockRendererDispatcher extends BlockRendererDispatcher {
 
     public ElecBlockRendererDispatcher(BlockRendererDispatcher blockRendererDispatcher) {

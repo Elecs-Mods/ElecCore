@@ -14,12 +14,15 @@ import net.minecraft.client.resources.model.IBakedModel;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.List;
 
 /**
  * Created by Elec332 on 26-12-2015.
  */
+@SideOnly(Side.CLIENT)
 public class ElecRenderItem extends RenderItem {
 
     public ElecRenderItem(RenderItem renderItem) {

@@ -1,10 +1,13 @@
 package elec332.core.client;
 
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 /**
  * Created by Elec332 on 25-11-2015.
  */
+@SideOnly(Side.CLIENT)
 public interface ITessellator {
 
     public void setBrightness(int brightness);

@@ -3,6 +3,8 @@ package elec332.core.client.model.template;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import net.minecraft.util.EnumFacing;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nonnull;
 import java.util.EnumMap;
@@ -11,6 +13,7 @@ import java.util.List;
 /**
  * Created by Elec332 on 6-12-2015.
  */
+@SideOnly(Side.CLIENT)
 public class MutableQuadSidedMap implements ITemplateSidedMap {
 
     @Nonnull

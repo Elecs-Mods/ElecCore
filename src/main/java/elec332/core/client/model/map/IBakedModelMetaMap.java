@@ -1,10 +1,13 @@
 package elec332.core.client.model.map;
 
 import net.minecraft.client.resources.model.IBakedModel;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 /**
  * Created by Elec332 on 6-12-2015.
  */
+@SideOnly(Side.CLIENT)
 public interface IBakedModelMetaMap<M extends IBakedModel> {
 
     /**

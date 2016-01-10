@@ -12,12 +12,15 @@ import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.BlockPos;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nullable;
 
 /**
  * Created by Elec332 on 19-11-2015.
  */
+@SideOnly(Side.CLIENT)
 public class ElecItemRenderer extends ItemRenderer {
 
     public ElecItemRenderer(ItemRenderer itemRenderer) {

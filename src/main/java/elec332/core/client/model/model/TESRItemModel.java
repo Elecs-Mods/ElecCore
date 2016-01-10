@@ -5,12 +5,15 @@ import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.List;
 
 /**
  * Created by Elec332 on 27-11-2015.
  */
+@SideOnly(Side.CLIENT)
 public class TESRItemModel extends AbstractItemModel {
 
     public TESRItemModel(TileEntitySpecialRenderer tesr){

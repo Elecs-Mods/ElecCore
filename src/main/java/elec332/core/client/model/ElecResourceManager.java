@@ -6,6 +6,8 @@ import net.minecraft.client.resources.IResourceManagerReloadListener;
 import net.minecraft.client.resources.IResourcePack;
 import net.minecraft.client.resources.SimpleReloadableResourceManager;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.io.IOException;
 import java.util.List;
@@ -14,6 +16,7 @@ import java.util.Set;
 /**
  * Created by Elec332 on 26-12-2015.
  */
+@SideOnly(Side.CLIENT)
 public final class ElecResourceManager extends SimpleReloadableResourceManager implements IElecResourceManager {
 
     public ElecResourceManager(SimpleReloadableResourceManager resourceManager) {
