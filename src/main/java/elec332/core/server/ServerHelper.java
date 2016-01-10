@@ -307,8 +307,6 @@ public class ServerHelper {
     }
 
     public static NBTTagCompound fromFile(File file){
-        System.out.println(Calendar.getInstance().getTime().toInstant().toString());
-
         if (file == null)
             return null;
         try {
