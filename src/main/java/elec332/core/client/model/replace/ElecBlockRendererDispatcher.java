@@ -37,8 +37,12 @@ public class ElecBlockRendererDispatcher extends BlockRendererDispatcher {
 
     public boolean renderBlock(IBlockState state, BlockPos pos, IBlockAccess world, WorldRenderer renderer) {
         try {
-            if (state.getBlock().getRenderType() == RenderingRegistry.SPECIAL_BLOCK_RENDERER_ID) {
+            int i = state.getBlock().getRenderType();
+            if (i == RenderingRegistry.SPECIAL_BLOCK_RENDERER_ID) {
                 return RenderingRegistry.instance().getRendererFor(state.getBlock()).renderBlock(world, state, pos, renderer);
+            } else if (i == 3){
+                IBakedModel ibakedmodel = this.getModelFromBlockState(state, world, pos);
+                return this.getBlockModelRenderer().renderModel(world, ibakedmodel, state, pos, renderer);
             }
         } catch (Throwable throwable) {
             CrashReport crashreport = CrashReport.makeCrashReport(throwable, "Tesselating block in world");
@@ -46,7 +50,7 @@ public class ElecBlockRendererDispatcher extends BlockRendererDispatcher {
             CrashReportCategory.addBlockInfo(crashreportcategory, pos, state.getBlock(), state.getBlock().getMetaFromState(state));
             throw new ReportedException(crashreport);
         }
-        return super.renderBlock(state, pos, world, renderer);
+        return this.blockRendererDispatcher.renderBlock(state, pos, world, renderer);
     }
 
     @SuppressWarnings("deprecation")
@@ -65,10 +69,10 @@ public class ElecBlockRendererDispatcher extends BlockRendererDispatcher {
         if (block instanceof INoJsonBlock) {
             ibakedmodel = ((INoJsonBlock) block).getBlockModel(state, iba, pos);
         } else {
-            ibakedmodel = this.blockModelShapes.getModelForState(state);
+            ibakedmodel = this.blockRendererDispatcher.blockModelShapes.getModelForState(state);
         }
 
-        if (pos != null && this.gameSettings.allowBlockAlternatives && ibakedmodel instanceof WeightedBakedModel) {
+        if (pos != null && this.blockRendererDispatcher.gameSettings.allowBlockAlternatives && ibakedmodel instanceof WeightedBakedModel) {
             ibakedmodel = ((WeightedBakedModel)ibakedmodel).getAlternativeModel(MathHelper.getPositionRandom(pos));
         }
 
