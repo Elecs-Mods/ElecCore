@@ -1,5 +1,6 @@
 package elec332.core.world.schematic;
 
+import com.google.common.collect.Maps;
 import elec332.core.main.ElecCore;
 import elec332.core.util.FileHelper;
 import elec332.core.util.NBT;
@@ -16,6 +17,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.GameData;
 
 import java.io.*;
+import java.util.Map;
 
 /*
  * This was originally created by Lumaceon, rewritten by Elec332.
@@ -69,12 +71,18 @@ public class SchematicHelper {
             short height = nbt.getShort("Height");
             short length = nbt.getShort("Length");
             short horizon = nbt.getShort("Horizon");
-            NBTTagList blockData = nbt.getTagList("Blocks", NBT.NBTData.COMPOUND.getID());
+            NBTTagList blockData = nbt.getTagList("BlockData", NBT.NBTData.COMPOUND.getID());
             byte[] metadata = nbt.getByteArray("Data");
+            int[] blockArray = nbt.getIntArray("Blocks");
             Block[] blocks = new Block[width * height * length];
+            Map<Integer, Block> idMap = Maps.newHashMap();
+            idMap.put(-1, Blocks.air);
             for (int i = 0; i < blockData.tagCount(); i++) {
                 NBTTagCompound tag = blockData.getCompoundTagAt(i);
-                blocks[tag.getInteger("p")] = GameData.getBlockRegistry().getObject(new ResourceLocation(tag.getString("m"), tag.getString("b")));
+                idMap.put(tag.getInteger("p"), GameData.getBlockRegistry().getObject(new ResourceLocation(tag.getString("m"), tag.getString("b"))));
+            }
+            for (int i = 0; i < blockArray.length; i++) {
+                blocks[i] = idMap.get(blockArray[i]);
             }
             return new Schematic(tileEntities, width, height, length, horizon, metadata, blocks);
         } catch (Exception ex) {
@@ -92,20 +100,30 @@ public class SchematicHelper {
         nbt.setShort("Horizon", schematic.horizon);
         nbt.setByteArray("Data", schematic.data);
         nbt.setTag("TileEntities", schematic.tileDataList);
+        int[] blocks = new int[schematic.blocks.length];
         NBTTagList blockData = new NBTTagList();
+        Map<Block, Integer> map = Maps.newHashMap();
+        int id = 0;
         for (int i = 0; i < schematic.blocks.length; i++) {
             Block block = schematic.blocks[i];
             if (block != Blocks.air) {
-                NBTTagCompound tag = new NBTTagCompound();
-                tag.setInteger("p", i);
-                ResourceLocation rl = GameData.getBlockRegistry().getNameForObject(block);
-                tag.setString("m", rl.getResourceDomain());
-                tag.setString("b", rl.getResourcePath());
-                blockData.appendTag(tag);
+                if (!map.containsKey(block)) {
+                    NBTTagCompound tag = new NBTTagCompound();
+                    int ID = id++;
+                    tag.setInteger("p", ID);
+                    map.put(block, ID);
+                    ResourceLocation rl = GameData.getBlockRegistry().getNameForObject(block);
+                    tag.setString("m", rl.getResourceDomain());
+                    tag.setString("b", rl.getResourcePath());
+                    blockData.appendTag(tag);
+                }
+                blocks[i] = map.get(block);
+            } else {
+                blocks[i] = -1;
             }
         }
-        nbt.setTag("Blocks", blockData);
-
+        nbt.setIntArray("Blocks", blocks);
+        nbt.setTag("BlockData", blockData);
         return nbt;
     }
 
