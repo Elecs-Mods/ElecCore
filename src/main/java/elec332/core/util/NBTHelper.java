@@ -71,7 +71,7 @@ public class NBTHelper {
     }
 
     public NBTHelper addToTag(BlockPos pos, String s){
-        return addToTag(pos.toLong(), s);
+        return addToTag(new NBTHelper().addToTag(pos.getX(), "x").addToTag(pos.getY(), "y").addToTag(pos.getZ(), "z"), s);
     }
 
     public NBTHelper addToTag(Long l, String s){
@@ -97,7 +97,8 @@ public class NBTHelper {
     }
 
     public BlockPos getPos(String s){
-        return BlockPos.fromLong(getLong(s));
+        NBTTagCompound tag = getCompoundTag(s);
+        return new BlockPos(tag.getInteger("x"), tag.getInteger("y"), tag.getInteger("z"));
     }
 
     public long getLong(String s){

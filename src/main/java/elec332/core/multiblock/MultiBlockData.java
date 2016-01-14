@@ -33,7 +33,7 @@ public final class MultiBlockData {
     }
 
     public void writeToNBT(NBTTagCompound tagCompound) {
-        String s = mbFacing == null?"":mbFacing.toString();
+        String s = mbFacing == null?"":mbFacing.toString().toUpperCase();
         tagCompound.setString("facing_MBS", s);
         tagCompound.setBoolean("valid_MBS", valid);
         tagCompound.setString("structure_MBS", structureID);

@@ -3,6 +3,8 @@ package elec332.core.client;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.util.BlockPos;
+import net.minecraft.util.EnumFacing;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -161,6 +163,31 @@ public class RenderBlocks {
      */
     public void unlockBlockBounds() {
         this.lockBlockBounds = false;
+    }
+
+    public void render(EnumFacing facing, BlockPos pos, TextureAtlasSprite texture){
+        switch (facing){
+            case DOWN:
+                renderFaceYNeg(pos.getX(), pos.getY(), pos.getZ(), texture);
+                return;
+            case UP:
+                renderFaceYPos(pos.getX(), pos.getY(), pos.getZ(), texture);
+                return;
+            case NORTH:
+                renderFaceZNeg(pos.getX(), pos.getY(), pos.getZ(), texture);
+                return;
+            case SOUTH:
+                renderFaceZPos(pos.getX(), pos.getY(), pos.getZ(), texture);
+                return;
+            case WEST:
+                renderFaceXNeg(pos.getX(), pos.getY(), pos.getZ(), texture);
+                return;
+            case EAST:
+                renderFaceXPos(pos.getX(), pos.getY(), pos.getZ(), texture);
+                return;
+            default:
+                break;
+        }
     }
 
     /**

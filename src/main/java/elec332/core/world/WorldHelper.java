@@ -1,5 +1,8 @@
 package elec332.core.world;
 
+import elec332.core.main.ElecCore;
+import elec332.core.network.PacketReRenderBlock;
+import elec332.core.server.ServerHelper;
 import elec332.core.util.BlockLoc;
 import elec332.core.util.NBTHelper;
 import elec332.core.util.PlayerHelper;
@@ -22,6 +25,14 @@ import net.minecraftforge.common.ForgeChunkManager;
  * Created by Elec332 on 20-3-2015.
  */
 public class WorldHelper {
+
+    public static void reRenderBlock(TileEntity tile){
+        if (!tile.getWorld().isRemote){
+            ServerHelper.instance.sendMessageToAllPlayersWatchingBlock(tile.getWorld(), tile.getPos(), new PacketReRenderBlock(tile), ElecCore.networkHandler);
+        } else {
+            WorldHelper.markBlockForRenderUpdate(tile.getWorld(), tile.getPos());
+        }
+    }
 
     public static void setBlockState(World world, BlockPos pos, IBlockState state, int flags){
         world.setBlockState(pos, state, flags);

@@ -31,13 +31,18 @@ public abstract class AbstractMultiBlockTile extends TileBase implements IMultiB
     private MultiBlockData multiBlockData;
 
     @Override
+    @SuppressWarnings("deprecation")
     public boolean canUpdate() {
         return false;
     }
 
     @Override
-    public boolean onBlockActivated(EntityPlayer player, EnumFacing side, float hitX, float hitY, float hitZ) {
-        return getMultiBlock() == null ? super.onBlockActivated(player, side, hitX, hitY, hitZ) : getMultiBlock().onAnyBlockActivated(player);
+    public final boolean onBlockActivated(EntityPlayer player, EnumFacing side, float hitX, float hitY, float hitZ) {
+        return getMultiBlock() == null ? onBlockActivatedBy(player, side, hitX, hitY, hitZ) : getMultiBlock().onAnyBlockActivated(player);
+    }
+
+    public boolean onBlockActivatedBy(EntityPlayer player, EnumFacing side, float hitX, float hitY, float hitZ){
+        return super.onBlockActivated(player, side, hitX, hitY, hitZ);
     }
 
     @Override

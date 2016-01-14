@@ -184,7 +184,16 @@ public class TileBase extends TileEntity implements IElecCoreNetworkTile, ITicka
     }
 
     public void onWrenched(EnumFacing forgeDirection) {
-        DirectionHelper.setFacing_YAW(worldObj, getPos(), forgeDirection);
+        if ((forgeDirection != EnumFacing.UP && forgeDirection != EnumFacing.DOWN) || canFaceUpOrDown()) {
+            setFacing(forgeDirection);
+            markDirty();
+            syncData();
+            reRenderBlock();
+        }
+    }
+
+    public boolean canFaceUpOrDown(){
+        return false;
     }
 
     public boolean openGui(EntityPlayer player, Object mod, int guiID){
@@ -201,15 +210,15 @@ public class TileBase extends TileEntity implements IElecCoreNetworkTile, ITicka
     }
 
     protected void setMetaForFacingOnPlacement(EntityLivingBase entityLivingBase){
-        WorldHelper.setBlockState(worldObj, pos, getBlockType().getBlockState().getBaseState().withProperty(BlockStateHelper.FACING_NORMAL.getProperty(), DirectionHelper.getDirectionFromNumber(DirectionHelper.getDirectionNumberOnPlacement(entityLivingBase))), 2);
+        setFacing(DirectionHelper.getFacingOnPlacement(entityLivingBase));
+    }
+
+    public void setFacing(EnumFacing facing){
+        WorldHelper.setBlockState(worldObj, pos, getBlockType().getBlockState().getBaseState().withProperty(BlockStateHelper.FACING_NORMAL.getProperty(), facing), 2);
     }
 
     public void reRenderBlock(){
-        if (!worldObj.isRemote){
-            ServerHelper.instance.sendMessageToAllPlayersWatchingBlock(worldObj, getPos(), new PacketReRenderBlock(this), ElecCore.networkHandler);
-        } else {
-            WorldHelper.markBlockForRenderUpdate(worldObj, getPos());
-        }
+        WorldHelper.reRenderBlock(this);
     }
 
     //NETWORK///////////////////////

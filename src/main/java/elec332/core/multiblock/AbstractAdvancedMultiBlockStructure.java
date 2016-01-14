@@ -1,7 +1,7 @@
 package elec332.core.multiblock;
 
-import elec332.core.util.BlockLoc;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
 
@@ -32,9 +32,9 @@ public abstract class AbstractAdvancedMultiBlockStructure implements IMultiBlock
      *
      * @return If all secondary conditions are met.
      */
-    public abstract boolean areSecondaryConditionsMet(World world, BlockLoc bottomLeft, EnumFacing facing);
+    public abstract boolean areSecondaryConditionsMet(World world, BlockPos bottomLeft, EnumFacing facing);
 
-    protected BlockLoc getTranslatedPosition(BlockLoc bottomLeft, EnumFacing facing, int length, int width, int height){
+    protected BlockPos getTranslatedPosition(BlockPos bottomLeft, EnumFacing facing, int length, int width, int height){
         return MultiBlockStructureRegistry.getTranslated(bottomLeft, facing, length, width, height);
     }
 }

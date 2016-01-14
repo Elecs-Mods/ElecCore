@@ -1,5 +1,6 @@
 package elec332.core.main;
 
+import elec332.core.api.annotations.RegisterTile;
 import elec332.core.compat.ElecCoreCompatHandler;
 import elec332.core.effects.AbilityHandler;
 import elec332.core.handler.FMLEventHandler;
@@ -12,18 +13,24 @@ import elec332.core.server.ServerHelper;
 import elec332.core.util.FileHelper;
 import elec332.core.util.MCModInfo;
 import elec332.core.util.ModInfoHelper;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.SidedProxy;
+import net.minecraftforge.fml.common.discovery.ASMDataTable;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 import org.apache.logging.log4j.Logger;
 
 import java.io.File;
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Created by Elec332.
@@ -39,14 +46,6 @@ public class ElecCore extends ModBase{
 	public static boolean debug;
 	//EXP
 
-	public ElecCore(){
-		if (!init)
-			//DoStuff
-		init = true;
-	}
-
-	private boolean init;
-
 	//END_EXP	
 	
 	@SidedProxy(clientSide = ModInfo.CLIENTPROXY, serverSide = ModInfo.COMMONPROXY)
@@ -58,6 +57,7 @@ public class ElecCore extends ModBase{
 	public static NetworkHandler networkHandler;
 	public static ElecCoreCompatHandler compatHandler;
 	public static Logger logger;
+	private static ASMDataTable dataTable;
 
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
@@ -72,6 +72,7 @@ public class ElecCore extends ModBase{
 		networkHandler.registerClientPacket(PacketReRenderBlock.class);
 		logger = event.getModLog();
 		compatHandler = new ElecCoreCompatHandler(config, logger);
+		dataTable = event.getAsmData();
 
 		//runUpdateCheck(event, "https://raw.githubusercontent.com/Elecs-Mods/ElecCore/master/build.properties");
 		FMLCommonHandler.instance().bus().register(new FMLEventHandler());
@@ -88,16 +89,31 @@ public class ElecCore extends ModBase{
 
 
 	@EventHandler
+	@SuppressWarnings("unchecked")
     public void init(FMLInitializationEvent event) {
 		loadConfiguration();
 		compatHandler.init();
 		AbilityHandler.instance.init();
 		notifyEvent(event);
+		for (ASMDataTable.ASMData data : getAnnotationList(RegisterTile.class)){
+			try {
+				GameRegistry.registerTileEntity((Class<? extends TileEntity>) Class.forName(data.getClassName()), (String) data.getAnnotationInfo().get("name"));
+			} catch (Exception e){
+				logger.error("Error registering tile: "+data.getClassName());
+			}
+		}
     }
 
 	@EventHandler
 	public void postInit(FMLPostInitializationEvent event){
+		if (FMLCommonHandler.instance().getEffectiveSide().isClient()){
+
+		}
 		//Nope
+	}
+
+	public static Set<ASMDataTable.ASMData> getAnnotationList(Class<? extends Annotation> annotationClass){
+		return dataTable.getAll(annotationClass.getName());
 	}
 
 	public static void systemPrintDebug(Object s){

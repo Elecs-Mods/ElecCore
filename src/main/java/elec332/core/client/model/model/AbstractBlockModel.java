@@ -34,7 +34,7 @@ public abstract class AbstractBlockModel implements IBlockModel {
 
     @Override
     public boolean isAmbientOcclusion() {
-        return false;
+        return true;
     }
 
     @Override
