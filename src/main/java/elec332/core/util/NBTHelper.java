@@ -51,8 +51,8 @@ public class NBTHelper {
         return this;
     }
 
-    public NBTHelper addToTag(String s, String saveName){
-        tagCompound.setString(saveName, s);
+    public NBTHelper addToTag(String data, String saveName){
+        tagCompound.setString(saveName, data);
         return this;
     }
 
@@ -88,6 +88,10 @@ public class NBTHelper {
         return this;
     }
 
+    public NBTHelper addToTag(Enum e, String s){
+        return addToTag(EnumHelper.getName(e), s);
+    }
+
     /*
      * Readers
      */
@@ -112,6 +116,16 @@ public class NBTHelper {
     public NBTTagCompound getCompoundTag(String s){
         return tagCompound.getCompoundTag(s);
     }
+
+    public String getString(String s){
+        return tagCompound.getString(s);
+    }
+
+    public <E extends Enum> E getEnum(String s, Class<E> c){
+        return EnumHelper.fromString(getString(s), c);
+    }
+
+
 
     public NBTTagCompound toNBT(){
         return this.tagCompound;

@@ -129,7 +129,7 @@ public class TileBase extends TileEntity implements IElecCoreNetworkTile, ITicka
     }
 
     public EnumFacing getTileFacing(){
-        return DirectionHelper.getDirectionFromNumber(getBlockMetadata());
+        return WorldHelper.getBlockState(worldObj, pos).getValue(BlockStateHelper.FACING_NORMAL.getProperty());
     }
 
     @Deprecated

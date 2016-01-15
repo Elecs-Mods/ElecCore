@@ -5,6 +5,7 @@ import com.google.common.collect.Maps;
 import elec332.core.network.AbstractMessage;
 import elec332.core.server.ServerHelper;
 import elec332.core.util.BlockLoc;
+import elec332.core.util.EnumHelper;
 import elec332.core.util.NBTHelper;
 import elec332.core.world.WorldHelper;
 import elec332.core.world.location.BlockStateWrapper;
@@ -260,7 +261,7 @@ public final class MultiBlockStructureRegistry implements IMessageHandler<MultiB
         }
 
         private SyncMultiBlockPacket(IMultiBlockStructure multiBlock, int x, int y, int z, EnumFacing side, MultiBlockStructureRegistry structureRegistry){
-            super(new NBTHelper().addToTag(x, "x").addToTag(y, "y").addToTag(z, "z").addToTag(side.toString(), "side").addToTag(structureRegistry.getIdentifier(multiBlock), "mbs").toNBT());
+            super(new NBTHelper().addToTag(x, "x").addToTag(y, "y").addToTag(z, "z").addToTag(side, "side").addToTag(structureRegistry.getIdentifier(multiBlock), "mbs").toNBT());
         }
 
     }
@@ -268,7 +269,7 @@ public final class MultiBlockStructureRegistry implements IMessageHandler<MultiB
     @Override
     public IMessage onMessage(SyncMultiBlockPacket message, MessageContext ctx) {
         NBTTagCompound tag = message.networkPackageObject;
-        tryCreateStructure(multiBlockStructures.get(tag.getString("mbs")), Minecraft.getMinecraft().theWorld, new BlockPos(tag.getInteger("x"), tag.getInteger("y"), tag.getInteger("z")), EnumFacing.valueOf(tag.getString("side")), false);
+        tryCreateStructure(multiBlockStructures.get(tag.getString("mbs")), Minecraft.getMinecraft().theWorld, new BlockPos(tag.getInteger("x"), tag.getInteger("y"), tag.getInteger("z")), EnumHelper.fromString(tag.getString("side"), EnumFacing.class), false);
         return null;
     }
 

@@ -2,6 +2,7 @@ package elec332.core.multiblock;
 
 import com.google.common.base.Strings;
 import elec332.core.main.ElecCore;
+import elec332.core.util.EnumHelper;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
@@ -33,7 +34,7 @@ public final class MultiBlockData {
     }
 
     public void writeToNBT(NBTTagCompound tagCompound) {
-        String s = mbFacing == null?"":mbFacing.toString().toUpperCase();
+        String s = mbFacing == null?"": EnumHelper.getName(mbFacing);
         tagCompound.setString("facing_MBS", s);
         tagCompound.setBoolean("valid_MBS", valid);
         tagCompound.setString("structure_MBS", structureID);
@@ -42,7 +43,7 @@ public final class MultiBlockData {
     public void readFromNBT(NBTTagCompound tagCompound) {
         String s = tagCompound.getString("facing_MBS");
         if (!Strings.isNullOrEmpty(s))
-            this.mbFacing = EnumFacing.valueOf(s);
+            this.mbFacing = EnumHelper.fromString(s, EnumFacing.class);
         this.valid = tagCompound.getBoolean("valid_MBS");
         this.structureID = tagCompound.getString("structure_MBS");
     }

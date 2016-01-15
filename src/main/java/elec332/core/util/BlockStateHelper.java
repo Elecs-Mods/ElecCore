@@ -28,12 +28,12 @@ public interface BlockStateHelper<M extends Comparable<M>> {
 
         @Override
         public IBlockState getStateForMeta(Block block, int meta) {
-            return block.getBlockState().getBaseState().withProperty(TYPE, EnumFacing.values()[meta]);
+            return block.getBlockState().getBaseState().withProperty(TYPE, EnumHelper.fromOrdinal(meta, EnumFacing.class));
         }
 
         @Override
         public int getMetaForState(IBlockState state) {
-            return state.getValue(TYPE).ordinal();
+            return EnumHelper.getOrdinal(state.getValue(TYPE));
         }
 
         @Override
