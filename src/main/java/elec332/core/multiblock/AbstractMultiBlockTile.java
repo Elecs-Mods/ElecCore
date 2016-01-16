@@ -15,6 +15,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 
 import java.util.List;
 
@@ -67,7 +68,7 @@ public abstract class AbstractMultiBlockTile extends TileBase implements IMultiB
                         getMultiBlock().readFromNBT(tagCompound);
                 }
             }
-        }, getWorld());
+        }, FMLCommonHandler.instance().getEffectiveSide());
     }
 
     /**

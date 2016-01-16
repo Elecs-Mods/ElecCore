@@ -71,7 +71,7 @@ public class TickHandler {
         } else if (side.isClient()){
             registerCallClient(runnable);
         } else {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("What am I supposed to do with side: "+side+"?");
         }
     }
 

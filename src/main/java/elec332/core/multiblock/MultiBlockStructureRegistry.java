@@ -24,6 +24,7 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.List;
 import java.util.Map;
@@ -269,8 +270,13 @@ public final class MultiBlockStructureRegistry implements IMessageHandler<MultiB
     @Override
     public IMessage onMessage(SyncMultiBlockPacket message, MessageContext ctx) {
         NBTTagCompound tag = message.networkPackageObject;
-        tryCreateStructure(multiBlockStructures.get(tag.getString("mbs")), Minecraft.getMinecraft().theWorld, new BlockPos(tag.getInteger("x"), tag.getInteger("y"), tag.getInteger("z")), EnumHelper.fromString(tag.getString("side"), EnumFacing.class), false);
+        tryCreateStructure(multiBlockStructures.get(tag.getString("mbs")), getClientWorld(), new BlockPos(tag.getInteger("x"), tag.getInteger("y"), tag.getInteger("z")), EnumHelper.fromString(tag.getString("side"), EnumFacing.class), false);
         return null;
+    }
+
+    @SideOnly(Side.CLIENT)
+    private World getClientWorld(){
+        return Minecraft.getMinecraft().theWorld;
     }
 
 }
