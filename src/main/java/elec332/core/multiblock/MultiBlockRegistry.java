@@ -5,12 +5,12 @@ import com.google.common.collect.Maps;
 import elec332.core.network.NetworkHandler;
 import elec332.core.registry.AbstractWorldRegistryHolder;
 import elec332.core.registry.IWorldRegistry;
-import elec332.core.util.BlockLoc;
-import elec332.core.util.EventHelper;
 import elec332.core.world.WorldHelper;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Loader;
 
 import java.util.HashMap;
@@ -29,7 +29,7 @@ public final class MultiBlockRegistry extends AbstractWorldRegistryHolder<MultiB
         this.registry = Maps.newHashMap();
         this.networkHandler = networkHandler;
         this.structureRegistry = new MultiBlockStructureRegistry(this);
-        EventHelper.registerHandlerForge(this);
+        MinecraftForge.EVENT_BUS.register(this);
     }
 
     @Override
@@ -103,7 +103,7 @@ public final class MultiBlockRegistry extends AbstractWorldRegistryHolder<MultiB
         }
 
         protected void invalidateMultiBlock(IMultiBlock multiBlock){
-            for (BlockLoc loc : multiBlock.getAllMultiBlockLocations()){
+            for (BlockPos loc : multiBlock.getAllMultiBlockLocations()){
                 TileEntity tile = WorldHelper.getTileAt(world, loc);
                 if (tile instanceof IMultiBlockTile){
                     ((IMultiBlockTile)tile).invalidateMultiBlock();
@@ -128,7 +128,7 @@ public final class MultiBlockRegistry extends AbstractWorldRegistryHolder<MultiB
             this.activeMultiBlocks.add(multiBlock);
         }
 
-        protected void createNewMultiBlock(IMultiBlockStructure multiBlockStructure, BlockLoc bottomLeft, List<BlockLoc> allLocations, World world, EnumFacing facing){
+        protected void createNewMultiBlock(IMultiBlockStructure multiBlockStructure, BlockPos bottomLeft, List<BlockPos> allLocations, World world, EnumFacing facing){
             Class<? extends IMultiBlock> clazz = registry.get(multiBlockStructure.getClass());
             IMultiBlock multiBlock;
             try {
@@ -137,7 +137,7 @@ public final class MultiBlockRegistry extends AbstractWorldRegistryHolder<MultiB
                 throw new RuntimeException("Error invoking class: "+clazz.getName()+" Please make sure the constructor has no arguments!", e);
             }
             boolean one = false;
-            for (BlockLoc loc : allLocations){
+            for (BlockPos loc : allLocations){
                 TileEntity tile = WorldHelper.getTileAt(world, loc);
                 if (tile instanceof IMultiBlockTile){
                     ((IMultiBlockTile)tile).setMultiBlock(multiBlock, facing, structureRegistry.getIdentifier(multiBlockStructure));

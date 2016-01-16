@@ -4,7 +4,6 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import elec332.core.network.AbstractMessage;
 import elec332.core.server.ServerHelper;
-import elec332.core.util.BlockLoc;
 import elec332.core.util.EnumHelper;
 import elec332.core.util.NBTHelper;
 import elec332.core.world.WorldHelper;
@@ -143,25 +142,27 @@ public final class MultiBlockStructureRegistry implements IMessageHandler<MultiB
             }
         }
         if (leftBottomCorner != null && areBlocksAtRightPlace(multiBlock.getStructure(), world, newX, newY, newZ, side)){
-            if (multiBlock instanceof AbstractAdvancedMultiBlockStructure && !((AbstractAdvancedMultiBlockStructure) multiBlock).areSecondaryConditionsMet(world, new BlockLoc(newX, newY, newZ), side))
+            if (multiBlock instanceof AbstractAdvancedMultiBlockStructure && !((AbstractAdvancedMultiBlockStructure) multiBlock).areSecondaryConditionsMet(world, new BlockPos(newX, newY, newZ), side))
                 return false;
             if (multiBlock.replaceUponCreated() != null) {
                 BlockStructure main = multiBlock.getStructure();
                 replaceAll(main, world, newX, newY, newZ, side, main.newBlockStructureWithSameDimensions(multiBlock.replaceUponCreated()));
             }
             //newZ--;
-            multiBlockRegistry.get(world).createNewMultiBlock(multiBlock, new BlockLoc(newX, newY, newZ), getAllMultiBlockLocations(multiBlock.getStructure(), newX, newY, newZ, side), world, side);
+            multiBlockRegistry.get(world).createNewMultiBlock(multiBlock, new BlockPos(newX, newY, newZ), getAllMultiBlockLocations(multiBlock.getStructure(), newX, newY, newZ, side), world, side);
             if (!recreate && !world.isRemote){
                 for (EntityPlayerMP player : ServerHelper.instance.getAllPlayersWatchingBlock(world, newX, newZ))
                     multiBlockRegistry.networkHandler.getNetworkWrapper().sendTo(new SyncMultiBlockPacket(multiBlock, x, y, z, side, this), player);
             }
+            int hn = multiBlock.getStructure().getHn();
+            world.markBlockRangeForRenderUpdate(newX, newY, newZ, newX + hn, newY + hn, newZ + hn);
             return true;
         }
         return false;
     }
 
-    private List<BlockLoc> getAllMultiBlockLocations(final BlockStructure multiBlock, final int x, final int y, final int z, final EnumFacing side){
-        final List<BlockLoc> ret = Lists.newArrayList();
+    private List<BlockPos> getAllMultiBlockLocations(final BlockStructure multiBlock, final int x, final int y, final int z, final EnumFacing side){
+        final List<BlockPos> ret = Lists.newArrayList();
         multiBlock.startLoop(new BlockStructure.IPositionCall() {
             @Override
             public void forPos(int length, int width, int height) {
@@ -179,7 +180,7 @@ public final class MultiBlockStructureRegistry implements IMessageHandler<MultiB
         multiBlock.startLoop(new BlockStructure.IPositionCall() {
             @Override
             public void forPos(int length, int width, int height) {
-                BlockLoc loc = getTranslated(pos, side, length, width, height);
+                BlockPos loc = getTranslated(pos, side, length, width, height);
                 BlockStateWrapper data = toReplace.getStructure()[length][width][height];
                 world.setBlockToAir(loc);
                 world.setBlockState(loc, data.getBlockState(), 3);
@@ -192,8 +193,10 @@ public final class MultiBlockStructureRegistry implements IMessageHandler<MultiB
             multiBlock.startLoop(new BlockStructure.IPositionCall() {
                 @Override
                 public void forPos(int length, int width, int height) {
-                    BlockLoc translated = getTranslated(x, y, z, side, length, width, height);
+                    BlockPos translated = getTranslated(x, y, z, side, length, width, height);
                     if (!multiBlock.getStructure()[length][width][height].equals(atLocation(world, translated)) || hasMultiBlock(translated, world)){
+                        System.out.println("Checking MB failed at relative: "+length+", "+width+", "+height);
+                        System.out.println("Found: "+atLocation(world, translated)+", expected: "+multiBlock.getStructure()[length][width][height]);
                         throw new RuntimeException("INVALID");
                     }
                 }
@@ -208,7 +211,7 @@ public final class MultiBlockStructureRegistry implements IMessageHandler<MultiB
         return true;
     }
 
-    private boolean hasMultiBlock(BlockLoc loc, World world){
+    private boolean hasMultiBlock(BlockPos loc, World world){
         TileEntity tile = WorldHelper.getTileAt(world, loc);
         if (tile instanceof IMultiBlockTile){
             if (((IMultiBlockTile) tile).getMultiBlock() != null)
@@ -217,11 +220,11 @@ public final class MultiBlockStructureRegistry implements IMessageHandler<MultiB
         return false;
     }
 
-    protected static BlockLoc getTranslated(BlockPos pos, EnumFacing side, int length, int width, int height){
+    protected static BlockPos getTranslated(BlockPos pos, EnumFacing side, int length, int width, int height){
         return getTranslated(pos.getX(), pos.getY(), pos.getZ(), side, length, width, height);
     }
 
-    protected static BlockLoc getTranslated(int x, int y, int z, EnumFacing side, int length, int width, int height){
+    protected static BlockPos getTranslated(int x, int y, int z, EnumFacing side, int length, int width, int height){
         int newX;
         int newY;
         int newZ;
@@ -240,7 +243,7 @@ public final class MultiBlockStructureRegistry implements IMessageHandler<MultiB
         } else throw new IllegalArgumentException("Cannot process side: "+side);
         newY = y + height;
         //newZ--; //Fix for that weird stuff above
-        return new BlockLoc(newX, newY, newZ);
+        return new BlockPos(newX, newY, newZ);
     }
 
     private BlockStateWrapper atLocation(IBlockAccess world, int x, int y, int z){
@@ -257,6 +260,7 @@ public final class MultiBlockStructureRegistry implements IMessageHandler<MultiB
 
     public static final class SyncMultiBlockPacket extends AbstractMessage {
 
+        @SuppressWarnings("unused")
         public SyncMultiBlockPacket(){
             super(null);
         }

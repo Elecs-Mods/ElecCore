@@ -43,7 +43,7 @@ public abstract class AbstractMultiBlockTile extends TileBase implements IMultiB
     }
 
     public boolean onBlockActivatedBy(EntityPlayer player, EnumFacing side, float hitX, float hitY, float hitZ){
-        return super.onBlockActivated(player, side, hitX, hitY, hitZ);
+        return false;
     }
 
     @Override

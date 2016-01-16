@@ -39,7 +39,7 @@ public final class BlockStateWrapper implements IBlockDataEqualiser {
 
     @Override
     public String toString() {
-        return MineTweakerHelper.getItemRegistryName(new ItemStack(block)) + ":" + hashCode();
+        return block == null ? "null" : MineTweakerHelper.getItemRegistryName(new ItemStack(block)) + ":" + hashCode();
     }
 
     @Override
@@ -54,10 +54,6 @@ public final class BlockStateWrapper implements IBlockDataEqualiser {
     @Override
     public boolean equals(Object obj) {
         return obj instanceof BlockStateWrapper && blocksEqual((BlockStateWrapper) obj);
-    }
-
-    public boolean blocksEqual(IBlockState blockState){
-        return block == blockState.getBlock() && meta == WorldHelper.getBlockMeta(blockState);
     }
 
     @Override

@@ -26,14 +26,14 @@ public abstract class AbstractMultiBlock extends IMultiBlock implements IInvento
     public abstract boolean onAnyBlockActivated(EntityPlayer player);
 
     public boolean isSaveDelegate(AbstractMultiBlockTile tile){
-        return tile.myLocation().equals(getLocation());
+        return tile.getPos().equals(getLocation());
     }
 
     public TileBase getSaveDelegate(){
         return (TileBase) getTileAt(getLocation());
     }
 
-    public TileEntity getTileAt(BlockLoc loc){
+    public TileEntity getTileAt(BlockPos loc){
         return WorldHelper.getTileAt(getWorldObj(), loc);
     }
 
@@ -41,7 +41,7 @@ public abstract class AbstractMultiBlock extends IMultiBlock implements IInvento
         return !getWorldObj().isRemote;
     }
 
-    public BlockLoc getBlockLocAtTranslatedPos(int length, int width, int height){
+    public BlockPos getBlockLocAtTranslatedPos(int length, int width, int height){
         return MultiBlockStructureRegistry.getTranslated(getLocation(), getMultiBlockFacing(), length, width, height);
     }
 
