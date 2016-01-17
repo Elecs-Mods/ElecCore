@@ -28,6 +28,9 @@ repositories {
         name 'ForgeFS'
         url 'http://files.minecraftforge.net/maven'
     }
+	maven {
+		url "http://dvs1.progwml6.com/files/maven"
+    } 
 }
 
 apply plugin: 'net.minecraftforge.gradle.forge'
@@ -55,11 +58,14 @@ minecraft {
     replace "#API_VER#", (config.abilityAPI_version)
 	
 	mappings = config.mappings
+	
+	useDepAts = true
 }
 
 dependencies {
 	compile "mcp.mobius.waila:Waila:${config.WAILA_version}"//_${config.minecraft_version}"
 	compile "codechicken:NotEnoughItems:${config.NEI_version}:dev"//${config.minecraft_version}-${config.NEI_version}:dev"
+	deobfCompile "mezz.jei:jei_${config.minecraft_version}:${config.jei_version}"
 }
 
 processResources

@@ -10,6 +10,7 @@ import elec332.core.client.model.model.IModelLoader;
 import elec332.core.client.model.template.ElecTemplateBakery;
 import elec332.core.client.render.ISpecialBlockRenderer;
 import elec332.core.client.render.ISpecialItemRenderer;
+import elec332.core.java.ReflectionHelper;
 import elec332.core.main.ElecCore;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -23,7 +24,6 @@ import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -115,19 +115,18 @@ public final class RenderingRegistry {
         }
     }*/
 
+    @SuppressWarnings("all")
     protected void removeJsonErrors(ModelLoader modelLoader){
         try {
-            Field field = ModelLoader.class.getDeclaredField("missingVariants");
-            field.setAccessible(true);
-            int i = field.getModifiers();
-            Field modifier = field.getClass().getDeclaredField("modifiers");
-            i &= -17;
-            modifier.setAccessible(true);
-            modifier.setInt(field, i);
-            @SuppressWarnings("unchecked")
-            Set<ModelResourceLocation> set = (Set<ModelResourceLocation>) field.get(modelLoader);
+            Set<ModelResourceLocation> set = (Set<ModelResourceLocation>) ReflectionHelper.makeFinalFieldModifiable(ModelLoader.class.getDeclaredField("missingVariants")).get(modelLoader);
+            Map<ModelResourceLocation, Exception> exceptionMap = (Map<ModelResourceLocation, Exception>) ReflectionHelper.makeFinalFieldModifiable(ModelLoader.class.getDeclaredField("loadingExceptions")).get(modelLoader);
+            if (ElecCore.removeJSONErrors){
+                exceptionMap.clear();
+            }
             Set<ModelResourceLocation> toRemove = Sets.newHashSet();
-            for (ModelResourceLocation rl : set){
+            Set<ModelResourceLocation> loop = Sets.newHashSet(set);
+            loop.addAll(exceptionMap.keySet());
+            for (ModelResourceLocation rl : loop){
                 String name = rl.toString().split("#")[0];
                 Item item = Item.getByNameOrId(name);
                 if (item == null){
@@ -146,7 +145,10 @@ public final class RenderingRegistry {
                     }
                 }
             }
-            set.removeAll(toRemove);
+            for (ModelResourceLocation rl : toRemove){
+                set.remove(rl);
+                exceptionMap.remove(rl);
+            }
             /*for (Block block : Util.getBlockIterator()){
                 if (block instanceof INoJsonBlock) {
                     ResourceLocation s = (ResourceLocation) GameData.getBlockRegistry().getNameForObject(block);

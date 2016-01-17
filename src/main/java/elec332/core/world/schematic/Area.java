@@ -5,9 +5,13 @@ package elec332.core.world.schematic;
  * You can find it here: https://github.com/Lumaceon/ClockworkPhase2/blob/master/src/main/java/lumaceon/mods/clockworkphase2/util/Area.java
  */
 
+import net.minecraft.util.BlockPos;
+
 public class Area {
 
-    public int x1, y1, z1, x2, y2, z2;
+    public Area(BlockPos pos1, BlockPos pos2){
+        this(pos1.getX(), pos1.getY(), pos1.getZ(), pos2.getX(), pos2.getY(), pos2.getZ());
+    }
 
     public Area(int x1, int y1, int z1, int x2, int y2, int z2) {
         this.x1 = x1;
@@ -17,6 +21,8 @@ public class Area {
         this.y2 = y2;
         this.z2 = z2;
     }
+
+    public final int x1, y1, z1, x2, y2, z2;
 
     public short getWidth() {
         return (short) (Math.abs(x1 - x2) + 1);

@@ -44,6 +44,7 @@ public class ElecCore extends ModBase{
 	public static LinkedHashMap<String, ArrayList> Updates = new LinkedHashMap<String, ArrayList>();
 	public static ArrayList<String> outdatedModList = new ArrayList<String>();
 	public static boolean debug;
+	public static boolean removeJSONErrors = true;
 	//EXP
 
 	//END_EXP	
@@ -78,6 +79,7 @@ public class ElecCore extends ModBase{
 		FMLCommonHandler.instance().bus().register(new FMLEventHandler());
 		FMLCommonHandler.instance().bus().register(tickHandler);
 		debug = config.isEnabled("debug", false);
+		removeJSONErrors = config.isEnabled("removeJsonExceptions", true);
 		ServerHelper.instance.load();
 
 		proxy.preInitRendering();
