@@ -7,6 +7,7 @@ import elec332.core.client.IIconRegistrar;
 import elec332.core.client.ITextureLoader;
 import elec332.core.client.model.model.IModelAndTextureLoader;
 import elec332.core.client.model.model.IModelLoader;
+import elec332.core.client.model.replace.ElecModelLoader;
 import elec332.core.client.model.template.ElecTemplateBakery;
 import elec332.core.client.render.ISpecialBlockRenderer;
 import elec332.core.client.render.ISpecialItemRenderer;
@@ -24,9 +25,7 @@ import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by Elec332 on 18-11-2015.
@@ -117,6 +116,7 @@ public final class RenderingRegistry {
 
     @SuppressWarnings("all")
     protected void removeJsonErrors(ModelLoader modelLoader){
+        ElecCore.logger.info("Cleaning up internal Json stuff...");
         try {
             Set<ModelResourceLocation> set = (Set<ModelResourceLocation>) ReflectionHelper.makeFinalFieldModifiable(ModelLoader.class.getDeclaredField("missingVariants")).get(modelLoader);
             Map<ModelResourceLocation, Exception> exceptionMap = (Map<ModelResourceLocation, Exception>) ReflectionHelper.makeFinalFieldModifiable(ModelLoader.class.getDeclaredField("loadingExceptions")).get(modelLoader);
@@ -126,26 +126,7 @@ public final class RenderingRegistry {
             Set<ModelResourceLocation> toRemove = Sets.newHashSet();
             Set<ModelResourceLocation> loop = Sets.newHashSet(set);
             loop.addAll(exceptionMap.keySet());
-            for (ModelResourceLocation rl : loop){
-                String name = rl.toString().split("#")[0];
-                Item item = Item.getByNameOrId(name);
-                if (item == null){
-                    Block block = Block.getBlockFromName(name);
-                    if (block == null){
-                        ElecCore.logger.error("Error finding object: "+name);
-                    }
-                    if (block instanceof INoJsonBlock){
-                        toRemove.add(rl);
-                    }
-                } else {
-                    if (item instanceof INoJsonItem){
-                        toRemove.add(rl);
-                    } else if (item instanceof ItemBlock && ((ItemBlock) item).getBlock() instanceof INoJsonBlock){
-                        toRemove.add(rl);
-                    }
-                }
-            }
-            for (ModelResourceLocation rl : toRemove){
+            for (ModelResourceLocation rl : getValidLocations(loop)){
                 set.remove(rl);
                 exceptionMap.remove(rl);
             }
@@ -167,6 +148,40 @@ public final class RenderingRegistry {
         } catch (Exception e1){
             e1.printStackTrace();
         }
+        ElecCore.logger.info("Finished cleaning up internal Json stuff.");
+    }
+
+    protected Set<ModelResourceLocation> getValidLocations(Collection<ModelResourceLocation> loop){
+        Set<ModelResourceLocation> toRemove = Sets.newHashSet();
+        for (ModelResourceLocation rl : loop){
+            String name = rl.toString().split("#")[0];
+            Item item = Item.getByNameOrId(name);
+            if (item == null){
+                Block block = Block.getBlockFromName(name);
+                if (block == null){
+                    //ElecCore.logger.error("Error finding object: "+name);
+                    continue;
+                }
+                if (block instanceof INoJsonBlock){
+                    toRemove.add(rl);
+                }
+            } else {
+                if (item instanceof INoJsonItem){
+                    toRemove.add(rl);
+                } else if (item instanceof ItemBlock && ((ItemBlock) item).getBlock() instanceof INoJsonBlock){
+                    toRemove.add(rl);
+                }
+            }
+        }
+        return toRemove;
+    }
+
+    protected void loadVariants(ElecModelLoader modelLoader, Collection<ModelResourceLocation> collection){
+        collection = Lists.newArrayList(collection);
+        for (ModelResourceLocation rl : getValidLocations(collection)){
+            collection.remove(rl);
+        }
+        modelLoader.actuallyLoadVariants(collection);
     }
 
     private class IconRegistrar implements IIconRegistrar {

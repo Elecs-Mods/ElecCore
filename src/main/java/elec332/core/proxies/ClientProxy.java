@@ -2,6 +2,7 @@ package elec332.core.proxies;
 
 import elec332.core.asm.asmload.ASMHooks;
 import elec332.core.client.model.ElecResourceManager;
+import elec332.core.client.model.replace.ElecModelManager;
 import elec332.core.main.ElecCore;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BlockRendererDispatcher;
@@ -9,6 +10,7 @@ import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.client.resources.IReloadableResourceManager;
 import net.minecraft.client.resources.IResourceManagerReloadListener;
 import net.minecraft.client.resources.SimpleReloadableResourceManager;
+import net.minecraft.client.resources.model.ModelManager;
 import net.minecraft.util.ChatComponentText;
 import net.minecraftforge.common.MinecraftForge;
 
@@ -56,6 +58,10 @@ public class ClientProxy extends CommonProxy {
 			} else if (listener.getClass() == BlockRendererDispatcher.class){
 				minecraft.blockRenderDispatcher = ASMHooks.Client.newBlockRendererDispatcher();
 				resourceManager.registerReloadListener(minecraft.blockRenderDispatcher);
+				return false;
+			} else if (listener.getClass() == ModelManager.class){
+				minecraft.modelManager = new ElecModelManager(minecraft.textureMapBlocks);
+				resourceManager.registerReloadListener(minecraft.modelManager);
 				return false;
 			}
 			return true;

@@ -7,6 +7,14 @@ import java.util.List;
  */
 public class JavaHelper {
 
+    public static String getFirstEntryContaining(List<String > list, String check){
+        for (String s : list){
+            if (s.contains(check))
+                return s;
+        }
+        return null;
+    }
+
     public static List<String> replaceAll(List<String> list, String initial, String replace){
         for (int i = 0; i < list.size(); i++) {
             list.add(i, list.get(i).replace(initial, replace));
@@ -23,11 +31,7 @@ public class JavaHelper {
     }
 
     public static boolean doesListContainPartially(List<String> list, String check){
-        for (String s : list){
-            if (s.contains(check))
-                return true;
-        }
-        return false;
+        return getFirstEntryContaining(list, check) != null;
     }
 
 }

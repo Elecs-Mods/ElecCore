@@ -13,6 +13,7 @@ import elec332.core.server.ServerHelper;
 import elec332.core.util.FileHelper;
 import elec332.core.util.MCModInfo;
 import elec332.core.util.ModInfoHelper;
+import elec332.core.util.OredictHelper;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Mod;
@@ -20,6 +21,7 @@ import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.discovery.ASMDataTable;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLLoadCompleteEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry;
@@ -79,7 +81,7 @@ public class ElecCore extends ModBase{
 		FMLCommonHandler.instance().bus().register(new FMLEventHandler());
 		FMLCommonHandler.instance().bus().register(tickHandler);
 		debug = config.isEnabled("debug", false);
-		removeJSONErrors = config.isEnabled("removeJsonExceptions", true);
+		removeJSONErrors = config.isEnabled("removeJsonExceptions", true) && !developmentEnvironment;
 		ServerHelper.instance.load();
 
 		proxy.preInitRendering();
@@ -104,6 +106,7 @@ public class ElecCore extends ModBase{
 				logger.error("Error registering tile: "+data.getClassName());
 			}
 		}
+		OredictHelper.initLists();
     }
 
 	@EventHandler
@@ -111,7 +114,13 @@ public class ElecCore extends ModBase{
 		if (FMLCommonHandler.instance().getEffectiveSide().isClient()){
 
 		}
+		OredictHelper.initLists();
 		//Nope
+	}
+
+	@EventHandler
+	public void loadComplete(FMLLoadCompleteEvent event){
+		OredictHelper.initLists();
 	}
 
 	public static Set<ASMDataTable.ASMData> getAnnotationList(Class<? extends Annotation> annotationClass){

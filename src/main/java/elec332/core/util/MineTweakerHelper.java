@@ -39,6 +39,9 @@ public class MineTweakerHelper {
 
     @SuppressWarnings("unchecked")
     public static String getItemRegistryName(ItemStack stack){
+        if (stack.getItem() == null){
+            throw new NullPointerException();
+        }
         return GameData.getItemRegistry().getNameForObject(stack.getItem()).toString();
     }
 

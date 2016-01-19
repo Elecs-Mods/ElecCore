@@ -7,7 +7,6 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import org.lwjgl.opengl.GL11;
 
 import java.io.IOException;
 
@@ -36,11 +35,11 @@ public abstract class BaseGuiContainer extends GuiContainer implements IResource
     @Override
     public void drawScreen(int mouseX, int mouseY, float f) {
         super.drawScreen(mouseX, mouseY, f);
-        GL11.glDisable(GL11.GL_LIGHTING);
-        GL11.glDisable(GL11.GL_DEPTH_TEST);
-        GL11.glPushMatrix();
-        GL11.glTranslatef((float) this.guiLeft, (float) this.guiTop, 0.0F);
-        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+        GlStateManager.disableLighting();
+        GlStateManager.disableDepth();
+        GlStateManager.pushMatrix();
+        GlStateManager.translate((float) this.guiLeft, (float) this.guiTop, 0.0F);
+        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
         RenderHelper.disableStandardItemLighting();
         for (Widget widget : container.getWidgets()){
             if (widget.isHidden())
@@ -48,15 +47,15 @@ public abstract class BaseGuiContainer extends GuiContainer implements IResource
             if (widget.getToolTip() != null && widget.isMouseOver(translatedMouseX(mouseX), translatedMouseY(mouseY)))
                 widget.getToolTip().renderTooltip(mouseX, mouseY, this.guiLeft, this.guiTop);
         }
-        GL11.glPopMatrix();
-        GL11.glEnable(GL11.GL_LIGHTING);
-        GL11.glEnable(GL11.GL_DEPTH_TEST);
+        GlStateManager.popMatrix();
+        //GL11.glEnable(GL11.GL_LIGHTING);
+        GlStateManager.enableDepth();
     }
 
 
     @Override
     protected void drawGuiContainerBackgroundLayer(float f, int mouseX, int mouseY) {
-        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
         this.mc.getTextureManager().bindTexture(getBackgroundImageLocation());
         int k = (this.width - this.xSize) / 2;
         int l = (this.height - this.ySize) / 2;

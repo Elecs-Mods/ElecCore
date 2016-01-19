@@ -11,18 +11,24 @@ import java.util.List;
 /**
  * Created by Elec332 on 23-12-2014.
  */
-@SuppressWarnings("deprecation")
+@SuppressWarnings({"deprecation", "unused"})
 public class OredictHelper {
 
     private static List<String> allOres = Lists.newArrayList();
     private static List<String> allIngots = Lists.newArrayList();
+    private static List<String> allDusts = Lists.newArrayList();
 
     public static void initLists(){
+        allDusts.clear();
+        allIngots.clear();
+        allOres.clear();
         for (String s : OreDictionary.getOreNames()){
-            if (s.contains("ore")) {
+            if (s.startsWith("ore")) {
                 allOres.add(s);
-            } else if (s.contains("ingot")) {
+            } else if (s.startsWith("ingot")) {
                 allIngots.add(s);
+            } else if (s.startsWith("dust")){
+                allDusts.add(s);
             }
         }
     }
@@ -33,6 +39,10 @@ public class OredictHelper {
 
     public static List<String> getAllIngots() {
         return ImmutableList.copyOf(allIngots);
+    }
+
+    public static List<String> getAllDusts(){
+        return ImmutableList.copyOf(allDusts);
     }
 
     public static String concatOreName(String oreName){

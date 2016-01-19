@@ -1,5 +1,6 @@
 package elec332.core.client.model;
 
+import elec332.core.client.model.replace.ElecModelLoader;
 import net.minecraftforge.client.event.ModelBakeEvent;
 import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.common.MinecraftForge;
@@ -37,6 +38,11 @@ public class EventHandler {
     public void afterAllModelsBaked(ModelBakeEvent event){
         //RenderingRegistry.instance().setItemBlockModels(event);
         RenderingRegistry.instance().removeJsonErrors(event.modelLoader);
+    }
+
+    @SubscribeEvent
+    public void onVariantLoad(ElecModelLoader.LoadVariantsEvent event){
+        RenderingRegistry.instance().loadVariants(event.modelLoader, event.collection);
     }
 
 }
