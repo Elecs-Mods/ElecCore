@@ -13,6 +13,10 @@ import java.util.List;
  */
 public class InventoryHelper {
 
+    public static boolean isValidStack(ItemStack stack){
+        return stack != null && stack.getItem() != null;
+    }
+
     /*
      * I don't want to depend on MC methods where possible.
      */

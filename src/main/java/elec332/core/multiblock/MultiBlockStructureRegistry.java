@@ -2,6 +2,7 @@ package elec332.core.multiblock;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import elec332.core.main.ElecCore;
 import elec332.core.network.AbstractMessage;
 import elec332.core.server.ServerHelper;
 import elec332.core.util.EnumHelper;
@@ -272,9 +273,14 @@ public final class MultiBlockStructureRegistry implements IMessageHandler<MultiB
     }
 
     @Override
-    public IMessage onMessage(SyncMultiBlockPacket message, MessageContext ctx) {
-        NBTTagCompound tag = message.networkPackageObject;
-        tryCreateStructure(multiBlockStructures.get(tag.getString("mbs")), getClientWorld(), new BlockPos(tag.getInteger("x"), tag.getInteger("y"), tag.getInteger("z")), EnumHelper.fromString(tag.getString("side"), EnumFacing.class), false);
+    public IMessage onMessage(final SyncMultiBlockPacket message, final MessageContext ctx) {
+        ElecCore.tickHandler.registerCall(new Runnable() {
+            @Override
+            public void run() {
+                NBTTagCompound tag = message.networkPackageObject;
+                tryCreateStructure(multiBlockStructures.get(tag.getString("mbs")), getClientWorld(), new BlockPos(tag.getInteger("x"), tag.getInteger("y"), tag.getInteger("z")), EnumHelper.fromString(tag.getString("side"), EnumFacing.class), false);
+            }
+        }, ctx.side);
         return null;
     }
 
