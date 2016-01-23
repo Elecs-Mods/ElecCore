@@ -2,7 +2,6 @@ package elec332.core.tile;
 
 import elec332.core.api.wrench.IRightClickCancel;
 import elec332.core.api.wrench.IWrenchable;
-import elec332.core.util.RegisterHelper;
 import elec332.core.world.WorldHelper;
 import net.minecraft.block.Block;
 import net.minecraft.block.ITileEntityProvider;
@@ -17,8 +16,11 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.List;
+import java.util.Random;
 
 /**
  * Created by Elec332 on 30-4-2015.
@@ -34,12 +36,15 @@ public class BlockTileBase extends Block implements IWrenchable, ITileEntityProv
         this.tileClass = tileClass;
         this.blockName = blockName;
         this.modID = modID;
+        randomDisplayTick = IRandomDisplayTickProviderTile.class.isAssignableFrom(tileClass);
     }
 
    // public IIcon[][] icons = new IIcon[2][6];
     private Class<? extends TileEntity> tileClass;
+    private boolean randomDisplayTick;
     public final String blockName;
-    private String modID;
+    @SuppressWarnings("unused")
+    public final String modID;
 
     public BlockTileBase registerTile(){
         GameRegistry.registerTileEntity(tileClass, blockName);
@@ -47,7 +52,7 @@ public class BlockTileBase extends Block implements IWrenchable, ITileEntityProv
     }
 
     public BlockTileBase register(){
-        RegisterHelper.registerBlock(this, blockName);
+        GameRegistry.registerBlock(this, blockName);
         return this;
     }
 
@@ -142,6 +147,17 @@ public class BlockTileBase extends Block implements IWrenchable, ITileEntityProv
         if (tile instanceof TileBase)
             return ((TileBase) tile).getLightOpacity();
         return super.getLightOpacity(world, pos);
+    }
+
+    @Override
+    @SideOnly(Side.CLIENT)
+    public void randomDisplayTick(World world, BlockPos pos, IBlockState state, Random rand) {
+        if (randomDisplayTick){
+            TileEntity tile = WorldHelper.getTileAt(world, pos);
+            if (tile != null){
+                ((IRandomDisplayTickProviderTile)tile).randomDisplayTick(state, rand);
+            }
+        }
     }
 
     @Override

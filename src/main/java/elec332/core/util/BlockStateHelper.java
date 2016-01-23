@@ -1,5 +1,6 @@
 package elec332.core.util;
 
+import com.google.common.collect.Lists;
 import net.minecraft.block.Block;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyEnum;
@@ -17,8 +18,8 @@ public interface BlockStateHelper<M extends Comparable<M>> {
         private final PropertyEnum<EnumFacing> TYPE = PropertyEnum.create("facing", EnumFacing.class);
 
         @Override
-        public BlockState createMetaBlockState(Block block) {
-            return new BlockState(block, TYPE);
+        public BlockState createMetaBlockState(Block block, IProperty... otherProperties) {
+            return new BlockState(block, Lists.asList(TYPE, otherProperties).toArray(new IProperty[1]));
         }
 
         @Override
@@ -40,9 +41,10 @@ public interface BlockStateHelper<M extends Comparable<M>> {
         public IProperty<EnumFacing> getProperty() {
             return TYPE;
         }
+
     };
 
-    public BlockState createMetaBlockState(Block block);
+    public BlockState createMetaBlockState(Block block, IProperty... otherProperties);
 
     public IBlockState setDefaultMetaState(Block block);
 

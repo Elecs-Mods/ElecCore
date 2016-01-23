@@ -81,6 +81,7 @@ public abstract class AbstractMultiBlockTile extends TileBase implements IMultiB
     @Override
     public void setMultiBlock(IMultiBlock multiBlock, EnumFacing facing, String structure) {
         multiBlockData.setMultiBlock(multiBlock, facing, structure);
+        onMultiBlockCreated();
     }
 
     /**
@@ -90,6 +91,7 @@ public abstract class AbstractMultiBlockTile extends TileBase implements IMultiB
     @Override
     public void invalidateMultiBlock() {
         multiBlockData.invalidateMultiBlock();
+        onMultiBlockRemoved();
     }
 
     /**
@@ -131,6 +133,12 @@ public abstract class AbstractMultiBlockTile extends TileBase implements IMultiB
     @Override
     public AbstractMultiBlock getMultiBlock() {
         return (AbstractMultiBlock) multiBlockData.getMultiBlock();
+    }
+
+    protected void onMultiBlockCreated(){
+    }
+
+    protected void onMultiBlockRemoved(){
     }
 
     @Override
