@@ -10,7 +10,6 @@ public interface IInventoryTile {
 
     public Container getGuiServer(EntityPlayer player);
 
-
     public Object getGuiClient(EntityPlayer player);
 
 }

@@ -4,12 +4,11 @@ import com.google.common.collect.Lists;
 import elec332.core.client.render.GuiDraw;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL12;
 
 import java.util.List;
 
@@ -36,10 +35,10 @@ public class ToolTip{
     public void renderTooltip(int mouseX, int mouseY, int guiLeft, int guiTop){
         FontRenderer fontRenderer = Minecraft.getMinecraft().fontRendererObj;
         if (!tooltip.isEmpty()) {
-            GL11.glDisable(GL12.GL_RESCALE_NORMAL);
+            GlStateManager.disableRescaleNormal();
             RenderHelper.disableStandardItemLighting();
-            GL11.glDisable(GL11.GL_LIGHTING);
-            GL11.glDisable(GL11.GL_DEPTH_TEST);
+            GlStateManager.disableLighting();
+            GlStateManager.disableDepth();
             int k = 0;
             for (ColouredString colouredString : tooltip){
                 int l = fontRenderer.getStringWidth(colouredString.toString());
@@ -82,14 +81,10 @@ public class ToolTip{
                 }
                 k2 += 10;
             }
-            GL11.glEnable(GL11.GL_LIGHTING);
-            GL11.glEnable(GL11.GL_DEPTH_TEST);
-            RenderHelper.enableStandardItemLighting();
-            GL11.glEnable(GL12.GL_RESCALE_NORMAL);
         }
     }
 
-    public static class ColouredString{
+    public static class ColouredString {
         public ColouredString(String s){
             this(EnumChatFormatting.GRAY, s);
         }

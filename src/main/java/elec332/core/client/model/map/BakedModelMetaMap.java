@@ -4,6 +4,7 @@ import com.google.common.collect.Maps;
 import net.minecraft.client.resources.model.IBakedModel;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.oredict.OreDictionary;
 
 import java.util.Map;
 
@@ -37,7 +38,16 @@ public class BakedModelMetaMap<M extends IBakedModel> implements IBakedModelMeta
      */
     @Override
     public M forMeta(int meta) {
-        return map.get(meta);
+        M ret = this.map.get(meta);
+        if (ret == null){
+            if (meta == OreDictionary.WILDCARD_VALUE){
+                ret = this.map.get(0);
+            }
+            if (ret == null){
+                throw new IllegalArgumentException("There is no model for meta "+meta);
+            }
+        }
+        return ret;
     }
 
     /**

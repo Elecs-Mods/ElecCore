@@ -96,4 +96,17 @@ public final class BlockStructure {
     protected int getHn() {
         return hn;
     }
+
+    public int getLength() {
+        return length;
+    }
+
+    public int getWidth() {
+        return width;
+    }
+
+    public int getHeight() {
+        return height;
+    }
+
 }

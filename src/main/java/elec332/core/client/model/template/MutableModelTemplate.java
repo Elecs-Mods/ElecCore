@@ -129,7 +129,7 @@ public class MutableModelTemplate implements IModelTemplate {
 
     @Override
     public TextureAtlasSprite getTexture() {
-        return RenderHelper.checkIcon(this.texture);
+        return texture;//RenderHelper.checkIcon(this.texture);
     }
 
     @Override

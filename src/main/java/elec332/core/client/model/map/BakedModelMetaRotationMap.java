@@ -6,6 +6,7 @@ import net.minecraft.client.resources.model.IBakedModel;
 import net.minecraft.client.resources.model.ModelRotation;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.oredict.OreDictionary;
 
 import java.util.List;
 import java.util.Map;
@@ -95,7 +96,12 @@ public class BakedModelMetaRotationMap<M extends IBakedModel> extends AbstractMo
     public M forMetaAndRotation(int meta, ModelRotation rotation) throws RotationNotSupportedException {
         Map<ModelRotation, M> map = this.map.get(meta);
         if (map == null){
-            throw new IllegalArgumentException("There is no model for meta "+meta);
+            if (meta == OreDictionary.WILDCARD_VALUE){
+                map = this.map.get(0);
+            }
+            if (map == null){
+                throw new IllegalArgumentException("There is no model for meta "+meta);
+            }
         }
         checkRotation(rotation);
         return map.get(rotation);

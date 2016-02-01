@@ -3,6 +3,7 @@ package elec332.core.handler;
 import elec332.core.main.ElecCore;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.ChatComponentText;
+import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent;
 
@@ -14,7 +15,8 @@ import static net.minecraft.util.EnumChatFormatting.RED;
 /**
  * Created by Elec332 on 20-1-2015.
  */
-public class FMLEventHandler extends ElecCore{
+public class FMLEventHandler extends ElecCore {
+
     @SubscribeEvent
     public void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
         if (event.player instanceof EntityPlayerMP) {
@@ -30,4 +32,5 @@ public class FMLEventHandler extends ElecCore{
             }
         }
     }
+
 }

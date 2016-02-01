@@ -14,7 +14,7 @@ import java.io.IOException;
  * Created by Elec332 on 4-4-2015.
  */
 @SideOnly(Side.CLIENT)
-public abstract class BaseGuiContainer extends GuiContainer implements IResourceLocationProvider{
+public abstract class BaseGuiContainer extends GuiContainer implements IResourceLocationProvider {
 
     public BaseGuiContainer(BaseContainer container) {
         super(container);
@@ -48,7 +48,6 @@ public abstract class BaseGuiContainer extends GuiContainer implements IResource
                 widget.getToolTip().renderTooltip(mouseX, mouseY, this.guiLeft, this.guiTop);
         }
         GlStateManager.popMatrix();
-        //GL11.glEnable(GL11.GL_LIGHTING);
         GlStateManager.enableDepth();
     }
 
@@ -74,4 +73,5 @@ public abstract class BaseGuiContainer extends GuiContainer implements IResource
     private int translatedMouseY(int mouseY){
         return mouseY - this.guiTop;
     }
+
 }

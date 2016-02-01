@@ -3,12 +3,9 @@ package elec332.core.tile;
 import com.google.common.collect.Lists;
 import elec332.core.main.ElecCore;
 import elec332.core.network.IElecCoreNetworkTile;
-import elec332.core.network.PacketReRenderBlock;
 import elec332.core.network.PacketTileDataToServer;
 import elec332.core.server.ServerHelper;
-import elec332.core.util.BlockLoc;
 import elec332.core.util.BlockStateHelper;
-import elec332.core.util.DirectionHelper;
 import elec332.core.world.WorldHelper;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
@@ -33,6 +30,7 @@ import java.util.ArrayList;
 /**
  * Created by Elec332 on 8-4-2015.
  */
+@SuppressWarnings("unused")
 public class TileBase extends TileEntity implements IElecCoreNetworkTile, ITickable {
 
     @Override
@@ -123,6 +121,7 @@ public class TileBase extends TileEntity implements IElecCoreNetworkTile, ITicka
         return oldState.getBlock() != newSate.getBlock();
     }
 
+    @Deprecated
     public void notifyNeighboursOfDataChange(){
         this.markDirty();
         this.worldObj.notifyNeighborsOfStateChange(getPos(), blockType);
@@ -132,18 +131,8 @@ public class TileBase extends TileEntity implements IElecCoreNetworkTile, ITicka
         return WorldHelper.getBlockState(worldObj, pos).getValue(BlockStateHelper.FACING_NORMAL.getProperty());
     }
 
-    @Deprecated
-    public BlockLoc myLocation(){
-        return new BlockLoc(getPos());
-    }
-
     public boolean timeCheck() {
         return this.worldObj.getTotalWorldTime() % 32L == 0L;
-    }
-
-    protected void setBlockMetadataWithNotify(int meta){
-        this.worldObj.setBlockState(getPos(), getBlockType().getStateFromMeta(meta), 2);
-        notifyNeighboursOfDataChange();
     }
 
     public int getLightOpacity() {
@@ -163,13 +152,16 @@ public class TileBase extends TileEntity implements IElecCoreNetworkTile, ITicka
     }
 
     public void onBlockPlacedBy(EntityLivingBase entityLiving, ItemStack stack) {
-        setMetaForFacingOnPlacement(entityLiving);
         if (stack.hasTagCompound())
             readItemStackNBT(stack.getTagCompound());
     }
 
     public void onNeighborBlockChange(Block block) {
 
+    }
+
+    public void onNeighborTileChange(BlockPos neighbor){
+        //System.out.println("Tile at "+neighbor+" changed, my pos is: "+pos);
     }
 
     public boolean onBlockActivated(EntityPlayer player, EnumFacing side, float hitX, float hitY, float hitZ) {
@@ -209,16 +201,17 @@ public class TileBase extends TileEntity implements IElecCoreNetworkTile, ITicka
         return ret;
     }
 
-    protected void setMetaForFacingOnPlacement(EntityLivingBase entityLivingBase){
-        setFacing(DirectionHelper.getFacingOnPlacement(entityLivingBase));
-    }
-
     public void setFacing(EnumFacing facing){
         WorldHelper.setBlockState(worldObj, pos, getBlockType().getBlockState().getBaseState().withProperty(BlockStateHelper.FACING_NORMAL.getProperty(), facing), 2);
+        notifyNeighborsOfChange();
     }
 
     public void reRenderBlock(){
         WorldHelper.reRenderBlock(this);
+    }
+
+    public void notifyNeighborsOfChange(){
+        worldObj.notifyNeighborsOfStateChange(pos, blockType);
     }
 
     //NETWORK///////////////////////
