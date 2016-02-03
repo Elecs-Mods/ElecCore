@@ -2,8 +2,8 @@ package elec332.core.grid.basic;
 
 import elec332.core.main.ElecCore;
 import elec332.core.registry.AbstractWorldRegistryHolder;
-import elec332.core.util.BlockLoc;
 import elec332.core.world.WorldHelper;
+import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
 
@@ -19,7 +19,7 @@ public abstract class AbstractCableGrid<G extends AbstractCableGrid<G, T, W, A>,
     public AbstractCableGrid(World world, T p, EnumFacing direction, W wiringHelper, AbstractWorldRegistryHolder<A> worldGridHolder){
         acceptors = new ArrayList<GridData>();
         providers = new ArrayList<GridData>();
-        locations = new ArrayList<BlockLoc>();
+        locations = new ArrayList<BlockPos>();
         specialProviders = new ArrayList<GridData>();
         transmitters = new ArrayList<GridData>();
         this.world = world;
@@ -31,8 +31,6 @@ public abstract class AbstractCableGrid<G extends AbstractCableGrid<G, T, W, A>,
         }
         if (wiringHelper.isReceiver(p.getTile()) && wiringHelper.canReceiverReceiveFrom(p.getTile(), direction))
             acceptors.add(new GridData(p.getLocation(), direction));
-        //if (wiringHelper.isTransmitter(p.getTile()))
-        //FMLCommonHandler.instance().bus().register(this);
         identifier = UUID.randomUUID();
         this.worldGridHolder = worldGridHolder;
     }
@@ -43,10 +41,10 @@ public abstract class AbstractCableGrid<G extends AbstractCableGrid<G, T, W, A>,
     protected List<GridData> providers;
     protected List<GridData> specialProviders;
     protected List<GridData> transmitters;
-    protected List<BlockLoc> locations;
+    protected List<BlockPos> locations;
     private final AbstractWorldRegistryHolder<A> worldGridHolder;
 
-    public List<BlockLoc> getLocations(){
+    public List<BlockPos> getLocations(){
         return locations;
     }
 
@@ -57,7 +55,7 @@ public abstract class AbstractCableGrid<G extends AbstractCableGrid<G, T, W, A>,
         if (this.equals(grid))
             return (G)this;
         uponGridMerge(grid);
-        for (BlockLoc vec : grid.locations){
+        for (BlockPos vec : grid.locations){
             T powerTile = getWorldHolder().getPowerTile(vec);
             if (powerTile != null)
                 powerTile.replaceGrid(grid, (G)this);
@@ -111,15 +109,15 @@ public abstract class AbstractCableGrid<G extends AbstractCableGrid<G, T, W, A>,
     }
 
     public static class GridData {
-        public GridData(BlockLoc blockLoc, EnumFacing direction){
+        public GridData(BlockPos blockLoc, EnumFacing direction){
             this.loc = blockLoc;
             this.direction = direction;
         }
 
-        private BlockLoc loc;
+        private BlockPos loc;
         private EnumFacing direction;
 
-        public BlockLoc getLoc() {
+        public BlockPos getLoc() {
             return loc;
         }
 

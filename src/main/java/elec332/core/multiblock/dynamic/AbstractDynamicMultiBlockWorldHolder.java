@@ -3,9 +3,9 @@ package elec332.core.multiblock.dynamic;
 import com.google.common.collect.Lists;
 import elec332.core.main.ElecCore;
 import elec332.core.registry.IWorldRegistry;
-import elec332.core.util.BlockLoc;
 import elec332.core.world.WorldHelper;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
 
@@ -22,14 +22,14 @@ public abstract class AbstractDynamicMultiBlockWorldHolder<A extends AbstractDyn
     public AbstractDynamicMultiBlockWorldHolder(World world){
         this.world = world;
         this.registeredTiles = Lists.newArrayList();
-        this.pending = new ArrayDeque<BlockLoc>();
+        this.pending = new ArrayDeque<BlockPos>();
         this.multiBlocks = Lists.newArrayList();
         this.oldInt = 0;
     }
 
     private World world;
-    private List<BlockLoc> registeredTiles;
-    private Queue<BlockLoc> pending;
+    private List<BlockPos> registeredTiles;
+    private Queue<BlockPos> pending;
     private List<M> multiBlocks;
     private int oldInt;
 
@@ -72,15 +72,18 @@ public abstract class AbstractDynamicMultiBlockWorldHolder<A extends AbstractDyn
         }
         if (!isTileValid(tile) || !(tile instanceof IDynamicMultiBlockTile))
             throw new IllegalArgumentException("Invalid tile");
+        if (!WorldHelper.chunkLoaded(world, tile.getPos())) {
+            return;
+        }
         if(!world.isRemote && getMultiBlock((IDynamicMultiBlockTile) tile) == null) {
-            BlockLoc loc = new BlockLoc(tile);
+            BlockPos loc = new BlockPos(tile.getPos());
             registeredTiles.add(loc);
             M newM = registerGrid(newMultiBlock(tile));
             setMultiBlock((IDynamicMultiBlockTile) tile, newM);
             for (EnumFacing direction : EnumFacing.VALUES) {
                 TileEntity possTile = WorldHelper.getTileAt(world, loc.offset(direction));
                 if (possTile != null && possTile instanceof IDynamicMultiBlockTile && isTileValid(possTile)) {
-                    BlockLoc fromPossTile = new BlockLoc(possTile);
+                    BlockPos fromPossTile = new BlockPos(possTile.getPos());
                     if (!registeredTiles.contains(fromPossTile)) {
                         continue;
                     }
@@ -97,7 +100,7 @@ public abstract class AbstractDynamicMultiBlockWorldHolder<A extends AbstractDyn
                         if (mb == null)
                             throw new RuntimeException("I have no idea what kind of weird stuff happened here...");
                         if (!newM.equals(mb)) {
-                            for (BlockLoc mbLoc : mb.getAllLocations()) {
+                            for (BlockPos mbLoc : mb.getAllLocations()) {
                                 setMultiBlock((IDynamicMultiBlockTile) WorldHelper.getTileAt(world, mbLoc), newM);
                             }
                             newM.mergeWith(mb);
@@ -111,7 +114,7 @@ public abstract class AbstractDynamicMultiBlockWorldHolder<A extends AbstractDyn
             }
         } else if (!world.isRemote){
             System.out.println("------------------------------------");
-            System.out.println("ERROR!!!  Tile at "+new BlockLoc(tile)+" is trying to register whilst already being registered!");
+            System.out.println("ERROR!!!  Tile at "+tile.getPos()+" is trying to register whilst already being registered!");
             System.out.println("------------------------------------");
         }
     }
@@ -121,24 +124,26 @@ public abstract class AbstractDynamicMultiBlockWorldHolder<A extends AbstractDyn
             throw new IllegalArgumentException("Invalid tile");
         M m = getMultiBlock((IDynamicMultiBlockTile) tile);
         if (m != null) {
-            List<BlockLoc> vec3List = Lists.newArrayList();
+            List<BlockPos> vec3List = Lists.newArrayList();
             vec3List.addAll(m.getAllLocations());
-            //vec3List.remove(new BlockLoc(tile));
             m.onTileRemoved(tile);
-            //m.invalidate();
             removeGrid(m);
-            //registeredTiles.remove(new BlockLoc(tile));
             registeredTiles.removeAll(vec3List);
-            for (BlockLoc vec : vec3List) {
-                TileEntity mbTile = WorldHelper.getTileAt(world, vec);
-                if (mbTile != null) {
-                    setMultiBlock((IDynamicMultiBlockTile)mbTile, null);
+            vec3List.remove(new BlockPos(tile.getPos()));
+            for (BlockPos vec : vec3List) {
+                if (!WorldHelper.chunkLoaded(world, vec)) {
+                    TileEntity mbTile = WorldHelper.getTileAt(world, vec);
+                    if (mbTile != null) {
+                        setMultiBlock((IDynamicMultiBlockTile) mbTile, null);
+                    }
                 }
             }
-            vec3List.remove(new BlockLoc(tile));
-            for (BlockLoc vec : vec3List) {
-                TileEntity tileEntity1 = WorldHelper.getTileAt(world, vec);
-                addTile(tileEntity1);
+            setMultiBlock((IDynamicMultiBlockTile)tile, null);
+            for (BlockPos vec : vec3List) {
+                if (!WorldHelper.chunkLoaded(world, vec)) {
+                    TileEntity tileEntity1 = WorldHelper.getTileAt(world, vec);
+                    addTile(tileEntity1);
+                }
             }
         }
     }
@@ -149,12 +154,8 @@ public abstract class AbstractDynamicMultiBlockWorldHolder<A extends AbstractDyn
     }
 
     private void onServerTickInternal(){
-        //System.out.println("Tick! " + world.provider.dimensionId);
         if (!pending.isEmpty() && pending.size() == oldInt) {
-            //for (BlockLoc loc : pending){
-            //    addTile(WorldHelper.getTileAt(world, loc));
-            //}
-            for (BlockLoc loc = pending.poll(); loc != null; loc = pending.poll()) {
+            for (BlockPos loc = pending.poll(); loc != null; loc = pending.poll()) {
                 addTile(WorldHelper.getTileAt(world, loc));
             }
             pending.clear();
@@ -163,7 +164,6 @@ public abstract class AbstractDynamicMultiBlockWorldHolder<A extends AbstractDyn
         for (M m : multiBlocks){
             m.tick();
         }
-        //System.out.println("Tick done");
     }
 
     @Override

@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import elec332.core.util.BlockLoc;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.BlockPos;
 import net.minecraft.world.World;
 
 import java.util.List;
@@ -22,18 +23,18 @@ public abstract class AbstractDynamicMultiBlock<A extends AbstractDynamicMultiBl
         this.hash = new Random().nextInt(Integer.MAX_VALUE);
         this.world = tile.getWorld();
         this.allLocations = Lists.newArrayList();
-        this.allLocations.add(new BlockLoc(tile));
+        this.allLocations.add(new BlockPos(tile.getPos()));
     }
 
     protected final World world;
     private final int hash;
     private final UUID identifier;
-    protected List<BlockLoc> allLocations;
+    protected List<BlockPos> allLocations;
 
     public void tick(){
     }
 
-    public final List<BlockLoc> getAllLocations() {
+    public final List<BlockPos> getAllLocations() {
         return ImmutableList.copyOf(allLocations);
     }
 

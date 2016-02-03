@@ -3,8 +3,9 @@ package elec332.core.grid.basic;
 import com.google.common.collect.Lists;
 import elec332.core.main.ElecCore;
 import elec332.core.registry.AbstractWorldRegistryHolder;
-import elec332.core.util.BlockLoc;
+import elec332.core.world.WorldHelper;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
 
 import java.util.List;
@@ -19,7 +20,7 @@ public abstract class AbstractGridTile<G extends AbstractCableGrid<G, T, W, A>, 
         if (!wiringHelper.isTileValid(tileEntity))
             throw new IllegalArgumentException();
         this.tile = tileEntity;
-        this.location = new BlockLoc(tileEntity);
+        this.location = new BlockPos(tileEntity.getPos());
         this.grids = new Object[6];
         this.worldGridHolder =worldGridHolder;
         if (wiringHelper.isTransmitter(tileEntity)) {
@@ -36,7 +37,7 @@ public abstract class AbstractGridTile<G extends AbstractCableGrid<G, T, W, A>, 
 
     private TileEntity tile;
     private boolean hasInit = false;
-    private BlockLoc location;
+    private BlockPos location;
     private Object[] grids;
     private IWiringTypeHelper.ConnectType connectType;
     private final AbstractWorldRegistryHolder<A> worldGridHolder;
@@ -54,7 +55,7 @@ public abstract class AbstractGridTile<G extends AbstractCableGrid<G, T, W, A>, 
         return connectType;
     }
 
-    public BlockLoc getLocation() {
+    public BlockPos getLocation() {
         return location;
     }
 
@@ -91,7 +92,7 @@ public abstract class AbstractGridTile<G extends AbstractCableGrid<G, T, W, A>, 
 
     public void resetGrid(G grid){
         removeGrid(grid);
-        if (singleGrid())
+        if (singleGrid() && WorldHelper.chunkLoaded(tile.getWorld(), location))
             getGrid();
     }
 
@@ -140,6 +141,7 @@ public abstract class AbstractGridTile<G extends AbstractCableGrid<G, T, W, A>, 
         return grid;
     }
 
+    @SuppressWarnings("unused")
     protected AbstractWorldRegistryHolder<A> getWorldGridHolder() {
         return this.worldGridHolder;
     }
