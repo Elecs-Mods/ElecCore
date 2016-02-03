@@ -42,6 +42,10 @@ public class WorldHelper {
         world.markBlockForUpdate(pos);
     }
 
+    public static boolean chunkLoaded(World world, BlockPos pos){
+        return world.getChunkProvider().chunkExists(pos.getX() >> 4, pos.getZ() >> 4) && world.getChunkFromBlockCoords(pos).isLoaded();
+    }
+
     public static boolean chunkExists(World world, BlockPos pos){
         return world.getChunkProvider().chunkExists(pos.getX() >> 4, pos.getZ() >> 4);
     }
