@@ -26,7 +26,7 @@ public interface IWiringTypeHelper {
 
     public boolean isTileValid(TileEntity tile);
 
-    public enum ConnectType{
+    public enum ConnectType {
         CONNECTOR, SEND, RECEIVE, SEND_RECEIVE
     }
 

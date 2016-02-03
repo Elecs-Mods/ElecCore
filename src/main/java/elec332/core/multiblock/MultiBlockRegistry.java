@@ -56,47 +56,17 @@ public final class MultiBlockRegistry extends AbstractWorldRegistryHolder<MultiB
         return this.structureRegistry;
     }
 
-    /*@SubscribeEvent
-    public void onChunkLoad(final ChunkDataEvent.Load event){
-        ElecCore.tickHandler.registerCall(new Runnable() {
-            @Override
-            public void run() {
-                MultiBlockWorldRegistry registry = get(event.world, false);
-                if (registry != null){
-                    List<IMultiBlockTile> list = registry.unloadedCache.get(event.getChunk().getChunkCoordIntPair());
-                    if (list != null){
-                        for (IMultiBlockTile tile : list){
-                            IMultiBlock.tileEntityValidate(tile, tile.getMultiBlock(), MultiBlockRegistry.this);
-                        }
-                    }
-                    registry.unloadedCache.put(event.getChunk().getChunkCoordIntPair(), null);
-                }
-            }
-        });
-    }*/
-
     public class MultiBlockWorldRegistry implements IWorldRegistry{
 
         protected MultiBlockWorldRegistry(World world){
             this.world = world;
             this.activeMultiBlocks = Lists.newArrayList();
             this.pausedMultiBlocks = Lists.newArrayList();
-            //this.unloadedCache = Maps.newHashMap();
         }
 
         private final World world;
         private List<IMultiBlock> activeMultiBlocks;
         private List<IMultiBlock> pausedMultiBlocks;
-        //private Map<ChunkCoordIntPair, List<IMultiBlockTile>> unloadedCache;
-
-        /*private void addUnloadedTile(ChunkCoordIntPair coord, IMultiBlockTile tile){
-            List<IMultiBlockTile> list = unloadedCache.get(coord);
-            if (list == null){
-                list = Lists.newArrayList();
-                unloadedCache.put(coord, list);
-            }
-            list.add(tile);
-        }*/
 
         protected World getWorldObj(){
             return world;
@@ -112,11 +82,6 @@ public final class MultiBlockRegistry extends AbstractWorldRegistryHolder<MultiB
             this.activeMultiBlocks.remove(multiBlock);
             multiBlock.invalidate();
         }
-
-        /*protected void tileChunkUnloaded(IMultiBlock multiBlock, IMultiBlockTile tile){
-            //addUnloadedTile(WorldHelper.fromBlockLoc(new BlockLoc((TileEntity) tile)), tile);
-            deactivateMultiBlock(multiBlock);
-        }*/
 
         protected void deactivateMultiBlock(IMultiBlock multiBlock){
             this.activeMultiBlocks.remove(multiBlock);
