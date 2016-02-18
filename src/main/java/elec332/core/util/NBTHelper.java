@@ -1,16 +1,19 @@
 package elec332.core.util;
 
+import com.google.common.base.Function;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.BlockPos;
+import net.minecraftforge.common.util.INBTSerializable;
 
 import java.util.List;
+import java.util.concurrent.Callable;
 
 /**
  * Created by Elec332 on 28-5-2015.
  */
-public class NBTHelper {
+public class NBTHelper implements INBTSerializable<NBTTagCompound> {
 
     public NBTHelper(){
         this(new NBTTagCompound());
@@ -126,9 +129,37 @@ public class NBTHelper {
     }
 
 
-
+    @Deprecated
     public NBTTagCompound toNBT(){
         return this.tagCompound;
+    }
+
+    @Override
+    public NBTTagCompound serializeNBT() {
+        return this.tagCompound;
+    }
+
+    @Override
+    public void deserializeNBT(NBTTagCompound nbt) {
+        this.tagCompound = nbt;
+    }
+
+    public static class DefaultCallable implements Callable<NBTHelper> {
+
+        @Override
+        public NBTHelper call() throws Exception {
+            return new NBTHelper();
+        }
+
+    }
+
+    public static class DefaultFunction<F> implements Function<F, NBTHelper>{
+
+        @Override
+        public NBTHelper apply(F input) {
+            return new NBTHelper();
+        }
+
     }
 
 }

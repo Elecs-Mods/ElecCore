@@ -161,7 +161,7 @@ public class TileBase extends TileEntity implements IElecCoreNetworkTile, ITicka
     }
 
     public void onNeighborTileChange(BlockPos neighbor){
-        //System.out.println("Tile at "+neighbor+" changed, my pos is: "+pos);
+
     }
 
     public boolean onBlockActivated(EntityPlayer player, EnumFacing side, float hitX, float hitY, float hitZ) {

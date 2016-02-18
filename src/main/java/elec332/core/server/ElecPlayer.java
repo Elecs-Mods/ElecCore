@@ -5,6 +5,7 @@ import elec332.core.util.NBTHelper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraftforge.common.util.INBTSerializable;
 
 import java.util.Map;
 import java.util.UUID;
@@ -12,7 +13,7 @@ import java.util.UUID;
 /**
  * Created by Elec332 on 28-5-2015.
  */
-public class ElecPlayer {
+public class ElecPlayer implements INBTSerializable<NBTTagCompound> {
 
     protected ElecPlayer(UUID uuid){
         this.uuid = uuid;
@@ -52,7 +53,7 @@ public class ElecPlayer {
         return this.uuid;
     }
 
-    public void readFromNBT(NBTTagCompound tag){
+    public void deserializeNBT(NBTTagCompound tag){
         this.data = new NBTHelper(tag.getCompoundTag("main"));
         NBTTagList tagList = tag.getTagList("props", 10);
         for (int i = 0; i < tagList.tagCount(); i++) {
@@ -68,9 +69,9 @@ public class ElecPlayer {
         }
     }
 
-    public NBTTagCompound saveToNBT(){
+    public NBTTagCompound serializeNBT(){
         NBTTagCompound tag = new NBTTagCompound();
-        tag.setTag("main", data.toNBT());
+        tag.setTag("main", data.serializeNBT());
         NBTTagList tagList = new NBTTagList();
         for (Map.Entry<String, ExtendedProperties> entry : extendedProperties.entrySet()){
             NBTTagCompound toAdd = new NBTTagCompound();

@@ -1,10 +1,11 @@
 package elec332.core.server;
 
+import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import elec332.core.main.ElecCore;
+import elec332.core.nbt.NBTMap;
 import elec332.core.network.NetworkHandler;
-import elec332.core.util.EventHelper;
 import elec332.core.util.NBTHelper;
 import elec332.core.util.PlayerHelper;
 import elec332.core.world.WorldHelper;
@@ -20,6 +21,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.LoaderState;
@@ -29,25 +31,35 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import org.apache.commons.io.FileUtils;
 
 import javax.annotation.Nonnull;
-import javax.xml.bind.SchemaOutputResolver;
 import java.io.EOFException;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.Callable;
 
 /**
  * Created by Elec332 on 28-5-2015.
  */
+@SuppressWarnings("unused")
 public class ServerHelper {
 
     public static final ServerHelper instance = new ServerHelper();
 
     private ServerHelper(){
         MinecraftForge.EVENT_BUS.register(new EventHandler());
-        this.playerData = Maps.newHashMap();
-        this.worldData = Maps.newHashMap();
+        this.playerData = NBTMap.newNBTMap(UUID.class, ElecPlayer.class, new Function<UUID, ElecPlayer>() {
+            @Override
+            public ElecPlayer apply(UUID input) {
+                ElecPlayer ret = new ElecPlayer(input);
+                ret.setExtendedProperties(extendedPropertiesList);
+                return ret;
+            }
+        });
+        this.worldData = NBTMap.newNBTMap(Integer.class, NBTHelper.class, new NBTHelper.DefaultFunction<Integer>());
+        this.savedData = NBTMap.newNBTMap(String.class, NBTTagCompound.class);
         this.extendedPropertiesList = Maps.newHashMap();
+        this.extendedSaveData = Maps.newHashMap();
         this.locked = false;
         setInvalid();
     }
@@ -58,7 +70,7 @@ public class ServerHelper {
     public void load(){
     }
 
-    public void registerExtendedProperties(String identifier, Class<? extends ElecPlayer.ExtendedProperties> propClass){
+    public void registerExtendedPlayerProperties(String identifier, Class<? extends ElecPlayer.ExtendedProperties> propClass){
         if (extendedPropertiesList.keySet().contains(identifier))
             throw new IllegalArgumentException("Property for "+identifier+" has already been registered!");
         if (Loader.instance().hasReachedState(LoaderState.AVAILABLE) || locked)
@@ -66,10 +78,22 @@ public class ServerHelper {
         extendedPropertiesList.put(identifier, propClass);
     }
 
+    public void registerExtendedProperties(String s, Callable<INBTSerializable<NBTTagCompound>> callable){
+        if (extendedSaveData.containsKey(s))
+            throw new IllegalArgumentException("Property for "+s+" has already been registered!");
+        if (Loader.instance().hasReachedState(LoaderState.AVAILABLE) || locked)
+            throw new IllegalArgumentException("Mod is attempting to register properties too late: "+s+"  "+callable.getClass());
+        extendedSaveData.put(s, callable);
+    }
+
     private final Map<String, Class<? extends ElecPlayer.ExtendedProperties>> extendedPropertiesList;
+    private final Map<String, Callable<INBTSerializable<NBTTagCompound>>> extendedSaveData;
+
     private NBTHelper generalData;
-    private Map<UUID, ElecPlayer> playerData;
-    private Map<Integer, NBTHelper> worldData;
+    private NBTMap<UUID, ElecPlayer> playerData;
+    private NBTMap<Integer, NBTHelper> worldData;
+    private NBTMap<String, NBTTagCompound> savedData;
+    private Map<String, INBTSerializable<NBTTagCompound>> saveDataInstances;
     private boolean locked; //Extra safety, in case Loader.instance().hasReachedState(LoaderState.AVAILABLE) fails
 
     public ElecPlayer getPlayer(EntityPlayer player){
@@ -77,16 +101,17 @@ public class ServerHelper {
     }
 
     public ElecPlayer getPlayer(@Nonnull UUID uuid){
-        if (isValid())
+        if (isValid()) {
             return playerData.get(uuid);
+        }
         return null;
     }
 
-    public NBTHelper getWorldData(World world){
-        return getWorldData(WorldHelper.getDimID(world));
+    public NBTHelper getPersistentWorldData(World world){
+        return getPersistentWorldData(WorldHelper.getDimID(world));
     }
 
-    public NBTHelper getWorldData(int i){
+    public NBTHelper getPersistentWorldData(int i){
         if (!isValid())
             return null;
         NBTHelper ret = worldData.get(i);
@@ -97,10 +122,35 @@ public class ServerHelper {
         return ret;
     }
 
-    public NBTHelper getGlobalData(){
-        if (isValid())
+    public NBTHelper getPersistentGlobalData(){
+        if (isValid()) {
             return generalData;
+        }
         return null;
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T extends INBTSerializable<NBTTagCompound>> T getExtendedSaveData(Class<T> clazz, String name){
+        return clazz.cast(getExtendedSaveData(name));
+    }
+    
+    public INBTSerializable<NBTTagCompound> getExtendedSaveData(String name){
+        try {
+            INBTSerializable<NBTTagCompound> ret = saveDataInstances.get(name);
+            if (ret != null){
+                return ret;
+            }
+            ret = extendedSaveData.get(name).call();
+            NBTTagCompound tag = savedData.get(name);
+            if (tag != null){
+                ret.deserializeNBT(tag);
+                savedData.remove(name);
+            }
+            saveDataInstances.put(name, ret);
+            return ret;
+        } catch (Exception e){
+            throw new RuntimeException(e);
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -115,8 +165,9 @@ public class ServerHelper {
     public EntityPlayerMP getRealPlayer(UUID uuid){
         if (isPlayerOnline(uuid)){
             for (EntityPlayerMP player : getOnlinePlayers()){
-                if (PlayerHelper.getPlayerUUID(player).equals(uuid))
+                if (PlayerHelper.getPlayerUUID(player).equals(uuid)) {
                     return player;
+                }
             }
         }
         return null;
@@ -132,16 +183,18 @@ public class ServerHelper {
             PlayerManager playerManager = ((WorldServer) world).getPlayerManager();
             for (EntityPlayerMP player : getOnlinePlayers()) {
                 Chunk chunk = world.getChunkFromChunkCoords(x >> 4, z >> 4);
-                if (playerManager.isPlayerWatchingChunk(player, chunk.xPosition, chunk.zPosition))
+                if (playerManager.isPlayerWatchingChunk(player, chunk.xPosition, chunk.zPosition)) {
                     ret.add(player);
+                }
             }
         }
         return ret;
     }
 
     public void sendMessageToAllPlayersWatchingBlock(World world, BlockPos pos, IMessage message, NetworkHandler networkHandler){
-        for (EntityPlayerMP player : getAllPlayersWatchingBlock(world, pos))
+        for (EntityPlayerMP player : getAllPlayersWatchingBlock(world, pos)) {
             networkHandler.getNetworkWrapper().sendTo(message, player);
+        }
     }
 
     public List<EntityPlayerMP> getAllPlayersInDimension(int dimension){
@@ -155,7 +208,6 @@ public class ServerHelper {
     }
 
     public void sendMessageToAllPlayersInDimension(int dimension, IMessage message, NetworkHandler networkHandler){
-        System.out.println(getAllPlayersInDimension(dimension).size());
         for (EntityPlayerMP playerMP : getAllPlayersInDimension(dimension)){
             networkHandler.getNetworkWrapper().sendTo(message, playerMP);
         }
@@ -184,8 +236,9 @@ public class ServerHelper {
     }
 
     private void investigateErrors(boolean errorBefore){
-        if (errorBefore)
+        if (errorBefore) {
             ElecCore.logger.error("Starting thorough investigation...");
+        }
         boolean error = false;
         for (EntityPlayerMP playerMP : getOnlinePlayers()){
             if (isValid()){
@@ -214,8 +267,9 @@ public class ServerHelper {
             }
         }
         if (errorBefore) {
-            if (!error)
+            if (!error) {
                 ElecCore.logger.error("No additional errors found...");
+            }
             ElecCore.logger.error("Finished investigation.");
         }
     }
@@ -225,53 +279,56 @@ public class ServerHelper {
         @SubscribeEvent
         public void onWorldLoad(WorldEvent.Load event){
             if (isServer(event.world) && WorldHelper.getDimID(event.world) == 0){
-                if (!ServerHelper.this.locked)
+
+                if (!ServerHelper.this.locked) {
                     ServerHelper.this.locked = true;
+                }
+
                 File folder = new File(event.world.getSaveHandler().getWorldDirectory(), "elec332/");
+
                 ServerHelper.this.generalData = new NBTHelper(fromFile(new File(folder, "generalData.dat")));
+
                 NBTTagList tagList1 = fromFile(new File(folder, "playerData.dat")).getTagList("playerData", 10);
-                for (int i = 0; i < tagList1.tagCount(); i++) {
-                    NBTTagCompound tagCompound = tagList1.getCompoundTagAt(i);
-                    UUID uuid = UUID.fromString(tagCompound.getString("uuid"));
-                    NBTTagCompound data = tagCompound.getCompoundTag("data");
-                    ElecPlayer player = new ElecPlayer(uuid);
-                    player.setExtendedProperties(extendedPropertiesList);
-                    player.readFromNBT(data);
-                    ServerHelper.this.playerData.put(uuid, player);
-                }
+                playerData.deserializeNBT(tagList1);
+
                 NBTTagList tagList2 = fromFile(new File(folder, "worldData.dat")).getTagList("dimData", 10);
-                for (int i = 0; i < tagList2.tagCount(); i++) {
-                    NBTTagCompound tagCompound = tagList2.getCompoundTagAt(i);
-                    int dim = tagCompound.getInteger("dim");
-                    NBTTagCompound data = tagCompound.getCompoundTag("data");
-                    ServerHelper.this.worldData.put(dim, new NBTHelper(data));
-                }
+                worldData.deserializeNBT(tagList2);
+
+                NBTTagList tagList3 = fromFile(new File(folder, "savedData.dat")).getTagList("data", 10);
+                savedData.deserializeNBT(tagList3);
+
             }
         }
 
         @SubscribeEvent
         public void onWorldSave(WorldEvent.Save event){
             if (isServer(event.world) && WorldHelper.getDimID(event.world) == 0){
+
                 File folder = new File(event.world.getSaveHandler().getWorldDirectory(), "elec332/");
-                toFile(ServerHelper.this.generalData.toNBT(), new File(folder, "generalData.dat"));
-                NBTTagList tagList1 = new NBTTagList();
-                for (UUID uuid : ServerHelper.this.playerData.keySet()){
-                    tagList1.appendTag(new NBTHelper(new NBTTagCompound()).addToTag(uuid.toString(), "uuid").addToTag(ServerHelper.this.playerData.get(uuid).saveToNBT(), "data").toNBT());
+
+                toFile(ServerHelper.this.generalData.serializeNBT(), new File(folder, "generalData.dat"));
+
+                NBTTagList tagList1 = playerData.serializeNBT();
+                toFile(new NBTHelper().addToTag(tagList1, "playerData").serializeNBT(), new File(folder, "playerData.dat"));
+
+                NBTTagList tagList2 = worldData.serializeNBT();
+                toFile(new NBTHelper().addToTag(tagList2, "dimData").serializeNBT(), new File(folder, "worldData.dat"));
+
+                String s = null;
+                for (Map.Entry<String, INBTSerializable<NBTTagCompound>> entry : saveDataInstances.entrySet()){
+                    if (savedData.containsKey(entry.getKey())){
+                        s = entry.getKey();
+                        continue;
+                    }
+                    savedData.put(entry.getKey(), entry.getValue().serializeNBT());
                 }
-                toFile(new NBTHelper().addToTag(tagList1, "playerData").toNBT(), new File(folder, "playerData.dat"));
-                NBTTagList tagList2 = new NBTTagList();
-                for (Integer i : ServerHelper.this.worldData.keySet()){
-                    tagList2.appendTag(new NBTHelper(new NBTTagCompound()).addToTag(i, "dim").addToTag(ServerHelper.this.worldData.get(i).toNBT(), "data").toNBT());
+                NBTTagList tagList3 = savedData.serializeNBT();
+                toFile(new NBTHelper().addToTag(tagList2, "data").serializeNBT(), new File(folder, "savedData.dat"));
+                if (s != null){
+                    throw new IllegalStateException("Duplicate names were used: "+s);
                 }
-                toFile(new NBTHelper().addToTag(tagList2, "dimData").toNBT(), new File(folder, "worldData.dat"));
             }
         }
-
-        /*@SubscribeEvent
-        public void onWorldUnload(WorldEvent.Unload event){
-            if (isServer(event.world) && WorldHelper.getDimID(event.world) == 0)
-                ServerHelper.this.setInvalid();
-        }*/
 
         @SubscribeEvent
         public void playerJoined(PlayerEvent.PlayerLoggedInEvent event){
@@ -283,7 +340,7 @@ public class ServerHelper {
             if (!ServerHelper.this.playerData.keySet().contains(uuid)) {
                 ElecPlayer player = new ElecPlayer(uuid);
                 player.setExtendedProperties(extendedPropertiesList);
-                player.readFromNBT(new NBTTagCompound());
+                player.deserializeNBT(new NBTTagCompound());
                 ServerHelper.this.playerData.put(uuid, player);
             }
             ServerHelper.this.playerData.get(uuid).setOnline(true);
@@ -327,12 +384,20 @@ public class ServerHelper {
                 //   throw new IOException();
                 //}
                 createFile(file);
+                try {
+                    File backup = getBackupFile(file);
+                    if (backup.exists()) {
+                        return CompressedStreamTools.read(backup);
+                    }
+                } catch (IOException ex){
+                    ElecCore.logger.info("Failed to read backup file: "+file);
+                }
                 return new NBTTagCompound();
             }
         } catch (IOException e){
             //Bad luck for you
             e.printStackTrace();
-            throw new RuntimeException(e); //return null;
+            throw new RuntimeException(e);
         }
     }
 
@@ -344,10 +409,16 @@ public class ServerHelper {
 
     public void toFile(NBTTagCompound tagCompound, File file){
         try {
+            FileUtils.copyFile(file, getBackupFile(file));
             CompressedStreamTools.write(tagCompound, file);
         } catch (IOException e){
             //Bad luck for you
             throw new RuntimeException(e); //e.printStackTrace();
         }
     }
+
+    private static File getBackupFile(File file) throws IOException {
+        return new File(file.getCanonicalPath()+"_back");
+    }
+
 }
