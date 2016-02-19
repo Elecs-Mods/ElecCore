@@ -60,6 +60,7 @@ public class ServerHelper {
         this.savedData = NBTMap.newNBTMap(String.class, NBTTagCompound.class);
         this.extendedPropertiesList = Maps.newHashMap();
         this.extendedSaveData = Maps.newHashMap();
+        this.saveDataInstances = Maps.newHashMap();
         this.locked = false;
         setInvalid();
     }
@@ -133,7 +134,7 @@ public class ServerHelper {
     public <T extends INBTSerializable<NBTTagCompound>> T getExtendedSaveData(Class<T> clazz, String name){
         return clazz.cast(getExtendedSaveData(name));
     }
-    
+
     public INBTSerializable<NBTTagCompound> getExtendedSaveData(String name){
         try {
             INBTSerializable<NBTTagCompound> ret = saveDataInstances.get(name);
@@ -322,6 +323,7 @@ public class ServerHelper {
                     }
                     savedData.put(entry.getKey(), entry.getValue().serializeNBT());
                 }
+                saveDataInstances.clear();
                 NBTTagList tagList3 = savedData.serializeNBT();
                 toFile(new NBTHelper().addToTag(tagList2, "data").serializeNBT(), new File(folder, "savedData.dat"));
                 if (s != null){
@@ -409,7 +411,9 @@ public class ServerHelper {
 
     public void toFile(NBTTagCompound tagCompound, File file){
         try {
-            FileUtils.copyFile(file, getBackupFile(file));
+            if (file.exists()) {
+                FileUtils.copyFile(file, getBackupFile(file));
+            }
             CompressedStreamTools.write(tagCompound, file);
         } catch (IOException e){
             //Bad luck for you

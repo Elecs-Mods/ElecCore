@@ -93,16 +93,22 @@ public class ElecItemRenderer extends ItemRenderer {
     @Override
     public void updateEquippedItem() {
         itemRenderer.updateEquippedItem();
+        equippedProgress = itemRenderer.equippedProgress;
+        prevEquippedProgress = itemRenderer.prevEquippedProgress;
+        equippedItemSlot = itemRenderer.equippedItemSlot;
+        itemToRender = itemRenderer.itemToRender;
     }
 
     @Override
     public void resetEquippedProgress() {
         itemRenderer.resetEquippedProgress();
+        equippedProgress = 0;
     }
 
     @Override
     public void resetEquippedProgress2() {
         itemRenderer.resetEquippedProgress2();
+        equippedProgress = 0;
     }
 
 }
