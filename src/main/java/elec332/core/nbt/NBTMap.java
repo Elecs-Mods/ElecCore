@@ -6,6 +6,7 @@ import net.minecraftforge.common.util.INBTSerializable;
 
 import javax.annotation.Nonnull;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.Callable;
 
@@ -72,7 +73,7 @@ public class NBTMap<K, V> extends HashMap<K, V> implements INBTSerializable<NBTT
     @Override
     public NBTTagList serializeNBT() {
         NBTTagList ret = new NBTTagList();
-        for (Entry<K, V> entry : entrySet()){
+        for (Map.Entry<K, V> entry : entrySet()){
             if (entry.getValue() == null && !serializeNull){
                 continue;
             }
