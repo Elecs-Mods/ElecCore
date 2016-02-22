@@ -7,7 +7,10 @@ import org.objectweb.asm.tree.ClassNode;
 
 /**
  * Created by Elec332 on 26-11-2015.
+ *
+ * Unused
  */
+@SuppressWarnings("unused")
 public abstract class AbstractASMClassTransformer implements IASMClassTransformer {
 
     public AbstractASMClassTransformer(){

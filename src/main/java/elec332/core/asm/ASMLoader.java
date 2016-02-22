@@ -10,7 +10,10 @@ import java.util.List;
 
 /**
  * Created by Elec332 on 18-11-2015.
+ *
+ * Unused
  */
+@SuppressWarnings("unused")
 public final class ASMLoader implements IClassTransformer {
 
     public ASMLoader(){
