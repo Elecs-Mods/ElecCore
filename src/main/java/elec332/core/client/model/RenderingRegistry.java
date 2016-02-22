@@ -7,20 +7,26 @@ import elec332.core.client.IIconRegistrar;
 import elec332.core.client.ITextureLoader;
 import elec332.core.client.model.model.IModelAndTextureLoader;
 import elec332.core.client.model.model.IModelLoader;
-import elec332.core.client.model.replace.ElecModelLoader;
 import elec332.core.client.model.template.ElecTemplateBakery;
 import elec332.core.client.render.ISpecialBlockRenderer;
 import elec332.core.client.render.ISpecialItemRenderer;
 import elec332.core.java.ReflectionHelper;
 import elec332.core.main.ElecCore;
 import net.minecraft.block.Block;
+import net.minecraft.client.renderer.block.model.BakedQuad;
+import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
+import net.minecraft.client.resources.model.IBakedModel;
 import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.IRegistry;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.TextureStitchEvent;
+import net.minecraftforge.client.model.ISmartItemModel;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -43,6 +49,8 @@ public final class RenderingRegistry {
         itemRendererMap = Maps.newHashMap();
         modelLoaders = Lists.newArrayList();
         textureLoaders = Lists.newArrayList();
+        modelItemLink = new LinkedItemModel();
+        modelItemBlockLink = new LinkedItemBlockModel();
     }
 
     public static final int SPECIAL_BLOCK_RENDERER_ID = 39;
@@ -51,6 +59,7 @@ public final class RenderingRegistry {
     private final Map<Item, ISpecialItemRenderer> itemRendererMap;
     private final List<IModelLoader> modelLoaders;
     private final List<ITextureLoader> textureLoaders;
+    private final IBakedModel modelItemLink, modelItemBlockLink;
 
     public void registerModelLoader(IModelLoader modelLoader){
         this.modelLoaders.add(modelLoader);
@@ -126,40 +135,25 @@ public final class RenderingRegistry {
             Set<ModelResourceLocation> toRemove = Sets.newHashSet();
             Set<ModelResourceLocation> loop = Sets.newHashSet(set);
             loop.addAll(exceptionMap.keySet());
-            for (ModelResourceLocation rl : getValidLocations(loop)){
+            for (ModelResourceLocation rl : getValidLocations(loop, modelLoader)){
                 set.remove(rl);
                 exceptionMap.remove(rl);
             }
-            /*for (Block block : Util.getBlockIterator()){
-                if (block instanceof INoJsonBlock) {
-                    ResourceLocation s = (ResourceLocation) GameData.getBlockRegistry().getNameForObject(block);
-                    set.remove(new ModelResourceLocation(s, "normal"));
-                }
-            }
-            for (Item item : Util.getItemIterator()){
-                if (item instanceof INoJsonItem){
-                    ResourceLocation s = (ResourceLocation) GameData.getItemRegistry().getNameForObject(item);
-                    set.remove(new ModelResourceLocation(s, "inventory"));
-                } else if (item instanceof ItemBlock){
-                    ResourceLocation s = (ResourceLocation) GameData.getBlockRegistry().getNameForObject(((ItemBlock) item).getBlock());
-                    set.remove(new ModelResourceLocation(s, "inventory"));
-                }
-            }*/
         } catch (Exception e1){
             e1.printStackTrace();
         }
         ElecCore.logger.info("Finished cleaning up internal Json stuff.");
     }
 
-    protected Set<ModelResourceLocation> getValidLocations(Collection<ModelResourceLocation> loop){
+    protected Set<ModelResourceLocation> getValidLocations(Collection<ModelResourceLocation> loop, ModelLoader modelLoader){
         Set<ModelResourceLocation> toRemove = Sets.newHashSet();
+        IRegistry<ModelResourceLocation, IBakedModel> registry = modelLoader.blockModelShapes.modelManager.modelRegistry;
         for (ModelResourceLocation rl : loop){
             String name = rl.toString().split("#")[0];
             Item item = Item.getByNameOrId(name);
             if (item == null){
                 Block block = Block.getBlockFromName(name);
                 if (block == null){
-                    //ElecCore.logger.error("Error finding object: "+name);
                     continue;
                 }
                 if (block instanceof INoJsonBlock){
@@ -168,20 +162,34 @@ public final class RenderingRegistry {
             } else {
                 if (item instanceof INoJsonItem){
                     toRemove.add(rl);
+                    registry.putObject(rl, modelItemLink);
+                    System.out.println("Handling item: "+item.delegate.getResourceName());
                 } else if (item instanceof ItemBlock && ((ItemBlock) item).getBlock() instanceof INoJsonBlock){
                     toRemove.add(rl);
+                    registry.putObject(rl, modelItemBlockLink);
+                    System.out.println("Handling block: "+item.delegate.getResourceName());
                 }
             }
         }
         return toRemove;
     }
 
-    protected void loadVariants(ElecModelLoader modelLoader, Collection<ModelResourceLocation> collection){
-        collection = Lists.newArrayList(collection);
-        for (ModelResourceLocation rl : getValidLocations(collection)){
-            collection.remove(rl);
+    private class LinkedItemModel extends NullModel implements ISmartItemModel {
+
+        @Override
+        public IBakedModel handleItemState(ItemStack stack) {
+            return ((INoJsonItem)stack.getItem()).getItemModel(stack.getItem(), stack.getItemDamage());
         }
-        modelLoader.actuallyLoadVariants(collection);
+
+    }
+
+    private class LinkedItemBlockModel extends LinkedItemModel {
+
+        @Override
+        public IBakedModel handleItemState(ItemStack stack) {
+            return ((INoJsonBlock)((ItemBlock)stack.getItem()).getBlock()).getBlockModel(stack.getItem(), stack.getMetadata());
+        }
+
     }
 
     private class IconRegistrar implements IIconRegistrar {
@@ -236,6 +244,46 @@ public final class RenderingRegistry {
                 }
             }
         });
+    }
+
+    private class NullModel implements IBakedModel {
+
+        @Override
+        public List<BakedQuad> getFaceQuads(EnumFacing p_177551_1_) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public List<BakedQuad> getGeneralQuads() {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public boolean isAmbientOcclusion() {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public boolean isGui3d() {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public boolean isBuiltInRenderer() {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public TextureAtlasSprite getParticleTexture() {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        @SuppressWarnings("deprecation")
+        public ItemCameraTransforms getItemCameraTransforms() {
+            throw new UnsupportedOperationException();
+        }
+
     }
 
 }

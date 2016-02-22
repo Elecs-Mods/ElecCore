@@ -1,5 +1,6 @@
 package elec332.core.client.model.model;
 
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
@@ -25,7 +26,7 @@ public class TESRItemModel extends AbstractItemModel {
 
     @Override
     public boolean isItemTESR() {
-        return true;
+        return false;//true;
     }
 
     @Override
@@ -40,7 +41,12 @@ public class TESRItemModel extends AbstractItemModel {
 
     @Override
     public final List<BakedQuad> getGeneralQuads() {
+        GlStateManager.pushMatrix();
+        GlStateManager.rotate(180.0F, 0.0F, 1.0F, 0.0F);
+        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+        GlStateManager.enableRescaleNormal();
         renderTesr();
+        GlStateManager.popMatrix();
         return EMPTY_LIST;
     }
 

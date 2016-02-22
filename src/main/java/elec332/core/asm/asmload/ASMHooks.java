@@ -17,19 +17,6 @@ public final class ASMHooks {
     @SideOnly(Side.CLIENT)
     public static final class Client {
 
-        public static void initItemRender(){
-            Minecraft mc = Minecraft.getMinecraft();
-            mc.renderItem = new ElecRenderItem(mc.renderItem);
-            mc.renderManager = new RenderManager(mc.renderEngine, mc.renderItem);
-            mc.itemRenderer = new ElecItemRenderer(mc.itemRenderer);
-            mc.mcResourceManager.registerReloadListener(mc.renderItem);
-            TileEntityItemStackRenderer.instance = new ElecTileEntityItemStackRenderer();
-        }
-
-        public static ItemModelMesher newModelMesher(){
-            return new ElecItemModelMesher(Minecraft.getMinecraft().renderItem.itemModelMesher);
-        }
-
         public static BlockRendererDispatcher newBlockRendererDispatcher(){
             return new ElecBlockRendererDispatcher(Minecraft.getMinecraft().blockRenderDispatcher);
         }
