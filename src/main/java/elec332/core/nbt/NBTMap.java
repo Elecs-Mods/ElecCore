@@ -54,6 +54,7 @@ public class NBTMap<K, V> extends HashMap<K, V> implements INBTSerializable<NBTT
         this.vNBT = vCallable != null;
         this.kCallable = kCallable;
         this.vCallable = vCallable;
+        this.serializeNull = false;
     }
 
     private final Class<K> kClass;
@@ -73,7 +74,7 @@ public class NBTMap<K, V> extends HashMap<K, V> implements INBTSerializable<NBTT
     @Override
     public NBTTagList serializeNBT() {
         NBTTagList ret = new NBTTagList();
-        for (Map.Entry<K, V> entry : entrySet()){
+        for (final Map.Entry<K, V> entry : entrySet()){
             if (entry.getValue() == null && !serializeNull){
                 continue;
             }

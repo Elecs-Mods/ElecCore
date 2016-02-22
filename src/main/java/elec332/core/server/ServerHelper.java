@@ -58,8 +58,10 @@ public class ServerHelper {
         });
         this.worldData = NBTMap.newNBTMap(Integer.class, NBTHelper.class, new NBTHelper.DefaultFunction<Integer>());
         this.savedData = NBTMap.newNBTMap(String.class, NBTTagCompound.class);
-        this.extendedPropertiesList = Maps.newHashMap();
-        this.extendedSaveData = Maps.newHashMap();
+        this.extendedPropertiesList_ = Maps.newHashMap();
+        this.extendedPropertiesList = Collections.unmodifiableMap(extendedPropertiesList_);
+        this.extendedSaveData_ = Maps.newHashMap();
+        this.extendedSaveData = Collections.unmodifiableMap(extendedSaveData_);
         this.saveDataInstances = Maps.newHashMap();
         this.locked = false;
         setInvalid();
@@ -72,21 +74,23 @@ public class ServerHelper {
     }
 
     public void registerExtendedPlayerProperties(String identifier, Class<? extends ElecPlayer.ExtendedProperties> propClass){
-        if (extendedPropertiesList.keySet().contains(identifier))
+        if (extendedPropertiesList_.keySet().contains(identifier))
             throw new IllegalArgumentException("Property for "+identifier+" has already been registered!");
         if (Loader.instance().hasReachedState(LoaderState.AVAILABLE) || locked)
             throw new IllegalArgumentException("Mod is attempting to register properties too late: "+identifier+"  "+propClass.getName());
-        extendedPropertiesList.put(identifier, propClass);
+        extendedPropertiesList_.put(identifier, propClass);
     }
 
     public void registerExtendedProperties(String s, Callable<INBTSerializable<NBTTagCompound>> callable){
-        if (extendedSaveData.containsKey(s))
+        if (extendedSaveData_.containsKey(s))
             throw new IllegalArgumentException("Property for "+s+" has already been registered!");
         if (Loader.instance().hasReachedState(LoaderState.AVAILABLE) || locked)
             throw new IllegalArgumentException("Mod is attempting to register properties too late: "+s+"  "+callable.getClass());
-        extendedSaveData.put(s, callable);
+        extendedSaveData_.put(s, callable);
     }
 
+    private final Map<String, Class<? extends ElecPlayer.ExtendedProperties>> extendedPropertiesList_;
+    private final Map<String, Callable<INBTSerializable<NBTTagCompound>>> extendedSaveData_;
     private final Map<String, Class<? extends ElecPlayer.ExtendedProperties>> extendedPropertiesList;
     private final Map<String, Callable<INBTSerializable<NBTTagCompound>>> extendedSaveData;
 
