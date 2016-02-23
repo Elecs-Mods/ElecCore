@@ -5,6 +5,7 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import elec332.core.client.IIconRegistrar;
 import elec332.core.client.ITextureLoader;
+import elec332.core.client.RenderHelper;
 import elec332.core.client.model.model.IModelAndTextureLoader;
 import elec332.core.client.model.model.IModelLoader;
 import elec332.core.client.model.template.ElecTemplateBakery;
@@ -61,17 +62,17 @@ public final class RenderingRegistry {
     private final List<ITextureLoader> textureLoaders;
     private final IBakedModel modelItemLink, modelItemBlockLink;
 
-    public void registerModelLoader(IModelLoader modelLoader){
+    public void registerLoader(IModelLoader modelLoader){
         this.modelLoaders.add(modelLoader);
     }
 
-    public void registerTextureLoader(ITextureLoader textureLoader){
+    public void registerLoader(ITextureLoader textureLoader){
         this.textureLoaders.add(textureLoader);
     }
 
-    public void registerModelTextureLoader(IModelAndTextureLoader loader){
-        registerModelLoader(loader);
-        registerTextureLoader(loader);
+    public void registerLoader(IModelAndTextureLoader loader){
+        registerLoader((IModelLoader)loader);
+        registerLoader((ITextureLoader)loader);
     }
 
     public void registerRenderer(Block block, ISpecialBlockRenderer renderer){
@@ -163,11 +164,11 @@ public final class RenderingRegistry {
                 if (item instanceof INoJsonItem){
                     toRemove.add(rl);
                     registry.putObject(rl, modelItemLink);
-                    System.out.println("Handling item: "+item.delegate.getResourceName());
+                    //System.out.println("Handling item: "+item.delegate.getResourceName());
                 } else if (item instanceof ItemBlock && ((ItemBlock) item).getBlock() instanceof INoJsonBlock){
                     toRemove.add(rl);
                     registry.putObject(rl, modelItemBlockLink);
-                    System.out.println("Handling block: "+item.delegate.getResourceName());
+                    //System.out.println("Handling block: "+item.delegate.getResourceName());
                 }
             }
         }
@@ -215,16 +216,16 @@ public final class RenderingRegistry {
 
     static {
         instance = new RenderingRegistry();
-        instance.registerModelTextureLoader(new IModelAndTextureLoader() {
+        instance.registerLoader(new IModelAndTextureLoader() {
             @Override
             public void registerModels(ElecQuadBakery quadBakery, ElecModelBakery modelBakery, ElecTemplateBakery templateBakery) {
-                for (Item item : Util.getItemIterator()){
-                    if (item instanceof IModelLoader){
+                for (Item item : Util.getItemIterator()) {
+                    if (item instanceof IModelLoader) {
                         ((IModelLoader) item).registerModels(quadBakery, modelBakery, templateBakery);
                     }
                 }
-                for (Block block : Util.getBlockIterator()){
-                    if (block instanceof IModelLoader){
+                for (Block block : Util.getBlockIterator()) {
+                    if (block instanceof IModelLoader) {
                         ((IModelLoader) block).registerModels(quadBakery, modelBakery, templateBakery);
                     }
                 }
@@ -232,13 +233,13 @@ public final class RenderingRegistry {
 
             @Override
             public void registerTextures(IIconRegistrar iconRegistrar) {
-                for (Item item : Util.getItemIterator()){
-                    if (item instanceof ITextureLoader){
+                for (Item item : Util.getItemIterator()) {
+                    if (item instanceof ITextureLoader) {
                         ((ITextureLoader) item).registerTextures(iconRegistrar);
                     }
                 }
-                for (Block block : Util.getBlockIterator()){
-                    if (block instanceof ITextureLoader){
+                for (Block block : Util.getBlockIterator()) {
+                    if (block instanceof ITextureLoader) {
                         ((ITextureLoader) block).registerTextures(iconRegistrar);
                     }
                 }
@@ -275,7 +276,7 @@ public final class RenderingRegistry {
 
         @Override
         public TextureAtlasSprite getParticleTexture() {
-            throw new UnsupportedOperationException();
+            return RenderHelper.getMissingTextureIcon();
         }
 
         @Override

@@ -11,7 +11,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public abstract class AbstractModelLoader implements IModelAndTextureLoader {
 
     public AbstractModelLoader(){
-        RenderingRegistry.instance().registerModelTextureLoader(this);
+        RenderingRegistry.instance().registerLoader(this);
     }
 
 }
