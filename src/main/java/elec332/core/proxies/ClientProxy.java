@@ -93,9 +93,12 @@ public class ClientProxy extends CommonProxy {
 				});
 				return false;
 			} else if (listener.getClass() == BlockRendererDispatcher.class){
-				minecraft.blockRenderDispatcher = ASMHooks.Client.newBlockRendererDispatcher();
-				resourceManager.registerReloadListener(minecraft.blockRenderDispatcher);
-				return false;
+				if (ElecCore.oldBlocks) {
+					minecraft.blockRenderDispatcher = ASMHooks.Client.newBlockRendererDispatcher();
+					resourceManager.registerReloadListener(minecraft.blockRenderDispatcher);
+					return false;
+				}
+				return true;
 			} else if (listener.getClass() == ModelManager.class){
 				resourceManager.registerReloadListener(new IResourceManagerReloadListener() {
 					@Override

@@ -62,6 +62,8 @@ public class ElecCore extends ModBase{
 	public static Logger logger;
 	private static ASMDataTable dataTable;
 
+	public static boolean oldBlocks = false;
+
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
 		this.cfgFile = FileHelper.getConfigFileElec(event);
