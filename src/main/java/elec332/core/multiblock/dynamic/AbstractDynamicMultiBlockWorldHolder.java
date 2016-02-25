@@ -124,14 +124,13 @@ public abstract class AbstractDynamicMultiBlockWorldHolder<A extends AbstractDyn
             throw new IllegalArgumentException("Invalid tile");
         M m = getMultiBlock((IDynamicMultiBlockTile) tile);
         if (m != null) {
-            List<BlockPos> vec3List = Lists.newArrayList();
-            vec3List.addAll(m.getAllLocations());
+            List<BlockPos> vec3List = Lists.newArrayList(m.getAllLocations());
             m.onTileRemoved(tile);
             removeGrid(m);
             registeredTiles.removeAll(vec3List);
-            vec3List.remove(new BlockPos(tile.getPos()));
+            vec3List.remove(tile.getPos());
             for (BlockPos vec : vec3List) {
-                if (!WorldHelper.chunkLoaded(world, vec)) {
+                if (WorldHelper.chunkLoaded(world, vec)) {
                     TileEntity mbTile = WorldHelper.getTileAt(world, vec);
                     if (mbTile != null) {
                         setMultiBlock((IDynamicMultiBlockTile) mbTile, null);
@@ -140,7 +139,7 @@ public abstract class AbstractDynamicMultiBlockWorldHolder<A extends AbstractDyn
             }
             setMultiBlock((IDynamicMultiBlockTile)tile, null);
             for (BlockPos vec : vec3List) {
-                if (!WorldHelper.chunkLoaded(world, vec)) {
+                if (WorldHelper.chunkLoaded(world, vec)) {
                     TileEntity tileEntity1 = WorldHelper.getTileAt(world, vec);
                     addTile(tileEntity1);
                 }
