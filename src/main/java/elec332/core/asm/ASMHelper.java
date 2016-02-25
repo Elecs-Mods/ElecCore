@@ -1,6 +1,5 @@
 package elec332.core.asm;
 
-import elec332.core.loader.ElecCoreLoader;
 import net.minecraftforge.fml.common.asm.transformers.deobf.FMLDeobfuscatingRemapper;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.*;

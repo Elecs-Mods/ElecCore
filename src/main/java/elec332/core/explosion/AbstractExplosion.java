@@ -1,7 +1,6 @@
 package elec332.core.explosion;
 
 import com.google.common.collect.Lists;
-import elec332.core.util.BlockLoc;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.util.*;
@@ -22,12 +21,12 @@ public abstract class AbstractExplosion extends Explosion {
     public AbstractExplosion(World world, Entity entity, double x, double y, double z, float size) {
         super(world, entity, x, y, z, size, Lists.<BlockPos>newArrayList());
         this.world = world;
-        this.location = new BlockLoc((int)explosionX, (int)explosionY, (int)explosionZ);
+        this.location = new BlockPos((int)explosionX, (int)explosionY, (int)explosionZ);
         this.entitiesInRange = Lists.newArrayList();
     }
 
     private final World world;
-    private final BlockLoc location;
+    private final BlockPos location;
     private List<Entity> entitiesInRange;
 
     public void explode(){
@@ -94,7 +93,7 @@ public abstract class AbstractExplosion extends Explosion {
     }
 
 
-    public final BlockLoc getLocation(){
+    public final BlockPos getLocation(){
         return location;
     }
 

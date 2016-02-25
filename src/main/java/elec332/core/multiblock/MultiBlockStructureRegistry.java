@@ -267,7 +267,7 @@ public final class MultiBlockStructureRegistry implements IMessageHandler<MultiB
         }
 
         private SyncMultiBlockPacket(IMultiBlockStructure multiBlock, int x, int y, int z, EnumFacing side, MultiBlockStructureRegistry structureRegistry){
-            super(new NBTHelper().addToTag(x, "x").addToTag(y, "y").addToTag(z, "z").addToTag(side, "side").addToTag(structureRegistry.getIdentifier(multiBlock), "mbs").toNBT());
+            super(new NBTHelper().addToTag(x, "x").addToTag(y, "y").addToTag(z, "z").addToTag(side, "side").addToTag(structureRegistry.getIdentifier(multiBlock), "mbs").serializeNBT());
         }
 
     }

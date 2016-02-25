@@ -16,6 +16,7 @@ import java.util.List;
 /**
  * Created by Elec332 on 21-8-2015.
  */
+@SuppressWarnings("unused")
 public class WidgetButton extends Widget {
 
     public WidgetButton(int x, int y, int u, int v, int width, int height) {
@@ -51,7 +52,7 @@ public class WidgetButton extends Widget {
     public final boolean mouseClicked(int mouseX, int mouseY, int button) {
         if (isMouseOver(mouseX, mouseY) && active){
             onButtonClicked();
-            sendNBTChangesToServer(new NBTHelper().addToTag(1, "id").toNBT());
+            sendNBTChangesToServer(new NBTHelper().addToTag(1, "id").serializeNBT());
             return true;
         }
         return false;

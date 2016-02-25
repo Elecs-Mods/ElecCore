@@ -23,7 +23,7 @@ public abstract class AbstractPacketTileAction extends AbstractPacket {
     }
 
     public AbstractPacketTileAction(TileEntity tile, NBTTagCompound message, int id){
-        super(new NBTHelper().addToTag(message, "data").addToTag(id, "id").addToTag(tile.getPos()).toNBT());
+        super(new NBTHelper().addToTag(message, "data").addToTag(id, "id").addToTag(tile.getPos()).serializeNBT());
     }
 
     @Override

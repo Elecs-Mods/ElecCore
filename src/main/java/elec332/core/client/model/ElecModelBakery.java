@@ -30,7 +30,7 @@ import java.util.List;
 /**
  * Created by Elec332 on 5-12-2015.
  */
-@SuppressWarnings("deprecation")
+@SuppressWarnings({"deprecation", "unused"})
 @SideOnly(Side.CLIENT)
 public class ElecModelBakery {
 

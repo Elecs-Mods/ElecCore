@@ -3,7 +3,6 @@ package elec332.core.main;
 import elec332.core.api.annotations.RegisterTile;
 import elec332.core.compat.ElecCoreCompatHandler;
 import elec332.core.effects.AbilityHandler;
-import elec332.core.handler.FMLEventHandler;
 import elec332.core.handler.TickHandler;
 import elec332.core.modBaseUtils.ModBase;
 import elec332.core.modBaseUtils.ModInfo;
@@ -14,6 +13,7 @@ import elec332.core.util.FileHelper;
 import elec332.core.util.MCModInfo;
 import elec332.core.util.ModInfoHelper;
 import elec332.core.util.OredictHelper;
+import net.minecraft.launchwrapper.Launch;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Mod;
@@ -29,28 +29,18 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.lang.annotation.Annotation;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Set;
 
 /**
  * Created by Elec332.
  */
+@SuppressWarnings("all")
 @Mod(modid = ModInfo.MODID_CORE, name = ModInfo.MODNAME_CORE, dependencies = "required-after:Forge@[11.15.0.1630,)",
 acceptedMinecraftVersions = ModInfo.ACCEPTEDMCVERSIONS, version = ElecCore.ElecCoreVersion, useMetadata = true, canBeDeactivated = false)
 public class ElecCore extends ModBase{
 
-	public static final String ElecCoreVersion = "#ELECCORE_VER#";
+	public static final String ElecCoreVersion = "1.5";//"#ELECCORE_VER#";
 
-	public static LinkedHashMap<String, ArrayList> Updates = new LinkedHashMap<String, ArrayList>();
-	public static ArrayList<String> outdatedModList = new ArrayList<String>();
-	public static boolean debug;
-	public static boolean removeJSONErrors = true;
-	//EXP
-
-	//END_EXP	
-	
 	@SidedProxy(clientSide = ModInfo.CLIENTPROXY, serverSide = ModInfo.COMMONPROXY)
 	public static CommonProxy proxy;
 
@@ -62,7 +52,11 @@ public class ElecCore extends ModBase{
 	public static Logger logger;
 	private static ASMDataTable dataTable;
 
+	public static final boolean developmentEnvironment;
 	public static boolean oldBlocks = false;
+	public static boolean debug = false;
+	public static boolean removeJSONErrors = true;
+
 
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
@@ -79,8 +73,6 @@ public class ElecCore extends ModBase{
 		compatHandler = new ElecCoreCompatHandler(config, logger);
 		dataTable = event.getAsmData();
 
-		//runUpdateCheck(event, "https://raw.githubusercontent.com/Elecs-Mods/ElecCore/master/build.properties");
-		FMLCommonHandler.instance().bus().register(new FMLEventHandler());
 		FMLCommonHandler.instance().bus().register(tickHandler);
 		debug = config.isEnabled("debug", false);
 		removeJSONErrors = config.isEnabled("removeJsonExceptions", true) && !developmentEnvironment;
@@ -130,8 +122,9 @@ public class ElecCore extends ModBase{
 	}
 
 	public static void systemPrintDebug(Object s){
-		if (debug)
+		if (debug) {
 			System.out.println(s);
+		}
 	}
 
 	File cfgFile;
@@ -146,4 +139,9 @@ public class ElecCore extends ModBase{
 	protected File configFile() {
 		return cfgFile;
 	}
+
+	static {
+		developmentEnvironment = (Boolean) Launch.blackboard.get("fml.deobfuscatedEnvironment");
+	}
+
 }

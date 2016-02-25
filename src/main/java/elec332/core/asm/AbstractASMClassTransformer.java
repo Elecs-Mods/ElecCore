@@ -1,6 +1,5 @@
 package elec332.core.asm;
 
-import elec332.core.loader.ElecCoreLoader;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.tree.ClassNode;

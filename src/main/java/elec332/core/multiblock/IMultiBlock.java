@@ -1,7 +1,6 @@
 package elec332.core.multiblock;
 
 import com.google.common.collect.ImmutableList;
-import elec332.core.util.BlockLoc;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;

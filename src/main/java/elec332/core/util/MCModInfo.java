@@ -7,6 +7,7 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 /**
  * Created by Elec332.
  */
+@SuppressWarnings("unused")
 public class MCModInfo {
 
 	public static void createMCModInfo(FMLPreInitializationEvent event, String modid, String name, String version, String credits, String desc, String url, String logo, String[] authors) {
@@ -22,6 +23,7 @@ public class MCModInfo {
 		meta.authorList = Lists.newArrayList(authors);
 	}
 
+	@SuppressWarnings("deprecation")
 	public static void createMCModInfo(FMLPreInitializationEvent event, String credits, String desc, String url, String logo, String[] authors) {
 		createMCModInfo(event, ModInfoHelper.getModID(event), ModInfoHelper.getModName(event), credits, desc, url, logo, authors);
 	}

@@ -15,13 +15,14 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 /**
  * Created by Elec332 on 27-9-2015.
  */
+@SuppressWarnings("unused")
 public class PacketSyncAbilities extends AbstractPacket implements IAbilityPacket{
 
     public PacketSyncAbilities(){
     }
 
     public PacketSyncAbilities(EntityLivingBase entity, NBTTagCompound tagCompound, PacketType type){
-        super(new NBTHelper(tagCompound).addToTag(entity.getEntityId(), "EntityDataIDToSender").addToTag(type.toString(), "type").toNBT());
+        super(new NBTHelper(tagCompound).addToTag(entity.getEntityId(), "EntityDataIDToSender").addToTag(type.toString(), "type").serializeNBT());
     }
 
     @Override

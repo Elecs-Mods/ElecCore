@@ -1,6 +1,7 @@
 package elec332.core.world;
 
 import com.google.common.collect.Sets;
+import elec332.core.api.structure.GenerationType;
 import elec332.core.main.ElecCore;
 import elec332.core.world.schematic.Area;
 import elec332.core.world.schematic.Schematic;
@@ -13,7 +14,6 @@ import net.minecraft.util.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.IChunkProvider;
-import elec332.core.api.structure.GenerationType;
 
 import java.util.Set;
 

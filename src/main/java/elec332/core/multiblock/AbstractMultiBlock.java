@@ -3,7 +3,6 @@ package elec332.core.multiblock;
 import elec332.core.compat.handlers.WailaCompatHandler;
 import elec332.core.tile.IInventoryTile;
 import elec332.core.tile.TileBase;
-import elec332.core.util.BlockLoc;
 import elec332.core.world.WorldHelper;
 import mcp.mobius.waila.api.IWailaConfigHandler;
 import mcp.mobius.waila.api.IWailaDataAccessor;

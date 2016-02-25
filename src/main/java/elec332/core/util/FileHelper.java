@@ -18,6 +18,7 @@ public class FileHelper {
         return new File(event.getModConfigurationDirectory(), "/Elec's Mods");
     }
 
+    @SuppressWarnings("deprecation")
     public static File getConfigFileElec(FMLPreInitializationEvent event){
         return new File(getElecsModsConfigFolder(event), ModInfoHelper.getModID(event) + ".cfg");
     }

@@ -13,13 +13,14 @@ import net.minecraftforge.fml.relauncher.Side;
 /**
  * Created by Elec332 on 31-7-2015.
  */
+@SuppressWarnings("unused")
 public class PacketSyncWidget extends AbstractPacket {
 
     public PacketSyncWidget(){
     }
 
     public PacketSyncWidget(NBTTagCompound tag, IWidgetContainer widgetContainer, Widget widget){
-        super(new NBTHelper().addToTag(new NBTHelper().addToTag(widgetContainer.getWidgets().indexOf(widget), "widget").addToTag(((Container) widgetContainer).windowId, "window").toNBT(), "containerData").addToTag(tag, "data").toNBT());
+        super(new NBTHelper().addToTag(new NBTHelper().addToTag(widgetContainer.getWidgets().indexOf(widget), "widget").addToTag(((Container) widgetContainer).windowId, "window").serializeNBT(), "containerData").addToTag(tag, "data").serializeNBT());
     }
 
     @Override

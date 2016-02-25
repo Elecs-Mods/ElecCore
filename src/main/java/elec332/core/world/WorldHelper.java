@@ -3,7 +3,6 @@ package elec332.core.world;
 import elec332.core.main.ElecCore;
 import elec332.core.network.PacketReRenderBlock;
 import elec332.core.server.ServerHelper;
-import elec332.core.util.BlockLoc;
 import elec332.core.util.NBTHelper;
 import elec332.core.util.PlayerHelper;
 import net.minecraft.block.Block;
@@ -24,6 +23,7 @@ import net.minecraftforge.common.ForgeChunkManager;
 /**
  * Created by Elec332 on 20-3-2015.
  */
+@SuppressWarnings("unused")
 public class WorldHelper {
 
     public static void reRenderBlock(TileEntity tile){
@@ -71,7 +71,7 @@ public class WorldHelper {
     }
 
     public static void forceChunk(ForgeChunkManager.Ticket ticket){
-        ForgeChunkManager.forceChunk(ticket, fromBlockLoc(new BlockLoc(ticket.getModData())));
+        ForgeChunkManager.forceChunk(ticket, fromBlockLoc(new NBTHelper(ticket.getModData()).getPos()));
     }
 
     public static void dropStack(World world, BlockPos blockLoc, ItemStack stack){

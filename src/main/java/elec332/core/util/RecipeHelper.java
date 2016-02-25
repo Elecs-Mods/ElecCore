@@ -16,7 +16,7 @@ public class RecipeHelper {
             IRecipe recipe = (IRecipe) CraftingManager.getInstance().getRecipeList().get(i);
             if (recipe != null) {
                 ItemStack output = recipe.getRecipeOutput();
-                if (ItemHelper.areItemsEqual(itemStack, output)) {
+                if (InventoryHelper.areEqualNoSizeNoNBT(itemStack, output)) {
                     return recipe;
                 }
             }

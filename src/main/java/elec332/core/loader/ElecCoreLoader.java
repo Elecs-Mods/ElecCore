@@ -1,11 +1,5 @@
 package elec332.core.loader;
 
-import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
-import java.util.Map;
-
 /**
  * Created by Elec332 on 18-11-2015.
  */

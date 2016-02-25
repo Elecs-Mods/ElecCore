@@ -16,8 +16,8 @@ import java.util.List;
 /**
  * Created by Elec332 on 15-11-2015.
  */
-@SuppressWarnings("deprecation")
 @SideOnly(Side.CLIENT)
+@SuppressWarnings({"deprecation", "unused"})
 public abstract class AbstractBlockModel implements IBlockModel {
 
     protected static final ImmutableList<BakedQuad> EMPTY_LIST;

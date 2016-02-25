@@ -1,7 +1,6 @@
 package elec332.core.client.model.template;
 
 import com.google.common.collect.Lists;
-import elec332.core.client.RenderHelper;
 import elec332.core.client.model.ElecModelBakery;
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -15,7 +14,7 @@ import java.util.List;
 /**
  * Created by Elec332 on 5-12-2015.
  */
-@SuppressWarnings("deprecation")
+@SuppressWarnings({"deprecation", "unused"})
 @SideOnly(Side.CLIENT)
 public class MutableModelTemplate implements IModelTemplate {
 
