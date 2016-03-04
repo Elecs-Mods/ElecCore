@@ -2,19 +2,26 @@ package elec332.core.multiblock;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import elec332.core.client.RenderHelper;
 import elec332.core.network.NetworkHandler;
 import elec332.core.registry.AbstractWorldRegistryHolder;
 import elec332.core.registry.IWorldRegistry;
 import elec332.core.world.WorldHelper;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.culling.ICamera;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
+import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Loader;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Elec332 on 27-7-2015.
@@ -27,6 +34,7 @@ public final class MultiBlockRegistry extends AbstractWorldRegistryHolder<MultiB
 
     public MultiBlockRegistry(NetworkHandler networkHandler){
         this.registry = Maps.newHashMap();
+        this.multiBlockRendererMap = Maps.newHashMap();
         this.networkHandler = networkHandler;
         this.structureRegistry = new MultiBlockStructureRegistry(this);
         MinecraftForge.EVENT_BUS.register(this);
@@ -42,7 +50,8 @@ public final class MultiBlockRegistry extends AbstractWorldRegistryHolder<MultiB
         return new MultiBlockWorldRegistry(world);
     }
 
-    private HashMap<Class<? extends IMultiBlockStructure>, Class<? extends IMultiBlock>> registry;
+    private Map<Class<? extends IMultiBlockStructure>, Class<? extends IMultiBlock>> registry;
+    private Map<Class<? extends IMultiBlock>, IMultiBlockRenderer<? extends IMultiBlock>> multiBlockRendererMap;
     private final MultiBlockStructureRegistry structureRegistry;
     protected final NetworkHandler networkHandler;
 
@@ -52,11 +61,34 @@ public final class MultiBlockRegistry extends AbstractWorldRegistryHolder<MultiB
         structureRegistry.registerMultiBlockStructure(multiBlockStructure, name);
     }
 
+    public <M extends IMultiBlock> void registerMultiBlockRenderer(Class<M> clazz, IMultiBlockRenderer<M> renderer){
+        multiBlockRendererMap.put(clazz, renderer);
+    }
+
+    @SideOnly(Side.CLIENT)
+    @SubscribeEvent
+    @SuppressWarnings({"unchecked", "unused"})
+    public void renderMultiBlocks(RenderWorldLastEvent event){
+        MultiBlockWorldRegistry mbwr = get(net.minecraft.client.Minecraft.getMinecraft().theWorld, false);
+        if (mbwr != null){
+            ICamera camera = RenderHelper.getPlayerCamera(event.partialTicks);
+            for (IMultiBlock multiBlock : mbwr.activeMultiBlocks){
+                IMultiBlockRenderer mbr = multiBlockRendererMap.get(multiBlock.getClass());
+                if (mbr != null && camera.isBoundingBoxInFrustum(mbr.getRenderingBoundingBox(multiBlock))) {
+                    GlStateManager.pushMatrix();
+                    RenderHelper.translateToWorld(event.partialTicks);
+                    mbr.renderMultiBlock(multiBlock, event.partialTicks);
+                    GlStateManager.popMatrix();
+                }
+            }
+        }
+    }
+
     public MultiBlockStructureRegistry getStructureRegistry() {
         return this.structureRegistry;
     }
 
-    public class MultiBlockWorldRegistry implements IWorldRegistry{
+    public class MultiBlockWorldRegistry implements IWorldRegistry {
 
         protected MultiBlockWorldRegistry(World world){
             this.world = world;

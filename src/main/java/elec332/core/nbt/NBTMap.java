@@ -54,28 +54,28 @@ public class NBTMap<K, V> extends HashMap<K, V> implements INBTSerializable<NBTT
         this.vNBT = vCallable != null;
         this.kCallable = kCallable;
         this.vCallable = vCallable;
-        this.serializeNull = false;
+        //this.serializeNull = false;
     }
 
     private final Class<K> kClass;
     private final Class<V> vClass;
 
-    private boolean serializeNull;
+    //private boolean serializeNull;
 
     private final boolean kNBT, vNBT;
     private final Callable<K> kCallable;
     private final Function<K, V> vCallable;
 
-    public NBTMap<K, V> setSerializeNull(boolean serializeNull){
-        this.serializeNull = serializeNull;
-        return this;
-    }
+    //public NBTMap<K, V> setSerializeNull(boolean serializeNull){
+    //    this.serializeNull = serializeNull;
+    //    return this;
+    //}
 
     @Override
     public NBTTagList serializeNBT() {
         NBTTagList ret = new NBTTagList();
         for (final Map.Entry<K, V> entry : entrySet()){
-            if (entry.getValue() == null && !serializeNull){
+            if (entry.getValue() == null /*&& !serializeNull*/){
                 continue;
             }
             NBTTagCompound tag = new NBTTagCompound();
@@ -116,7 +116,9 @@ public class NBTMap<K, V> extends HashMap<K, V> implements INBTSerializable<NBTT
 
     private void writeToNBT(NBTTagCompound tag, String name, Object toWrite){
         NBTBase serialized;
-        if (toWrite instanceof NBTBase){
+        if (toWrite == null){
+            throw new NullPointerException();
+        }else if (toWrite instanceof NBTBase){
             serialized = (NBTBase) toWrite;
         } else if (toWrite instanceof INBTSerializable){
             serialized = ((INBTSerializable) toWrite).serializeNBT();
@@ -139,6 +141,8 @@ public class NBTMap<K, V> extends HashMap<K, V> implements INBTSerializable<NBTT
         }
         if (serialized != null){
             tag.setTag(name, serialized);
+        } else {
+            throw new IllegalArgumentException();
         }
     }
 
