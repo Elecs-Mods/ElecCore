@@ -4,8 +4,11 @@ import com.google.common.collect.Maps;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.particle.EntityFX;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.WorldRenderer;
+import net.minecraft.client.renderer.culling.Frustum;
+import net.minecraft.client.renderer.culling.ICamera;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.entity.player.EntityPlayer;
@@ -59,9 +62,21 @@ public class RenderHelper {
         return new Vec3(dX, dY, dZ);
     }
 
+    public static void translateToWorld(float partialTicks){
+        Vec3 vec = getPlayerVec(partialTicks);
+        GlStateManager.translate(-vec.xCoord, -vec.yCoord, -vec.zCoord);
+    }
+
     public static Vec3 getPlayerVec(){
         EntityPlayer player = mc.thePlayer;
         return new Vec3(player.posX, player.posY, player.posZ);
+    }
+
+    public static ICamera getPlayerCamera(float partialTicks){
+        ICamera camera = new Frustum();
+        Vec3 vec = getPlayerVec(partialTicks);
+        camera.setPosition(vec.xCoord, vec.yCoord, vec.zCoord);
+        return camera;
     }
 
     public static void drawLine(Vec3 from, Vec3 to, Vec3 player, float thickness){
