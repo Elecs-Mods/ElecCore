@@ -11,14 +11,15 @@ import mcmultipart.multipart.IMultipartContainer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
+import net.minecraftforge.event.world.ChunkEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-import java.util.ArrayDeque;
-import java.util.Queue;
+import java.util.*;
 
 /**
  * Created by Elec332 on 23-4-2015.
@@ -84,10 +85,32 @@ public abstract class AbstractWorldGridHolder<T extends ITileData, O> implements
         }
     }
 
+    @SubscribeEvent
+    public final void chunkUnload(ChunkEvent.Unload event){
+        World world = event.world;
+        if (!world.isRemote && WorldHelper.getDimID(world) == WorldHelper.getDimID(this.world)) {
+            ChunkCoordIntPair chunkPos = event.getChunk().getChunkCoordIntPair();
+            if (registeredTiles.chunkExists(chunkPos)) {
+                Collection<T> list = registeredTiles.getObjectsInChunk(chunkPos).values();
+                if (!list.isEmpty()) {
+                    onChunkUnload(list);
+                }
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public final void chunkLoad(ChunkEvent.Load event){
+        World world = event.world;
+        if (!world.isRemote && WorldHelper.getDimID(world) == WorldHelper.getDimID(this.world)) {
+            onChunkLoad(event.getChunk().getTileEntityMap().values());
+        }
+    }
+
     public final void addTile(TileEntity tile){
         if (!world.isRemote) {
             BlockPos tilePos = tile.getPos();
-            if (WorldHelper.getDimID(world) != WorldHelper.getDimID(this.world) || tile instanceof IMultipartContainer) {
+            if (WorldHelper.getDimID(world) != WorldHelper.getDimID(this.world)) {
                 throw new IllegalArgumentException();
             }
             if (!WorldHelper.chunkLoaded(world, tilePos) || !isValidTile(tile)) {
@@ -142,6 +165,12 @@ public abstract class AbstractWorldGridHolder<T extends ITileData, O> implements
      */
     protected abstract void onExtraMultiPartAdded(T t, IMultipart multiPart);
 
+    protected void onChunkLoad(Collection<TileEntity> loadingTiles){
+        for (TileEntity tile : loadingTiles){
+            addTile(tile);
+        }
+    }
+
     protected abstract void remove(T t);
 
     /**
@@ -151,6 +180,8 @@ public abstract class AbstractWorldGridHolder<T extends ITileData, O> implements
      * @param multiPart The MultiPart that was removed, could be an insignificant one
      */
     protected abstract void onMultiPartRemoved(T t, IMultipart multiPart);
+
+    protected abstract void onChunkUnload(Collection<T> unloadingObjects);
 
     protected abstract void onTick();
 

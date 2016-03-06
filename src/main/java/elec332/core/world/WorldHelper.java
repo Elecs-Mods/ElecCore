@@ -27,6 +27,14 @@ import net.minecraftforge.common.ForgeChunkManager;
 @SuppressWarnings("unused")
 public class WorldHelper {
 
+    public static ChunkCoordIntPair chunkCoordFromBlockPos(BlockPos pos){
+        return new ChunkCoordIntPair(pos.getX() >> 4, pos.getZ() >> 4);
+    }
+
+    public static long longFromBlockPos(BlockPos pos){
+        return ChunkCoordIntPair.chunkXZ2Int(pos.getX() >> 4, pos.getZ() >> 4);
+    }
+
     public static long longFromChunk(Chunk chunk){
         return longFromChunkXZ(chunk.getChunkCoordIntPair());
     }

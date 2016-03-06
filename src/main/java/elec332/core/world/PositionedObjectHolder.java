@@ -5,6 +5,7 @@ import net.minecraft.util.BlockPos;
 import net.minecraft.util.LongHashMap;
 import net.minecraft.world.ChunkCoordIntPair;
 
+import java.util.Collections;
 import java.util.Map;
 
 /**
@@ -24,25 +25,32 @@ public class PositionedObjectHolder<T> {
     private LongHashMap<PositionChunk> positionedMap;
 
     public T get(BlockPos pos){
-        return getChunkForPos(pos).get(pos);
+        return getChunkForPos(WorldHelper.longFromBlockPos(pos)).get(pos);
     }
 
-    private PositionChunk getChunkForPos(BlockPos pos){
-        long value = ChunkCoordIntPair.chunkXZ2Int(pos.getX(), pos.getZ());
-        PositionChunk positionChunk = positionedMap.getValueByKey(value);
+    private PositionChunk getChunkForPos(long chunkPos){
+        PositionChunk positionChunk = positionedMap.getValueByKey(chunkPos);
         if (positionChunk == null){
             positionChunk = new PositionChunk();
-            positionedMap.add(value, positionChunk);
+            positionedMap.add(chunkPos, positionChunk);
         }
         return positionChunk;
     }
 
     public void put(T t, BlockPos pos){
-        getChunkForPos(pos).put(t, pos);
+        getChunkForPos(WorldHelper.longFromBlockPos(pos)).put(t, pos);
     }
 
     public void remove(BlockPos pos){
-        getChunkForPos(pos).remove(pos);
+        getChunkForPos(WorldHelper.longFromBlockPos(pos)).remove(pos);
+    }
+
+    public Map<BlockPos, T> getObjectsInChunk(ChunkCoordIntPair chunk){
+        return getChunkForPos(WorldHelper.longFromChunkXZ(chunk)).publicVisibleMap;
+    }
+
+    public boolean chunkExists(ChunkCoordIntPair chunk){
+        return positionedMap.containsItem(WorldHelper.longFromChunkXZ(chunk));
     }
 
     /**
@@ -52,9 +60,11 @@ public class PositionedObjectHolder<T> {
 
         private PositionChunk(){
             this.posMap = Maps.newHashMap();
+            this.publicVisibleMap = Collections.unmodifiableMap(this.posMap);
         }
 
-        private Map<BlockPos, T> posMap;
+        private final Map<BlockPos, T> posMap;
+        private final Map<BlockPos, T> publicVisibleMap;
 
         private T get(BlockPos pos){
             return posMap.get(pos);
@@ -69,7 +79,5 @@ public class PositionedObjectHolder<T> {
         }
 
     }
-
-
 
 }
