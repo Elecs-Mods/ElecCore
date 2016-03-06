@@ -17,6 +17,7 @@ import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.ForgeChunkManager;
 
@@ -25,6 +26,14 @@ import net.minecraftforge.common.ForgeChunkManager;
  */
 @SuppressWarnings("unused")
 public class WorldHelper {
+
+    public static long longFromChunk(Chunk chunk){
+        return longFromChunkXZ(chunk.getChunkCoordIntPair());
+    }
+
+    public static long longFromChunkXZ(ChunkCoordIntPair chunkCoordIntPair){
+        return ChunkCoordIntPair.chunkXZ2Int(chunkCoordIntPair.chunkXPos, chunkCoordIntPair.chunkZPos);
+    }
 
     public static void reRenderBlock(TileEntity tile){
         if (!tile.getWorld().isRemote){
@@ -44,10 +53,6 @@ public class WorldHelper {
 
     public static boolean chunkLoaded(World world, BlockPos pos){
         return world.getChunkProvider().chunkExists(pos.getX() >> 4, pos.getZ() >> 4) && world.getChunkFromBlockCoords(pos).isLoaded();
-    }
-
-    public static boolean chunkExists(World world, BlockPos pos){
-        return world.getChunkProvider().chunkExists(pos.getX() >> 4, pos.getZ() >> 4);
     }
 
     public static void markBlockForRenderUpdate(World world, BlockPos pos){

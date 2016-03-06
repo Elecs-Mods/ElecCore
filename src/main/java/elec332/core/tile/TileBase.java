@@ -39,7 +39,7 @@ public class TileBase extends TileEntity implements IElecCoreNetworkTile, ITicka
         ElecCore.tickHandler.registerCall(new Runnable() {
             @Override
             public void run() {
-                if (WorldHelper.chunkExists(worldObj, getPos())) {
+                if (WorldHelper.chunkLoaded(worldObj, getPos())) {
                     onTileLoaded();
                 }
             }

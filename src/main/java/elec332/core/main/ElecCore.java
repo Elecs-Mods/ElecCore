@@ -39,7 +39,7 @@ import java.util.Set;
 acceptedMinecraftVersions = ModInfo.ACCEPTEDMCVERSIONS, version = ElecCore.ElecCoreVersion, useMetadata = true, canBeDeactivated = false)
 public class ElecCore extends ModBase{
 
-	public static final String ElecCoreVersion = "1.5";//"#ELECCORE_VER#";
+	public static final String ElecCoreVersion = "#ELECCORE_VER#";
 
 	@SidedProxy(clientSide = ModInfo.CLIENTPROXY, serverSide = ModInfo.COMMONPROXY)
 	public static CommonProxy proxy;
