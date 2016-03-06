@@ -52,8 +52,13 @@ public abstract class AbstractWorldGridHolder<T extends ITileData, O> implements
             }
             T t = getPowerTile(pos);
             TileEntity tile = WorldHelper.getTileAt(world, pos);
-            if (t == null && isValidTile(tile)) {
-                addTile(tile);
+            if (isValidTile(tile)) {
+                if (t == null) {
+                    addTile(tile);
+                } else {
+                    resetPosAndSurroundings(pos);
+                    onExtraMultiPartAdded(t, multiPart);
+                }
             }
         }
     }
@@ -71,6 +76,9 @@ public abstract class AbstractWorldGridHolder<T extends ITileData, O> implements
                 TileEntity tile = t.getTile();
                 if(!isValidTile(tile)) {
                     removeTile(tile);
+                } else {
+                    resetPosAndSurroundings(pos);
+                    onMultiPartRemoved(t, multiPart);
                 }
             }
         }
@@ -94,7 +102,8 @@ public abstract class AbstractWorldGridHolder<T extends ITileData, O> implements
             T powerTile = generate(tile);
             registeredTiles.put(powerTile, tilePos);
             surroundingChecker.addPosition(tilePos);
-            addT(powerTile);
+            resetPosAndSurroundings(tilePos);
+            add(powerTile);
         }
     }
 
@@ -109,8 +118,7 @@ public abstract class AbstractWorldGridHolder<T extends ITileData, O> implements
         removeFromRegistry(t);
     }
 
-    private void addT(T t){
-        BlockPos pos = t.getPos();
+    private void resetPosAndSurroundings(BlockPos pos){
         surroundingChecker.resetPositionData(pos);
         for (EnumFacing facing : EnumFacing.VALUES) {
             BlockPos o = pos.offset(facing);
@@ -118,7 +126,6 @@ public abstract class AbstractWorldGridHolder<T extends ITileData, O> implements
                 surroundingChecker.resetPositionData(o);
             }
         }
-        add(t);
     }
 
     protected abstract boolean isValidTile(TileEntity tile);
@@ -127,7 +134,23 @@ public abstract class AbstractWorldGridHolder<T extends ITileData, O> implements
 
     protected abstract void add(T t);
 
+    /**
+     * Called when a MultiPart gets added to an already registered tile.
+     *
+     * @param t The tile-reference object
+     * @param multiPart The MultiPart that was added, could be an insignificant one
+     */
+    protected abstract void onExtraMultiPartAdded(T t, IMultipart multiPart);
+
     protected abstract void remove(T t);
+
+    /**
+     * Called when a MultiPart gets removed from an tile that is still valid.
+     *
+     * @param t The tile-reference object
+     * @param multiPart The MultiPart that was removed, could be an insignificant one
+     */
+    protected abstract void onMultiPartRemoved(T t, IMultipart multiPart);
 
     protected abstract void onTick();
 
@@ -146,7 +169,7 @@ public abstract class AbstractWorldGridHolder<T extends ITileData, O> implements
     public final void tick() {
         if (!pending.isEmpty()){
             for (T t = pending.poll(); t != null; t = pending.poll()){
-                addT(t);
+                add(t);
             }
         }
         onTick();
