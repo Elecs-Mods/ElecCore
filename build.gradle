@@ -31,6 +31,9 @@ repositories {
 	maven {
 		url "http://dvs1.progwml6.com/files/maven"
     } 
+	maven {
+		url "http://maven.amadornes.com/"
+	}
 }
 
 apply plugin: 'net.minecraftforge.gradle.forge'
@@ -66,6 +69,7 @@ dependencies {
 	compile "mcp.mobius.waila:Waila:${config.WAILA_version}"//_${config.minecraft_version}"
 	//compile "codechicken:NotEnoughItems:${config.NEI_version}:dev"//${config.minecraft_version}-${config.NEI_version}:dev"
 	deobfCompile "mezz.jei:jei_${config.minecraft_version}:${config.jei_version}"
+	deobfCompile "MCMultiPart:MCMultiPart-experimental:${config.mcmp_version}:universal"
 }
 
 processResources
