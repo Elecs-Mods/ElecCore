@@ -1,6 +1,10 @@
 package elec332.core.main;
 
-import elec332.core.api.annotations.RegisterTile;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import elec332.core.api.util.IASMDataHelper;
+import elec332.core.api.util.IASMDataProcessor;
 import elec332.core.compat.ElecCoreCompatHandler;
 import elec332.core.effects.AbilityHandler;
 import elec332.core.handler.TickHandler;
@@ -14,21 +18,19 @@ import elec332.core.util.MCModInfo;
 import elec332.core.util.ModInfoHelper;
 import elec332.core.util.OredictHelper;
 import net.minecraft.launchwrapper.Launch;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.common.LoaderState;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.discovery.ASMDataTable;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLLoadCompleteEvent;
-import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.common.event.*;
 import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.lang.annotation.Annotation;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -51,6 +53,7 @@ public class ElecCore extends ModBase{
 	public static ElecCoreCompatHandler compatHandler;
 	public static Logger logger;
 	private static ASMDataTable dataTable;
+	private ASMDataProcessor asmDataProcessor;
 
 	public static final boolean developmentEnvironment;
 	public static boolean oldBlocks = true;
@@ -72,6 +75,7 @@ public class ElecCore extends ModBase{
 		logger = event.getModLog();
 		compatHandler = new ElecCoreCompatHandler(config, logger);
 		dataTable = event.getAsmData();
+		asmDataProcessor = new ASMDataProcessor();
 
 		FMLCommonHandler.instance().bus().register(tickHandler);
 		debug = config.isEnabled("debug", false);
@@ -79,6 +83,7 @@ public class ElecCore extends ModBase{
 		ServerHelper.instance.load();
 
 		proxy.preInitRendering();
+		asmDataProcessor.process(LoaderState.PREINITIALIZATION);
 
 		MCModInfo.createMCModInfoElec(event, "Provides core functionality for Elec's Mods",
 				"-", "assets/elec332/logo.png", new String[]{"Elec332"});
@@ -93,32 +98,22 @@ public class ElecCore extends ModBase{
 		compatHandler.init();
 		AbilityHandler.instance.init();
 		notifyEvent(event);
-		for (ASMDataTable.ASMData data : getAnnotationList(RegisterTile.class)){
-			try {
-				GameRegistry.registerTileEntity((Class<? extends TileEntity>) Class.forName(data.getClassName()), (String) data.getAnnotationInfo().get("name"));
-			} catch (Exception e){
-				logger.error("Error registering tile: "+data.getClassName());
-			}
-		}
+
+		asmDataProcessor.process(LoaderState.INITIALIZATION);
 		OredictHelper.initLists();
     }
 
 	@EventHandler
 	public void postInit(FMLPostInitializationEvent event){
-		if (FMLCommonHandler.instance().getEffectiveSide().isClient()){
-
-		}
+		asmDataProcessor.process(LoaderState.POSTINITIALIZATION);
 		OredictHelper.initLists();
 		//Nope
 	}
 
 	@EventHandler
 	public void loadComplete(FMLLoadCompleteEvent event){
+		asmDataProcessor.process(LoaderState.AVAILABLE);
 		OredictHelper.initLists();
-	}
-
-	public static Set<ASMDataTable.ASMData> getAnnotationList(Class<? extends Annotation> annotationClass){
-		return dataTable.getAll(annotationClass.getName());
 	}
 
 	public static void systemPrintDebug(Object s){
@@ -138,6 +133,68 @@ public class ElecCore extends ModBase{
 	@Override
 	protected File configFile() {
 		return cfgFile;
+	}
+
+	private class ASMDataProcessor {
+
+		private ASMDataProcessor(){
+			asmLoaderMap = Maps.newHashMap();
+			validStates = ImmutableList.of(LoaderState.PREINITIALIZATION, LoaderState.INITIALIZATION, LoaderState.POSTINITIALIZATION, LoaderState.AVAILABLE);
+		}
+
+		private final Map<LoaderState, List<IASMDataProcessor>> asmLoaderMap;
+		private final List<LoaderState> validStates;
+		private IASMDataHelper asmDataHelper;
+
+		private void init(){
+			for (LoaderState state : validStates){
+				asmLoaderMap.put(state, Lists.<IASMDataProcessor>newArrayList());
+			}
+			asmDataHelper = new IASMDataHelper() {
+				@Override
+				public ASMDataTable getASMDataTable() {
+					return dataTable;
+				}
+
+				@Override
+				public Set<ASMDataTable.ASMData> getAnnotationList(Class<? extends Annotation> annotationClass) {
+					return getASMDataTable().getAll(annotationClass.getName());
+				}
+			};
+			for (ASMDataTable.ASMData data : asmDataHelper.getAnnotationList(elec332.core.api.annotations.ASMDataProcessor.class)){
+				LoaderState[] hS = (LoaderState[]) data.getAnnotationInfo().get("value");
+				if (hS == null || hS.length == 0){
+					throw new IllegalArgumentException("Invalid LoaderState parameters: Null or empty array; For"+data.getClassName());
+				}
+				for (LoaderState state : hS){
+					if (!validStates.contains(state)){
+						throw new IllegalArgumentException("Invalid LoaderState parameter: "+state+"; For "+data.getClassName());
+					}
+					IASMDataProcessor dataProcessor;
+					try {
+						dataProcessor = (IASMDataProcessor)Class.forName(data.getClassName()).newInstance();
+					} catch (Exception e){
+						throw new RuntimeException("Error invocating annotated IASMData class: "+data.getClassName());
+					}
+					asmLoaderMap.get(state).add(dataProcessor);
+				}
+			}
+		}
+
+		private void process(LoaderState state){
+			if (validStates.contains(state)){
+				List<IASMDataProcessor> dataProcessors = asmLoaderMap.get(state);
+				for (IASMDataProcessor dataProcessor : dataProcessors){
+					dataProcessor.processASMData(asmDataHelper, state);
+				}
+				asmLoaderMap.remove(state);
+			} else {
+				throw new IllegalArgumentException();
+			}
+		}
+
+
+
 	}
 
 	static {
