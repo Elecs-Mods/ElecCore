@@ -182,7 +182,7 @@ public final class RenderingRegistry {
 
         @Override
         public IBakedModel handleItemState(ItemStack stack) {
-            return ((INoJsonItem)stack.getItem()).getItemModel(stack.getItem(), stack.getItemDamage());
+            return ((INoJsonItem)stack.getItem()).getItemModel(stack, null, null);
         }
 
     }

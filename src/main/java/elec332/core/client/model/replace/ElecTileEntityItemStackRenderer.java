@@ -26,7 +26,7 @@ public class ElecTileEntityItemStackRenderer extends TileEntityItemStackRenderer
         Item item = itemStackIn.getItem();
         IBakedModel model = null;
         if (item instanceof INoJsonItem){
-            model = ((INoJsonItem) item).getItemModel(itemStackIn.getItem(), itemStackIn.getItemDamage());
+            model = ((INoJsonItem) item).getItemModel(itemStackIn, null, null);
         } else if (item instanceof ItemBlock && ((ItemBlock) item).getBlock() instanceof INoJsonBlock){
             model = ((INoJsonBlock) ((ItemBlock) item).getBlock()).getBlockModel(itemStackIn.getItem(), itemStackIn.getItemDamage());
         }
