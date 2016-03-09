@@ -76,7 +76,7 @@ public class ElecCore extends ModBase{
 		compatHandler = new ElecCoreCompatHandler(config, logger);
 		dataTable = event.getAsmData();
 		asmDataProcessor = new ASMDataProcessor();
-
+		asmDataProcessor.init();
 		FMLCommonHandler.instance().bus().register(tickHandler);
 		debug = config.isEnabled("debug", false);
 		removeJSONErrors = config.isEnabled("removeJsonExceptions", true) && !developmentEnvironment;
@@ -162,19 +162,20 @@ public class ElecCore extends ModBase{
 				}
 			};
 			for (ASMDataTable.ASMData data : asmDataHelper.getAnnotationList(elec332.core.api.annotations.ASMDataProcessor.class)){
-				LoaderState[] hS = (LoaderState[]) data.getAnnotationInfo().get("value");
+				IASMDataProcessor dataProcessor;
+				try {
+					dataProcessor = (IASMDataProcessor)Class.forName(data.getClassName()).newInstance();
+				} catch (Exception e){
+					throw new RuntimeException("Error invocating annotated IASMData class: "+data.getClassName());
+				}
+				elec332.core.api.annotations.ASMDataProcessor annotation = dataProcessor.getClass().getAnnotation(elec332.core.api.annotations.ASMDataProcessor.class);
+				LoaderState[] hS = annotation.value();
 				if (hS == null || hS.length == 0){
-					throw new IllegalArgumentException("Invalid LoaderState parameters: Null or empty array; For"+data.getClassName());
+					throw new IllegalArgumentException("Invalid LoaderState parameters: Null or empty array; For "+data.getClassName());
 				}
 				for (LoaderState state : hS){
 					if (!validStates.contains(state)){
 						throw new IllegalArgumentException("Invalid LoaderState parameter: "+state+"; For "+data.getClassName());
-					}
-					IASMDataProcessor dataProcessor;
-					try {
-						dataProcessor = (IASMDataProcessor)Class.forName(data.getClassName()).newInstance();
-					} catch (Exception e){
-						throw new RuntimeException("Error invocating annotated IASMData class: "+data.getClassName());
 					}
 					asmLoaderMap.get(state).add(dataProcessor);
 				}
@@ -192,8 +193,6 @@ public class ElecCore extends ModBase{
 				throw new IllegalArgumentException();
 			}
 		}
-
-
 
 	}
 
