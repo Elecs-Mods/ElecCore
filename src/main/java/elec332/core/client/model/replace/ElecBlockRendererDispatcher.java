@@ -1,16 +1,15 @@
 package elec332.core.client.model.replace;
 
+import elec332.core.client.*;
 import elec332.core.client.model.INoJsonBlock;
 import elec332.core.client.model.RenderingRegistry;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.renderer.BlockModelRenderer;
-import net.minecraft.client.renderer.BlockModelShapes;
-import net.minecraft.client.renderer.BlockRendererDispatcher;
-import net.minecraft.client.renderer.WorldRenderer;
+import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.client.resources.model.IBakedModel;
+import net.minecraft.client.resources.model.SimpleBakedModel;
 import net.minecraft.client.resources.model.WeightedBakedModel;
 import net.minecraft.crash.CrashReport;
 import net.minecraft.crash.CrashReportCategory;
@@ -93,6 +92,21 @@ public class ElecBlockRendererDispatcher extends BlockRendererDispatcher {
 
     @Override
     public void renderBlockDamage(IBlockState state, BlockPos pos, TextureAtlasSprite texture, IBlockAccess blockAccess) {
+        Block block = state.getBlock();
+        if (block instanceof INoJsonBlock && block.getRenderType() == 3){
+            IBakedModel model = ((INoJsonBlock) block).getBlockModel(block.getActualState(state, blockAccess, pos), blockAccess, pos);
+            IBlockState extendedState = block.getExtendedState(state, blockAccess, pos);
+            for (net.minecraft.util.EnumWorldBlockLayer layer : net.minecraft.util.EnumWorldBlockLayer.values()) {
+                if (block.canRenderInLayer(layer)) {
+                    net.minecraftforge.client.ForgeHooksClient.setRenderLayer(layer);
+                    IBakedModel targetLayer = ((net.minecraftforge.client.model.ISmartBlockModel)model).handleBlockState(extendedState);
+                    TextureAtlasSprite tas = elec332.core.client.RenderHelper.checkIcon(targetLayer.getParticleTexture());
+                    IBakedModel damageModel = (new SimpleBakedModel.Builder(targetLayer, texture).setTexture(tas)).makeBakedModel();
+                    this.getBlockModelRenderer().renderModel(blockAccess, damageModel, state, pos, Tessellator.getInstance().getWorldRenderer());
+                }
+            }
+            return;
+        }
         blockRendererDispatcher.renderBlockDamage(state, pos, texture, blockAccess);
     }
 
