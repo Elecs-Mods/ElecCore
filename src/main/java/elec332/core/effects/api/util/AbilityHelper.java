@@ -46,7 +46,8 @@ public class AbilityHelper {
     }
 
     public static IEntityAbilityProperties getHandler(EntityLivingBase entity){
-        return (IEntityAbilityProperties) entity.getExtendedProperties(ElecCoreAbilitiesAPI.PROPERTIES_NAME);
+        return entity.getCapability(ElecCoreAbilitiesAPI.ABILITIES_CAPABILITY, null);
+        //return (IEntityAbilityProperties) entity.getExtendedProperties(ElecCoreAbilitiesAPI.PROPERTIES_NAME);
     }
 
 }

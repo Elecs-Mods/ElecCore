@@ -6,7 +6,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -86,10 +86,10 @@ public class ToolTip{
 
     public static class ColouredString {
         public ColouredString(String s){
-            this(EnumChatFormatting.GRAY, s);
+            this(TextFormatting.GRAY, s);
         }
 
-        public ColouredString(EnumChatFormatting colour, String s){
+        public ColouredString(TextFormatting colour, String s){
             this.string = colour+s;
         }
 

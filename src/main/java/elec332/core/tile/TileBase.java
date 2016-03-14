@@ -16,9 +16,10 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
-import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
+import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.BlockPos;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
 import net.minecraft.world.World;
@@ -164,7 +165,7 @@ public class TileBase extends TileEntity implements IElecCoreNetworkTile, ITicka
 
     }
 
-    public boolean onBlockActivated(EntityPlayer player, EnumFacing side, float hitX, float hitY, float hitZ) {
+    public boolean onBlockActivated(IBlockState state, EntityPlayer player, EnumHand hand, ItemStack stack, EnumFacing side, float hitX, float hitY, float hitZ) {
         return false;
     }
 
@@ -234,18 +235,18 @@ public class TileBase extends TileEntity implements IElecCoreNetworkTile, ITicka
     }
 
     public void sendPacketTo(EntityPlayerMP player, int ID, NBTTagCompound data){
-        player.playerNetServerHandler.sendPacket(new S35PacketUpdateTileEntity(getPos(), ID, data));
+        player.playerNetServerHandler.sendPacket(new SPacketUpdateTileEntity(getPos(), ID, data));
     }
 
     @Override
     public Packet getDescriptionPacket() {
         NBTTagCompound nbtTag = new NBTTagCompound();
         writeToNBT(nbtTag);
-        return new S35PacketUpdateTileEntity(getPos(), 0, nbtTag);
+        return new SPacketUpdateTileEntity(getPos(), 0, nbtTag);
     }
 
     @Override
-    public void onDataPacket(NetworkManager net, S35PacketUpdateTileEntity packet) {
+    public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity packet) {
         if (packet.getTileEntityType() == 0)
             readFromNBT(packet.getNbtCompound());
         else onDataPacket(packet.getTileEntityType(), packet.getNbtCompound());

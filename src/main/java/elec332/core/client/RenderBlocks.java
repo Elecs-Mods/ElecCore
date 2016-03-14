@@ -3,7 +3,7 @@ package elec332.core.client;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.util.BlockPos;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.EnumFacing;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -130,7 +130,7 @@ public class RenderBlocks {
 
     /**
      * Like setRenderBounds, but automatically pulling the bounds from the given Block.
-     */
+     *
     public void setRenderBoundsFromBlock(Block p_147775_1_) {
         if (!this.lockBlockBounds) {
             this.renderMinX = p_147775_1_.getBlockBoundsMinX();
@@ -141,7 +141,7 @@ public class RenderBlocks {
             this.renderMaxZ = p_147775_1_.getBlockBoundsMaxZ();
             this.partialRenderBounds = this.minecraftRB.gameSettings.ambientOcclusion >= 2 && (this.renderMinX > 0.0D || this.renderMaxX < 1.0D || this.renderMinY > 0.0D || this.renderMaxY < 1.0D || this.renderMinZ > 0.0D || this.renderMaxZ < 1.0D);
         }
-    }
+    }*/
 
     /**
      * Like setRenderBounds, but locks the values so that RenderBlocks won't change them.  If you use this, you must

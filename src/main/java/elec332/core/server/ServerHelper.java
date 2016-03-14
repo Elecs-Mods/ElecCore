@@ -15,14 +15,16 @@ import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.dedicated.DedicatedServer;
 import net.minecraft.server.management.PlayerManager;
-import net.minecraft.util.BlockPos;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.event.world.WorldEvent;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.LoaderState;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -160,7 +162,7 @@ public class ServerHelper {
 
     @SuppressWarnings("unchecked")
     public List<EntityPlayerMP> getOnlinePlayers(){
-        return getMinecraftServer().getConfigurationManager().playerEntityList;
+        return getMinecraftServer().func_184103_al().getPlayerList();
     }
 
     public boolean isPlayerOnline(UUID uuid){
@@ -185,7 +187,7 @@ public class ServerHelper {
     public List<EntityPlayerMP> getAllPlayersWatchingBlock(World world, int x, int z){
         List<EntityPlayerMP> ret = Lists.newArrayList();
         if (world instanceof WorldServer) {
-            PlayerManager playerManager = ((WorldServer) world).getPlayerManager();
+            PlayerManager playerManager = ((WorldServer) world).func_184164_w();
             for (EntityPlayerMP player : getOnlinePlayers()) {
                 Chunk chunk = world.getChunkFromChunkCoords(x >> 4, z >> 4);
                 if (playerManager.isPlayerWatchingChunk(player, chunk.xPosition, chunk.zPosition)) {
@@ -219,7 +221,7 @@ public class ServerHelper {
     }
 
     public MinecraftServer getMinecraftServer(){
-        return MinecraftServer.getServer();
+        return FMLCommonHandler.instance().getMinecraftServerInstance();
     }
 
     public boolean isValid(){
@@ -283,7 +285,8 @@ public class ServerHelper {
 
         @SubscribeEvent
         public void onWorldLoad(WorldEvent.Load event){
-            if (isServer(event.world) && WorldHelper.getDimID(event.world) == 0){
+            if (isServer(event.world) && WorldHelper.getDimID(event.world) == 0 && event.world.getClass() == WorldServer.class){
+                System.out.println("loading data: "+event.world+"  "+!event.world.isRemote);
 
                 if (!ServerHelper.this.locked) {
                     ServerHelper.this.locked = true;
@@ -307,8 +310,8 @@ public class ServerHelper {
 
         @SubscribeEvent
         public void onWorldSave(WorldEvent.Save event){
-            if (isServer(event.world) && WorldHelper.getDimID(event.world) == 0){
-
+            if (isServer(event.world) && WorldHelper.getDimID(event.world) == 0 && event.world.getClass() == WorldServer.class){
+                System.out.println("saving: "+event.world);
                 File folder = new File(event.world.getSaveHandler().getWorldDirectory(), "elec332/");
 
                 toFile(ServerHelper.this.generalData.serializeNBT(), new File(folder, "generalData.dat"));

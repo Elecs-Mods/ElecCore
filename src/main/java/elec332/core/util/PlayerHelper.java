@@ -4,10 +4,10 @@ import elec332.core.main.ElecCore;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.DamageSource;
-import net.minecraft.util.MovingObjectPosition;
-import net.minecraft.util.Vec3;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.text.TextComponentString;
 
 import java.util.UUID;
 
@@ -20,7 +20,7 @@ public class PlayerHelper {
         return player.theItemInWorldManager.getBlockReachDistance();
     }
 
-    public static Vec3 getCorrectedHeadVec(EntityPlayer player) {
+    public static Vec3d getCorrectedHeadVec(EntityPlayer player) {
         double yCoord = player.posY;
         if(player.worldObj.isRemote) {
             yCoord += (player.getEyeHeight() - player.getDefaultEyeHeight());
@@ -30,7 +30,7 @@ public class PlayerHelper {
                 yCoord -= 0.08D;
             }
         }
-        return new Vec3(player.posX, yCoord, player.posZ);
+        return new Vec3d(player.posX, yCoord, player.posZ);
     }
 
     public static UUID getPlayerUUID(EntityPlayer player){
@@ -39,7 +39,7 @@ public class PlayerHelper {
 
     public static void sendMessageToPlayer(EntityPlayer player, String s){
         try {
-            player.addChatComponentMessage(new ChatComponentText(s));
+            player.addChatComponentMessage(new TextComponentString(s));
         } catch (NullPointerException e){
             //Null player, whoops
         }
@@ -71,7 +71,7 @@ public class PlayerHelper {
         return player.capabilities.isCreativeMode;
     }
 
-    public static MovingObjectPosition getPosPlayerIsLookingAt(EntityPlayer player, Double range){
+    public static RayTraceResult getPosPlayerIsLookingAt(EntityPlayer player, Double range){
         return player.rayTrace(range, 1.0F);
     }
 

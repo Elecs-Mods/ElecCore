@@ -1,9 +1,9 @@
 package elec332.core.effects.network;
 
-import elec332.core.effects.EntityAbilityProperties;
-import elec332.core.effects.api.ElecCoreAbilitiesAPI;
 import elec332.core.effects.api.ability.WrappedAbility;
+import elec332.core.effects.api.util.AbilityHelper;
 import elec332.core.effects.api.util.IAbilityPacket;
+import elec332.core.effects.api.util.IEntityAbilityProperties;
 import elec332.core.network.AbstractPacket;
 import elec332.core.util.NBTHelper;
 import net.minecraft.client.Minecraft;
@@ -27,7 +27,7 @@ public class PacketSyncAbilities extends AbstractPacket implements IAbilityPacke
 
     @Override
     public IMessage onMessageThreadSafe(AbstractPacket message, MessageContext ctx) {
-        EntityAbilityProperties prop = (EntityAbilityProperties) Minecraft.getMinecraft().theWorld.getEntityByID(message.networkPackageObject.getInteger("EntityDataIDToSender")).getExtendedProperties(ElecCoreAbilitiesAPI.PROPERTIES_NAME);
+        IEntityAbilityProperties prop = AbilityHelper.getHandler((EntityLivingBase)Minecraft.getMinecraft().theWorld.getEntityByID(message.networkPackageObject.getInteger("EntityDataIDToSender")));
         ability = WrappedAbility.readEffectFromNBT(message.networkPackageObject);
         packetType = IAbilityPacket.PacketType.valueOf(message.networkPackageObject.getString("type"));
         if (ability == null || packetType == null)
@@ -48,4 +48,5 @@ public class PacketSyncAbilities extends AbstractPacket implements IAbilityPacke
     public PacketType getPacketType() {
         return packetType;
     }
+
 }

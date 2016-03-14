@@ -1,33 +1,36 @@
 package elec332.core.client.model;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import elec332.core.client.IIconRegistrar;
 import elec332.core.client.ITextureLoader;
 import elec332.core.client.RenderHelper;
+import elec332.core.client.model.model.IBlockModelWithoutQuads;
 import elec332.core.client.model.model.IModelAndTextureLoader;
 import elec332.core.client.model.model.IModelLoader;
+import elec332.core.client.model.model.IQuadProvider;
 import elec332.core.client.model.template.ElecTemplateBakery;
+import elec332.core.client.newstuff.ElecModelHandler;
 import elec332.core.client.render.ISpecialBlockRenderer;
 import elec332.core.client.render.ISpecialItemRenderer;
 import elec332.core.java.ReflectionHelper;
 import elec332.core.main.ElecCore;
 import net.minecraft.block.Block;
-import net.minecraft.client.renderer.block.model.BakedQuad;
-import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.renderer.block.model.*;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
-import net.minecraft.client.resources.model.IBakedModel;
-import net.minecraft.client.resources.model.ModelResourceLocation;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.IRegistry;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.registry.IRegistry;
+import net.minecraft.world.World;
 import net.minecraftforge.client.event.TextureStitchEvent;
-import net.minecraftforge.client.model.ISmartItemModel;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -53,8 +56,6 @@ public final class RenderingRegistry {
         itemRendererMap = Maps.newHashMap();
         modelLoaders = Lists.newArrayList();
         textureLoaders = Lists.newArrayList();
-        modelItemLink = new LinkedItemModel();
-        modelItemBlockLink = new LinkedItemBlockModel();
     }
 
     public static final int SPECIAL_BLOCK_RENDERER_ID = 39;
@@ -63,7 +64,6 @@ public final class RenderingRegistry {
     private final Map<Item, ISpecialItemRenderer> itemRendererMap;
     private final List<IModelLoader> modelLoaders;
     private final List<ITextureLoader> textureLoaders;
-    private final IBakedModel modelItemLink, modelItemBlockLink;
 
     public void registerLoader(IModelLoader modelLoader){
         this.modelLoaders.add(modelLoader);
@@ -79,8 +79,8 @@ public final class RenderingRegistry {
     }
 
     public void registerRenderer(Block block, ISpecialBlockRenderer renderer){
-        if (block.getRenderType() != SPECIAL_BLOCK_RENDERER_ID)
-            System.out.println("Detected useless registering of special blockrenderer, block "+"todo"+" is using the wrong renderer ID: "+block.getRenderType()+", expected "+SPECIAL_BLOCK_RENDERER_ID);
+        //if (block.getRenderType() != SPECIAL_BLOCK_RENDERER_ID)
+        //    System.out.println("Detected useless registering of special blockrenderer, block "+"todo"+" is using the wrong renderer ID: "+block.getRenderType()+", expected "+SPECIAL_BLOCK_RENDERER_ID);
         if (blockRendererMap.containsKey(block)){
             System.out.println("Replacing renderer for: "+ "todo");
         }
@@ -128,11 +128,11 @@ public final class RenderingRegistry {
     }*/
 
     @SuppressWarnings("all")
-    protected void removeJsonErrors(ModelLoader modelLoader){
+    protected void removeJsonErrors(ModelBakery modelLoader){
         ElecCore.logger.info("Cleaning up internal Json stuff...");
         try {
-            Set<ModelResourceLocation> set = (Set<ModelResourceLocation>) ReflectionHelper.makeFinalFieldModifiable(ModelLoader.class.getDeclaredField("missingVariants")).get(modelLoader);
-            Map<ModelResourceLocation, Exception> exceptionMap = (Map<ModelResourceLocation, Exception>) ReflectionHelper.makeFinalFieldModifiable(ModelLoader.class.getDeclaredField("loadingExceptions")).get(modelLoader);
+            Set<ModelResourceLocation> set = Sets.newHashSet();//(Set<ModelResourceLocation>) ReflectionHelper.makeFinalFieldModifiable(ModelLoader.class.getDeclaredField("missingVariants")).get(modelLoader);
+            Map<ModelResourceLocation, Exception> exceptionMap = Maps.newHashMap();//(Map<ModelResourceLocation, Exception>) ReflectionHelper.makeFinalFieldModifiable(ModelLoader.class.getDeclaredField("loadingExceptions")).get(modelLoader);
             if (ElecCore.removeJSONErrors){
                 exceptionMap.clear();
             }
@@ -149,52 +149,76 @@ public final class RenderingRegistry {
         ElecCore.logger.info("Finished cleaning up internal Json stuff.");
     }
 
-    protected Set<ModelResourceLocation> getValidLocations(Collection<ModelResourceLocation> loop, ModelLoader modelLoader){
-        Set<ModelResourceLocation> toRemove = Sets.newHashSet();
+    protected Set<ModelResourceLocation> getValidLocations(Collection<ModelResourceLocation> loop, ModelBakery modelLoader){
+        //Set<ModelResourceLocation> toRemove = Sets.newHashSet();
         IRegistry<ModelResourceLocation, IBakedModel> registry = modelLoader.blockModelShapes.modelManager.modelRegistry;
-        for (ModelResourceLocation rl : loop){
-            String name = rl.toString().split("#")[0];
-            Item item = Item.getByNameOrId(name);
-            if (item == null){
-                Block block = Block.getBlockFromName(name);
-                if (block == null){
-                    continue;
-                }
-                if (block instanceof INoJsonBlock){
-                    toRemove.add(rl);
-                }
-            } else {
+        /*for (ModelResourceLocation rl : loop){
+            String[] sa = rl.toString().split("#");
+            String name = sa[0];
+            if (sa[1].equals("inventory")){
+                Item item = Item.getByNameOrId(name);
                 if (item instanceof INoJsonItem){
                     toRemove.add(rl);
                     registry.putObject(rl, modelItemLink);
-                    //System.out.println("Handling item: "+item.delegate.getResourceName());
-                } else if (item instanceof ItemBlock && ((ItemBlock) item).getBlock() instanceof INoJsonBlock){
+                } else if (item instanceof ItemBlock && ((ItemBlock) item).getBlock() instanceof INoJsonItem){
                     toRemove.add(rl);
                     registry.putObject(rl, modelItemBlockLink);
-                    //System.out.println("Handling block: "+item.delegate.getResourceName());
+                }
+            } else {
+                Block block = Block.getBlockFromName(name);
+                if (block instanceof INoJsonBlock) {
+                    toRemove.add(rl);
+                    registry.putObject(rl, forBlock((INoJsonBlock) block, block.getStateFromMeta(Integer.parseInt(sa[1]))));
                 }
             }
         }
-        return toRemove;
+        return toRemove;*/
+        return ElecModelHandler.registerBakedModels(registry);
     }
 
-    private class LinkedItemModel extends NullModel implements ISmartItemModel {
+    /*private IBakedModel forBlock(final INoJsonBlock block, final IBlockState state){
+        return new IBakedModel() {
 
-        @Override
-        public IBakedModel handleItemState(ItemStack stack) {
-            return ((INoJsonItem)stack.getItem()).getItemModel(stack, null, null);
-        }
+            private final IBlockModelWithoutQuads bm = block.getBlockModel(state);
+            private final IQuadProvider quadProvider = block.getQuadProvider(state);
+            private final ItemOverrideList iol = new NoJsonItemOverrideList(block);
 
-    }
+            @Override
+            public List<BakedQuad> func_188616_a(IBlockState p_188616_1_, EnumFacing p_188616_2_, long p_188616_3_) {
+                return quadProvider.getBakedQuads(p_188616_1_, p_188616_2_, p_188616_3_);
+            }
 
-    private class LinkedItemBlockModel extends LinkedItemModel {
+            @Override
+            public boolean isAmbientOcclusion() {
+                return bm.isAmbientOcclusion();
+            }
 
-        @Override
-        public IBakedModel handleItemState(ItemStack stack) {
-            return ((INoJsonBlock)((ItemBlock)stack.getItem()).getBlock()).getBlockModel(stack.getItem(), stack.getMetadata());
-        }
+            @Override
+            public boolean isGui3d() {
+                return bm.isGui3d();
+            }
 
-    }
+            @Override
+            public boolean func_188618_c() {
+                return bm.isTESRItem();
+            }
+
+            @Override
+            public TextureAtlasSprite getParticleTexture() {
+                return bm.getParticleTexture();
+            }
+
+            @Override
+            public ItemCameraTransforms getItemCameraTransforms() {
+                return bm.getItemCameraTransforms();
+            }
+
+            @Override
+            public ItemOverrideList func_188617_f() {
+                return iol;
+            }
+        };
+    }*/
 
     private class IconRegistrar implements IIconRegistrar {
 
@@ -248,46 +272,6 @@ public final class RenderingRegistry {
                 }
             }
         });
-    }
-
-    private class NullModel implements IBakedModel {
-
-        @Override
-        public List<BakedQuad> getFaceQuads(EnumFacing p_177551_1_) {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public List<BakedQuad> getGeneralQuads() {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public boolean isAmbientOcclusion() {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public boolean isGui3d() {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public boolean isBuiltInRenderer() {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public TextureAtlasSprite getParticleTexture() {
-            return RenderHelper.getMissingTextureIcon();
-        }
-
-        @Override
-        @SuppressWarnings("deprecation")
-        public ItemCameraTransforms getItemCameraTransforms() {
-            throw new UnsupportedOperationException();
-        }
-
     }
 
 }

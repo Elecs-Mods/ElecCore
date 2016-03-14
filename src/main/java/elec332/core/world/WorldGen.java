@@ -4,9 +4,9 @@ import com.google.common.base.Predicate;
 import elec332.core.util.WorldGenInfo;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.block.state.pattern.BlockHelper;
+import net.minecraft.block.state.pattern.BlockMatcher;
 import net.minecraft.init.Blocks;
-import net.minecraft.util.BlockPos;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.feature.WorldGenMinable;
 import net.minecraftforge.common.config.Configuration;
@@ -81,9 +81,9 @@ public abstract class WorldGen implements IWorldGenerator {
 
 
     static {
-        STONE = BlockHelper.forBlock(Blocks.stone);
-        NETHERRACK = BlockHelper.forBlock(Blocks.netherrack);
-        ENDSTONE = BlockHelper.forBlock(Blocks.end_stone);
+        STONE = BlockMatcher.forBlock(Blocks.stone);
+        NETHERRACK = BlockMatcher.forBlock(Blocks.netherrack);
+        ENDSTONE = BlockMatcher.forBlock(Blocks.end_stone);
     }
 
 }

@@ -15,9 +15,14 @@ import elec332.core.server.ServerHelper;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.IExtendedEntityProperties;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.entity.EntityEvent;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.ICapabilityProvider;
+import net.minecraftforge.common.util.INBTSerializable;
+import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.LoaderState;
@@ -106,10 +111,7 @@ public final class AbilityHandler implements IElecCoreAbilitiesAPI {
 
         @SubscribeEvent
         public void updateEntity(LivingEvent.LivingUpdateEvent event){
-            IExtendedEntityProperties prop = event.entityLiving.getExtendedProperties(ElecCoreAbilitiesAPI.PROPERTIES_NAME);
-            if (prop != null){
-                ((EntityAbilityProperties) prop).updateEffects();
-            }
+            AbilityHelper.getHandler(event.entityLiving).updateEffects();
         }
 
     }
@@ -117,9 +119,11 @@ public final class AbilityHandler implements IElecCoreAbilitiesAPI {
     public static class EffectsSyncHandler{
 
         @SubscribeEvent
-        public void onEntityConstructing(EntityEvent.EntityConstructing event){
-            if (event.entity instanceof EntityLivingBase)
-                event.entity.registerExtendedProperties(ElecCoreAbilitiesAPI.PROPERTIES_NAME, new EntityAbilityProperties());
+        public void onEntityConstructing(AttachCapabilitiesEvent.Entity event){
+            if (event.getEntity() instanceof EntityLivingBase) {
+                //event.entity.registerExtendedProperties(ElecCoreAbilitiesAPI.PROPERTIES_NAME, new EntityAbilityProperties());
+                event.addCapability(new ResourceLocation("ElecCore", "AbilitiesAPI"), new AbilityCapabilityDispatcher());
+            }
         }
 
         @SubscribeEvent
@@ -148,6 +152,29 @@ public final class AbilityHandler implements IElecCoreAbilitiesAPI {
 
     }
 
+    private static class AbilityCapabilityDispatcher implements ICapabilityProvider, INBTSerializable<NBTTagCompound> {
+
+        @Override
+        public boolean hasCapability(Capability<?> capability, EnumFacing facing) {
+            return capability == ElecCoreAbilitiesAPI.ABILITIES_CAPABILITY;
+        }
+
+        @Override
+        public <T> T getCapability(Capability<T> capability, EnumFacing facing) {
+            return capability == ElecCoreAbilitiesAPI.ABILITIES_CAPABILITY ? (T) new EntityAbilityProperties() : null;
+        }
+
+        @Override
+        public NBTTagCompound serializeNBT() {
+            return null;
+        }
+
+        @Override
+        public void deserializeNBT(NBTTagCompound nbt) {
+
+        }
+    }
+
     private void initDefaultAbilities(){
         registerEffect(new Climb());
         registerEffect(new FireResistance());
@@ -159,4 +186,5 @@ public final class AbilityHandler implements IElecCoreAbilitiesAPI {
         registerEffect(new QuickSwimming());
         registerEffect(new WaterBreathing());
     }
+
 }

@@ -1,10 +1,11 @@
 package elec332.core.util;
 
-import net.minecraft.client.resources.model.ModelRotation;
+import elec332.core.world.WorldHelper;
+import net.minecraft.client.renderer.block.model.ModelRotation;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.util.BlockPos;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.MathHelper;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -125,7 +126,7 @@ public class DirectionHelper {
 
     @Deprecated
     public static void setFacing_YAW(World world, BlockPos blockPos, EnumFacing forgeDirection) {
-        world.markBlockForUpdate(blockPos);
+        WorldHelper.markBlockForUpdate(world, blockPos);
         //world.setBlockMetadataWithNotify(i, i1, i2, getNumberForDirection(forgeDirection), 2);
         throw new UnsupportedOperationException();
     }

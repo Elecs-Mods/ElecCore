@@ -1,22 +1,12 @@
 package elec332.core.modBaseUtils;
 
 import elec332.core.config.ConfigCore;
-import elec332.core.main.ElecCore;
 import elec332.core.util.LogHelper;
-import elec332.core.util.ModInfoHelper;
-import net.minecraft.launchwrapper.Launch;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.common.Loader;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLStateEvent;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.InputStreamReader;
-import java.net.URL;
-import java.util.ArrayList;
 
 /**
  * Created by Elec332.

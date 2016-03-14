@@ -1,7 +1,8 @@
 package elec332.core.client.model.map;
 
-import net.minecraft.client.resources.model.IBakedModel;
-import net.minecraft.client.resources.model.ModelRotation;
+import elec332.core.client.model.model.IQuadProvider;
+import net.minecraft.client.renderer.block.model.IBakedModel;
+import net.minecraft.client.renderer.block.model.ModelRotation;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -12,7 +13,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public interface IBakedModelRotationMap<M extends IBakedModel> {
 
     /**
-     * Returns whether ihe specified rotation is supported by this map.
+     * Returns whether the specified rotation is supported by this map.
      *
      * @param rotation The rotation.
      * @return Whether the rotation is supported.

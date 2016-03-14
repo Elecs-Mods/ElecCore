@@ -12,11 +12,12 @@ import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.BlockPos;
-import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldServer;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.ForgeChunkManager;
@@ -56,11 +57,15 @@ public class WorldHelper {
     }
 
     public static void markBlockForUpdate(World world, BlockPos pos){
-        world.markBlockForUpdate(pos);
+        if (!world.isRemote){
+            ((WorldServer)world).func_184164_w().markBlockForUpdate(pos);
+        }
+        //world.markBlockForUpdate(pos);
     }
 
     public static boolean chunkLoaded(World world, BlockPos pos){
-        return world.getChunkProvider().chunkExists(pos.getX() >> 4, pos.getZ() >> 4) && world.getChunkFromBlockCoords(pos).isLoaded();
+        Chunk chunk = world.getChunkProvider().func_186026_b(pos.getX() >> 4, pos.getZ() >> 4);
+        return chunk == null || chunk.isLoaded();
     }
 
     public static void markBlockForRenderUpdate(World world, BlockPos pos){
@@ -107,9 +112,11 @@ public class WorldHelper {
         world.scheduleUpdate(blockLoc, getBlockAt(world, blockLoc), 1);
     }
 
+    @SuppressWarnings("all")
     public static int getDimID(World world){
-        if (world == null)
+        if (world == null) {
             throw new IllegalArgumentException("Cannot fetch the Dimension-ID from a null world!");
+        }
         if (world.provider == null){
             for (Integer i : DimensionManager.getIDs()){
                 if (DimensionManager.getWorld(i) == world)
@@ -117,7 +124,7 @@ public class WorldHelper {
             }
             throw new RuntimeException("Unable to determine the dimension of world: "+ world);
         }
-        return world.provider.getDimensionId();
+        return world.provider.getDimension();
     }
 
     public static int getBlockMeta(IBlockAccess world, BlockPos blockLoc){
@@ -141,7 +148,7 @@ public class WorldHelper {
     }
 
     public static void spawnLightningAtLookVec(EntityPlayer player, Double range){
-        MovingObjectPosition position = PlayerHelper.getPosPlayerIsLookingAt(player, range);
+        RayTraceResult position = PlayerHelper.getPosPlayerIsLookingAt(player, range);
         spawnLightningAt(player.worldObj, position.getBlockPos());
     }
 
@@ -150,8 +157,8 @@ public class WorldHelper {
     }
 
     public static void spawnLightningAt(World world, double x, double y, double z){
-        world.playSoundEffect(x, y, z,"ambient.weather.thunder", 10000.0F, 0.8F);
-        world.playSoundEffect(x, y, z,"random.explode", 10000.0F, 0.8F);
-        world.spawnEntityInWorld(new EntityLightningBolt(world, x, y, z));
+        //world.pl(x, y, z,"ambient.weather.thunder", 10000.0F, 0.8F);
+        //world.playSoundEffect(x, y, z,"random.explode", 10000.0F, 0.8F);
+        world.spawnEntityInWorld(new EntityLightningBolt(world, x, y, z, false));
     }
 }

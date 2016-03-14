@@ -6,14 +6,14 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.particle.EntityFX;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.WorldRenderer;
+import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.culling.ICamera;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.Vec3;
+import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -31,9 +31,9 @@ public class RenderHelper {
     private static final ITessellator tessellator;
     private static final Minecraft mc;
     private static final RenderBlocks renderBlocks;
-    private static final Map<WorldRenderer, ITessellator> worldRenderTessellators;
+    private static final Map<VertexBuffer, ITessellator> worldRenderTessellators;
 
-    public static ITessellator forWorldRenderer(WorldRenderer renderer){
+    public static ITessellator forWorldRenderer(VertexBuffer renderer){
         ITessellator ret = worldRenderTessellators.get(renderer);
         if (ret == null){
             ret = new ElecTessellator(renderer);
@@ -54,44 +54,44 @@ public class RenderHelper {
         return tessellator;
     }
 
-    public static Vec3 getPlayerVec(float partialTicks){
+    public static Vec3d getPlayerVec(float partialTicks){
         EntityPlayer player = mc.thePlayer;
         double dX = player.lastTickPosX + (player.posX - player.lastTickPosX) * partialTicks;
         double dY = player.lastTickPosY + (player.posY - player.lastTickPosY) * partialTicks;
         double dZ = player.lastTickPosZ + (player.posZ - player.lastTickPosZ) * partialTicks;
-        return new Vec3(dX, dY, dZ);
+        return new Vec3d(dX, dY, dZ);
     }
 
     public static void translateToWorld(float partialTicks){
-        Vec3 vec = getPlayerVec(partialTicks);
+        Vec3d vec = getPlayerVec(partialTicks);
         GlStateManager.translate(-vec.xCoord, -vec.yCoord, -vec.zCoord);
     }
 
-    public static Vec3 getPlayerVec(){
+    public static Vec3d getPlayerVec(){
         EntityPlayer player = mc.thePlayer;
-        return new Vec3(player.posX, player.posY, player.posZ);
+        return new Vec3d(player.posX, player.posY, player.posZ);
     }
 
     public static ICamera getPlayerCamera(float partialTicks){
         ICamera camera = new Frustum();
-        Vec3 vec = getPlayerVec(partialTicks);
+        Vec3d vec = getPlayerVec(partialTicks);
         camera.setPosition(vec.xCoord, vec.yCoord, vec.zCoord);
         return camera;
     }
 
-    public static void drawLine(Vec3 from, Vec3 to, Vec3 player, float thickness){
+    public static void drawLine(Vec3d from, Vec3d to, Vec3d player, float thickness){
         drawQuad(from, from.addVector(thickness, thickness, thickness), to, to.addVector(thickness, thickness, thickness));
     }
 
-    public static void drawQuad(Vec3 v1, Vec3 v2, Vec3 v3, Vec3 v4){
+    public static void drawQuad(Vec3d v1, Vec3d v2, Vec3d v3, Vec3d v4){
         tessellator.addVertexWithUV(v1.xCoord, v1.yCoord, v1.zCoord, 0, 0);
         tessellator.addVertexWithUV(v2.xCoord, v2.yCoord, v2.zCoord, 1, 0);
         tessellator.addVertexWithUV(v3.xCoord, v3.yCoord, v3.zCoord, 1, 1);
         tessellator.addVertexWithUV(v4.xCoord, v4.yCoord, v4.zCoord, 0, 1);
     }
 
-    public static Vec3 multiply(Vec3 original, double m){
-        return new Vec3(original.xCoord * m, original.yCoord * m, original.zCoord * m);
+    public static Vec3d multiply(Vec3d original, double m){
+        return new Vec3d(original.xCoord * m, original.yCoord * m, original.zCoord * m);
     }
 
     public static void bindBlockTextures(){

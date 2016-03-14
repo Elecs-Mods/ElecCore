@@ -1,21 +1,19 @@
 package elec332.core.client.model.replace;
 
-import elec332.core.client.*;
 import elec332.core.client.model.INoJsonBlock;
 import elec332.core.client.model.RenderingRegistry;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.*;
+import net.minecraft.client.renderer.block.model.IBakedModel;
+import net.minecraft.client.renderer.block.model.WeightedBakedModel;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.IResourceManager;
-import net.minecraft.client.resources.model.IBakedModel;
-import net.minecraft.client.resources.model.SimpleBakedModel;
-import net.minecraft.client.resources.model.WeightedBakedModel;
 import net.minecraft.crash.CrashReport;
 import net.minecraft.crash.CrashReportCategory;
-import net.minecraft.util.BlockPos;
-import net.minecraft.util.MathHelper;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.ReportedException;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.WorldType;
 import net.minecraftforge.fml.relauncher.Side;
@@ -25,7 +23,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
  * Created by Elec332 on 15-11-2015.
  */
 @SideOnly(Side.CLIENT)
-public class ElecBlockRendererDispatcher extends BlockRendererDispatcher {
+public class ElecBlockRendererDispatcher{}/* extends BlockRendererDispatcher {
 
     public ElecBlockRendererDispatcher(BlockRendererDispatcher blockRendererDispatcher) {
         super(blockRendererDispatcher.blockModelShapes, blockRendererDispatcher.gameSettings);
@@ -34,7 +32,8 @@ public class ElecBlockRendererDispatcher extends BlockRendererDispatcher {
 
     private final BlockRendererDispatcher blockRendererDispatcher;
 
-    public boolean renderBlock(IBlockState state, BlockPos pos, IBlockAccess world, WorldRenderer renderer) {
+    @Override
+    public boolean renderBlock(IBlockState state, BlockPos pos, IBlockAccess world, VertexBuffer renderer) {
         try {
             int i = state.getBlock().getRenderType();
             if (i == RenderingRegistry.SPECIAL_BLOCK_RENDERER_ID) {
@@ -83,7 +82,7 @@ public class ElecBlockRendererDispatcher extends BlockRendererDispatcher {
         return ibakedmodel;
     }
 
-    /* Link-through */
+    /* Link-through *//*
 
     @Override
     public BlockModelShapes getBlockModelShapes() {
@@ -131,3 +130,4 @@ public class ElecBlockRendererDispatcher extends BlockRendererDispatcher {
     }
 
 }
+        */

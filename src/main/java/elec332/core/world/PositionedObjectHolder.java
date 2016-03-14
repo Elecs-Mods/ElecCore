@@ -1,7 +1,7 @@
 package elec332.core.world;
 
 import com.google.common.collect.Maps;
-import net.minecraft.util.BlockPos;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.LongHashMap;
 import net.minecraft.world.ChunkCoordIntPair;
 

@@ -1,36 +1,23 @@
 package elec332.core.client.model.model;
 
 import com.google.common.collect.ImmutableList;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.client.model.ISmartBlockModel;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-
-import java.util.List;
 
 /**
  * Created by Elec332 on 15-11-2015.
  */
 @SideOnly(Side.CLIENT)
 @SuppressWarnings({"deprecation", "unused"})
-public abstract class AbstractBlockModel implements IBlockModel {
+public abstract class AbstractBlockModel implements IBlockModelWithoutQuads {
 
     protected static final ImmutableList<BakedQuad> EMPTY_LIST;
 
-    @Override
-    public ISmartBlockModel handleBlockState(IBlockState state) {
-        return this;
-    }
-
-    @Override
-    public List<BakedQuad> getGeneralQuads() {
-        return EMPTY_LIST;
-    }
 
     @Override
     public boolean isAmbientOcclusion() {
@@ -43,7 +30,7 @@ public abstract class AbstractBlockModel implements IBlockModel {
     }
 
     @Override
-    public boolean isBuiltInRenderer() {
+    public boolean isTESRItem() {
         return false;
     }
 

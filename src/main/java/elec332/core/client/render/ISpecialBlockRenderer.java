@@ -1,8 +1,8 @@
 package elec332.core.client.render;
 
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.renderer.WorldRenderer;
-import net.minecraft.util.BlockPos;
+import net.minecraft.client.renderer.VertexBuffer;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -13,6 +13,6 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public interface ISpecialBlockRenderer {
 
-    public boolean renderBlock(IBlockAccess iba, IBlockState state, BlockPos blockPosIn, WorldRenderer renderer);
+    public boolean renderBlock(IBlockAccess iba, IBlockState state, BlockPos blockPosIn, VertexBuffer renderer);
 
 }

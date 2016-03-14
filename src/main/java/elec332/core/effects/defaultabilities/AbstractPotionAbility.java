@@ -3,6 +3,7 @@ package elec332.core.effects.defaultabilities;
 import elec332.core.effects.api.ability.Ability;
 import elec332.core.effects.api.ability.WrappedAbility;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 
 /**
@@ -14,16 +15,16 @@ public abstract class AbstractPotionAbility extends Ability {
         super(name);
     }
 
-    public abstract int getPotionID();
+    public abstract Potion getPotion();
 
     @Override
     public void updateEffectOnEntity(EntityLivingBase entity, WrappedAbility activeEffect) {
-        entity.addPotionEffect(new PotionEffect(getPotionID(), 5, activeEffect.getStrength()));
+        entity.addPotionEffect(new PotionEffect(getPotion(), 5, activeEffect.getStrength()));
     }
 
     @Override
     public void onEffectRemovedFromEntity(EntityLivingBase entity, WrappedAbility activeEffect) {
-        entity.removePotionEffect(getPotionID());
+        entity.func_184589_d(getPotion());//removePotionEffect(getPotionID());
     }
 
 }

@@ -1,7 +1,7 @@
 package elec332.core.client;
 
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.WorldRenderer;
+import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -21,12 +21,12 @@ public class ElecTessellator implements ITessellator {
         this.tessellator = tessellator;
     }
 
-    public ElecTessellator(WorldRenderer worldRenderer){
+    public ElecTessellator(VertexBuffer worldRenderer){
         this.worldRenderer = worldRenderer;
     }
 
     private Tessellator tessellator;
-    private final WorldRenderer worldRenderer;
+    private final VertexBuffer worldRenderer;
     private int brightness1, brightness2;
     private int color1, color2, color3, color4;
 
@@ -72,8 +72,8 @@ public class ElecTessellator implements ITessellator {
     public void addVertexWithUV(double x, double y, double z, double u, double v){
         worldRenderer.pos(x, y, z);
         drawColor();
-        worldRenderer.tex(u, v);
-        worldRenderer.lightmap(brightness1, brightness2);
+        worldRenderer.func_187315_a(u, v); //tex
+        worldRenderer.func_187314_a(brightness1, brightness2); //lightmap
         worldRenderer.endVertex();
     }
 

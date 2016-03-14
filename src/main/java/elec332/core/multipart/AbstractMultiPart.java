@@ -1,14 +1,9 @@
 package elec332.core.multipart;
 
-import elec332.core.main.ElecCore;
-import elec332.core.world.WorldHelper;
-import mcmultipart.multipart.Multipart;
-import net.minecraft.tileentity.TileEntity;
-
 /**
  * Created by Elec332 on 9-2-2016.
  */
-public abstract class AbstractMultiPart extends Multipart {
+public abstract class AbstractMultiPart{}/* extends Multipart {
 
     @Override
     public void onLoaded() {
@@ -45,4 +40,4 @@ public abstract class AbstractMultiPart extends Multipart {
         return WorldHelper.getTileAt(getWorld(), getPos());
     }
 
-}
+}*/

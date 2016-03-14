@@ -2,7 +2,7 @@ package elec332.core.multiblock;
 
 import com.google.common.collect.ImmutableList;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.BlockPos;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
 

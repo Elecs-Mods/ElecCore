@@ -3,7 +3,7 @@ package elec332.core.util;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.IChatComponent;
+import net.minecraft.util.text.ITextComponent;
 
 import java.util.List;
 
@@ -127,7 +127,7 @@ public class DoubleInventory<I1 extends IInventory, I2 extends IInventory> imple
      */
 
     @Override
-    public IChatComponent getDisplayName() {
+    public ITextComponent getDisplayName() {
         return null; //TODO
     }
 

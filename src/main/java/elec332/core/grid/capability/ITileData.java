@@ -1,7 +1,7 @@
 package elec332.core.grid.capability;
 
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.BlockPos;
+import net.minecraft.util.math.BlockPos;
 
 /**
  * Created by Elec332 on 6-3-2016.

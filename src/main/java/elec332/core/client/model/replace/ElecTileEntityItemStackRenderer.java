@@ -2,8 +2,8 @@ package elec332.core.client.model.replace;
 
 import elec332.core.client.model.INoJsonBlock;
 import elec332.core.client.model.INoJsonItem;
+import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.tileentity.TileEntityItemStackRenderer;
-import net.minecraft.client.resources.model.IBakedModel;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
@@ -28,10 +28,10 @@ public class ElecTileEntityItemStackRenderer extends TileEntityItemStackRenderer
         if (item instanceof INoJsonItem){
             model = ((INoJsonItem) item).getItemModel(itemStackIn, null, null);
         } else if (item instanceof ItemBlock && ((ItemBlock) item).getBlock() instanceof INoJsonBlock){
-            model = ((INoJsonBlock) ((ItemBlock) item).getBlock()).getBlockModel(itemStackIn.getItem(), itemStackIn.getItemDamage());
+            model = ((INoJsonBlock) ((ItemBlock) item).getBlock()).getItemModel(itemStackIn, null, null);
         }
-        if (model != null && model.isBuiltInRenderer()){
-            model.getGeneralQuads(); //See TESRItemModel
+        if (model != null && model.func_188618_c()){
+            model.func_188616_a(null, null, 0L); //See TESRItemModel
             return;
         }
 

@@ -1,7 +1,7 @@
 package elec332.core.effects.api.ability;
 
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.util.StatCollector;
+import elec332.core.util.StatCollector;
 
 import java.awt.*;
 
@@ -62,7 +62,7 @@ public class Ability {
     }
 
     public String getLocalisedName(){
-        return StatCollector.translateToLocal("ability."+name);
+        return StatCollector.translateToLocal("ability." + name);
     }
 
     public int getMaxLevel() {

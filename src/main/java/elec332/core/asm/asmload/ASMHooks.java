@@ -15,7 +15,7 @@ public final class ASMHooks {
     public static final class Client {
 
         public static BlockRendererDispatcher newBlockRendererDispatcher(){
-            return new ElecBlockRendererDispatcher(Minecraft.getMinecraft().blockRenderDispatcher);
+            return null;//new ElecBlockRendererDispatcher(Minecraft.getMinecraft().blockRenderDispatcher);
         }
 
     }

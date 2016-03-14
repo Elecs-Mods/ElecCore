@@ -4,7 +4,7 @@ import com.google.common.collect.Lists;
 import net.minecraft.block.Block;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyEnum;
-import net.minecraft.block.state.BlockState;
+import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.EnumFacing;
 
@@ -18,8 +18,8 @@ public interface BlockStateHelper<M extends Comparable<M>> {
         private final PropertyEnum<EnumFacing> TYPE = PropertyEnum.create("facing", EnumFacing.class);
 
         @Override
-        public BlockState createMetaBlockState(Block block, IProperty... otherProperties) {
-            return new BlockState(block, Lists.asList(TYPE, otherProperties).toArray(new IProperty[1]));
+        public BlockStateContainer createMetaBlockState(Block block, IProperty... otherProperties) {
+            return new BlockStateContainer(block, Lists.asList(TYPE, otherProperties).toArray(new IProperty[1]));
         }
 
         @Override
@@ -44,7 +44,7 @@ public interface BlockStateHelper<M extends Comparable<M>> {
 
     };
 
-    public BlockState createMetaBlockState(Block block, IProperty... otherProperties);
+    public BlockStateContainer createMetaBlockState(Block block, IProperty... otherProperties);
 
     public IBlockState setDefaultMetaState(Block block);
 

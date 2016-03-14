@@ -1,6 +1,6 @@
 package elec332.core.multiblock;
 
-import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.math.AxisAlignedBB;
 
 /**
  * Created by Elec332 on 4-3-2016.

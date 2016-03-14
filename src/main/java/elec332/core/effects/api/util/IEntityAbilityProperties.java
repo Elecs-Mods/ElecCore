@@ -10,7 +10,7 @@ import net.minecraftforge.common.IExtendedEntityProperties;
 /**
  * Created by Elec332 on 27-9-2015.
  */
-public interface IEntityAbilityProperties extends IExtendedEntityProperties {
+public interface IEntityAbilityProperties {
 
     public void updateEffects();
 
@@ -26,13 +26,10 @@ public interface IEntityAbilityProperties extends IExtendedEntityProperties {
 
     public void readFromPacket(IAbilityPacket packet);
 
-    @Override
     public void saveNBTData(NBTTagCompound compound);
 
-    @Override
     public void loadNBTData(NBTTagCompound compound);
 
-    @Override
     public void init(Entity entity, World world);
 
 }

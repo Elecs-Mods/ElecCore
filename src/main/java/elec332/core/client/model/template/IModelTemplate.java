@@ -11,7 +11,7 @@ import java.util.List;
  * Created by Elec332 on 5-12-2015.
  */
 @SideOnly(Side.CLIENT)
-public interface IModelTemplate {
+public interface IModelTemplate extends IQuadProviderTemplate {
 
     public List<IQuadTemplate> getGeneralQuads();
 

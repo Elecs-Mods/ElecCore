@@ -4,18 +4,12 @@ import elec332.core.registry.IWorldRegistry;
 import elec332.core.world.PositionedObjectHolder;
 import elec332.core.world.SurroundingChecker;
 import elec332.core.world.WorldHelper;
-import mcmultipart.capabilities.MultipartCapabilityHelper;
-import mcmultipart.event.PartEvent;
-import mcmultipart.multipart.IMultipart;
-import mcmultipart.multipart.IMultipartContainer;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.BlockPos;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.event.world.ChunkEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
@@ -39,7 +33,7 @@ public abstract class AbstractWorldGridHolder<T extends ITileData, O> implements
     private final Queue<T> pending;
     private final PositionedObjectHolder<T> registeredTiles;
     private final SurroundingChecker<O> surroundingChecker;
-
+/*
     @SubscribeEvent
     public final void partAdd(PartEvent.Add event){
         if (!world.isRemote) {
@@ -84,7 +78,7 @@ public abstract class AbstractWorldGridHolder<T extends ITileData, O> implements
             }
         }
     }
-
+*/
     @SubscribeEvent
     public final void chunkUnload(ChunkEvent.Unload event){
         World world = event.world;
@@ -157,14 +151,14 @@ public abstract class AbstractWorldGridHolder<T extends ITileData, O> implements
 
     protected abstract void add(T t);
 
-    /**
+    /*
      * Called when a MultiPart gets added to an already registered tile.
      *
      * @param t The tile-reference object
      * @param multiPart The MultiPart that was added, could be an insignificant one
-     */
-    protected abstract void onExtraMultiPartAdded(T t, IMultipart multiPart);
 
+    protected abstract void onExtraMultiPartAdded(T t, IMultipart multiPart);
+    */
     protected void onChunkLoad(Collection<TileEntity> loadingTiles){
         for (TileEntity tile : loadingTiles){
             addTile(tile);
@@ -173,14 +167,14 @@ public abstract class AbstractWorldGridHolder<T extends ITileData, O> implements
 
     protected abstract void remove(T t);
 
-    /**
+    /*
      * Called when a MultiPart gets removed from an tile that is still valid.
      *
      * @param t The tile-reference object
      * @param multiPart The MultiPart that was removed, could be an insignificant one
-     */
-    protected abstract void onMultiPartRemoved(T t, IMultipart multiPart);
 
+    protected abstract void onMultiPartRemoved(T t, IMultipart multiPart);
+    */
     protected abstract void onChunkUnload(Collection<T> unloadingObjects);
 
     protected abstract void onTick();
@@ -218,7 +212,7 @@ public abstract class AbstractWorldGridHolder<T extends ITileData, O> implements
     public final void addPendingAdd(T t){
         pending.add(t);
     }
-
+/*
     public static ICapabilityProvider forSlottedProvider(final IMultipartContainer provider){
         return new ICapabilityProvider() {
             @Override
@@ -232,5 +226,5 @@ public abstract class AbstractWorldGridHolder<T extends ITileData, O> implements
             }
         };
     }
-
+*/
 }

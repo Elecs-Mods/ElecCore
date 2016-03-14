@@ -36,7 +36,7 @@ public class EventHandler {
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public void afterAllModelsBaked(ModelBakeEvent event){
         //RenderingRegistry.instance().setItemBlockModels(event);
-        RenderingRegistry.instance().removeJsonErrors(event.modelLoader);
+        RenderingRegistry.instance().removeJsonErrors(event.getModelLoader());
     }
 
 }

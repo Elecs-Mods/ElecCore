@@ -5,7 +5,7 @@ package elec332.core.world.schematic;
  * You can find it here: https://github.com/Lumaceon/ClockworkPhase2/blob/master/src/main/java/lumaceon/mods/clockworkphase2/util/Area.java
  */
 
-import net.minecraft.util.BlockPos;
+import net.minecraft.util.math.BlockPos;
 
 public class Area {
 
