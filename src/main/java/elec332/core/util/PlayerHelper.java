@@ -17,7 +17,7 @@ import java.util.UUID;
 public class PlayerHelper {
 
     public static double getBlockReachDistance(EntityPlayerMP player){
-        return player.theItemInWorldManager.getBlockReachDistance();
+        return player.interactionManager.getBlockReachDistance();
     }
 
     public static Vec3d getCorrectedHeadVec(EntityPlayer player) {

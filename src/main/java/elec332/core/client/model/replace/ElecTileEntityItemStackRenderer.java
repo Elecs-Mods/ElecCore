@@ -30,8 +30,8 @@ public class ElecTileEntityItemStackRenderer extends TileEntityItemStackRenderer
         } else if (item instanceof ItemBlock && ((ItemBlock) item).getBlock() instanceof INoJsonBlock){
             model = ((INoJsonBlock) ((ItemBlock) item).getBlock()).getItemModel(itemStackIn, null, null);
         }
-        if (model != null && model.func_188618_c()){
-            model.func_188616_a(null, null, 0L); //See TESRItemModel
+        if (model != null && model.isBuiltInRenderer()){
+            model.getQuads(null, null, 0L); //See TESRItemModel
             return;
         }
 

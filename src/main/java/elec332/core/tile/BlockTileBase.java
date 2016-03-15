@@ -35,7 +35,7 @@ public class BlockTileBase extends Block implements IWrenchable, ITileEntityProv
         super(mat);
         setResistance(4.5F);
         setHardness(2.0F);
-        setStepSound(SoundType.field_185851_d); //soundTypeStone
+        setSoundType(SoundType.STONE); //soundTypeStone
         this.setUnlocalizedName(modID + "." + blockName);
         this.tileClass = tileClass;
         this.blockName = blockName;

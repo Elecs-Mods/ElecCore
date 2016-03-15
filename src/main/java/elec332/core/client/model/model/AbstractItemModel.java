@@ -25,8 +25,8 @@ public abstract class AbstractItemModel implements IItemModel {
     protected static final ImmutableList<BakedQuad> EMPTY_LIST;
 
     @Override
-    public List<BakedQuad> func_188616_a(IBlockState p_188616_1_, EnumFacing p_188616_2_, long p_188616_3_) {
-        return p_188616_2_ == null ? getGeneralQuads() : EMPTY_LIST;
+    public List<BakedQuad> getQuads(IBlockState state, EnumFacing side, long rand) {
+        return side == null ? getGeneralQuads() : EMPTY_LIST;
     }
 
     public abstract List<BakedQuad> getGeneralQuads();
@@ -42,17 +42,12 @@ public abstract class AbstractItemModel implements IItemModel {
     }
 
     @Override
-    public final boolean func_188618_c() {
-        return isBuiltInRenderer();
-    }
-
-    //@Override
     public final boolean isBuiltInRenderer() {
         return isItemTESR();
     }
 
     @Override
-    public ItemOverrideList func_188617_f() {
+    public ItemOverrideList getOverrides() {
         return null;
     }
 

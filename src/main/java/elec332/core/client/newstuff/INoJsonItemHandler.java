@@ -95,7 +95,7 @@ public class INoJsonItemHandler implements IItemModelHandler {
         private final ItemOverrideList iol;
 
         @Override
-        public List<BakedQuad> func_188616_a(IBlockState p_188616_1_, EnumFacing p_188616_2_, long p_188616_3_) {
+        public List<BakedQuad> getQuads(IBlockState p_188616_1_, EnumFacing p_188616_2_, long p_188616_3_) {
             throw new UnsupportedOperationException();
         }
 
@@ -110,11 +110,6 @@ public class INoJsonItemHandler implements IItemModelHandler {
         }
 
         @Override
-        public boolean func_188618_c() {
-            return isBuiltInRenderer();
-        }
-
-        //@Override
         public boolean isBuiltInRenderer() {
             throw new UnsupportedOperationException();
         }
@@ -131,7 +126,7 @@ public class INoJsonItemHandler implements IItemModelHandler {
         }
 
         @Override
-        public ItemOverrideList func_188617_f() {
+        public ItemOverrideList getOverrides() {
             return iol;
         }
 

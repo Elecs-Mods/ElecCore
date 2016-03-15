@@ -80,8 +80,8 @@ public class ElecModelBakery {
     public IBakedModel forQuadProvider(IModelTemplate template, final IQuadProvider quadProvider){
         return new DefaultBakedModel(template){
             @Override
-            public List<BakedQuad> func_188616_a(IBlockState p_188616_1_, EnumFacing p_188616_2_, long p_188616_3_) {
-                return quadProvider.getBakedQuads(p_188616_1_, p_188616_2_, p_188616_3_);
+            public List<BakedQuad> getQuads(IBlockState state, EnumFacing facing, long rand) {
+                return quadProvider.getBakedQuads(state, facing, rand);
             }
         };
     }
@@ -148,8 +148,8 @@ public class ElecModelBakery {
         }
 
         @Override
-        public List<BakedQuad> func_188616_a(IBlockState p_188616_1_, EnumFacing p_188616_2_, long p_188616_3_) {
-            return p_188616_2_ == null ? generalQuads : sidedQuads.getForSide(p_188616_2_);
+        public List<BakedQuad> getQuads(IBlockState state, EnumFacing facing, long rand) {
+            return facing == null ? generalQuads : sidedQuads.getForSide(facing);
         }
 
         @Override
@@ -163,11 +163,6 @@ public class ElecModelBakery {
         }
 
         @Override
-        public boolean func_188618_c() {
-            return isBuiltInRenderer();
-        }
-
-        //@Override
         public boolean isBuiltInRenderer() {
             return this.builtIn;
         }
@@ -183,7 +178,7 @@ public class ElecModelBakery {
         }
 
         @Override
-        public ItemOverrideList func_188617_f() {
+        public ItemOverrideList getOverrides() {
             return null;
         }
 

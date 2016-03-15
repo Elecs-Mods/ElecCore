@@ -58,13 +58,13 @@ public class WorldHelper {
 
     public static void markBlockForUpdate(World world, BlockPos pos){
         if (!world.isRemote){
-            ((WorldServer)world).func_184164_w().markBlockForUpdate(pos);
+            ((WorldServer)world).getPlayerChunkManager().markBlockForUpdate(pos);
         }
         //world.markBlockForUpdate(pos);
     }
 
     public static boolean chunkLoaded(World world, BlockPos pos){
-        Chunk chunk = world.getChunkProvider().func_186026_b(pos.getX() >> 4, pos.getZ() >> 4);
+        Chunk chunk = world.getChunkProvider().getLoadedChunk(pos.getX() >> 4, pos.getZ() >> 4);
         return chunk == null || chunk.isLoaded();
     }
 

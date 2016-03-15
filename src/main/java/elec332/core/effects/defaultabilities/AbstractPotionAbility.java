@@ -24,7 +24,7 @@ public abstract class AbstractPotionAbility extends Ability {
 
     @Override
     public void onEffectRemovedFromEntity(EntityLivingBase entity, WrappedAbility activeEffect) {
-        entity.func_184589_d(getPotion());//removePotionEffect(getPotionID());
+        entity.removePotionEffect(getPotion());
     }
 
 }

@@ -128,11 +128,11 @@ public final class RenderingRegistry {
     }*/
 
     @SuppressWarnings("all")
-    protected void removeJsonErrors(ModelBakery modelLoader){
+    protected void removeJsonErrors(ModelLoader modelLoader){
         ElecCore.logger.info("Cleaning up internal Json stuff...");
         try {
-            Set<ModelResourceLocation> set = Sets.newHashSet();//(Set<ModelResourceLocation>) ReflectionHelper.makeFinalFieldModifiable(ModelLoader.class.getDeclaredField("missingVariants")).get(modelLoader);
-            Map<ModelResourceLocation, Exception> exceptionMap = Maps.newHashMap();//(Map<ModelResourceLocation, Exception>) ReflectionHelper.makeFinalFieldModifiable(ModelLoader.class.getDeclaredField("loadingExceptions")).get(modelLoader);
+            Set<ModelResourceLocation> set = (Set<ModelResourceLocation>) ReflectionHelper.makeFinalFieldModifiable(ModelLoader.class.getDeclaredField("missingVariants")).get(modelLoader);
+            Map<ModelResourceLocation, Exception> exceptionMap = (Map<ModelResourceLocation, Exception>) ReflectionHelper.makeFinalFieldModifiable(ModelLoader.class.getDeclaredField("loadingExceptions")).get(modelLoader);
             if (ElecCore.removeJSONErrors){
                 exceptionMap.clear();
             }

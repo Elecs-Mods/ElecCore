@@ -136,7 +136,7 @@ public class RenderHelper {
         mc = Minecraft.getMinecraft();
         renderBlocks = new RenderBlocks();
         worldRenderTessellators = Maps.newHashMap();
-        worldRenderTessellators.put(mcTessellator.getWorldRenderer(), tessellator);
+        worldRenderTessellators.put(mcTessellator.getBuffer(), tessellator);
     }
 
 }

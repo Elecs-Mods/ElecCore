@@ -17,7 +17,7 @@ public class ElecTessellator implements ITessellator {
     }
 
     public ElecTessellator(Tessellator tessellator){
-        this(tessellator.getWorldRenderer());
+        this(tessellator.getBuffer());
         this.tessellator = tessellator;
     }
 
@@ -72,8 +72,8 @@ public class ElecTessellator implements ITessellator {
     public void addVertexWithUV(double x, double y, double z, double u, double v){
         worldRenderer.pos(x, y, z);
         drawColor();
-        worldRenderer.func_187315_a(u, v); //tex
-        worldRenderer.func_187314_a(brightness1, brightness2); //lightmap
+        worldRenderer.tex(u, v); //tex
+        worldRenderer.lightmap(brightness1, brightness2); //lightmap
         worldRenderer.endVertex();
     }
 
