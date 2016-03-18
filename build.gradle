@@ -66,10 +66,10 @@ minecraft {
 }
 
 dependencies {
-	compile "mcp.mobius.waila:Waila:${config.WAILA_version}"//_${config.minecraft_version}"
+	//compile "mcp.mobius.waila:Waila:${config.WAILA_version}"//_${config.minecraft_version}"
 	//compile "codechicken:NotEnoughItems:${config.NEI_version}:dev"//${config.minecraft_version}-${config.NEI_version}:dev"
-	deobfCompile "mezz.jei:jei_${config.minecraft_version}:${config.jei_version}"
-	deobfCompile "MCMultiPart:MCMultiPart-experimental:${config.mcmp_version}:universal"
+	//deobfCompile "mezz.jei:jei_${config.minecraft_version}:${config.jei_version}"
+	//deobfCompile "MCMultiPart:MCMultiPart-experimental:${config.mcmp_version}:universal"
 }
 
 processResources

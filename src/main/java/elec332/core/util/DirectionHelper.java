@@ -53,11 +53,11 @@ public class DirectionHelper {
     public static ModelRotation getRotationFromFacing(EnumFacing facing){
         switch (facing){
             case EAST:
-                return ModelRotation.X0_Y90;
+                return ModelRotation.X0_Y270;
             case SOUTH:
                 return ModelRotation.X0_Y180;
             case WEST:
-                return ModelRotation.X0_Y270;
+                return ModelRotation.X0_Y90;
             default:
                 return ModelRotation.X0_Y0;
         }

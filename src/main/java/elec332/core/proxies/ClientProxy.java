@@ -53,11 +53,11 @@ public class ClientProxy extends CommonProxy {
 
 		@Override
 		public boolean onRegister(IReloadableResourceManager resourceManager, final IResourceManagerReloadListener listener) {
-			if (listener.getClass() == RenderItem.class){
-				resourceManager.registerReloadListener(new IResourceManagerReloadListener() {
+			/*if (listener.getClass() == RenderItem.class){
+				/*resourceManager.registerReloadListener(new IResourceManagerReloadListener() {
 					@Override
 					public void onResourceManagerReload(IResourceManager resourceManager) {
-						ElecModelHandler.registerItemModels((RenderItem) listener);
+						//ElecModelHandler.registerItemModels((RenderItem) listener);
 						listener.onResourceManagerReload(resourceManager);
 					}
 				});
@@ -69,11 +69,12 @@ public class ClientProxy extends CommonProxy {
 					return false;
 				}
 				return true;
-			}*/ else if (listener.getClass() == ModelManager.class){
+			} else*/ if (listener.getClass() == ModelManager.class){
 				resourceManager.registerReloadListener(new IResourceManagerReloadListener() {
 					@Override
 					public void onResourceManagerReload(IResourceManager resourceManager) {
 						ElecModelHandler.registerBlockModels((ModelManager)listener);
+						ElecModelHandler.registerItemModels(minecraft.renderItem);
 						listener.onResourceManagerReload(resourceManager);
 					}
 				});

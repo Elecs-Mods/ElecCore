@@ -11,12 +11,15 @@ import gnu.trove.map.hash.TIntObjectHashMap;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.ItemMeshDefinition;
 import net.minecraft.client.renderer.RenderItem;
 import net.minecraft.client.renderer.block.model.IBakedModel;
+import net.minecraft.client.renderer.block.model.ModelBakery;
 import net.minecraft.client.renderer.block.model.ModelManager;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.renderer.block.statemap.StateMapperBase;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.registry.IRegistry;
 import net.minecraftforge.client.ItemModelMesherForge;
 import net.minecraftforge.client.model.ModelLoader;
@@ -67,9 +70,9 @@ public class ElecModelHandler implements IASMDataProcessor {
     @SuppressWarnings("unchecked")
     public static void registerItemModels(RenderItem renderItem){
         System.out.println("Prehandling Items");
-        IdentityHashMap<Item, TIntObjectHashMap<IBakedModel>> models = null;
+        //IdentityHashMap<Item, TIntObjectHashMap<IBakedModel>> models = null;
         try {
-            models = (IdentityHashMap<Item, TIntObjectHashMap<IBakedModel>>) ReflectionHelper.makeFieldAccessible(ItemModelMesherForge.class.getDeclaredField("models")).get(renderItem.getItemModelMesher());
+            //models = (IdentityHashMap<Item, TIntObjectHashMap<IBakedModel>>) ReflectionHelper.makeFieldAccessible(ItemModelMesherForge.class.getDeclaredField("models")).get(renderItem.getItemModelMesher());
         } catch (Exception e){
             e.printStackTrace();
         }
@@ -77,14 +80,21 @@ public class ElecModelHandler implements IASMDataProcessor {
             throw new RuntimeException();
         }
         for (Item item : GameData.getItemRegistry().typeSafeIterable()){
+            handlerLoop:
             for (IItemModelHandler handler : itemModelHandlers){
                 if (handler.handleItem(item)){
-                    models.put(item, new InternalItemMap<IBakedModel>());
+                    //models.put(item, new InternalItemMap<IBakedModel>());
                     String s = handler.getIdentifier(item);
-                    ModelResourceLocation mr = new ModelResourceLocation(item.delegate.getResourceName().toString(), s);
-                    renderItem.getItemModelMesher().register(item, 0, mr);
+                    final ModelResourceLocation mr = new ModelResourceLocation(item.delegate.getResourceName().toString(), s);
+                    renderItem.getItemModelMesher().register(item, new ItemMeshDefinition() {
+                        @Override
+                        public ModelResourceLocation getModelLocation(ItemStack stack) {
+                            return mr;
+                        }
+                    });
                     itemResourceLocations.put(item, mr);
-                    break;
+                    System.out.println("handled: "+item.delegate.getResourceName());
+                    break handlerLoop;
                 }
             }
         }
@@ -113,7 +123,7 @@ public class ElecModelHandler implements IASMDataProcessor {
         System.out.println("handling models");
         Set<ModelResourceLocation> ret = Sets.newHashSet();
         List<ModelResourceLocation> o = Lists.newArrayList();
-        IBakedModel missingModel = registry.getObject(new ModelResourceLocation("builtin/missing", "missing"));
+        IBakedModel missingModel = registry.getObject(ModelBakery.MODEL_MISSING);
         for (Map.Entry<IBlockState, ModelResourceLocation> entry : blockResourceLocations.entrySet()){
             ModelResourceLocation mrl = entry.getValue();
             for (IBlockModelHandler handler : blockModelHandlers){
