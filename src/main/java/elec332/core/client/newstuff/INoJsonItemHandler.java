@@ -12,6 +12,8 @@ import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.List;
 
@@ -19,6 +21,7 @@ import java.util.List;
  * Created by Elec332 on 11-3-2016.
  */
 @ModelHandler
+@SideOnly(Side.CLIENT)
 public class INoJsonItemHandler implements IItemModelHandler {
 
     public INoJsonItemHandler(){
