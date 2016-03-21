@@ -109,7 +109,7 @@ public class INoJsonItemHandler implements IItemModelHandler {
 
         @Override
         public boolean isGui3d() {
-            throw new UnsupportedOperationException();
+            return false;//throw new UnsupportedOperationException();
         }
 
         @Override

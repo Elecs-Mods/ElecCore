@@ -9,7 +9,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
  * Created by Elec332 on 21-11-2015.
  */
 @SideOnly(Side.CLIENT)
-public class ReplaceJsonEvent extends Event {
+public final class ReplaceJsonEvent extends Event {
 
     public ReplaceJsonEvent(ElecQuadBakery quadBakery, ElecModelBakery modelBakery, ElecTemplateBakery templateBakery){
         this.quadBakery = quadBakery;
