@@ -42,8 +42,8 @@ public abstract class AbstractWorldGridHolder<T extends ITileData, O> implements
 
     @SubscribeEvent
     public final void partAdd(PartEvent.Add event){
-        if (!world.isRemote) {
-            IMultipart multiPart = event.part;
+        IMultipart multiPart = event.part;
+        if (multiPart.getWorld().isRemote) {
             if (WorldHelper.getDimID(multiPart.getWorld()) != WorldHelper.getDimID(world)) {
                 return;
             }
@@ -66,8 +66,8 @@ public abstract class AbstractWorldGridHolder<T extends ITileData, O> implements
 
     @SubscribeEvent
     public final void partRemove(PartEvent.Remove event){
-        if (!world.isRemote) {
-            IMultipart multiPart = event.part;
+        IMultipart multiPart = event.part;
+        if (multiPart.getWorld().isRemote) {
             if (WorldHelper.getDimID(multiPart.getWorld()) != WorldHelper.getDimID(world)) {
                 return;
             }
@@ -108,7 +108,7 @@ public abstract class AbstractWorldGridHolder<T extends ITileData, O> implements
     }
 
     public final void addTile(TileEntity tile){
-        if (!world.isRemote) {
+        if (!tile.getWorld().isRemote) {
             BlockPos tilePos = tile.getPos();
             if (WorldHelper.getDimID(world) != WorldHelper.getDimID(this.world)) {
                 throw new IllegalArgumentException();
@@ -131,7 +131,7 @@ public abstract class AbstractWorldGridHolder<T extends ITileData, O> implements
     }
 
     public final void removeTile(TileEntity tile){
-        if (!world.isRemote) {
+        if (!tile.getWorld().isRemote) {
             removeTile_(getPowerTile(tile.getPos()));
         }
     }
