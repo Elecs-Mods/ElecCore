@@ -311,7 +311,7 @@ public class ServerHelper {
         @SubscribeEvent
         public void onWorldSave(WorldEvent.Save event){
             if (isServer(event.world) && WorldHelper.getDimID(event.world) == 0 && event.world.getClass() == WorldServer.class){
-                System.out.println("saving: "+event.world);
+                //System.out.println("saving: "+event.world);
                 File folder = new File(event.world.getSaveHandler().getWorldDirectory(), "elec332/");
 
                 toFile(ServerHelper.this.generalData.serializeNBT(), new File(folder, "generalData.dat"));
