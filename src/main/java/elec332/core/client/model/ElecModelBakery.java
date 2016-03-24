@@ -179,7 +179,7 @@ public class ElecModelBakery {
 
         @Override
         public ItemOverrideList getOverrides() {
-            return null;
+            return ItemOverrideList.NONE;
         }
 
     }

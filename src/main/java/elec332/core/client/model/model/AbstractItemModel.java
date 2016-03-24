@@ -48,7 +48,7 @@ public abstract class AbstractItemModel implements IItemModel {
 
     @Override
     public ItemOverrideList getOverrides() {
-        return null;
+        return ItemOverrideList.NONE;
     }
 
     public boolean isItemTESR(){
