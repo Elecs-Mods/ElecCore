@@ -17,7 +17,6 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.common.IExtendedEntityProperties;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
@@ -111,7 +110,7 @@ public final class AbilityHandler implements IElecCoreAbilitiesAPI {
 
         @SubscribeEvent
         public void updateEntity(LivingEvent.LivingUpdateEvent event){
-            AbilityHelper.getHandler(event.entityLiving).updateEffects();
+            AbilityHelper.getHandler(event.getEntityLiving()).updateEffects();
         }
 
     }

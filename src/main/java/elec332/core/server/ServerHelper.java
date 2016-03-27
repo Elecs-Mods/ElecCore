@@ -285,14 +285,14 @@ public class ServerHelper {
 
         @SubscribeEvent
         public void onWorldLoad(WorldEvent.Load event){
-            if (isServer(event.world) && WorldHelper.getDimID(event.world) == 0 && event.world.getClass() == WorldServer.class){
-                System.out.println("loading data: "+event.world+"  "+!event.world.isRemote);
+            if (isServer(event.getWorld()) && WorldHelper.getDimID(event.getWorld()) == 0 && event.getWorld().getClass() == WorldServer.class){
+                //System.out.println("loading data: "+event.getWorld()+"  "+!event.world.isRemote);
 
                 if (!ServerHelper.this.locked) {
                     ServerHelper.this.locked = true;
                 }
 
-                File folder = new File(event.world.getSaveHandler().getWorldDirectory(), "elec332/");
+                File folder = new File(event.getWorld().getSaveHandler().getWorldDirectory(), "elec332/");
 
                 ServerHelper.this.generalData = new NBTHelper(fromFile(new File(folder, "generalData.dat")));
 
@@ -310,9 +310,9 @@ public class ServerHelper {
 
         @SubscribeEvent
         public void onWorldSave(WorldEvent.Save event){
-            if (isServer(event.world) && WorldHelper.getDimID(event.world) == 0 && event.world.getClass() == WorldServer.class){
+            if (isServer(event.getWorld()) && WorldHelper.getDimID(event.getWorld()) == 0 && event.getWorld().getClass() == WorldServer.class){
                 //System.out.println("saving: "+event.world);
-                File folder = new File(event.world.getSaveHandler().getWorldDirectory(), "elec332/");
+                File folder = new File(event.getWorld().getSaveHandler().getWorldDirectory(), "elec332/");
 
                 toFile(ServerHelper.this.generalData.serializeNBT(), new File(folder, "generalData.dat"));
 

@@ -87,7 +87,7 @@ public abstract class AbstractWorldGridHolder<T extends ITileData, O> implements
 
     @SubscribeEvent
     public final void chunkUnload(ChunkEvent.Unload event){
-        World world = event.world;
+        World world = event.getWorld();
         if (!world.isRemote && WorldHelper.getDimID(world) == WorldHelper.getDimID(this.world)) {
             ChunkCoordIntPair chunkPos = event.getChunk().getChunkCoordIntPair();
             if (registeredTiles.chunkExists(chunkPos)) {
@@ -101,7 +101,7 @@ public abstract class AbstractWorldGridHolder<T extends ITileData, O> implements
 
     @SubscribeEvent
     public final void chunkLoad(ChunkEvent.Load event){
-        World world = event.world;
+        World world = event.getWorld();
         if (!world.isRemote && WorldHelper.getDimID(world) == WorldHelper.getDimID(this.world)) {
             onChunkLoad(event.getChunk().getTileEntityMap().values());
         }

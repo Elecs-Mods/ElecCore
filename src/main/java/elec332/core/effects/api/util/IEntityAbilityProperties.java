@@ -5,7 +5,6 @@ import elec332.core.effects.api.ability.WrappedAbility;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
-import net.minecraftforge.common.IExtendedEntityProperties;
 
 /**
  * Created by Elec332 on 27-9-2015.

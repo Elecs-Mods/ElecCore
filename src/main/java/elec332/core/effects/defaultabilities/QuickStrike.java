@@ -20,9 +20,9 @@ public class QuickStrike extends Ability {
 
     @SubscribeEvent
     public void onHit(LivingHurtEvent event) {
-        if (event.source.getEntity() instanceof EntityLivingBase && AbilityHelper.isEffectActive((EntityLivingBase) event.source.getEntity(), this)) {
-            if (event.entityLiving.hurtResistantTime > 15) {
-                event.entityLiving.hurtResistantTime -= 13;
+        if (event.getSource().getEntity() instanceof EntityLivingBase && AbilityHelper.isEffectActive((EntityLivingBase) event.getSource().getEntity(), this)) {
+            if (event.getEntityLiving().hurtResistantTime > 15) {
+                event.getEntityLiving().hurtResistantTime -= 13;
             }
         }
     }

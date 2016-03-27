@@ -54,12 +54,12 @@ public class SurroundingChecker<O> {
 
     @SubscribeEvent
     public void onNeighborChangeEvent(BlockEvent.NeighborNotifyEvent event){
-        if (WorldHelper.getDimID(world) == WorldHelper.getDimID(event.world)){
+        if (WorldHelper.getDimID(world) == WorldHelper.getDimID(event.getWorld())){
             for (EnumFacing facing : EnumFacing.VALUES){
-                BlockPos pos = event.pos.offset(facing);
+                BlockPos pos = event.getPos().offset(facing);
                 checkForPos(pos);
             }
-            checkForPos(event.pos);
+            checkForPos(event.getPos());
         }
     }
 

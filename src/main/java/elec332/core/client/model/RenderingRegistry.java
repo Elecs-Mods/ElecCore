@@ -223,7 +223,7 @@ public final class RenderingRegistry {
     private class IconRegistrar implements IIconRegistrar {
 
         public IconRegistrar(TextureStitchEvent event){
-            this.textureMap = event.map;
+            this.textureMap = event.getMap();
         }
 
         private final TextureMap textureMap;

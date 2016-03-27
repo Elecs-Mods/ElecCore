@@ -71,13 +71,13 @@ public final class MultiBlockRegistry extends AbstractWorldRegistryHolder<MultiB
     public void renderMultiBlocks(RenderWorldLastEvent event){
         MultiBlockWorldRegistry mbwr = get(net.minecraft.client.Minecraft.getMinecraft().theWorld, false);
         if (mbwr != null){
-            ICamera camera = RenderHelper.getPlayerCamera(event.partialTicks);
+            ICamera camera = RenderHelper.getPlayerCamera(event.getPartialTicks());
             for (IMultiBlock multiBlock : mbwr.activeMultiBlocks){
                 IMultiBlockRenderer mbr = multiBlockRendererMap.get(multiBlock.getClass());
                 if (mbr != null && camera.isBoundingBoxInFrustum(mbr.getRenderingBoundingBox(multiBlock))) {
                     GlStateManager.pushMatrix();
-                    RenderHelper.translateToWorld(event.partialTicks);
-                    mbr.renderMultiBlock(multiBlock, event.partialTicks);
+                    RenderHelper.translateToWorld(event.getPartialTicks());
+                    mbr.renderMultiBlock(multiBlock, event.getPartialTicks());
                     GlStateManager.popMatrix();
                 }
             }

@@ -66,7 +66,7 @@ public abstract class AbstractWorldRegistryHolder<T extends IWorldRegistry> {
     public void onWorldUnload(WorldEvent.Unload event) {
         World world_unload = null;
         for (World world : worlds) {
-            if (WorldHelper.getDimID(event.world) == WorldHelper.getDimID(world)) {
+            if (WorldHelper.getDimID(event.getWorld()) == WorldHelper.getDimID(world)) {
                 world_unload = world;
                 unload(world);
                 break;

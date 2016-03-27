@@ -19,9 +19,9 @@ public class QuickSwimming extends Ability {
 
     @SubscribeEvent
     public void onTick(LivingEvent.LivingUpdateEvent event){
-        if (AbilityHelper.isEffectActive(event.entityLiving, this) && event.entityLiving.isInWater()){
-            event.entityLiving.motionX = event.entityLiving.motionX *1.08;
-            event.entityLiving.motionZ = event.entityLiving.motionZ *1.08;
+        if (AbilityHelper.isEffectActive(event.getEntityLiving(), this) && event.getEntityLiving().isInWater()){
+            event.getEntityLiving().motionX *= 1.08;
+            event.getEntityLiving().motionZ *= 1.08;
         }
     }
 }

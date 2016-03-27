@@ -19,8 +19,8 @@ public class WaterBreathing extends Ability {
 
     @SubscribeEvent
     public void resetAir(LivingEvent.LivingUpdateEvent event){
-        if (AbilityHelper.isEffectActive(event.entityLiving, this) && event.entityLiving.getAir() < 300){
-            event.entityLiving.setAir(300);
+        if (AbilityHelper.isEffectActive(event.getEntityLiving(), this) && event.getEntityLiving().getAir() < 300){
+            event.getEntityLiving().setAir(300);
         }
     }
 }
