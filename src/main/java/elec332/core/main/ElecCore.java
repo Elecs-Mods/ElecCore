@@ -37,7 +37,7 @@ import java.util.Set;
  * Created by Elec332.
  */
 @SuppressWarnings("all")
-@Mod(modid = ModInfo.MODID_CORE, name = ModInfo.MODNAME_CORE, dependencies = "required-after:Forge@[12.16.0.1797,)",
+@Mod(modid = ModInfo.MODID_CORE, name = ModInfo.MODNAME_CORE, dependencies = "required-after:Forge@[12.16.0.1832,)",
 acceptedMinecraftVersions = ModInfo.ACCEPTEDMCVERSIONS, version = ElecCore.ElecCoreVersion, useMetadata = true, canBeDeactivated = false)
 public class ElecCore extends ModBase{
 
