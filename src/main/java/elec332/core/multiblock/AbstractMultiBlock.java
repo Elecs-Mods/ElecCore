@@ -12,15 +12,18 @@ import net.minecraft.inventory.Container;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.common.capabilities.Capability;
 
+import javax.annotation.Nonnull;
 import java.util.List;
 
 /**
  * Created by Elec332 on 28-7-2015.
  */
-public abstract class AbstractMultiBlock extends IMultiBlock implements IInventoryTile, WailaCompatHandler.IWailaInfoTile{
+public abstract class AbstractMultiBlock extends IMultiBlock implements IInventoryTile, WailaCompatHandler.IWailaInfoTile, IMultiBlockCapabilityProvider {
 
     public abstract boolean onAnyBlockActivated(EntityPlayer player);
 
@@ -91,4 +94,15 @@ public abstract class AbstractMultiBlock extends IMultiBlock implements IInvento
     public Object getGui(EntityPlayer player, boolean client){
         return null;
     }
+
+    @Override
+    public boolean hasCapability(Capability<?> capability, EnumFacing facing, @Nonnull BlockPos pos) {
+        return false;
+    }
+
+    @Override
+    public <T> T getCapability(Capability<T> capability, EnumFacing facing, @Nonnull BlockPos pos) {
+        return null;
+    }
+
 }

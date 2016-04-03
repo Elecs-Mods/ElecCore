@@ -1,6 +1,5 @@
 package elec332.core.client.model;
 
-import elec332.core.client.model.model.IItemModel;
 import elec332.core.client.model.model.IModelAndTextureLoader;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.entity.EntityLivingBase;

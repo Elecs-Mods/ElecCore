@@ -17,6 +17,7 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
+import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 
 import java.util.List;
@@ -185,5 +186,43 @@ public abstract class AbstractMultiBlockTile extends TileBase implements IMultiB
         return tag;
     }
 
+    @Override
+    public final boolean hasCapability(Capability<?> capability, EnumFacing facing) {
+        boolean hasMB = getMultiBlock() != null;
+        return hasCapability(capability, facing, hasMB) || hasMultiBlockCapability(capability, facing);
+    }
+
+    public boolean hasCapability(Capability<?> capability, EnumFacing facing, boolean hasMultiBlock){
+        return !hasMultiBlock && hasBaseCapability(capability, facing);
+    }
+
+    public final boolean hasMultiBlockCapability(Capability<?> capability, EnumFacing facing){
+        return getMultiBlock() != null && getMultiBlock().hasCapability(capability, facing, getPos());
+    }
+
+    protected final boolean hasBaseCapability(Capability<?> capability, EnumFacing facing){
+        return super.hasCapability(capability, facing);
+    }
+
+    @Override
+    public final <T> T getCapability(Capability<T> capability, EnumFacing facing) {
+        boolean hasMB = getMultiBlock() != null;
+        if (hasCapability(capability, facing, hasMB)){
+            return getCapability(capability, facing, hasMB);
+        }
+        return getMultiBlockCapability(capability, facing);
+    }
+
+    public <T> T getCapability(Capability<T> capability, EnumFacing facing, boolean hasMultiBlock) {
+        return hasMultiBlock ? null : getBaseCapability(capability, facing);
+    }
+
+    public final <T> T getMultiBlockCapability(Capability<T> capability, EnumFacing facing){
+        return getMultiBlock() == null ? null : getMultiBlock().getCapability(capability, facing, getPos());
+    }
+
+    protected final <T> T getBaseCapability(Capability<T> capability, EnumFacing facing){
+        return super.getCapability(capability, facing);
+    }
 
 }

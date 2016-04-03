@@ -127,7 +127,7 @@ public class ElecQuadBakery {
     public BakedQuad bakeQuad(Vector3f v1, Vector3f v2, TextureAtlasSprite texture, EnumFacing facing, ModelRotation rotation, float f1, float f2, float f3, float f4, int tint){
         BlockFaceUV bfuv = new BlockFaceUV(new float[]{f1, f2, f3, f4}, 0);
         BlockPartFace bpf = new BlockPartFace(facing, tint, null, bfuv);
-        return faceBakery.makeBakedQuad(v1, v2, bpf, texture, facing, rotation, null, true, true);
+        return faceBakery.makeBakedQuad(v1, v2, bpf, texture, facing, rotation, null, false, true);
     }
 
     /**

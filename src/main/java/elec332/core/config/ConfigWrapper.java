@@ -121,14 +121,17 @@ public class ConfigWrapper {
                         }
                         addRegisteredCategory(category);
                         if (field.getType().isAssignableFrom(Integer.TYPE)) {
-                            field.set(o, configuration.getInt(field.getName(), category, (Integer) oldValue, configurable.minValue(), configurable.maxValue(), configurable.comment()));
+                            field.set(o, configuration.getInt(field.getName(), category, (Integer) oldValue, (int) configurable.minValue(), (int) configurable.maxValue(), configurable.comment()));
                         } else if (field.getType().isAssignableFrom(Boolean.TYPE)) {
                             field.set(o, configuration.getBoolean(field.getName(), category, (Boolean) oldValue, configurable.comment()));
                         } else if (field.getType().isAssignableFrom(String.class)){
-                            if (configurable.validStrings().length > 0)
+                            if (configurable.validStrings().length > 0) {
                                 field.set(o, configuration.getString(field.getName(), category, (String) oldValue, configurable.comment(), configurable.validStrings()));
-                            else
+                            } else {
                                 field.set(o, configuration.getString(field.getName(), category, (String) oldValue, configurable.comment()));
+                            }
+                        } else if (field.getType().isAssignableFrom(Float.TYPE)){
+                            field.set(o, configuration.getFloat(field.getName(), category, (Float) oldValue, configurable.minValue(), configurable.maxValue(), configurable.comment()));
                         }
                     }
                     field.setAccessible(oldAccess);

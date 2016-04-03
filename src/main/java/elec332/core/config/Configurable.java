@@ -18,9 +18,9 @@ public @interface Configurable {
 
     String comment() default "";
 
-    int minValue() default 0;
+    float minValue() default 0;
 
-    int maxValue() default 0;
+    float maxValue() default 0;
 
     String[] validStrings() default {};
 
