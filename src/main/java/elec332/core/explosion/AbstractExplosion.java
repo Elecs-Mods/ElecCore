@@ -34,7 +34,7 @@ public abstract class AbstractExplosion extends Explosion {
     private List<Entity> entitiesInRange;
 
     public void explode(){
-        ExplosionEvent event = new ExplosionEvent.Detonate(world, this, null);
+        ExplosionEvent event = new ExplosionEvent.Start(world, this);
         MinecraftForge.EVENT_BUS.post(event);
         if (!event.isCanceled()){
             preExplode();
