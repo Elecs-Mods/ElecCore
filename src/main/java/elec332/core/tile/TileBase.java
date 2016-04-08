@@ -21,7 +21,6 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.ITickable;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -32,7 +31,7 @@ import java.util.ArrayList;
  * Created by Elec332 on 8-4-2015.
  */
 @SuppressWarnings("unused")
-public class TileBase extends TileEntity implements IElecCoreNetworkTile, ITickable {
+public class TileBase extends TileEntity implements IElecCoreNetworkTile {
 
     @Override
     public void validate() {
@@ -99,22 +98,6 @@ public class TileBase extends TileEntity implements IElecCoreNetworkTile, ITicka
     }
 
     public void onTileUnloaded(){
-    }
-
-    @SuppressWarnings("deprecation")
-    @Override
-    public void update(){
-        if (canUpdate())
-            updateEntity();
-    }
-
-    @Deprecated
-    public void updateEntity() {
-    }
-
-    @Deprecated
-    public boolean canUpdate() {
-        return true;
     }
 
     @Override

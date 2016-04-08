@@ -26,6 +26,7 @@ import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.common.LoaderState;
 import net.minecraftforge.fml.common.discovery.ASMDataTable;
 import net.minecraftforge.fml.common.registry.GameData;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -70,15 +71,15 @@ public class ElecModelHandler implements IASMDataProcessor {
     @SuppressWarnings("unchecked")
     public static void registerItemModels(RenderItem renderItem){
         System.out.println("Prehandling Items");
-        //IdentityHashMap<Item, TIntObjectHashMap<IBakedModel>> models = null;
+        /*IdentityHashMap<Item, TIntObjectHashMap<IBakedModel>> models = null;
         try {
-            //models = (IdentityHashMap<Item, TIntObjectHashMap<IBakedModel>>) ReflectionHelper.makeFieldAccessible(ItemModelMesherForge.class.getDeclaredField("models")).get(renderItem.getItemModelMesher());
+            models = (IdentityHashMap<Item, TIntObjectHashMap<IBakedModel>>) ReflectionHelper.makeFieldAccessible(ItemModelMesherForge.class.getDeclaredField("models")).get(renderItem.getItemModelMesher());
         } catch (Exception e){
             e.printStackTrace();
         }
         if (models == null){
             throw new RuntimeException();
-        }
+        }*/
         for (Item item : GameData.getItemRegistry().typeSafeIterable()){
             handlerLoop:
             for (IItemModelHandler handler : itemModelHandlers){
@@ -167,24 +168,6 @@ public class ElecModelHandler implements IASMDataProcessor {
             registry.putObject(entry.getKey(), entry.getValue());
         }
         return ret;
-    }
-
-    private static class InternalItemMap<M> extends TIntObjectHashMap<M> {
-
-        public InternalItemMap(){
-            super();
-        }
-
-        @Override
-        public M put(int key, M value) {
-            return super.put(0, value);
-        }
-
-        @Override
-        public M get(int key) {
-            return super.get(0);
-        }
-
     }
 
     static {

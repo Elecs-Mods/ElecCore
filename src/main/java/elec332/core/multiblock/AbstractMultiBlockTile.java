@@ -35,12 +35,6 @@ public abstract class AbstractMultiBlockTile extends TileBase implements IMultiB
     private MultiBlockData multiBlockData;
 
     @Override
-    @SuppressWarnings("deprecation")
-    public boolean canUpdate() {
-        return false;
-    }
-
-    @Override
     public final boolean onBlockActivated(IBlockState state, EntityPlayer player, EnumHand hand, ItemStack stack, EnumFacing side, float hitX, float hitY, float hitZ) {
         return getMultiBlock() == null ? onBlockActivatedBy(player, side, hitX, hitY, hitZ) : getMultiBlock().onAnyBlockActivated(player);
     }
