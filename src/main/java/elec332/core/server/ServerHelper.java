@@ -187,7 +187,7 @@ public class ServerHelper {
     public List<EntityPlayerMP> getAllPlayersWatchingBlock(World world, int x, int z){
         List<EntityPlayerMP> ret = Lists.newArrayList();
         if (world instanceof WorldServer) {
-            PlayerManager playerManager = ((WorldServer) world).getPlayerChunkManager();
+            PlayerManager playerManager = ((WorldServer) world).getPlayerChunkMap();
             for (EntityPlayerMP player : getOnlinePlayers()) {
                 Chunk chunk = world.getChunkFromChunkCoords(x >> 4, z >> 4);
                 if (playerManager.isPlayerWatchingChunk(player, chunk.xPosition, chunk.zPosition)) {

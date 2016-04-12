@@ -58,7 +58,7 @@ public class WorldHelper {
 
     public static void markBlockForUpdate(World world, BlockPos pos){
         if (!world.isRemote){
-            ((WorldServer)world).getPlayerChunkManager().markBlockForUpdate(pos);
+            ((WorldServer)world).getPlayerChunkMap().markBlockForUpdate(pos);
         }
         //world.markBlockForUpdate(pos);
     }

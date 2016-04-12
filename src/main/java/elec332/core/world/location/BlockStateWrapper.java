@@ -58,7 +58,7 @@ public final class BlockStateWrapper implements IBlockDataEqualiser {
 
     @Override
     public boolean blocksEqual(BlockStateWrapper blockData) {
-        return (blockData.block == block || blockData.block == Blocks.air && block == null || blockData.block == null && block == Blocks.air) && checkMeta(blockData);
+        return (blockData.block == block || blockData.block == Blocks.AIR && block == null || blockData.block == null && block == Blocks.AIR) && checkMeta(blockData);
     }
 
 }

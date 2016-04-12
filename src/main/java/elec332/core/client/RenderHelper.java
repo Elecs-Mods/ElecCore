@@ -123,7 +123,7 @@ public class RenderHelper {
     }
 
     public static ResourceLocation getBlocksResourceLocation(){
-        return TextureMap.locationBlocksTexture;
+        return TextureMap.LOCATION_BLOCKS_TEXTURE;
     }
 
     public void spawnParticle(EntityFX particle){

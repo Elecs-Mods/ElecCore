@@ -254,7 +254,7 @@ public final class MultiBlockStructureRegistry implements IMessageHandler<MultiB
     private BlockStateWrapper atLocation(IBlockAccess world, BlockPos pos){
         Block block = WorldHelper.getBlockAt(world, pos);
         int meta = WorldHelper.getBlockMeta(world, pos);
-        if (block == null || block == Blocks.air)
+        if (block == null || block == Blocks.AIR)
             return new BlockStateWrapper((Block)null);
         return new BlockStateWrapper(block, meta);
     }

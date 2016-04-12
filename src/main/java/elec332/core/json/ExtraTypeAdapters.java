@@ -37,7 +37,7 @@ public class ExtraTypeAdapters {
                     out.beginObject();
                     out.name("name").value(MineTweakerHelper.getItemRegistryName(value));
                     out.name("count").value(value.stackSize);
-                    out.name("damage").value(Items.diamond.getDamage(value));
+                    out.name("damage").value(Items.DIAMOND.getDamage(value));
                     out.name("nbtTag");
                     JsonHandler.getGson().toJson(value.getTagCompound(), NBTTagCompound.class, out);
                     out.endObject();

@@ -33,7 +33,7 @@ public class Elexplosion extends AbstractExplosion{
                         if (dist < this.getRadius()) {
                             IBlockState state = WorldHelper.getBlockState(getWorld(), targetPosition);
                             Block block = state.getBlock();
-                            if (block != null && !block.isAir(state, getWorld(), targetPosition) && block != Blocks.bedrock) {
+                            if (block != null && !block.isAir(state, getWorld(), targetPosition) && block.getBlockHardness(state, getWorld(), targetPosition.toImmutable()) >= 0) {
                                 if (dist < this.getRadius() - 1 || getWorld().rand.nextFloat() > 0.7) {
                                     getWorld().setBlockToAir(targetPosition);
                                 }

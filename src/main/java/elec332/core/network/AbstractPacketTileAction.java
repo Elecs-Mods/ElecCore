@@ -34,7 +34,7 @@ public abstract class AbstractPacketTileAction extends AbstractPacket {
         NBTTagCompound data = tag.getCompoundTag("data");
         if (ctx.side == Side.CLIENT)
             return processClient(loc, i, data, ctx);
-        processPacket(WorldHelper.getTileAt(ctx.getServerHandler().playerEntity.getServerForPlayer(), loc), i, data, ctx);
+        processPacket(WorldHelper.getTileAt(ctx.getServerHandler().playerEntity.worldObj, loc), i, data, ctx);
         return null;
     }
 

@@ -15,7 +15,7 @@ public class ElecCTab {
 	    @Override
 	    @SideOnly(Side.CLIENT)
 	    public Item getTabIconItem() {
-	        return Item.getItemFromBlock(Blocks.anvil);
+	        return Item.getItemFromBlock(Blocks.ANVIL);
 	    }
 	};
 

@@ -20,31 +20,31 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 public class RegistryHelper {
 
     public static FMLControlledNamespacedRegistry<Block> getBlockRegistry() {
-        return (FMLControlledNamespacedRegistry<Block>)Block.blockRegistry;
+        return (FMLControlledNamespacedRegistry<Block>)Block.REGISTRY;
     }
 
     public static FMLControlledNamespacedRegistry<Item> getItemRegistry() {
-        return (FMLControlledNamespacedRegistry<Item>)Item.itemRegistry;
+        return (FMLControlledNamespacedRegistry<Item>)Item.REGISTRY;
     }
 
     public static FMLControlledNamespacedRegistry<Potion> getPotionRegistry() {
-        return (FMLControlledNamespacedRegistry<Potion>)Potion.potionRegistry;
+        return (FMLControlledNamespacedRegistry<Potion>)Potion.REGISTRY;
     }
 
     public static FMLControlledNamespacedRegistry<BiomeGenBase> getBiomeRegistry() {
-        return (FMLControlledNamespacedRegistry<BiomeGenBase>)BiomeGenBase.biomeRegistry;
+        return (FMLControlledNamespacedRegistry<BiomeGenBase>)BiomeGenBase.REGISTRY;
     }
 
     public static FMLControlledNamespacedRegistry<SoundEvent> getSoundEventRegistry() {
-        return (FMLControlledNamespacedRegistry<SoundEvent>)SoundEvent.soundEventRegistry;
+        return (FMLControlledNamespacedRegistry<SoundEvent>)SoundEvent.REGISTRY;
     }
 
     public static FMLControlledNamespacedRegistry<PotionType> getPotionTypesRegistry() {
-        return (FMLControlledNamespacedRegistry<PotionType>)PotionType.potionTypeRegistry;
+        return (FMLControlledNamespacedRegistry<PotionType>)PotionType.REGISTRY;
     }
 
     public static FMLControlledNamespacedRegistry<Enchantment> getEnchantmentRegistry() {
-        return (FMLControlledNamespacedRegistry<Enchantment>)Enchantment.enchantmentRegistry;
+        return (FMLControlledNamespacedRegistry<Enchantment>)Enchantment.REGISTRY;
     }
 
     public static BiMap<Block, Item> getBlockItemMap() {

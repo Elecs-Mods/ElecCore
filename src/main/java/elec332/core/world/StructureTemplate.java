@@ -75,8 +75,8 @@ public class StructureTemplate {
                             IBlockState state = schematic.getState(schematicPos);
 
                             if (block != null) {
-                                WorldHelper.setBlockState(world, worldPos, Blocks.air.getDefaultState(), 2);
-                                if (!block.getMaterial(state).equals(Material.air)) {
+                                WorldHelper.setBlockState(world, worldPos, Blocks.AIR.getDefaultState(), 2);
+                                if (!block.getMaterial(state).equals(Material.AIR)) {
                                     WorldHelper.setBlockState(world, worldPos, state, 2);
                                     if (block.hasTileEntity(state)) {
                                         NBTTagCompound tileData = schematic.getTileData(x, y, z, worldX, worldY, worldZ);

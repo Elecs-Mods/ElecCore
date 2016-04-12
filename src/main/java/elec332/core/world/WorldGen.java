@@ -81,9 +81,9 @@ public abstract class WorldGen implements IWorldGenerator {
 
 
     static {
-        STONE = BlockMatcher.forBlock(Blocks.stone);
-        NETHERRACK = BlockMatcher.forBlock(Blocks.netherrack);
-        ENDSTONE = BlockMatcher.forBlock(Blocks.end_stone);
+        STONE = BlockMatcher.forBlock(Blocks.STONE);
+        NETHERRACK = BlockMatcher.forBlock(Blocks.NETHERRACK);
+        ENDSTONE = BlockMatcher.forBlock(Blocks.END_STONE);
     }
 
 }

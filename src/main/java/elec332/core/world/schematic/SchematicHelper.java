@@ -79,7 +79,7 @@ public class SchematicHelper {
             int[] blockArray = nbt.getIntArray("Blocks");
             Block[] blocks = new Block[width * height * length];
             Map<Integer, Block> idMap = Maps.newHashMap();
-            idMap.put(-1, Blocks.air);
+            idMap.put(-1, Blocks.AIR);
             for (int i = 0; i < blockData.tagCount(); i++) {
                 NBTTagCompound tag = blockData.getCompoundTagAt(i);
                 idMap.put(tag.getInteger("p"), GameData.getBlockRegistry().getObject(new ResourceLocation(tag.getString("m"), tag.getString("b"))));
@@ -109,7 +109,7 @@ public class SchematicHelper {
         int id = 0;
         for (int i = 0; i < schematic.blocks.length; i++) {
             Block block = schematic.blocks[i];
-            if (block != Blocks.air) {
+            if (block != Blocks.AIR) {
                 if (!map.containsKey(block)) {
                     NBTTagCompound tag = new NBTTagCompound();
                     int ID = id++;

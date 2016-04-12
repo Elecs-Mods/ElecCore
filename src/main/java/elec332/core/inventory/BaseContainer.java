@@ -44,7 +44,7 @@ public class BaseContainer extends Container implements IWidgetContainer{
     public void addWidget(Widget widget) {
         widget.setContainer(this);
         widget.setID(widgets.size());
-        for (Object obj : crafters)
+        for (Object obj : listeners)
             widget.initWidget((ICrafting)obj);
         this.widgets.add(widget);
     }
@@ -79,7 +79,7 @@ public class BaseContainer extends Container implements IWidgetContainer{
     public void detectAndSendChanges() {
         super.detectAndSendChanges();
         for (Widget widget : widgets){
-            widget.detectAndSendChanges(crafters);
+            widget.detectAndSendChanges(listeners);
         }
     }
 
