@@ -23,15 +23,13 @@ import java.util.List;
 public abstract class AbstractExplosion extends Explosion {
 
     public AbstractExplosion(World world, Entity entity, double x, double y, double z, float size) {
-        super(world, entity, x, y, z, size, Lists.<BlockPos>newArrayList());
+        super(world, entity, x, y, z, size, false, true);
         this.world = world;
         this.location = new BlockPos((int)explosionX, (int)explosionY, (int)explosionZ);
-        this.entitiesInRange = Lists.newArrayList();
     }
 
     private final World world;
     private final BlockPos location;
-    private List<Entity> entitiesInRange;
 
     public void explode(){
         ExplosionEvent event = new ExplosionEvent.Start(world, this);
