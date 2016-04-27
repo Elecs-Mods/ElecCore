@@ -14,6 +14,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.ModelBakeEvent;
 import net.minecraftforge.client.model.ItemLayerModel;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.model.ITransformation;
 import net.minecraftforge.common.model.TRSRTransformation;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -67,7 +68,7 @@ public class ElecQuadBakery {
      * @param rotation The fixed quad rotation.
      * @return The ISidedMap with the baked quads.
      */
-    public ISidedMap bakeQuads(ITemplateSidedMap from, ModelRotation rotation){
+    public ISidedMap bakeQuads(ITemplateSidedMap from, ITransformation rotation){
         ISidedMap ret = newSidedMap();
         for (EnumFacing facing : EnumFacing.VALUES){
             ret.setQuadsForSide(rotation == null ? facing : rotation.rotate(facing), bakeQuads(from.getForSide(facing), rotation));
@@ -92,7 +93,7 @@ public class ElecQuadBakery {
      * @param rotation The fixed quad rotation.
      * @return A new list with the baked quads.
      */
-    public List<BakedQuad> bakeQuads(List<IQuadTemplate> from, ModelRotation rotation){
+    public List<BakedQuad> bakeQuads(List<IQuadTemplate> from, ITransformation rotation){
         ImmutableList.Builder<BakedQuad> builder = new ImmutableList.Builder<BakedQuad>();
         for (IQuadTemplate quadTemplate : from){
             builder.add(bakeQuad(quadTemplate, rotation == null ? quadTemplate.getRotation() : rotation));
@@ -104,11 +105,11 @@ public class ElecQuadBakery {
         return bakeQuad(v1, v2, texture, facing, ModelRotation.X0_Y0);
     }
 
-    public BakedQuad bakeQuad(Vector3f v1, Vector3f v2, TextureAtlasSprite texture, EnumFacing facing, ModelRotation rotation){
+    public BakedQuad bakeQuad(Vector3f v1, Vector3f v2, TextureAtlasSprite texture, EnumFacing facing, ITransformation rotation){
         return bakeQuad(v1, v2, texture, facing, rotation, 0, 0, 16, 16);
     }
 
-    public BakedQuad bakeQuad(Vector3f v1, Vector3f v2, TextureAtlasSprite texture, EnumFacing facing, ModelRotation rotation, float f1, float f2, float f3, float f4){
+    public BakedQuad bakeQuad(Vector3f v1, Vector3f v2, TextureAtlasSprite texture, EnumFacing facing, ITransformation rotation, float f1, float f2, float f3, float f4){
         return bakeQuad(v1, v2, texture, facing, rotation, f1, f2, f3, f4, -1);
     }
 
@@ -116,15 +117,15 @@ public class ElecQuadBakery {
         return bakeQuad(template, template.getRotation());
     }
 
-    public BakedQuad bakeQuad(IQuadTemplate template, ModelRotation rotation){
+    public BakedQuad bakeQuad(IQuadTemplate template, ITransformation rotation){
         return bakeQuad(template.getV1(), template.getV2(), template.getTexture(), template.getSide(), rotation, template.getUVData(), template.getTintIndex());
     }
 
-    public BakedQuad bakeQuad(Vector3f v1, Vector3f v2, TextureAtlasSprite texture, EnumFacing facing, ModelRotation rotation, IQuadTemplate.IUVData uvData, int tint){
+    public BakedQuad bakeQuad(Vector3f v1, Vector3f v2, TextureAtlasSprite texture, EnumFacing facing, ITransformation rotation, IQuadTemplate.IUVData uvData, int tint){
         return bakeQuad(v1, v2, texture, facing, rotation, uvData.getUMin(), uvData.getVMin(), uvData.getUMax(), uvData.getVMax(), tint);
     }
 
-    public BakedQuad bakeQuad(Vector3f v1, Vector3f v2, TextureAtlasSprite texture, EnumFacing facing, ModelRotation rotation, float f1, float f2, float f3, float f4, int tint){
+    public BakedQuad bakeQuad(Vector3f v1, Vector3f v2, TextureAtlasSprite texture, EnumFacing facing, ITransformation rotation, float f1, float f2, float f3, float f4, int tint){
         BlockFaceUV bfuv = new BlockFaceUV(new float[]{f1, f2, f3, f4}, 0);
         BlockPartFace bpf = new BlockPartFace(facing, tint, null, bfuv);
         return faceBakery.makeBakedQuad(v1, v2, bpf, texture, facing, rotation, null, false, true);

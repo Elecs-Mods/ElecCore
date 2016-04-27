@@ -7,17 +7,25 @@ import net.minecraft.client.particle.EntityFX;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.VertexBuffer;
+import net.minecraft.client.renderer.block.model.ModelRotation;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.culling.ICamera;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraftforge.common.model.ITransformation;
+import net.minecraftforge.common.model.TRSRTransformation;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.lwjgl.util.vector.Matrix4f;
 
+import javax.vecmath.Quat4f;
+import javax.vecmath.Vector3f;
 import java.util.Map;
 
 /**
@@ -32,6 +40,7 @@ public class RenderHelper {
     private static final Minecraft mc;
     private static final RenderBlocks renderBlocks;
     private static final Map<VertexBuffer, ITessellator> worldRenderTessellators;
+    private static final Map<EnumFacing, ITransformation[]> rotateAroundMap;
 
     public static ITessellator forWorldRenderer(VertexBuffer renderer){
         ITessellator ret = worldRenderTessellators.get(renderer);
@@ -52,6 +61,47 @@ public class RenderHelper {
 
     public static ITessellator getTessellator(){
         return tessellator;
+    }
+
+    public static ITransformation getTransformation(int x, int y, int z){
+        if ((z = MathHelper.normalizeAngle(z, 360)) == 0){
+            return ModelRotation.getModelRotation(x, y);
+        }
+        return TRSRTransformation.blockCenterToCorner(new TRSRTransformation(null, TRSRTransformation.quatFromXYZDegrees(new Vector3f(MathHelper.normalizeAngle(x, 360), MathHelper.normalizeAngle(y, 360), z)), null, null));
+    }
+
+    public static ITransformation[] getTranformationsFor(EnumFacing axis){
+        return rotateAroundMap.get(axis);
+    }
+
+    public static ModelRotation combine(ModelRotation rotation1, ModelRotation rotation2){
+        if (rotation1 == null && rotation2 == null){
+            return ModelRotation.X0_Y0;
+        }
+        if (rotation1 == null){
+            return rotation2;
+        }
+        if (rotation2 == null){
+            return rotation1;
+        }
+        return ModelRotation.getModelRotation(((rotation1.quartersX + rotation2.quartersX)) * 90, ((rotation1.quartersY + rotation2.quartersY)) * 90);
+    }
+
+    public static ModelRotation defaultFor(EnumFacing facing){
+        switch (facing){
+            case EAST:
+                return ModelRotation.X0_Y90;
+            case SOUTH:
+                return ModelRotation.X0_Y180;
+            case WEST:
+                return ModelRotation.X0_Y270;
+            case UP:
+                return ModelRotation.X270_Y0;
+            case DOWN:
+                return ModelRotation.X90_Y0;
+            default:
+                return ModelRotation.X0_Y0;
+        }
     }
 
     public static Vec3d getPlayerVec(float partialTicks){
@@ -137,6 +187,31 @@ public class RenderHelper {
         renderBlocks = new RenderBlocks();
         worldRenderTessellators = Maps.newHashMap();
         worldRenderTessellators.put(mcTessellator.getBuffer(), tessellator);
+        rotateAroundMap = Maps.newEnumMap(EnumFacing.class);
+        for (EnumFacing facing : EnumFacing.VALUES){
+            switch (facing){
+                case NORTH:
+                    rotateAroundMap.put(facing, new ITransformation[]{RenderHelper.getTransformation(0, 0, 0), RenderHelper.getTransformation(0, 0, 90), RenderHelper.getTransformation(0, 0, 180), RenderHelper.getTransformation(0, 0, 270)});
+                    break;
+                case EAST:
+                    rotateAroundMap.put(facing, new ITransformation[]{RenderHelper.getTransformation(0, 90, 0), RenderHelper.getTransformation(180, -90, 90), RenderHelper.getTransformation(-90, -90, 90), RenderHelper.getTransformation(0, -90, 90)});
+                    break;
+                case SOUTH:
+                    rotateAroundMap.put(facing, new ITransformation[]{RenderHelper.getTransformation(180, 0, 0), RenderHelper.getTransformation(180, 0, 90), RenderHelper.getTransformation(180, 0, 180), RenderHelper.getTransformation(180, 0, -90)});
+                    break;
+                case WEST:
+                    rotateAroundMap.put(facing, new ITransformation[]{RenderHelper.getTransformation(0, 90, 180), RenderHelper.getTransformation(180, 90, 180), RenderHelper.getTransformation(90, 90, 180), RenderHelper.getTransformation(-90, 90, 180)});
+                    break;
+                case UP:
+                    rotateAroundMap.put(facing, new ITransformation[]{RenderHelper.getTransformation(-90, 0, 0), RenderHelper.getTransformation(90, 0, 90), RenderHelper.getTransformation(90, 0, 180), RenderHelper.getTransformation(90, 0, -90)});
+                    break;
+                case DOWN:
+                    rotateAroundMap.put(facing, new ITransformation[]{RenderHelper.getTransformation(90, 0, 0), RenderHelper.getTransformation(-90, 0, 90), RenderHelper.getTransformation(-90, 0, 180), RenderHelper.getTransformation(-90, 0, -90)});
+                    break;
+                default:
+                    throw new IllegalArgumentException();
+            }
+        }
     }
 
 }
