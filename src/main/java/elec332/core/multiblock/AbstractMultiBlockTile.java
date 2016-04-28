@@ -48,8 +48,9 @@ public abstract class AbstractMultiBlockTile extends TileBase implements IMultiB
         super.writeToNBT(tagCompound);
         multiBlockData.writeToNBT(tagCompound);
         if (getMultiBlock() != null){
-            if (getMultiBlock().isSaveDelegate(this))
+            if (getMultiBlock().isSaveDelegate(this)) {
                 getMultiBlock().writeToNBT(tagCompound);
+            }
         }
     }
 
@@ -61,8 +62,9 @@ public abstract class AbstractMultiBlockTile extends TileBase implements IMultiB
             @Override
             public void run() {
                 if (getMultiBlock() != null) {
-                    if (getMultiBlock().isSaveDelegate(AbstractMultiBlockTile.this))
+                    if (getMultiBlock().isSaveDelegate(AbstractMultiBlockTile.this)) {
                         getMultiBlock().readFromNBT(tagCompound);
+                    }
                 }
             }
         }, FMLCommonHandler.instance().getEffectiveSide());
@@ -187,7 +189,7 @@ public abstract class AbstractMultiBlockTile extends TileBase implements IMultiB
     }
 
     public boolean hasCapability(Capability<?> capability, EnumFacing facing, boolean hasMultiBlock){
-        return !hasMultiBlock && hasBaseCapability(capability, facing);
+        return canFetchNonMultiBlockCapabilities(hasMultiBlock) && hasBaseCapability(capability, facing);
     }
 
     public final boolean hasMultiBlockCapability(Capability<?> capability, EnumFacing facing){
@@ -208,7 +210,7 @@ public abstract class AbstractMultiBlockTile extends TileBase implements IMultiB
     }
 
     public <T> T getCapability(Capability<T> capability, EnumFacing facing, boolean hasMultiBlock) {
-        return hasMultiBlock ? null : getBaseCapability(capability, facing);
+        return !canFetchNonMultiBlockCapabilities(hasMultiBlock) ? null : getBaseCapability(capability, facing);
     }
 
     public final <T> T getMultiBlockCapability(Capability<T> capability, EnumFacing facing){
@@ -217,6 +219,10 @@ public abstract class AbstractMultiBlockTile extends TileBase implements IMultiB
 
     protected final <T> T getBaseCapability(Capability<T> capability, EnumFacing facing){
         return super.getCapability(capability, facing);
+    }
+
+    protected boolean canFetchNonMultiBlockCapabilities(boolean hasMultiBlock){
+        return true;
     }
 
 }
