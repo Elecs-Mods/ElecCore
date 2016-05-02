@@ -56,7 +56,7 @@ public class ElecCore extends ModBase{
 	private ASMDataProcessor asmDataProcessor;
 
 	public static final boolean developmentEnvironment;
-	public static boolean oldBlocks = true;
+	public static boolean oldBlocks = false;
 	public static boolean debug = false;
 	public static boolean removeJSONErrors = true;
 

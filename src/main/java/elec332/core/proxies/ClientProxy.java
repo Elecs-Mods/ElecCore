@@ -88,10 +88,9 @@ public class ClientProxy extends CommonProxy {
 								((RenderItem)listener).itemModelMesher.register(item, 0, new ModelResourceLocation(item.delegate.getResourceName().toString(), i ? "inventory" : "normal"));
 							}
 						}
-						listener.onResourceManagerReload(resourceManager);
 					}
 				});
-				return false;
+				return true;
 			} else if (listener.getClass() == BlockRendererDispatcher.class){
 				if (ElecCore.oldBlocks) {
 					minecraft.blockRenderDispatcher = ASMHooks.Client.newBlockRendererDispatcher();
