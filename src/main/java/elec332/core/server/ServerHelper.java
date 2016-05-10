@@ -15,7 +15,6 @@ import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.dedicated.DedicatedServer;
 import net.minecraft.server.management.PlayerManager;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -31,8 +30,10 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import org.apache.commons.io.FileUtils;
+import scala.collection.generic.Clearable;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.EOFException;
 import java.io.File;
 import java.io.IOException;
@@ -59,12 +60,22 @@ public class ServerHelper {
             }
         });
         this.worldData = NBTMap.newNBTMap(Integer.class, NBTHelper.class, new NBTHelper.DefaultFunction<Integer>());
-        this.savedData = NBTMap.newNBTMap(String.class, NBTTagCompound.class);
+        this.savedData = NBTMap.newNBTMap(String.class, INBTSerializable.class, new Function<String, INBTSerializable>() {
+            @Nullable
+            @Override
+            public INBTSerializable apply(@Nullable String input) {
+                try {
+                    return extendedSaveData.get(input).call();
+                } catch (Exception e){
+                    throw new RuntimeException(e);
+                }
+            }
+        });
         this.extendedPropertiesList_ = Maps.newHashMap();
         this.extendedPropertiesList = Collections.unmodifiableMap(extendedPropertiesList_);
         this.extendedSaveData_ = Maps.newHashMap();
         this.extendedSaveData = Collections.unmodifiableMap(extendedSaveData_);
-        this.saveDataInstances = Maps.newHashMap();
+        //this.saveDataInstances = Maps.newHashMap();
         this.locked = false;
         setInvalid();
     }
@@ -83,7 +94,7 @@ public class ServerHelper {
         extendedPropertiesList_.put(identifier, propClass);
     }
 
-    public void registerExtendedProperties(String s, Callable<INBTSerializable<NBTTagCompound>> callable){
+    public void registerExtendedProperties(String s, Callable<INBTSerializable> callable){
         if (extendedSaveData_.containsKey(s))
             throw new IllegalArgumentException("Property for "+s+" has already been registered!");
         if (Loader.instance().hasReachedState(LoaderState.AVAILABLE) || locked)
@@ -92,15 +103,15 @@ public class ServerHelper {
     }
 
     private final Map<String, Class<? extends ElecPlayer.ExtendedProperties>> extendedPropertiesList_;
-    private final Map<String, Callable<INBTSerializable<NBTTagCompound>>> extendedSaveData_;
+    private final Map<String, Callable<INBTSerializable>> extendedSaveData_;
     private final Map<String, Class<? extends ElecPlayer.ExtendedProperties>> extendedPropertiesList;
-    private final Map<String, Callable<INBTSerializable<NBTTagCompound>>> extendedSaveData;
+    private final Map<String, Callable<INBTSerializable>> extendedSaveData;
 
     private NBTHelper generalData;
     private NBTMap<UUID, ElecPlayer> playerData;
     private NBTMap<Integer, NBTHelper> worldData;
-    private NBTMap<String, NBTTagCompound> savedData;
-    private Map<String, INBTSerializable<NBTTagCompound>> saveDataInstances;
+    private NBTMap<String, INBTSerializable> savedData;
+    //private Map<String, INBTSerializable<NBTTagCompound>> saveDataInstances;
     private boolean locked; //Extra safety, in case Loader.instance().hasReachedState(LoaderState.AVAILABLE) fails
 
     public ElecPlayer getPlayer(EntityPlayer player){
@@ -141,23 +152,8 @@ public class ServerHelper {
         return clazz.cast(getExtendedSaveData(name));
     }
 
-    public INBTSerializable<NBTTagCompound> getExtendedSaveData(String name){
-        try {
-            INBTSerializable<NBTTagCompound> ret = saveDataInstances.get(name);
-            if (ret != null){
-                return ret;
-            }
-            ret = extendedSaveData.get(name).call();
-            NBTTagCompound tag = savedData.get(name);
-            if (tag != null){
-                ret.deserializeNBT(tag);
-                savedData.remove(name);
-            }
-            saveDataInstances.put(name, ret);
-            return ret;
-        } catch (Exception e){
-            throw new RuntimeException(e);
-        }
+    public INBTSerializable getExtendedSaveData(String name){
+        return savedData.get(name);
     }
 
     @SuppressWarnings("unchecked")
@@ -166,7 +162,7 @@ public class ServerHelper {
     }
 
     public boolean isPlayerOnline(UUID uuid){
-        return getPlayer(uuid).isOnline();
+        return uuid != null && getPlayer(uuid).isOnline();
     }
 
     public EntityPlayerMP getRealPlayer(UUID uuid){
@@ -302,8 +298,24 @@ public class ServerHelper {
                 NBTTagList tagList2 = fromFile(new File(folder, "worldData.dat")).getTagList("dimData", 10);
                 worldData.deserializeNBT(tagList2);
 
-                NBTTagList tagList3 = fromFile(new File(folder, "savedData.dat")).getTagList("data", 10);
+                for (Object o : savedData.values()){
+                    if (o instanceof Clearable){
+                        ((Clearable) o).clear();
+                    }
+                }
+
+                NBTTagList tagList3 = fromFile(new File(folder, "savedData.dat")).getTagList("savedData", 10);
                 savedData.deserializeNBT(tagList3);
+
+                for (Map.Entry<String, Callable<INBTSerializable>> entry : extendedSaveData.entrySet()){
+                    if (!savedData.keySet().contains(entry.getKey())){
+                        try {
+                            savedData.put(entry.getKey(), entry.getValue().call());
+                        } catch (Exception e){
+                            throw new RuntimeException(e);
+                        }
+                    }
+                }
 
             }
         }
@@ -322,7 +334,7 @@ public class ServerHelper {
                 NBTTagList tagList2 = worldData.serializeNBT();
                 toFile(new NBTHelper().addToTag(tagList2, "dimData").serializeNBT(), new File(folder, "worldData.dat"));
 
-                String s = null;
+                /*String s = null;
                 for (Map.Entry<String, INBTSerializable<NBTTagCompound>> entry : saveDataInstances.entrySet()){
                     if (savedData.containsKey(entry.getKey())){
                         s = entry.getKey();
@@ -330,12 +342,12 @@ public class ServerHelper {
                     }
                     savedData.put(entry.getKey(), entry.getValue().serializeNBT());
                 }
-                saveDataInstances.clear();
+                saveDataInstances.clear();*/
                 NBTTagList tagList3 = savedData.serializeNBT();
-                toFile(new NBTHelper().addToTag(tagList2, "data").serializeNBT(), new File(folder, "savedData.dat"));
-                if (s != null){
-                    throw new IllegalStateException("Duplicate names were used: "+s);
-                }
+                toFile(new NBTHelper().addToTag(tagList3, "savedData").serializeNBT(), new File(folder, "savedData.dat"));
+                //if (s != null){
+                //    throw new IllegalStateException("Duplicate names were used: "+s);
+                //}
             }
         }
 

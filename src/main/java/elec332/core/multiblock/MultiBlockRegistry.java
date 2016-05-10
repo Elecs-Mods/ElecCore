@@ -10,8 +10,8 @@ import elec332.core.world.WorldHelper;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.culling.ICamera;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.common.MinecraftForge;
@@ -20,6 +20,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -133,6 +134,7 @@ public final class MultiBlockRegistry extends AbstractWorldRegistryHolder<MultiB
             } catch (Exception e){
                 throw new RuntimeException("Error invoking class: "+clazz.getName()+" Please make sure the constructor has no arguments!", e);
             }
+            multiBlock.initMain(bottomLeft, facing, allLocations, this, structureRegistry.getIdentifier(multiBlockStructure));
             boolean one = false;
             for (BlockPos loc : allLocations){
                 TileEntity tile = WorldHelper.getTileAt(world, loc);
@@ -141,9 +143,9 @@ public final class MultiBlockRegistry extends AbstractWorldRegistryHolder<MultiB
                     one = true;
                 }
             }
-            if (!one)
+            if (!one) {
                 throw new IllegalArgumentException("A multiblock must contain at LEAST 1 IMultiBlockTile");
-            multiBlock.initMain(bottomLeft, facing, allLocations, this, structureRegistry.getIdentifier(multiBlockStructure));
+            }
             activeMultiBlocks.add(multiBlock);
         }
 
@@ -152,7 +154,12 @@ public final class MultiBlockRegistry extends AbstractWorldRegistryHolder<MultiB
          */
         @Override
         public void tick() {
-            for (IMultiBlock multiBlock : activeMultiBlocks){
+            for (IMultiBlock multiBlock : new Iterable<IMultiBlock>() {
+                @Override
+                public Iterator<IMultiBlock> iterator() {
+                    return activeMultiBlocks.listIterator();
+                }
+            }){
                 multiBlock.onTick();
             }
         }

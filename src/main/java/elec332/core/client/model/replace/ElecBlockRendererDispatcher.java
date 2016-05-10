@@ -1,21 +1,5 @@
 package elec332.core.client.model.replace;
 
-import elec332.core.client.model.INoJsonBlock;
-import elec332.core.client.model.RenderingRegistry;
-import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.renderer.*;
-import net.minecraft.client.renderer.block.model.IBakedModel;
-import net.minecraft.client.renderer.block.model.WeightedBakedModel;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.resources.IResourceManager;
-import net.minecraft.crash.CrashReport;
-import net.minecraft.crash.CrashReportCategory;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.ReportedException;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.IBlockAccess;
-import net.minecraft.world.WorldType;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 

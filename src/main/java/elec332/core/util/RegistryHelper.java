@@ -12,7 +12,6 @@ import net.minecraft.util.SoundEvent;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraftforge.fml.common.registry.FMLControlledNamespacedRegistry;
 import net.minecraftforge.fml.common.registry.GameData;
-import net.minecraftforge.fml.common.registry.GameRegistry;
 
 /**
  * Created by Elec332 on 5-4-2016.

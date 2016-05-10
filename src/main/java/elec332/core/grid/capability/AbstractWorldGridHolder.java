@@ -9,8 +9,8 @@ import mcmultipart.event.PartEvent;
 import mcmultipart.multipart.IMultipart;
 import mcmultipart.multipart.IMultipartContainer;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
@@ -19,7 +19,9 @@ import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.event.world.ChunkEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-import java.util.*;
+import java.util.ArrayDeque;
+import java.util.Collection;
+import java.util.Queue;
 
 /**
  * Created by Elec332 on 23-4-2015.

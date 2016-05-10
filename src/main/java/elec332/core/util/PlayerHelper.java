@@ -71,11 +71,12 @@ public class PlayerHelper {
         return player.capabilities.isCreativeMode;
     }
 
-    public static RayTraceResult getPosPlayerIsLookingAt(EntityPlayer player, Double range){
-        return player.rayTrace(range, 1.0F);
+    public static RayTraceResult getPosPlayerIsLookingAt(EntityPlayer player, double range){
+        return RayTraceHelper.rayTrace(player, range);
     }
 
     public static boolean arePlayersEqual(EntityPlayer player1, EntityPlayer player2){
         return player1.getUniqueID() == player2.getUniqueID();
     }
+
 }

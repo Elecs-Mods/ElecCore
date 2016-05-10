@@ -6,6 +6,7 @@ import elec332.core.tile.TileBase;
 import elec332.core.world.WorldHelper;
 import mcp.mobius.waila.api.IWailaConfigHandler;
 import mcp.mobius.waila.api.IWailaDataAccessor;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.Container;
@@ -13,6 +14,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
@@ -25,7 +27,9 @@ import java.util.List;
  */
 public abstract class AbstractMultiBlock extends IMultiBlock implements IInventoryTile, WailaCompatHandler.IWailaInfoTile, IMultiBlockCapabilityProvider {
 
-    public abstract boolean onAnyBlockActivated(EntityPlayer player);
+    public boolean onAnyBlockActivated(EntityPlayer player, EnumHand hand, ItemStack stack, BlockPos pos, IBlockState state){
+        return false;
+    }
 
     public boolean isSaveDelegate(AbstractMultiBlockTile tile){
         return tile.getPos().equals(getLocation());

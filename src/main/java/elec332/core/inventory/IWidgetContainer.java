@@ -11,6 +11,6 @@ public interface IWidgetContainer {
 
     public List<Widget> getWidgets();
 
-    public void addWidget(Widget widget);
+    public <W extends Widget> W addWidget(W widget);
 
 }

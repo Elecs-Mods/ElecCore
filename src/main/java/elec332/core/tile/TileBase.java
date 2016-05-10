@@ -18,14 +18,14 @@ import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Elec332 on 8-4-2015.
@@ -155,7 +155,7 @@ public class TileBase extends TileEntity implements IElecCoreNetworkTile {
     public void onBlockClicked(EntityPlayer player){
     }
 
-    public ArrayList<ItemStack> getDrops(int fortune){
+    public List<ItemStack> getDrops(int fortune){
         return Lists.newArrayList(itemStackFromNBTTile());
     }
 

@@ -5,8 +5,8 @@ import elec332.core.main.ElecCore;
 import elec332.core.registry.IWorldRegistry;
 import elec332.core.world.WorldHelper;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import java.util.ArrayDeque;

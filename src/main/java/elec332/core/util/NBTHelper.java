@@ -8,6 +8,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.common.util.INBTSerializable;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.Callable;
 
 /**
@@ -51,6 +52,11 @@ public class NBTHelper implements INBTSerializable<NBTTagCompound> {
 
     public NBTHelper addToTag(int i, String s){
         tagCompound.setInteger(s, i);
+        return this;
+    }
+
+    public NBTHelper addToTag(UUID uuid, String s){
+        tagCompound.setUniqueId(s, uuid);
         return this;
     }
 
@@ -122,6 +128,10 @@ public class NBTHelper implements INBTSerializable<NBTTagCompound> {
 
     public String getString(String s){
         return tagCompound.getString(s);
+    }
+
+    public UUID getUUID(String s){
+        return tagCompound.getUniqueId(s);
     }
 
     public <E extends Enum> E getEnum(String s, Class<E> c){

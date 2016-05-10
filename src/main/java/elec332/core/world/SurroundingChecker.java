@@ -1,11 +1,9 @@
 package elec332.core.world;
 
 import com.google.common.collect.Maps;
-import elec332.core.world.PositionedObjectHolder;
-import elec332.core.world.WorldHelper;
 import net.minecraft.block.Block;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.world.BlockEvent;

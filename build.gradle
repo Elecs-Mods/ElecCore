@@ -50,6 +50,9 @@ version = "${config.minecraft_version}-${config.mod_version}." + (System.env.DRO
 group= "elec332.core" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "ElecCore"
 
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
 minecraft {
     version = config.minecraft_version + "-" + config.forge_version
     runDir = "run"

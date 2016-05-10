@@ -1,20 +1,12 @@
 package elec332.core.client.model;
 
-import elec332.core.client.model.model.IBlockModelWithoutQuads;
-import elec332.core.client.model.model.IItemModel;
-import elec332.core.client.model.model.IModelAndTextureLoader;
-import elec332.core.client.model.model.IQuadProvider;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-
-import java.util.List;
 
 /**
  * Created by Elec332 on 15-11-2015.

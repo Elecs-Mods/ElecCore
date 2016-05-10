@@ -16,8 +16,8 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
@@ -195,7 +195,8 @@ public final class MultiBlockStructureRegistry implements IMessageHandler<MultiB
                 @Override
                 public void forPos(int length, int width, int height) {
                     BlockPos translated = getTranslated(x, y, z, side, length, width, height);
-                    if (!multiBlock.getStructure()[length][width][height].equals(atLocation(world, translated)) || hasMultiBlock(translated, world)){
+                    BlockStateWrapper bsw = multiBlock.getStructure()[length][width][height];
+                    if (bsw != null && !bsw.equals(atLocation(world, translated)) || hasMultiBlock(translated, world)){
                         System.out.println("Checking MB failed at relative: "+length+", "+width+", "+height);
                         System.out.println("Found: "+atLocation(world, translated)+", expected: "+multiBlock.getStructure()[length][width][height]);
                         throw new RuntimeException("INVALID");

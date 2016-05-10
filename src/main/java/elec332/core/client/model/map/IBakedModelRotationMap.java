@@ -1,6 +1,5 @@
 package elec332.core.client.model.map;
 
-import elec332.core.client.model.model.IQuadProvider;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.block.model.ModelRotation;
 import net.minecraftforge.fml.relauncher.Side;

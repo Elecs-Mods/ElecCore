@@ -15,6 +15,10 @@ public class WidgetButtonArrow extends WidgetButton {
 
     private final Direction direction;
 
+    public Direction getDirection() {
+        return direction;
+    }
+
     @Override
     public void draw(Gui gui, int guiX, int guiY, int mouseX, int mouseY) {
         bindTexture(new ResourceLocation("eleccore", "buttons.png"));

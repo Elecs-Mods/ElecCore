@@ -41,12 +41,14 @@ public class BaseContainer extends Container implements IWidgetContainer{
     }
 
     @Override
-    public void addWidget(Widget widget) {
+    public <W extends Widget> W addWidget(W widget) {
         widget.setContainer(this);
         widget.setID(widgets.size());
-        for (Object obj : listeners)
-            widget.initWidget((ICrafting)obj);
+        for (Object obj : listeners) {
+            widget.initWidget((ICrafting) obj);
+        }
         this.widgets.add(widget);
+        return widget;
     }
 
     public void addPlayerInventoryToContainer(){

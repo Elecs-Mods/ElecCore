@@ -49,14 +49,13 @@ public class BasicInventory implements IInventory {
             ItemStack itemstack;
             if (this.inventoryContents[slotID].stackSize <= size) {
                 itemstack = this.inventoryContents[slotID];
-                this.inventoryContents[slotID] = null;
+                setInventorySlotContents(slotID, null);
                 this.markDirty();
                 return itemstack;
-            }
-            else {
+            } else {
                 itemstack = this.inventoryContents[slotID].splitStack(size);
                 if (this.inventoryContents[slotID].stackSize == 0) {
-                    this.inventoryContents[slotID] = null;
+                    setInventorySlotContents(slotID, null);
                 }
                 this.markDirty();
                 return itemstack;
@@ -81,11 +80,13 @@ public class BasicInventory implements IInventory {
 
     @Override
     public void setInventorySlotContents(int slotID, ItemStack stack) {
-        this.inventoryContents[slotID] = stack;
-        if (stack != null && stack.stackSize > this.getInventoryStackLimit()) {
-            stack.stackSize = this.getInventoryStackLimit();
+        if (stack == null || isItemValidForSlot(slotID, stack)) {
+            this.inventoryContents[slotID] = stack;
+            if (stack != null && stack.stackSize > this.getInventoryStackLimit()) {
+                stack.stackSize = this.getInventoryStackLimit();
+            }
+            this.markDirty();
         }
-        this.markDirty();
     }
 
     public boolean canAddItemStackFully(ItemStack itemStack, int i, boolean ignoreNBT){
@@ -128,8 +129,9 @@ public class BasicInventory implements IInventory {
 
     @Override
     public void markDirty() {
-        if (tile != null)
+        if (tile != null) {
             tile.markDirty();
+        }
     }
 
     @Override
@@ -171,7 +173,7 @@ public class BasicInventory implements IInventory {
     @Override
     public void clear() {
         for (int i = 0; i < inventoryContents.length; i++) {
-            inventoryContents[i] = null;
+            setInventorySlotContents(i, null);
         }
     }
 

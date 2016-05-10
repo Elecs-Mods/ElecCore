@@ -22,9 +22,7 @@ import net.minecraftforge.common.model.TRSRTransformation;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import org.lwjgl.util.vector.Matrix4f;
 
-import javax.vecmath.Quat4f;
 import javax.vecmath.Vector3f;
 import java.util.Map;
 

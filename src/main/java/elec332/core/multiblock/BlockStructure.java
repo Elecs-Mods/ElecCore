@@ -3,7 +3,6 @@ package elec332.core.multiblock;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import elec332.core.world.location.BlockStateWrapper;
-import net.minecraft.block.Block;
 import net.minecraft.item.ItemStack;
 
 import java.util.List;
@@ -35,11 +34,11 @@ public final class BlockStructure {
                         i++;
                         allBlocks.remove(blockData);
                         allBlocks.put(blockData, i);
-                    } else if (blockData != null){
+                    } else /*if (blockData != null)*/{
                         structure[l][w][h] = blockData;
-                    } else {
+                    }/* else {
                         structure[l][w][h] = new BlockStateWrapper((Block)null);
-                    }
+                    }*/
                 }
             }
         }

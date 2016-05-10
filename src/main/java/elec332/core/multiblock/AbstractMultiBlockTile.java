@@ -13,9 +13,9 @@ import net.minecraft.inventory.Container;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.fml.common.FMLCommonHandler;
@@ -35,11 +35,11 @@ public abstract class AbstractMultiBlockTile extends TileBase implements IMultiB
     private MultiBlockData multiBlockData;
 
     @Override
-    public final boolean onBlockActivated(IBlockState state, EntityPlayer player, EnumHand hand, ItemStack stack, EnumFacing side, float hitX, float hitY, float hitZ) {
-        return getMultiBlock() == null ? onBlockActivatedBy(player, side, hitX, hitY, hitZ) : getMultiBlock().onAnyBlockActivated(player);
+    public boolean onBlockActivated(IBlockState state, EntityPlayer player, EnumHand hand, ItemStack stack, EnumFacing side, float hitX, float hitY, float hitZ) {
+        return getMultiBlock() == null ? onBlockActivatedBy(state, player, hand, stack, side, hitX, hitY, hitZ) : getMultiBlock().onAnyBlockActivated(player, hand, stack, pos, state);
     }
 
-    public boolean onBlockActivatedBy(EntityPlayer player, EnumFacing side, float hitX, float hitY, float hitZ){
+    public boolean onBlockActivatedBy(IBlockState state, EntityPlayer player, EnumHand hand, ItemStack stack, EnumFacing side, float hitX, float hitY, float hitZ){
         return false;
     }
 
@@ -185,7 +185,7 @@ public abstract class AbstractMultiBlockTile extends TileBase implements IMultiB
     @Override
     public final boolean hasCapability(Capability<?> capability, EnumFacing facing) {
         boolean hasMB = getMultiBlock() != null;
-        return hasCapability(capability, facing, hasMB) || hasMultiBlockCapability(capability, facing);
+        return hasCapability(capability, facing, hasMB);// || hasMultiBlockCapability(capability, facing);
     }
 
     public boolean hasCapability(Capability<?> capability, EnumFacing facing, boolean hasMultiBlock){
@@ -203,10 +203,10 @@ public abstract class AbstractMultiBlockTile extends TileBase implements IMultiB
     @Override
     public final <T> T getCapability(Capability<T> capability, EnumFacing facing) {
         boolean hasMB = getMultiBlock() != null;
-        if (hasCapability(capability, facing, hasMB)){
+        //if (hasCapability(capability, facing, hasMB)){
             return getCapability(capability, facing, hasMB);
-        }
-        return getMultiBlockCapability(capability, facing);
+        //}
+        //return getMultiBlockCapability(capability, facing);
     }
 
     public <T> T getCapability(Capability<T> capability, EnumFacing facing, boolean hasMultiBlock) {

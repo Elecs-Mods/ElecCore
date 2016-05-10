@@ -1,7 +1,7 @@
 package elec332.core.effects.api.ability;
 
-import net.minecraft.entity.EntityLivingBase;
 import elec332.core.util.StatCollector;
+import net.minecraft.entity.EntityLivingBase;
 
 import java.awt.*;
 
