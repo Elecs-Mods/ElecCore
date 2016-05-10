@@ -43,7 +43,7 @@ public abstract class AbstractWorldGridHolder<T extends ITileData, O> implements
     @SubscribeEvent
     public final void partAdd(PartEvent.Add event){
         IMultipart multiPart = event.part;
-        if (multiPart.getWorld().isRemote) {
+        if (!multiPart.getWorld().isRemote) {
             if (WorldHelper.getDimID(multiPart.getWorld()) != WorldHelper.getDimID(world)) {
                 return;
             }
@@ -67,7 +67,7 @@ public abstract class AbstractWorldGridHolder<T extends ITileData, O> implements
     @SubscribeEvent
     public final void partRemove(PartEvent.Remove event){
         IMultipart multiPart = event.part;
-        if (multiPart.getWorld().isRemote) {
+        if (!multiPart.getWorld().isRemote) {
             if (WorldHelper.getDimID(multiPart.getWorld()) != WorldHelper.getDimID(world)) {
                 return;
             }
