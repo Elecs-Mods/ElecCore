@@ -80,10 +80,17 @@ public class WidgetButton extends Widget {
             GL11.glEnable(GL11.GL_BLEND);
             OpenGlHelper.glBlendFunc(770, 771, 1, 0);
             GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-            gui.drawTexturedModalRect(guiX + this.x, guiY + this.y, 0, 46 + k * 20, this.width / 2, this.height);
-            gui.drawTexturedModalRect(guiX + this.x + this.width / 2, guiY + this.y, 200 - this.width / 2, 46 + k * 20, this.width / 2, this.height);
+            //Left half
+            gui.drawTexturedModalRect(guiX + this.x, guiY + this.y, 0, 46 + k * 20, this.width / 2, this.height / 2);
+            gui.drawTexturedModalRect(guiX + this.x, guiY + this.y + this.height / 2, 0, 46 + k * 20 + 20 - this.height / 2, this.width / 2, this.height / 2);
+            //Right half
+            gui.drawTexturedModalRect(guiX + this.x + this.width / 2, guiY + this.y, 200 - this.width / 2, 46 + k * 20, this.width / 2, this.height / 2);
+            gui.drawTexturedModalRect(guiX + this.x + this.width / 2, guiY + this.y + this.height / 2, 200 - this.width / 2, 46 + k * 20 + 20 - this.height / 2, this.width / 2, this.height / 2);
+            //Vanilla code
+            //gui.drawTexturedModalRect(guiX + this.x, guiY + this.y, 0, 46 + k * 20, this.width / 2, this.height);
+            //gui.drawTexturedModalRect(guiX + this.x + this.width / 2, guiY + this.y, 200 - this.width / 2, 46 + k * 20, this.width / 2, this.height);
             int l = 14737632;
-            if (this.isHidden()) {
+            if (!active) {
                 l = 10526880;
             } else if (hovering) {
                 l = 16777120;
@@ -94,7 +101,7 @@ public class WidgetButton extends Widget {
 
     protected int getHoverState(boolean hovering) {
         byte b = 1;
-        if (isHidden()) {
+        if (!active) {
             b = 0;
         } else if (hovering) {
             b = 2;
