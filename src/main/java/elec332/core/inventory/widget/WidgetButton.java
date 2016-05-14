@@ -19,6 +19,14 @@ import java.util.List;
 @SuppressWarnings("unused")
 public class WidgetButton extends Widget {
 
+    public WidgetButton(int x, int y, int width, int height){
+        this(x, y, 0, 0, width, height);
+    }
+
+    public WidgetButton(int x, int y, int width, int height, IButtonEvent... events) {
+        this(x, y, 0, 0, width, height, events);
+    }
+
     public WidgetButton(int x, int y, int u, int v, int width, int height) {
         super(x, y, u, v, width, height);
         this.buttonEvents = Lists.newArrayList();
