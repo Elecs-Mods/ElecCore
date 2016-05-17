@@ -25,7 +25,7 @@ import java.util.List;
 /**
  * Created by Elec332 on 28-7-2015.
  */
-public abstract class AbstractMultiBlock extends IMultiBlock implements IInventoryTile, WailaCompatHandler.IWailaInfoTile, IMultiBlockCapabilityProvider {
+public abstract class AbstractMultiBlock extends IMultiBlock implements IInventoryTile, WailaCompatHandler.IWailaInfoTile, IMultiBlockCapabilityProvider, ISpecialMultiBlockCapabilityProvider {
 
     public boolean onAnyBlockActivated(EntityPlayer player, EnumHand hand, ItemStack stack, BlockPos pos, IBlockState state){
         return false;
@@ -106,6 +106,11 @@ public abstract class AbstractMultiBlock extends IMultiBlock implements IInvento
 
     @Override
     public <T> T getCapability(Capability<T> capability, EnumFacing facing, @Nonnull BlockPos pos) {
+        return null;
+    }
+
+    @Override
+    public <T> T getSpecialCapability(Capability<T> capability, EnumFacing facing, @Nonnull BlockPos pos) {
         return null;
     }
 

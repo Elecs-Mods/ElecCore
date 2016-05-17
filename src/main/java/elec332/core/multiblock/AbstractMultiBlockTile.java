@@ -189,7 +189,7 @@ public abstract class AbstractMultiBlockTile extends TileBase implements IMultiB
     }
 
     public boolean hasCapability(Capability<?> capability, EnumFacing facing, boolean hasMultiBlock){
-        return canFetchNonMultiBlockCapabilities(hasMultiBlock) && hasBaseCapability(capability, facing);
+        return (canFetchNonMultiBlockCapabilities(hasMultiBlock) && hasBaseCapability(capability, facing)) || hasMultiBlockCapability(capability, facing);
     }
 
     public final boolean hasMultiBlockCapability(Capability<?> capability, EnumFacing facing){
@@ -210,7 +210,11 @@ public abstract class AbstractMultiBlockTile extends TileBase implements IMultiB
     }
 
     public <T> T getCapability(Capability<T> capability, EnumFacing facing, boolean hasMultiBlock) {
-        return !canFetchNonMultiBlockCapabilities(hasMultiBlock) ? null : getBaseCapability(capability, facing);
+        T t = !canFetchNonMultiBlockCapabilities(hasMultiBlock) ? null : getBaseCapability(capability, facing);
+        if (t == null){
+            return getMultiBlockCapability(capability, facing);
+        }
+        return t;
     }
 
     public final <T> T getMultiBlockCapability(Capability<T> capability, EnumFacing facing){
