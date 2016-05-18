@@ -1,6 +1,7 @@
 package elec332.core.multiblock;
 
 import elec332.core.compat.handlers.WailaCompatHandler;
+import elec332.core.multiblock.dynamic.ISpecialMultiBlockCapabilityProvider;
 import elec332.core.tile.IInventoryTile;
 import elec332.core.tile.TileBase;
 import elec332.core.world.WorldHelper;
