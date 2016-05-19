@@ -1,9 +1,10 @@
 package elec332.core.world;
 
 import com.google.common.collect.Maps;
-import net.minecraft.util.LongHashMap;
+import it.unimi.dsi.fastutil.longs.Long2ObjectLinkedOpenHashMap;
+import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.ChunkCoordIntPair;
+import net.minecraft.util.math.ChunkPos;
 
 import java.util.Collections;
 import java.util.Map;
@@ -19,20 +20,20 @@ public class PositionedObjectHolder<T> {
 
     @SuppressWarnings("unused")
     private PositionedObjectHolder(int height){
-        positionedMap = new LongHashMap<PositionChunk>();
+        positionedMap = new Long2ObjectLinkedOpenHashMap<PositionChunk>();
     }
 
-    private LongHashMap<PositionChunk> positionedMap;
+    private Long2ObjectMap<PositionChunk> positionedMap;
 
     public T get(BlockPos pos){
         return getChunkForPos(WorldHelper.longFromBlockPos(pos)).get(pos);
     }
 
     private PositionChunk getChunkForPos(long chunkPos){
-        PositionChunk positionChunk = positionedMap.getValueByKey(chunkPos);
+        PositionChunk positionChunk = positionedMap.get(chunkPos);
         if (positionChunk == null){
             positionChunk = new PositionChunk();
-            positionedMap.add(chunkPos, positionChunk);
+            positionedMap.put(chunkPos, positionChunk);
         }
         return positionChunk;
     }
@@ -45,12 +46,12 @@ public class PositionedObjectHolder<T> {
         getChunkForPos(WorldHelper.longFromBlockPos(pos)).remove(pos);
     }
 
-    public Map<BlockPos, T> getObjectsInChunk(ChunkCoordIntPair chunk){
+    public Map<BlockPos, T> getObjectsInChunk(ChunkPos chunk){
         return getChunkForPos(WorldHelper.longFromChunkXZ(chunk)).publicVisibleMap;
     }
 
-    public boolean chunkExists(ChunkCoordIntPair chunk){
-        return positionedMap.containsItem(WorldHelper.longFromChunkXZ(chunk));
+    public boolean chunkExists(ChunkPos chunk){
+        return positionedMap.containsKey(WorldHelper.longFromChunkXZ(chunk));
     }
 
     /**

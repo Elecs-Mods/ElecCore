@@ -5,7 +5,7 @@ import elec332.core.inventory.slot.SlotOutput;
 import elec332.core.inventory.widget.Widget;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
-import net.minecraft.inventory.ICrafting;
+import net.minecraft.inventory.IContainerListener;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 
@@ -45,7 +45,7 @@ public class BaseContainer extends Container implements IWidgetContainer{
         widget.setContainer(this);
         widget.setID(widgets.size());
         for (Object obj : listeners) {
-            widget.initWidget((ICrafting) obj);
+            widget.initWidget((IContainerListener) obj);
         }
         this.widgets.add(widget);
         return widget;
@@ -69,11 +69,12 @@ public class BaseContainer extends Container implements IWidgetContainer{
         this.offset = offset;
     }
 
+
     @Override
-    public void onCraftGuiOpened(ICrafting iCrafting) {
+    public void addListener(IContainerListener iCrafting) {
         for (Widget widget : widgets)
             widget.initWidget(iCrafting);
-        super.onCraftGuiOpened(iCrafting);
+        super.addListener(iCrafting);
     }
 
     @Override

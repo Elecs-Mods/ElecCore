@@ -2,7 +2,7 @@ package elec332.core.inventory.widget;
 
 import elec332.core.inventory.IHasProgressBar;
 import net.minecraft.client.gui.Gui;
-import net.minecraft.inventory.ICrafting;
+import net.minecraft.inventory.IContainerListener;
 import net.minecraft.util.ResourceLocation;
 
 import java.util.List;
@@ -23,7 +23,7 @@ public class WidgetProgressArrow extends Widget {
     private int lastProgress;
 
     @Override
-    public void detectAndSendChanges(List<ICrafting> crafters) {
+    public void detectAndSendChanges(List<IContainerListener> crafters) {
         int progress = iHasProgressBar.getProgress();
         if (lastProgress != progress){
             sendProgressBarUpdate(crafters, progress);

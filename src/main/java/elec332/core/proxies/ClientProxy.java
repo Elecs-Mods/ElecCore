@@ -4,6 +4,7 @@ import elec332.core.client.model.ElecResourceManager;
 import elec332.core.client.newstuff.ElecModelHandler;
 import elec332.core.main.ElecCore;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.RenderItem;
 import net.minecraft.client.renderer.block.model.ModelManager;
 import net.minecraft.client.resources.IReloadableResourceManager;
 import net.minecraft.client.resources.IResourceManager;
@@ -68,11 +69,11 @@ public class ClientProxy extends CommonProxy {
 					return false;
 				}
 				return true;
-			} else*/ if (listener.getClass() == ModelManager.class){
+			} else*/ if (listener.getClass() == RenderItem.class){
 				resourceManager.registerReloadListener(new IResourceManagerReloadListener() {
 					@Override
 					public void onResourceManagerReload(IResourceManager resourceManager) {
-						ElecModelHandler.registerBlockModels((ModelManager)listener);
+						ElecModelHandler.registerBlockModels(minecraft.modelManager);
 						ElecModelHandler.registerItemModels(minecraft.renderItem);
 						ElecModelHandler.registerMultiPartModels();
 					}

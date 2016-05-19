@@ -25,6 +25,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.registry.IRegistry;
+import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.LoaderState;
 import net.minecraftforge.fml.common.discovery.ASMDataTable;
 import net.minecraftforge.fml.relauncher.Side;
@@ -49,6 +50,8 @@ public final class ElecModelHandler implements IASMDataProcessor {
     private static Map<Item, ModelResourceLocation> itemResourceLocations;
     private static Map<IBlockState, ModelResourceLocation> blockResourceLocations;
     private static Map<Pair<IBlockState, IMultipart>, ModelResourceLocation> multipartResourceLocations;
+
+    private static boolean mcmp = Loader.isModLoaded("mcmultipart");
 
     @Override
     public void processASMData(IASMDataHelper asmData, LoaderState state) {
@@ -122,27 +125,29 @@ public final class ElecModelHandler implements IASMDataProcessor {
     }
 
     public static void registerMultiPartModels(){
-        ElecCore.logger.info("Prehandling MultiParts");
-        for (final ResourceLocation part : MultipartRegistry.getRegisteredParts()){
-            for (final IMultipartModelHandler handler : multipartModelHandlers){
-                final IMultipart mPart = MultipartRegistry.createPart(part, new NBTTagCompound());
-                if (handler.handlePart(mPart)){
-                    MultipartRegistryClient.registerSpecialPartStateMapper(part, new StateMapperBase() {
-                        @Override
-                        public Map<IBlockState, ModelResourceLocation> putStateModelLocations(Block blockIn) {
-                            for (IBlockState iblockstate : MultipartRegistry.getDefaultState(part).getValidStates()) {
-                                this.mapStateModelLocations.put(iblockstate, this.getModelResourceLocation(iblockstate));
+        if (mcmp) {
+            ElecCore.logger.info("Prehandling MultiParts");
+            for (final ResourceLocation part : MultipartRegistry.getRegisteredParts()) {
+                for (final IMultipartModelHandler handler : multipartModelHandlers) {
+                    final IMultipart mPart = MultipartRegistry.createPart(part, new NBTTagCompound());
+                    if (handler.handlePart(mPart)) {
+                        MultipartRegistryClient.registerSpecialPartStateMapper(part, new StateMapperBase() {
+                            @Override
+                            public Map<IBlockState, ModelResourceLocation> putStateModelLocations(Block blockIn) {
+                                for (IBlockState iblockstate : MultipartRegistry.getDefaultState(part).getValidStates()) {
+                                    this.mapStateModelLocations.put(iblockstate, this.getModelResourceLocation(iblockstate));
+                                }
+                                return this.mapStateModelLocations;
                             }
-                            return this.mapStateModelLocations;
-                        }
 
-                        @Override
-                        protected ModelResourceLocation getModelResourceLocation(IBlockState state) {
-                            ModelResourceLocation mrl = new ModelResourceLocation(part, handler.getIdentifier(state, mPart));
-                            multipartResourceLocations.put(Pair.of(state, mPart), mrl);
-                            return mrl;
-                        }
-                    });
+                            @Override
+                            protected ModelResourceLocation getModelResourceLocation(IBlockState state) {
+                                ModelResourceLocation mrl = new ModelResourceLocation(part, handler.getIdentifier(state, mPart));
+                                multipartResourceLocations.put(Pair.of(state, mPart), mrl);
+                                return mrl;
+                            }
+                        });
+                    }
                 }
             }
         }
@@ -187,22 +192,24 @@ public final class ElecModelHandler implements IASMDataProcessor {
                 }
             }
         }
-        for (Map.Entry<Pair<IBlockState, IMultipart>, ModelResourceLocation> entry : multipartResourceLocations.entrySet()){
-            ModelResourceLocation mrl = entry.getValue();
-            for (IMultipartModelHandler handler : multipartModelHandlers){
-                Pair<IBlockState, IMultipart> pair = entry.getKey();
-                IMultipart multipart = pair.getRight();
-                if (handler.handlePart(multipart)){
-                    IBakedModel model = handler.getModelFor(multipart, pair.getLeft(), mrl.getVariant(), mrl);
-                    if (model == null){
-                        if (models.get(mrl) == null){
-                            o.add(mrl);
+        if (mcmp) {
+            for (Map.Entry<Pair<IBlockState, IMultipart>, ModelResourceLocation> entry : multipartResourceLocations.entrySet()) {
+                ModelResourceLocation mrl = entry.getValue();
+                for (IMultipartModelHandler handler : multipartModelHandlers) {
+                    Pair<IBlockState, IMultipart> pair = entry.getKey();
+                    IMultipart multipart = pair.getRight();
+                    if (handler.handlePart(multipart)) {
+                        IBakedModel model = handler.getModelFor(multipart, pair.getLeft(), mrl.getVariant(), mrl);
+                        if (model == null) {
+                            if (models.get(mrl) == null) {
+                                o.add(mrl);
+                            }
+                            break;
                         }
+                        models.put(mrl, model);
+                        ret.add(mrl);
                         break;
                     }
-                    models.put(mrl, model);
-                    ret.add(mrl);
-                    break;
                 }
             }
         }

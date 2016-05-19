@@ -69,9 +69,10 @@ public class TileBase extends TileEntity implements IElecCoreNetworkTile {
     }
 
     @Override
-    public void writeToNBT(NBTTagCompound tagCompound) {
+    public NBTTagCompound writeToNBT(NBTTagCompound tagCompound) {
         super.writeToNBT(tagCompound);
         writeToItemStack(tagCompound);
+        return tagCompound;
     }
 
     /**
@@ -218,11 +219,11 @@ public class TileBase extends TileEntity implements IElecCoreNetworkTile {
     }
 
     public void sendPacketTo(EntityPlayerMP player, int ID, NBTTagCompound data){
-        player.playerNetServerHandler.sendPacket(new SPacketUpdateTileEntity(getPos(), ID, data));
+        player.connection.sendPacket(new SPacketUpdateTileEntity(getPos(), ID, data));
     }
 
     @Override
-    public Packet getDescriptionPacket() {
+    public SPacketUpdateTileEntity getUpdatePacket() {
         NBTTagCompound nbtTag = new NBTTagCompound();
         writeToNBT(nbtTag);
         return new SPacketUpdateTileEntity(getPos(), 0, nbtTag);
@@ -237,4 +238,5 @@ public class TileBase extends TileEntity implements IElecCoreNetworkTile {
 
     public void onDataPacket(int id, NBTTagCompound tag){
     }
+
 }

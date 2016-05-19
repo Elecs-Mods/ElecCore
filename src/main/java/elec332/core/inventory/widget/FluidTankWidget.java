@@ -6,7 +6,7 @@ import elec332.core.inventory.tooltip.ToolTip;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.inventory.ICrafting;
+import net.minecraft.inventory.IContainerListener;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTank;
@@ -29,9 +29,9 @@ public class FluidTankWidget extends Widget {
     private int capacity;
 
     @Override
-    public void detectAndSendChanges(List<ICrafting> crafters) {
+    public void detectAndSendChanges(List<IContainerListener> crafters) {
         if (capacity != tank.getCapacity() || nullityDiffers(fluidStack, tank.getFluid()) || fluidStack != null && !fluidStack.isFluidStackIdentical(tank.getFluid())) {
-            for (ICrafting iCrafting : crafters) {
+            for (IContainerListener iCrafting : crafters) {
                 if (iCrafting instanceof EntityPlayerMP) {
                     NBTTagCompound tag = new NBTTagCompound();
                     if (tank.getFluid() != null) {

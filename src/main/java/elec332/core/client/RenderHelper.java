@@ -3,7 +3,7 @@ package elec332.core.client;
 import com.google.common.collect.Maps;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.particle.EntityFX;
+import net.minecraft.client.particle.Particle;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.VertexBuffer;
@@ -174,7 +174,7 @@ public class RenderHelper {
         return TextureMap.LOCATION_BLOCKS_TEXTURE;
     }
 
-    public void spawnParticle(EntityFX particle){
+    public void spawnParticle(Particle particle){
         mc.effectRenderer.addEffect(particle);
     }
 

@@ -9,7 +9,7 @@ import net.minecraft.item.crafting.FurnaceRecipes;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionType;
 import net.minecraft.util.SoundEvent;
-import net.minecraft.world.biome.BiomeGenBase;
+import net.minecraft.world.biome.Biome;
 import net.minecraftforge.fml.common.registry.FMLControlledNamespacedRegistry;
 import net.minecraftforge.fml.common.registry.GameData;
 
@@ -30,8 +30,8 @@ public class RegistryHelper {
         return (FMLControlledNamespacedRegistry<Potion>)Potion.REGISTRY;
     }
 
-    public static FMLControlledNamespacedRegistry<BiomeGenBase> getBiomeRegistry() {
-        return (FMLControlledNamespacedRegistry<BiomeGenBase>)BiomeGenBase.REGISTRY;
+    public static FMLControlledNamespacedRegistry<Biome> getBiomeRegistry() {
+        return (FMLControlledNamespacedRegistry<Biome>)Biome.REGISTRY;
     }
 
     public static FMLControlledNamespacedRegistry<SoundEvent> getSoundEventRegistry() {

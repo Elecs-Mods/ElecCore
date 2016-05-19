@@ -11,7 +11,7 @@ import mcmultipart.multipart.IMultipartContainer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.ChunkCoordIntPair;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
@@ -91,7 +91,7 @@ public abstract class AbstractWorldGridHolder<T extends ITileData, O> implements
     public final void chunkUnload(ChunkEvent.Unload event){
         World world = event.getWorld();
         if (!world.isRemote && WorldHelper.getDimID(world) == WorldHelper.getDimID(this.world)) {
-            ChunkCoordIntPair chunkPos = event.getChunk().getChunkCoordIntPair();
+            ChunkPos chunkPos = event.getChunk().getChunkCoordIntPair();
             if (registeredTiles.chunkExists(chunkPos)) {
                 Collection<T> list = registeredTiles.getObjectsInChunk(chunkPos).values();
                 if (!list.isEmpty()) {

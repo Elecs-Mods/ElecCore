@@ -121,11 +121,11 @@ public class BlockTileBase extends Block implements IWrenchable, ITileEntityProv
     }
 
     @Override
-    public void onNeighborBlockChange(World world, BlockPos pos, IBlockState state, Block neighbor) {
+    public void neighborChanged(IBlockState state, World world, BlockPos pos, Block neighbor) {
         TileEntity tile = WorldHelper.getTileAt(world, pos);
         if (tile instanceof TileBase)
             ((TileBase) tile).onNeighborBlockChange(neighbor);
-        super.onNeighborBlockChange(world, pos, state, neighbor);
+        super.neighborChanged(state, world, pos, neighbor);
     }
 
     @Override
@@ -143,7 +143,6 @@ public class BlockTileBase extends Block implements IWrenchable, ITileEntityProv
             ((TileBase) tile).onBlockAdded();
         super.onBlockAdded(world, pos, state);
     }
-
 
     @Override
     public void breakBlock(World world, BlockPos pos, IBlockState state) {

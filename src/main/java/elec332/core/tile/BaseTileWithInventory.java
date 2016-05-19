@@ -135,7 +135,7 @@ public abstract class BaseTileWithInventory extends TileBase implements IInvento
         }
     }
 
-    public void writeToNBT(NBTTagCompound compound) {
+    public NBTTagCompound writeToNBT(NBTTagCompound compound) {
         super.writeToNBT(compound);
         NBTTagList nbttaglist = new NBTTagList();
         for (int i = 0; i < this.inventoryContent.length; ++i) {
@@ -150,6 +150,7 @@ public abstract class BaseTileWithInventory extends TileBase implements IInvento
         if (this.hasCustomInventoryName()) {
             compound.setString("CustomName", this.customInventoryName);
         }
+        return compound;
     }
 
     /**

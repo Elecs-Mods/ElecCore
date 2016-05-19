@@ -13,8 +13,8 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
@@ -28,20 +28,20 @@ import net.minecraftforge.common.ForgeChunkManager;
 @SuppressWarnings("unused")
 public class WorldHelper {
 
-    public static ChunkCoordIntPair chunkCoordFromBlockPos(BlockPos pos){
-        return new ChunkCoordIntPair(pos.getX() >> 4, pos.getZ() >> 4);
+    public static ChunkPos chunkCoordFromBlockPos(BlockPos pos){
+        return new ChunkPos(pos.getX() >> 4, pos.getZ() >> 4);
     }
 
     public static long longFromBlockPos(BlockPos pos){
-        return ChunkCoordIntPair.chunkXZ2Int(pos.getX() >> 4, pos.getZ() >> 4);
+        return ChunkPos.chunkXZ2Int(pos.getX() >> 4, pos.getZ() >> 4);
     }
 
     public static long longFromChunk(Chunk chunk){
         return longFromChunkXZ(chunk.getChunkCoordIntPair());
     }
 
-    public static long longFromChunkXZ(ChunkCoordIntPair chunkCoordIntPair){
-        return ChunkCoordIntPair.chunkXZ2Int(chunkCoordIntPair.chunkXPos, chunkCoordIntPair.chunkZPos);
+    public static long longFromChunkXZ(ChunkPos chunkCoordIntPair){
+        return ChunkPos.chunkXZ2Int(chunkCoordIntPair.chunkXPos, chunkCoordIntPair.chunkZPos);
     }
 
     public static void reRenderBlock(TileEntity tile){
@@ -84,8 +84,8 @@ public class WorldHelper {
         return ticket;
     }
 
-    public static ChunkCoordIntPair fromBlockLoc(BlockPos loc){
-        return new ChunkCoordIntPair(loc.getX() >> 4, loc.getZ() >> 4);
+    public static ChunkPos fromBlockLoc(BlockPos loc){
+        return new ChunkPos(loc.getX() >> 4, loc.getZ() >> 4);
     }
 
     public static void forceChunk(ForgeChunkManager.Ticket ticket){

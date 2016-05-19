@@ -15,7 +15,7 @@ import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.management.PlayerManager;
+import net.minecraft.server.management.PlayerChunkMap;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
@@ -183,7 +183,7 @@ public class ServerHelper {
     public List<EntityPlayerMP> getAllPlayersWatchingBlock(World world, int x, int z){
         List<EntityPlayerMP> ret = Lists.newArrayList();
         if (world instanceof WorldServer) {
-            PlayerManager playerManager = ((WorldServer) world).getPlayerChunkMap();
+            PlayerChunkMap playerManager = ((WorldServer) world).getPlayerChunkMap();
             for (EntityPlayerMP player : getOnlinePlayers()) {
                 Chunk chunk = world.getChunkFromChunkCoords(x >> 4, z >> 4);
                 if (playerManager.isPlayerWatchingChunk(player, chunk.xPosition, chunk.zPosition)) {

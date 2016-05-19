@@ -10,7 +10,7 @@ import elec332.core.network.PacketWidgetDataToServer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.Container;
-import net.minecraft.inventory.ICrafting;
+import net.minecraft.inventory.IContainerListener;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
@@ -47,19 +47,19 @@ public class Widget {
     public final int x, y, u, v, width, height;
     private boolean hidden;
 
-    public void initWidget(ICrafting iCrafting){
+    public void initWidget(IContainerListener iCrafting){
         detectAndSendChanges(Lists.newArrayList(iCrafting));
     }
 
-    public void detectAndSendChanges(List<ICrafting> crafters){
+    public void detectAndSendChanges(List<IContainerListener> crafters){
     }
 
-    public void sendProgressBarUpdate(List<ICrafting> crafters, int value){
-        for (ICrafting iCrafting : crafters)
+    public void sendProgressBarUpdate(List<IContainerListener> crafters, int value){
+        for (IContainerListener iCrafting : crafters)
             iCrafting.sendProgressBarUpdate((Container)container, id, value);
     }
 
-    public void sendProgressBarUpdate(ICrafting iCrafting, int value){
+    public void sendProgressBarUpdate(IContainerListener iCrafting, int value){
         iCrafting.sendProgressBarUpdate((Container)container, id, value);
     }
 

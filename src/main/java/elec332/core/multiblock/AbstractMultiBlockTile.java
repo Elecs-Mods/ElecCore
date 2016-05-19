@@ -44,7 +44,7 @@ public abstract class AbstractMultiBlockTile extends TileBase implements IMultiB
     }
 
     @Override
-    public void writeToNBT(NBTTagCompound tagCompound) {
+    public NBTTagCompound writeToNBT(NBTTagCompound tagCompound) {
         super.writeToNBT(tagCompound);
         multiBlockData.writeToNBT(tagCompound);
         if (getMultiBlock() != null){
@@ -52,6 +52,7 @@ public abstract class AbstractMultiBlockTile extends TileBase implements IMultiB
                 getMultiBlock().writeToNBT(tagCompound);
             }
         }
+        return tagCompound;
     }
 
     @Override
