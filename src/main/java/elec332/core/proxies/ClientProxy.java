@@ -69,13 +69,15 @@ public class ClientProxy extends CommonProxy {
 					return false;
 				}
 				return true;
-			} else*/ if (listener.getClass() == RenderItem.class){
+			} else*/ if (listener.getClass() == ModelManager.class){
 				resourceManager.registerReloadListener(new IResourceManagerReloadListener() {
 					@Override
 					public void onResourceManagerReload(IResourceManager resourceManager) {
-						ElecModelHandler.registerBlockModels(minecraft.modelManager);
-						ElecModelHandler.registerItemModels(minecraft.renderItem);
-						ElecModelHandler.registerMultiPartModels();
+						if (minecraft.renderItem != null) {
+							ElecModelHandler.registerBlockModels(minecraft.modelManager);
+							ElecModelHandler.registerItemModels(minecraft.renderItem);
+							ElecModelHandler.registerMultiPartModels();
+						}
 					}
 				});
 				return true;
