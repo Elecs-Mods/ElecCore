@@ -25,6 +25,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import javax.annotation.Nonnull;
 import java.util.List;
 
 /**
@@ -223,10 +224,13 @@ public class TileBase extends TileEntity implements IElecCoreNetworkTile {
     }
 
     @Override
+    public NBTTagCompound getUpdateTag() {
+        return writeToNBT(new NBTTagCompound());
+    }
+
+    @Override
     public SPacketUpdateTileEntity getUpdatePacket() {
-        NBTTagCompound nbtTag = new NBTTagCompound();
-        writeToNBT(nbtTag);
-        return new SPacketUpdateTileEntity(getPos(), 0, nbtTag);
+        return new SPacketUpdateTileEntity(getPos(), 0, getUpdateTag());
     }
 
     @Override
