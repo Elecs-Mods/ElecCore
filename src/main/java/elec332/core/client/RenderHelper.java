@@ -33,6 +33,7 @@ import java.util.Map;
 public class RenderHelper {
 
     public static final float renderUnit = 1/16f;
+    public static final double BB_EXPAND_NUMBER = 0.0020000000949949026D;
     private static final Tessellator mcTessellator;
     private static final ITessellator tessellator;
     private static final Minecraft mc;
