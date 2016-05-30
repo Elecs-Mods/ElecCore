@@ -3,6 +3,8 @@ package elec332.core.util;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
 import net.minecraftforge.oredict.OreDictionary;
 
 import java.util.ArrayList;
@@ -12,6 +14,40 @@ import java.util.List;
  * Created by Elec332 on 27-3-2015.
  */
 public class InventoryHelper {
+
+    public static NBTTagCompound writeStacksToNBT(ItemStack[] stacks){
+        NBTTagCompound compound = new NBTTagCompound();
+        if (stacks != null) {
+            NBTTagList nbttaglist = new NBTTagList();
+            for (int i = 0; i < stacks.length; ++i) {
+                if (stacks[i] != null) {
+                    NBTTagCompound tag = new NBTTagCompound();
+                    tag.setByte("Slot", (byte) i);
+                    stacks[i].writeToNBT(tag);
+                    nbttaglist.appendTag(tag);
+                }
+            }
+            compound.setTag("Items", nbttaglist);
+            compound.setInteger("SlotCount", stacks.length);
+        }
+        return compound;
+    }
+
+    public static ItemStack[] readStacksFromNBT(NBTTagCompound compound){
+        if (compound.hasKey("SlotCount")) {
+            ItemStack[] inventoryContents = new ItemStack[compound.getInteger("SlotCount")];
+            NBTTagList nbttaglist = compound.getTagList("Items", 10);
+            for (int i = 0; i < nbttaglist.tagCount(); ++i) {
+                NBTTagCompound tag = nbttaglist.getCompoundTagAt(i);
+                int j = tag.getByte("Slot") & 255;
+                if (j >= 0 && j < inventoryContents.length) {
+                    inventoryContents[j] = ItemStack.loadItemStackFromNBT(tag);
+                }
+            }
+            return inventoryContents;
+        }
+        return null;
+    }
 
     public static boolean isValidStack(ItemStack stack){
         return stack != null && stack.getItem() != null;

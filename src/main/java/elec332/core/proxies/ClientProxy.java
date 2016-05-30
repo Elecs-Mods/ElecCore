@@ -4,7 +4,6 @@ import elec332.core.client.model.ElecResourceManager;
 import elec332.core.client.newstuff.ElecModelHandler;
 import elec332.core.main.ElecCore;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.RenderItem;
 import net.minecraft.client.renderer.block.model.ModelManager;
 import net.minecraft.client.resources.IReloadableResourceManager;
 import net.minecraft.client.resources.IResourceManager;
@@ -48,6 +47,8 @@ public class ClientProxy extends CommonProxy {
 		Minecraft.getMinecraft().thePlayer.addChatComponentMessage(new TextComponentString(s));
 	}
 
+	private boolean registered;
+
 	@SuppressWarnings("unchecked")
 	private class RenderReplacer implements ElecResourceManager.IResourceHook {
 
@@ -69,18 +70,21 @@ public class ClientProxy extends CommonProxy {
 					return false;
 				}
 				return true;
-			} else*/ if (listener.getClass() == ModelManager.class){
-				resourceManager.registerReloadListener(new IResourceManagerReloadListener() {
-					@Override
-					public void onResourceManagerReload(IResourceManager resourceManager) {
-						if (minecraft.renderItem != null) {
-							ElecModelHandler.registerBlockModels(minecraft.modelManager);
-							ElecModelHandler.registerItemModels(minecraft.renderItem);
-							ElecModelHandler.registerMultiPartModels();
+			} else*/
+			if (listener instanceof ModelManager){
+				if (!registered) {
+					resourceManager.registerReloadListener(new IResourceManagerReloadListener() {
+						@Override
+						public void onResourceManagerReload(IResourceManager resourceManager) {
+							if (minecraft.renderItem != null) {
+								ElecModelHandler.registerBlockModels(minecraft.modelManager);
+								ElecModelHandler.registerItemModels(minecraft.renderItem);
+								ElecModelHandler.registerMultiPartModels();
+							}
 						}
-					}
-				});
-				return true;
+					});
+					registered = true;
+				}
 			}
 			return true;
 		}

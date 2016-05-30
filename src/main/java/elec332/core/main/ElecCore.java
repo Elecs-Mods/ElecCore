@@ -8,17 +8,17 @@ import elec332.core.api.util.IASMDataProcessor;
 import elec332.core.compat.ElecCoreCompatHandler;
 import elec332.core.effects.AbilityHandler;
 import elec332.core.handler.TickHandler;
-import elec332.core.modBaseUtils.ModBase;
 import elec332.core.modBaseUtils.ModInfo;
 import elec332.core.network.*;
 import elec332.core.proxies.CommonProxy;
 import elec332.core.server.ServerHelper;
 import elec332.core.util.FileHelper;
+import elec332.core.util.LoadTimer;
 import elec332.core.util.MCModInfo;
-import elec332.core.util.ModInfoHelper;
 import elec332.core.util.OredictHelper;
 import net.minecraft.launchwrapper.Launch;
-import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.common.LoaderState;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
@@ -30,7 +30,6 @@ import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import org.apache.logging.log4j.Logger;
 
-import java.io.File;
 import java.lang.annotation.Annotation;
 import java.util.List;
 import java.util.Map;
@@ -39,17 +38,18 @@ import java.util.Set;
 /**
  * Created by Elec332.
  */
-@SuppressWarnings("all")
-@Mod(modid = ModInfo.MODID_CORE, name = ModInfo.MODNAME_CORE, dependencies = "required-after:Forge@[12.16.0.1832,)",
+@Mod(modid = ElecCore.MODID, name = ElecCore.MODNAME, dependencies = "required-after:Forge@[12.16.0.1832,)",
 acceptedMinecraftVersions = ModInfo.ACCEPTEDMCVERSIONS, version = ElecCore.ElecCoreVersion, useMetadata = true, canBeDeactivated = false)
-public class ElecCore extends ModBase{
+public class ElecCore {
 
 	public static final String ElecCoreVersion = "#ELECCORE_VER#";
+	public static final String MODID = "ElecCore";
+	public static final String MODNAME = "ElecCore";
 
 	@SidedProxy(clientSide = ModInfo.CLIENTPROXY, serverSide = ModInfo.COMMONPROXY)
 	public static CommonProxy proxy;
 
-	@Mod.Instance(ModInfo.MODID_CORE)
+	@Mod.Instance(MODID)
 	public static ElecCore instance;
 	public static TickHandler tickHandler;
 	public static NetworkHandler networkHandler;
@@ -57,8 +57,11 @@ public class ElecCore extends ModBase{
 	public static Logger logger;
 	private static ASMDataTable dataTable;
 	private ASMDataProcessor asmDataProcessor;
+	private Configuration config;
+	private LoadTimer loadTimer;
 
 	public static final boolean developmentEnvironment;
+	@Deprecated
 	public static boolean oldBlocks = true;
 	public static boolean debug = false;
 	public static boolean removeJSONErrors = true;
@@ -66,76 +69,71 @@ public class ElecCore extends ModBase{
 
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
-		this.cfgFile = FileHelper.getConfigFileElec(event);
-		this.ModID = ModInfoHelper.getModID(event);
-		loadConfiguration();
+		logger = event.getModLog();
+		loadTimer = new LoadTimer(logger, MODNAME);
+		loadTimer.startPhase(event);
+		this.config = new Configuration(FileHelper.getConfigFileElec(event));
 		tickHandler = new TickHandler();
-		networkHandler = new NetworkHandler(modID());
+		networkHandler = new NetworkHandler(MODID);
 		networkHandler.registerClientPacket(PacketSyncWidget.class);
 		networkHandler.registerServerPacket(PacketTileDataToServer.class);
 		networkHandler.registerServerPacket(PacketWidgetDataToServer.class);
 		networkHandler.registerClientPacket(PacketReRenderBlock.class);
-		logger = event.getModLog();
+
 		compatHandler = new ElecCoreCompatHandler(config, logger);
 		dataTable = event.getAsmData();
 		asmDataProcessor = new ASMDataProcessor();
 		asmDataProcessor.init();
-		FMLCommonHandler.instance().bus().register(tickHandler);
-		debug = config.isEnabled("debug", false);
-		removeJSONErrors = config.isEnabled("removeJsonExceptions", true) && !developmentEnvironment;
+		MinecraftForge.EVENT_BUS.register(tickHandler);
+		debug = config.getBoolean("debug", Configuration.CATEGORY_GENERAL, false, "Set to true to print debug info to the log.");
+		removeJSONErrors = config.getBoolean("removeJsonExceptions", Configuration.CATEGORY_CLIENT, true, "Set to true to remove all the Json model errors from the log.") && !developmentEnvironment;
 		ServerHelper.instance.load();
 
 		proxy.preInitRendering();
 		asmDataProcessor.process(LoaderState.PREINITIALIZATION);
 
+		loadTimer.endPhase(event);
 		MCModInfo.createMCModInfoElec(event, "Provides core functionality for Elec's Mods",
 				"-", "assets/elec332/logo.png", new String[]{"Elec332"});
-		notifyEvent(event);
 	}
 
 
 	@EventHandler
 	@SuppressWarnings("unchecked")
     public void init(FMLInitializationEvent event) {
-		loadConfiguration();
+		loadTimer.startPhase(event);
+		config.load();
+		if (config.hasChanged()){
+			config.save();
+		}
 		compatHandler.init();
 		AbilityHandler.instance.init();
-		notifyEvent(event);
 
 		asmDataProcessor.process(LoaderState.INITIALIZATION);
 		OredictHelper.initLists();
+		loadTimer.endPhase(event);
     }
 
 	@EventHandler
 	public void postInit(FMLPostInitializationEvent event){
+		loadTimer.startPhase(event);
 		asmDataProcessor.process(LoaderState.POSTINITIALIZATION);
 		OredictHelper.initLists();
-		//Nope
+		loadTimer.endPhase(event);
 	}
 
 	@EventHandler
 	public void loadComplete(FMLLoadCompleteEvent event){
+		loadTimer.startPhase(event);
 		asmDataProcessor.process(LoaderState.AVAILABLE);
 		OredictHelper.initLists();
+		loadTimer.endPhase(event);
 	}
 
 	public static void systemPrintDebug(Object s){
 		if (debug) {
 			System.out.println(s);
 		}
-	}
-
-	File cfgFile;
-	String ModID;
-
-	@Override
-	public String modID(){
-		return ModID;
-	}
-
-	@Override
-	protected File configFile() {
-		return cfgFile;
 	}
 
 	private class ASMDataProcessor {
