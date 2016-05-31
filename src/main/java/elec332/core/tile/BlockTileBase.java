@@ -16,6 +16,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
@@ -32,20 +33,27 @@ import java.util.Random;
 public class BlockTileBase extends Block implements IWrenchable, ITileEntityProvider{
 
     public BlockTileBase(Material mat, Class<? extends TileEntity> tileClass, String blockName, String modID) {
+        this(mat, tileClass, new ResourceLocation(modID.toLowerCase(), blockName.toLowerCase()));
+    }
+
+    public BlockTileBase(Material mat, Class<? extends TileEntity> tileClass, ResourceLocation name) {
         super(mat);
         setResistance(4.5F);
         setHardness(2.0F);
         setSoundType(SoundType.STONE); //soundTypeStone
-        this.setUnlocalizedName(modID + "." + blockName);
-        this.setRegistryName(modID, blockName);
+        this.setRegistryName(name);
+        this.setUnlocalizedName(getRegistryName().toString().replace(":", ".").toLowerCase());
         this.tileClass = tileClass;
-        this.blockName = blockName;
-        this.modID = modID;
-        randomDisplayTick = IRandomDisplayTickProviderTile.class.isAssignableFrom(tileClass);
+        this.blockName = name.getResourcePath();
+        this.modID = name.getResourceDomain();
+        if (tileClass != null) {
+            randomDisplayTick = IRandomDisplayTickProviderTile.class.isAssignableFrom(tileClass);
+            comparatorInputOverride = IComparatorOverride.class.isAssignableFrom(this.tileClass);
+        }
     }
 
     private Class<? extends TileEntity> tileClass;
-    private boolean randomDisplayTick;
+    private boolean randomDisplayTick, comparatorInputOverride;
     public final String blockName;
     @SuppressWarnings("unused")
     public final String modID;
@@ -57,7 +65,7 @@ public class BlockTileBase extends Block implements IWrenchable, ITileEntityProv
     }
 
     public BlockTileBase register(){
-        GameRegistry.registerBlock(this, blockName);
+        GameRegistry.register(this);
         return this;
     }
 
@@ -205,7 +213,7 @@ public class BlockTileBase extends Block implements IWrenchable, ITileEntityProv
 
     @Override
     public boolean hasComparatorInputOverride(IBlockState state) {
-        return IComparatorOverride.class.isAssignableFrom(this.tileClass);
+        return comparatorInputOverride;
     }
 
     @Override
