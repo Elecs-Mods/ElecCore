@@ -2,6 +2,7 @@ package elec332.core.util;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import elec332.core.main.ElecCore;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.oredict.OreDictionary;
@@ -22,7 +23,13 @@ public class OredictHelper {
         allDusts.clear();
         allIngots.clear();
         allOres.clear();
-        for (String s : OreDictionary.getOreNames()){
+        String[] names = OreDictionary.getOreNames();
+        for (int i = 0; i < names.length; i++) {
+            String s = names[i];
+            if (s == null){ //What?!?
+                ElecCore.systemPrintDebug("Null ore for ID: "+i);
+                continue;
+            }
             if (s.startsWith("ore")) {
                 allOres.add(s);
             } else if (s.startsWith("ingot")) {
