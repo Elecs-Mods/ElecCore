@@ -5,7 +5,10 @@ import com.google.common.collect.Lists;
 import elec332.core.main.ElecCore;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.IRecipe;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.oredict.OreDictionary;
+import net.minecraftforge.oredict.RecipeSorter;
 
 import java.util.List;
 
@@ -14,6 +17,14 @@ import java.util.List;
  */
 @SuppressWarnings({"deprecation", "unused"})
 public class OredictHelper {
+
+    public static void registerRecipeSorter(ResourceLocation name, Class<? extends IRecipe> recipeClass){
+        registerRecipeSorter(name, recipeClass, RecipeSorter.Category.SHAPELESS);
+    }
+
+    public static void registerRecipeSorter(ResourceLocation name, Class<? extends IRecipe> recipeClass, RecipeSorter.Category category){
+        RecipeSorter.register(name.toString(), recipeClass, category, "");
+    }
 
     private static List<String> allOres = Lists.newArrayList();
     private static List<String> allIngots = Lists.newArrayList();

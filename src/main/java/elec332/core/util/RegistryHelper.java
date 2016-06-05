@@ -8,15 +8,25 @@ import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.item.crafting.FurnaceRecipes;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionType;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.world.biome.Biome;
-import net.minecraftforge.fml.common.registry.FMLControlledNamespacedRegistry;
-import net.minecraftforge.fml.common.registry.GameData;
+import net.minecraftforge.fml.common.registry.*;
+
+import java.util.Map;
 
 /**
  * Created by Elec332 on 5-4-2016.
  */
 public class RegistryHelper {
+
+    public static <T extends IForgeRegistryEntry<T>, C extends IForgeRegistry.AddCallback<T> & IForgeRegistry.ClearCallback<T> & IForgeRegistry.CreateCallback<T>> FMLControlledNamespacedRegistry<T> createRegistry(ResourceLocation registryName, Class<T> registryType, C callback){
+        return createRegistry(registryName, registryType, 0, Byte.MAX_VALUE, callback);
+    }
+
+    public static <T extends IForgeRegistryEntry<T>, C extends IForgeRegistry.AddCallback<T> & IForgeRegistry.ClearCallback<T> & IForgeRegistry.CreateCallback<T>> FMLControlledNamespacedRegistry<T> createRegistry(ResourceLocation registryName, Class<T> registryType, int minId, int maxId, C callback){
+        return PersistentRegistryManager.createRegistry(registryName, registryType, null, minId, maxId, true, callback, callback, callback);
+    }
 
     public static FMLControlledNamespacedRegistry<Block> getBlockRegistry() {
         return (FMLControlledNamespacedRegistry<Block>)Block.REGISTRY;
@@ -56,6 +66,37 @@ public class RegistryHelper {
 
     public static FurnaceRecipes getFurnaceRecipes() {
         return FurnaceRecipes.instance();
+    }
+
+    //Callback helpers
+
+    public interface FullRegistryCallback<T extends IForgeRegistryEntry<T>> extends IForgeRegistry.AddCallback<T>, IForgeRegistry.ClearCallback<T>, IForgeRegistry.CreateCallback<T> {
+
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T extends IForgeRegistryEntry<T>> FullRegistryCallback<T> getNullCallback(){
+        return (FullRegistryCallback<T>) NULL_CALLBACK;
+    }
+
+    private static final FullRegistryCallback NULL_CALLBACK;
+
+    static {
+        NULL_CALLBACK = new FullRegistryCallback() {
+            
+            @Override
+            public void onAdd(Object obj, int id, Map slaveset) {
+            }
+
+            @Override
+            public void onClear(Map slaveset) {
+            }
+
+            @Override
+            public void onCreate(Map slaveset) {
+            }
+
+        };
     }
 
 }

@@ -162,7 +162,11 @@ public class ServerHelper {
     }
 
     public boolean isPlayerOnline(UUID uuid){
-        return uuid != null && getPlayer(uuid).isOnline();
+        if (uuid == null){
+            return false;
+        }
+        ElecPlayer player = getPlayer(uuid);
+        return player != null && getPlayer(uuid).isOnline();
     }
 
     public EntityPlayerMP getRealPlayer(UUID uuid){
