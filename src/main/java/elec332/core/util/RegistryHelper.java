@@ -56,6 +56,10 @@ public class RegistryHelper {
         return (FMLControlledNamespacedRegistry<Enchantment>)Enchantment.REGISTRY;
     }
 
+    public static FMLControlledNamespacedRegistry<VillagerRegistry.VillagerProfession> getVillagerRegistry(){
+        return (FMLControlledNamespacedRegistry<VillagerRegistry.VillagerProfession>) VillagerRegistry.instance().getRegistry();
+    }
+
     public static BiMap<Block, Item> getBlockItemMap() {
         return GameData.getBlockItemMap();
     }

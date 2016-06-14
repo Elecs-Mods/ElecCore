@@ -113,16 +113,7 @@ public class InventoryHelper {
     }
 
     public static boolean areNBTsEqual(ItemStack first, ItemStack second) {
-        if (first == null || second == null) {
-            return first == second;
-        }
-        if (first.getTagCompound() == null || first.getTagCompound().hasNoTags()) {
-            return second.getTagCompound() == null || second.getTagCompound().hasNoTags();
-        }
-        if (second.getTagCompound() == null || second.getTagCompound().hasNoTags()) {
-            return false;
-        }
-        return first.getTagCompound().equals(second.getTagCompound());
+        return ItemStack.areItemStackTagsEqual(first, second);
     }
 
     public static boolean areEqualNoSizeNoNBT(ItemStack first, ItemStack second) {
