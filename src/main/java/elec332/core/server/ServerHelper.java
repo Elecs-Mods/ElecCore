@@ -295,9 +295,15 @@ public class ServerHelper {
                 String ext = file.getName().split(".")[1];
                 File newFile = new File(file.getCanonicalPath().replace(ext, "-" + date + ext));
                 FileUtils.moveFile(file, newFile);
-                if (!file.delete()){
-                    ElecCore.logger.error("Error deleting file: "+file.getCanonicalPath()+", please remove it yourself.");
-                    throw new IOException();
+                //if (!file.delete()){
+                //    ElecCore.logger.error("Error deleting file: "+file.getCanonicalPath()+", please remove it yourself.");
+                //    throw new IOException();
+                //}
+                createFile(file);
+                return new NBTTagCompound();
+            } catch (IOException io){
+                if (file.exists()&& !file.delete()){
+                    throw new IOException("Failed to delete file: "+file.getCanonicalPath());
                 }
                 createFile(file);
                 return new NBTTagCompound();
