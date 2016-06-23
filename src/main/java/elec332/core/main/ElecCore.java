@@ -39,7 +39,7 @@ import java.util.Set;
  * Created by Elec332.
  */
 @Mod(modid = ElecCore.MODID, name = ElecCore.MODNAME, dependencies = "required-after:Forge@[12.16.0.1832,)",
-acceptedMinecraftVersions = ModInfo.ACCEPTEDMCVERSIONS, version = ElecCore.ElecCoreVersion, useMetadata = true, canBeDeactivated = false)
+acceptedMinecraftVersions = "[1.9,)", version = ElecCore.ElecCoreVersion, useMetadata = true)
 public class ElecCore {
 
 	public static final String ElecCoreVersion = "#ELECCORE_VER#";
