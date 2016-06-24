@@ -16,7 +16,7 @@ public class NBT {
     }
 
     public static enum NBTData{
-        END(new NBTTagEnd()),                           //0
+        END((byte)0, NBTTagEnd.class),                  //0
         BYTE(new NBTTagByte((byte)0)),                  //1
         SHORT(new NBTTagShort((short)0)),               //2
         INT(new NBTTagInt(0)),                          //3

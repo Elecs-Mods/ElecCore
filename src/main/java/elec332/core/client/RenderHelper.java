@@ -62,6 +62,10 @@ public class RenderHelper {
         return tessellator;
     }
 
+    public static boolean isBufferDrawing(VertexBuffer buffer){
+        return buffer.isDrawing;
+    }
+
     public static ITransformation getTransformation(int x, int y, int z){
         if ((z = MathHelper.normalizeAngle(z, 360)) == 0){
             return ModelRotation.getModelRotation(x, y);
