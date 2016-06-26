@@ -13,6 +13,7 @@ import elec332.core.client.render.ISpecialBlockRenderer;
 import elec332.core.client.render.ISpecialItemRenderer;
 import elec332.core.java.ReflectionHelper;
 import elec332.core.main.ElecCore;
+import elec332.core.util.RegistryHelper;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.block.model.ModelBakery;
@@ -48,6 +49,8 @@ public final class RenderingRegistry {
         itemRendererMap = Maps.newHashMap();
         modelLoaders = Lists.newArrayList();
         textureLoaders = Lists.newArrayList();
+        extraItems = Lists.newArrayList();
+        extraBlocks = Lists.newArrayList();
     }
 
     public static final int SPECIAL_BLOCK_RENDERER_ID = 39;
@@ -56,6 +59,17 @@ public final class RenderingRegistry {
     private final Map<Item, ISpecialItemRenderer> itemRendererMap;
     private final List<IModelLoader> modelLoaders;
     private final List<ITextureLoader> textureLoaders;
+
+    private final List<Item> extraItems;
+    private final List<Block> extraBlocks;
+
+    public void registerFakeItem(Item item){
+        extraItems.add(item);
+    }
+
+    public void registerFakeBlock(Block block){
+        extraBlocks.add(block);
+    }
 
     public void registerLoader(IModelLoader modelLoader){
         this.modelLoaders.add(modelLoader);
@@ -238,12 +252,12 @@ public final class RenderingRegistry {
         instance.registerLoader(new IModelAndTextureLoader() {
             @Override
             public void registerModels(ElecQuadBakery quadBakery, ElecModelBakery modelBakery, ElecTemplateBakery templateBakery) {
-                for (Item item : Util.getItemIterator()) {
+                for (Item item : getAllValiditems()) {
                     if (item instanceof IModelLoader) {
                         ((IModelLoader) item).registerModels(quadBakery, modelBakery, templateBakery);
                     }
                 }
-                for (Block block : Util.getBlockIterator()) {
+                for (Block block : getAllValidBlocks()) {
                     if (block instanceof IModelLoader) {
                         ((IModelLoader) block).registerModels(quadBakery, modelBakery, templateBakery);
                     }
@@ -252,18 +266,30 @@ public final class RenderingRegistry {
 
             @Override
             public void registerTextures(IIconRegistrar iconRegistrar) {
-                for (Item item : Util.getItemIterator()) {
+                for (Item item : getAllValiditems()) {
                     if (item instanceof ITextureLoader) {
                         ((ITextureLoader) item).registerTextures(iconRegistrar);
                     }
                 }
-                for (Block block : Util.getBlockIterator()) {
+                for (Block block : getAllValidBlocks()) {
                     if (block instanceof ITextureLoader) {
                         ((ITextureLoader) block).registerTextures(iconRegistrar);
                     }
                 }
             }
         });
+    }
+
+    public static Iterable<Block> getAllValidBlocks(){
+        List<Block> list = Lists.newArrayList(RegistryHelper.getBlockRegistry().typeSafeIterable());
+        list.addAll(instance.extraBlocks);
+        return list;
+    }
+
+    public static Iterable<Item> getAllValiditems(){
+        List<Item> list = Lists.newArrayList(RegistryHelper.getItemRegistry().typeSafeIterable());
+        list.addAll(instance.extraItems);
+        return list;
     }
 
 }

@@ -6,8 +6,8 @@ import com.google.common.collect.Sets;
 import elec332.core.api.annotations.ASMDataProcessor;
 import elec332.core.api.util.IASMDataHelper;
 import elec332.core.api.util.IASMDataProcessor;
+import elec332.core.client.model.RenderingRegistry;
 import elec332.core.main.ElecCore;
-import elec332.core.util.RegistryHelper;
 import mcmultipart.client.multipart.MultipartRegistryClient;
 import mcmultipart.multipart.IMultipart;
 import mcmultipart.multipart.MultipartRegistry;
@@ -86,7 +86,7 @@ public final class ElecModelHandler implements IASMDataProcessor {
         if (models == null){
             throw new RuntimeException();
         }*/
-        for (Item item : RegistryHelper.getItemRegistry().typeSafeIterable()){
+        for (Item item : RenderingRegistry.getAllValiditems()){
             for (IItemModelHandler handler : itemModelHandlers){
                 if (handler.handleItem(item)){
                     //models.put(item, new InternalItemMap<IBakedModel>());
@@ -107,7 +107,7 @@ public final class ElecModelHandler implements IASMDataProcessor {
 
     public static void registerBlockModels(ModelManager modelManager){
         ElecCore.logger.info("Prehandling blocks");
-        for (Block block : RegistryHelper.getBlockRegistry().typeSafeIterable()){
+        for (Block block : RenderingRegistry.getAllValidBlocks()){
             for (final IBlockModelHandler handler : blockModelHandlers) {
                 if (handler.handleBlock(block)) {
                     modelManager.getBlockModelShapes().getBlockStateMapper().registerBlockStateMapper(block, new StateMapperBase() {

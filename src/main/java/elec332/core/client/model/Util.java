@@ -18,10 +18,12 @@ import javax.annotation.Nonnull;
 @SideOnly(Side.CLIENT)
 public class Util {
 
+    @Deprecated
     public static Iterable<Block> getBlockIterator(){
         return GameData.getBlockRegistry().typeSafeIterable();
     }
 
+    @Deprecated
     public static Iterable<Item> getItemIterator(){
         return GameData.getItemRegistry().typeSafeIterable();
     }
