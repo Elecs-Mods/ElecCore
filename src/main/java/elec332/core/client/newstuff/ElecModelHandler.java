@@ -91,7 +91,7 @@ public final class ElecModelHandler implements IASMDataProcessor {
                 if (handler.handleItem(item)){
                     //models.put(item, new InternalItemMap<IBakedModel>());
                     String s = handler.getIdentifier(item);
-                    final ModelResourceLocation mr = new ModelResourceLocation(item.delegate.name().toString(), s);
+                    final ModelResourceLocation mr = new ModelResourceLocation(item.getRegistryName().toString(), s);
                     renderItem.getItemModelMesher().register(item, new ItemMeshDefinition() {
                         @Override
                         public ModelResourceLocation getModelLocation(ItemStack stack) {
@@ -113,7 +113,7 @@ public final class ElecModelHandler implements IASMDataProcessor {
                     modelManager.getBlockModelShapes().getBlockStateMapper().registerBlockStateMapper(block, new StateMapperBase() {
                         @Override
                         protected ModelResourceLocation getModelResourceLocation(IBlockState state) {
-                            ModelResourceLocation mrl = new ModelResourceLocation(state.getBlock().delegate.name().toString() + "#" + handler.getIdentifier(state));
+                            ModelResourceLocation mrl = new ModelResourceLocation(state.getBlock().getRegistryName().toString() + "#" + handler.getIdentifier(state));
                             blockResourceLocations.put(state, mrl);
                             return mrl;
                         }
