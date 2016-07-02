@@ -422,8 +422,8 @@ public class ServerHelper {
                 return new NBTTagCompound();
             }
         } catch (IOException e){
-        	ElecCore.logger.error("Failed to load "+file, e);
-        	return new NBTTagCompound();
+            ElecCore.logger.error("Failed to load "+file, e);
+            return new NBTTagCompound();
         }
     }
 
