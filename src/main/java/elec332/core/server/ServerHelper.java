@@ -3,6 +3,8 @@ package elec332.core.server;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.io.Files;
+
 import elec332.core.main.ElecCore;
 import elec332.core.nbt.NBTMap;
 import elec332.core.network.NetworkHandler;
@@ -420,9 +422,8 @@ public class ServerHelper {
                 return new NBTTagCompound();
             }
         } catch (IOException e){
-            //Bad luck for you
-            e.printStackTrace();
-            throw new RuntimeException(e);
+            ElecCore.logger.error("Failed to load "+file, e);
+            return new NBTTagCompound();
         }
     }
 
@@ -435,12 +436,16 @@ public class ServerHelper {
     public void toFile(NBTTagCompound tagCompound, File file){
         try {
             if (file.exists()) {
-                FileUtils.copyFile(file, getBackupFile(file));
+                Files.move(file, getBackupFile(file));
             }
+            file.createNewFile();
             CompressedStreamTools.write(tagCompound, file);
         } catch (IOException e){
-            //Bad luck for you
-            throw new RuntimeException(e); //e.printStackTrace();
+            // This method is called at a sensitive time in the world saving
+            // process, and if we were to throw an exception, the server will
+            // crash and corrupt the ID map. This is obviously undesirable, and
+            // as such, logging an error will have to do.
+            ElecCore.logger.error("Failed to save "+file, e);
         }
     }
 
