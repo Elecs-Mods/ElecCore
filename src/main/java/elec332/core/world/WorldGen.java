@@ -38,7 +38,9 @@ public abstract class WorldGen implements IWorldGenerator {
         boolean s = configuration.getBoolean("Should_gen", oreName, true, "Sets if the ore should generate in the world or not");
         int m = configuration.getInt("Generation_multiplier", oreName, 100, 0, 1000, "Sets how many times the mod will attempt to generate ores per chunk (In % from the default value)");
         int c = configuration.getInt("ClusterSize", oreName, clusterSize, 0, 30, "Sets the max cluster size for this ore");
-        configuration.save();
+        if (configuration.hasChanged()) {
+            configuration.save();
+        }
         return new WorldGenInfo(maxY, timesPerChunk, block, meta).setGenerationMultiplier(((float)m)/100).setShouldGen(s).setClusterSize(c);
     }
 

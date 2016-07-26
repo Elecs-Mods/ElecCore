@@ -1,5 +1,7 @@
 package elec332.core.proxies;
 
+import net.minecraft.world.World;
+
 /**
  * Created by Elec332.
  */
@@ -13,6 +15,11 @@ public class CommonProxy {
 	}
 
 	public void addPersonalMessageToPlayer(String s){
+	}
+
+
+	public World getClientWorld(){
+		return null;
 	}
 
 }

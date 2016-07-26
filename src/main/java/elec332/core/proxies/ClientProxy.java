@@ -10,6 +10,7 @@ import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.client.resources.IResourceManagerReloadListener;
 import net.minecraft.client.resources.SimpleReloadableResourceManager;
 import net.minecraft.util.text.TextComponentString;
+import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 
 /**
@@ -89,6 +90,12 @@ public class ClientProxy extends CommonProxy {
 			return true;
 		}
 
+	}
+
+
+	@Override
+	public World getClientWorld() {
+		return Minecraft.getMinecraft().theWorld;
 	}
 
 }

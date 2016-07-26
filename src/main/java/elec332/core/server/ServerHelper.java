@@ -84,6 +84,7 @@ public class ServerHelper {
      * Dummy method to make sure this gets registered on the Forge EventBus before world load
      */
     public void load(){
+        SaveHandler.INSTANCE.dummyLoad();
     }
 
     public void registerExtendedPlayerProperties(String identifier, Class<? extends ElecPlayer.ExtendedProperties> propClass){
@@ -388,6 +389,7 @@ public class ServerHelper {
         }
     }
 
+    @Deprecated
     public static NBTTagCompound fromFile(File file){
         if (file == null)
             return null;
@@ -426,12 +428,14 @@ public class ServerHelper {
         }
     }
 
-    public static void createFile(File file) throws IOException{
+    @Deprecated
+    public static void createFile(File file) throws IOException {
         if (!file.exists())
             if (!file.getParentFile().mkdirs() && !file.createNewFile())
                 throw new IOException();
     }
 
+    @Deprecated
     public void toFile(NBTTagCompound tagCompound, File file){
         try {
             if (file.exists()) {
@@ -444,6 +448,7 @@ public class ServerHelper {
         }
     }
 
+    @Deprecated
     private static File getBackupFile(File file) throws IOException {
         return new File(file.getCanonicalPath()+"_back");
     }
