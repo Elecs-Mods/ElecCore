@@ -4,7 +4,6 @@ import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.io.Files;
-
 import elec332.core.main.ElecCore;
 import elec332.core.nbt.NBTMap;
 import elec332.core.network.NetworkHandler;

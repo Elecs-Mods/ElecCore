@@ -7,6 +7,8 @@ import elec332.core.api.util.IASMDataHelper;
 import elec332.core.api.util.IASMDataProcessor;
 import elec332.core.compat.ElecCoreCompatHandler;
 import elec332.core.effects.AbilityHandler;
+import elec332.core.grid.v2.internal.GridEventHandler;
+import elec332.core.grid.v2.internal.GridEventInputHandler;
 import elec332.core.handler.TickHandler;
 import elec332.core.modBaseUtils.ModInfo;
 import elec332.core.network.*;
@@ -24,10 +26,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.discovery.ASMDataTable;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLLoadCompleteEvent;
-import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.event.*;
 import org.apache.logging.log4j.Logger;
 
 import java.lang.annotation.Annotation;
@@ -89,6 +88,8 @@ public class ElecCore {
 		removeJSONErrors = config.getBoolean("removeJsonExceptions", Configuration.CATEGORY_CLIENT, true, "Set to true to remove all the Json model errors from the log.") && !developmentEnvironment;
 		ServerHelper.instance.load();
 
+		MinecraftForge.EVENT_BUS.register(new GridEventHandler());
+
 		proxy.preInitRendering();
 		asmDataProcessor.process(LoaderState.PREINITIALIZATION);
 
@@ -128,6 +129,11 @@ public class ElecCore {
 		asmDataProcessor.process(LoaderState.AVAILABLE);
 		OredictHelper.initLists();
 		loadTimer.endPhase(event);
+	}
+
+	@EventHandler
+	public void onServerStarting(FMLServerStartingEvent event){
+		GridEventInputHandler.INSTANCE.reloadHandlers();
 	}
 
 	public static void systemPrintDebug(Object s){
