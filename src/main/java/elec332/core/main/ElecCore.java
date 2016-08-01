@@ -132,7 +132,7 @@ public class ElecCore {
 	}
 
 	@EventHandler
-	public void onServerStarting(FMLServerStartingEvent event){
+	public void onServerStarting(FMLServerAboutToStartEvent event){
 		GridEventInputHandler.INSTANCE.reloadHandlers();
 	}
 

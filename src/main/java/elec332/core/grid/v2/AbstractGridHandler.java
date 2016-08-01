@@ -17,7 +17,7 @@ import java.util.Set;
 /**
  * Created by Elec332 on 1-8-2016.
  */
-public abstract class AbstractGridHandler<T extends ITileEntityLink> extends IForgeRegistryEntry.Impl<AbstractGridHandler<T>> {
+public abstract class AbstractGridHandler<T extends ITileEntityLink> {
 
     public AbstractGridHandler(){
         this.objects = new Int2ObjectArrayMap<PositionedObjectHolder<T>>();
@@ -26,7 +26,7 @@ public abstract class AbstractGridHandler<T extends ITileEntityLink> extends IFo
         this.add = Sets.newHashSet();
     }
 
-    private final Int2ObjectMap<PositionedObjectHolder<T>> objects;
+    protected final Int2ObjectMap<PositionedObjectHolder<T>> objects;
     protected final Set<DimensionCoordinate> extraUnload, changeCheck, add;
 
     //Block changed

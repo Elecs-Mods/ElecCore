@@ -24,7 +24,7 @@ public final class ElecCoreRegistrar {
 
 
     static {
-        IN_MOD_LOADING = input -> Loader.instance().hasReachedState(LoaderState.AVAILABLE);
+        IN_MOD_LOADING = input -> !Loader.instance().hasReachedState(LoaderState.AVAILABLE);
 
         GRIDS_V2 = new Registry<AbstractGridHandler>(ElecCoreRegistrar.IN_MOD_LOADING);
     }
