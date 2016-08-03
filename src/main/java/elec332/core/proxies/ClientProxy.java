@@ -13,6 +13,8 @@ import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 
+import javax.annotation.Nonnull;
+
 /**
  * Created by Elec332.
  */
@@ -37,9 +39,12 @@ public class ClientProxy extends CommonProxy {
 			ElecCore.logger.error("Source: " + resourceManager.getClass().getCanonicalName());
 			throw new RuntimeException("Class: " + resourceManager.getClass().getCanonicalName() + " is not a valid replacement for the vanilla resource manager.");
 		}
+		((SimpleReloadableResourceManager) resourceManager).registerReloadListener(new ModelReloadListener());
+		/*
 		ElecResourceManager newResourceManager = new ElecResourceManager((SimpleReloadableResourceManager) resourceManager);
 		newResourceManager.addListenHook(new RenderReplacer());
 		minecraft.mcResourceManager = newResourceManager;
+		*/
 		MinecraftForge.EVENT_BUS.register(new elec332.core.client.model.EventHandler());
 	}
 
@@ -50,7 +55,7 @@ public class ClientProxy extends CommonProxy {
 
 	private boolean registered;
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({"unchecked", "unused"})
 	private class RenderReplacer implements ElecResourceManager.IResourceHook {
 
 		@Override
@@ -74,16 +79,7 @@ public class ClientProxy extends CommonProxy {
 			} else*/
 			if (listener instanceof ModelManager){
 				if (!registered) {
-					resourceManager.registerReloadListener(new IResourceManagerReloadListener() {
-						@Override
-						public void onResourceManagerReload(IResourceManager resourceManager) {
-							if (minecraft.renderItem != null) {
-								ElecModelHandler.registerBlockModels(minecraft.modelManager);
-								ElecModelHandler.registerItemModels(minecraft.renderItem);
-								ElecModelHandler.registerMultiPartModels();
-							}
-						}
-					});
+					resourceManager.registerReloadListener(new ModelReloadListener());
 					registered = true;
 				}
 			}
@@ -92,6 +88,18 @@ public class ClientProxy extends CommonProxy {
 
 	}
 
+	private class ModelReloadListener implements IResourceManagerReloadListener {
+
+		@Override
+		public void onResourceManagerReload(@Nonnull IResourceManager resourceManager) {
+			if (minecraft.renderItem != null) {
+				ElecModelHandler.registerBlockModels(minecraft.modelManager);
+				ElecModelHandler.registerItemModels(minecraft.renderItem);
+				ElecModelHandler.registerMultiPartModels();
+			}
+		}
+
+	}
 
 	@Override
 	public World getClientWorld() {
