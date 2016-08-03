@@ -30,7 +30,7 @@ import java.util.List;
  * Created by Elec332 on 8-4-2015.
  */
 @SuppressWarnings("unused")
-public class TileBase extends TileEntity implements IElecCoreNetworkTile {
+public class TileBase extends TileEntityBase implements IElecCoreNetworkTile {
 
     @Override
     public void validate() {
@@ -100,11 +100,6 @@ public class TileBase extends TileEntity implements IElecCoreNetworkTile {
     public void onTileUnloaded(){
     }
 
-    @Override
-    public boolean shouldRefresh(World world, BlockPos pos, IBlockState oldState, IBlockState newSate) {
-        return oldState.getBlock() != newSate.getBlock();
-    }
-
     @Deprecated
     public void notifyNeighboursOfDataChange(){
         this.markDirty();
@@ -172,11 +167,6 @@ public class TileBase extends TileEntity implements IElecCoreNetworkTile {
         return false;
     }
 
-    public boolean openGui(EntityPlayer player, Object mod, int guiID){
-        player.openGui(mod, guiID, worldObj, getPos().getX(), getPos().getY(), getPos().getZ());
-        return true;
-    }
-
     protected ItemStack itemStackFromNBTTile(){
         NBTTagCompound compound = new NBTTagCompound();
         ItemStack ret = new ItemStack(getBlockType(), 1, getBlockMetadata());
@@ -188,57 +178,6 @@ public class TileBase extends TileEntity implements IElecCoreNetworkTile {
     public void setFacing(EnumFacing facing){
         WorldHelper.setBlockState(worldObj, pos, getBlockType().getBlockState().getBaseState().withProperty(BlockStateHelper.FACING_NORMAL.getProperty(), facing), 2);
         notifyNeighborsOfChange();
-    }
-
-    public void reRenderBlock(){
-        WorldHelper.reRenderBlock(this);
-    }
-
-    public void notifyNeighborsOfChange(){
-        worldObj.notifyNeighborsOfStateChange(pos, blockType);
-    }
-
-    //NETWORK///////////////////////
-
-    public void syncData(){
-        WorldHelper.markBlockForUpdate(worldObj, pos);
-    }
-
-    @SideOnly(Side.CLIENT)
-    public void sendPacketToServer(int ID, NBTTagCompound data){
-        ElecCore.networkHandler.getNetworkWrapper().sendToServer(new PacketTileDataToServer(this, ID, data));
-    }
-
-    public void onPacketReceivedFromClient(EntityPlayerMP sender, int ID, NBTTagCompound data){
-    }
-
-    public void sendPacket(int ID, NBTTagCompound data){
-        for (EntityPlayerMP player : ServerHelper.instance.getAllPlayersWatchingBlock(worldObj, getPos()))
-            sendPacketTo(player, ID, data);
-    }
-
-    public void sendPacketTo(EntityPlayerMP player, int ID, NBTTagCompound data){
-        player.connection.sendPacket(new SPacketUpdateTileEntity(getPos(), ID, data));
-    }
-
-    @Override
-    public NBTTagCompound getUpdateTag() {
-        return writeToNBT(new NBTTagCompound());
-    }
-
-    @Override
-    public SPacketUpdateTileEntity getUpdatePacket() {
-        return new SPacketUpdateTileEntity(getPos(), 0, getUpdateTag());
-    }
-
-    @Override
-    public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity packet) {
-        if (packet.getTileEntityType() == 0)
-            readFromNBT(packet.getNbtCompound());
-        else onDataPacket(packet.getTileEntityType(), packet.getNbtCompound());
-    }
-
-    public void onDataPacket(int id, NBTTagCompound tag){
     }
 
 }
