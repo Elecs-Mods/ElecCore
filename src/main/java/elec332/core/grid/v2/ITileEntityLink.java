@@ -20,7 +20,7 @@ public interface ITileEntityLink extends ICapabilityProvider {
     @Nonnull
     public DimensionCoordinate getPosition();
 
-    default public boolean hasChanges(){
+    default public boolean hasChanged(){
         return false;
     }
 

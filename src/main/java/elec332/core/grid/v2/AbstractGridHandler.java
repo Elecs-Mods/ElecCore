@@ -9,7 +9,6 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.registry.IForgeRegistryEntry;
 
 import java.util.Collections;
 import java.util.Set;
@@ -49,7 +48,7 @@ public abstract class AbstractGridHandler<T extends ITileEntityLink> {
                 if (!o.getPosition().isLoaded()){
                     throw new IllegalStateException(); //Something has gone terribly wrong somewhere...
                 }
-                if (o.hasChanges()){
+                if (o.hasChanged()){
                     changeCheck.add(dimCoord);
                     return;
                 }
@@ -73,7 +72,7 @@ public abstract class AbstractGridHandler<T extends ITileEntityLink> {
                 extraUnload.add(dimCoord);
             }
             if (o != null && isValidObject(tile)){
-                if (o.hasChanges()){
+                if (o.hasChanged()){
                     changeCheck.add(dimCoord);
                 }
             }
@@ -132,7 +131,7 @@ public abstract class AbstractGridHandler<T extends ITileEntityLink> {
             } else {
                 o = createNewObject(tile);
                 objects.get(WorldHelper.getDimID(tile.getWorld())).put(o, tile.getPos());
-                o.hasChanges(); //Set initial data
+                o.hasChanged(); //Set initial data
             }
             internalAdd(o);
         }
