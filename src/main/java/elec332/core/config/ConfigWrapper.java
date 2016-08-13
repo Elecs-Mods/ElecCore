@@ -59,7 +59,7 @@ public class ConfigWrapper {
 
     public void registerConfigWithInnerClasses(Object obj){
         registerConfig(obj);
-        for (Class<?> clazz : obj.getClass().getDeclaredClasses()){
+        for (Class<?> clazz : Lists.reverse(Lists.newArrayList(obj.getClass().getDeclaredClasses()))){
             if (!clazz.isInterface()){
                 try {
                     registerConfigWithInnerClasses(clazz.getConstructor().newInstance());
