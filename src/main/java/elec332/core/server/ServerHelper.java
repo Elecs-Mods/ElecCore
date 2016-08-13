@@ -332,13 +332,25 @@ public class ServerHelper {
                 //System.out.println("saving: "+event.world);
                 File folder = new File(event.getWorld().getSaveHandler().getWorldDirectory(), "elec332/");
 
-                toFile(ServerHelper.this.generalData.serializeNBT(), new File(folder, "generalData.dat"));
+                if (ServerHelper.this.generalData != null) {
+                    toFile(ServerHelper.this.generalData.serializeNBT(), new File(folder, "generalData.dat"));
+                } else {
+                    ElecCore.logger.error("General save data is null upon world save, something has probably been corrupted...");
+                }
 
-                NBTTagList tagList1 = playerData.serializeNBT();
-                toFile(new NBTHelper().addToTag(tagList1, "playerData").serializeNBT(), new File(folder, "playerData.dat"));
+                if (ServerHelper.this.playerData != null) {
+                    NBTTagList tagList1 = playerData.serializeNBT();
+                    toFile(new NBTHelper().addToTag(tagList1, "playerData").serializeNBT(), new File(folder, "playerData.dat"));
+                } else {
+                    ElecCore.logger.error("Player save data is null upon world save, something has probably been corrupted...");
+                }
 
-                NBTTagList tagList2 = worldData.serializeNBT();
-                toFile(new NBTHelper().addToTag(tagList2, "dimData").serializeNBT(), new File(folder, "worldData.dat"));
+                if (ServerHelper.this.worldData != null) {
+                    NBTTagList tagList2 = worldData.serializeNBT();
+                    toFile(new NBTHelper().addToTag(tagList2, "dimData").serializeNBT(), new File(folder, "worldData.dat"));
+                } else {
+                    ElecCore.logger.error("World save data is null upon world save, something has probably been corrupted...");
+                }
 
                 /*String s = null;
                 for (Map.Entry<String, INBTSerializable<NBTTagCompound>> entry : saveDataInstances.entrySet()){
