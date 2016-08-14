@@ -115,6 +115,7 @@ public class ServerHelper {
     private NBTMap<String, INBTSerializable> savedData;
     //private Map<String, INBTSerializable<NBTTagCompound>> saveDataInstances;
     private boolean locked; //Extra safety, in case Loader.instance().hasReachedState(LoaderState.AVAILABLE) fails
+    private boolean loaded;
 
     public ElecPlayer getPlayer(EntityPlayer player){
         return getPlayer(PlayerHelper.getPlayerUUID(player));
@@ -323,34 +324,28 @@ public class ServerHelper {
                     }
                 }
 
+                ServerHelper.this.loaded = true;
             }
         }
 
         @SubscribeEvent
         public void onWorldSave(WorldEvent.Save event){
             if (isServer(event.getWorld()) && WorldHelper.getDimID(event.getWorld()) == 0 && event.getWorld().getClass() == WorldServer.class){
+                if (!ServerHelper.this.loaded){
+                    ElecCore.logger.error("World is unloading before data has been loaded, skipping data saving...");
+                    return;
+                }
                 //System.out.println("saving: "+event.world);
                 File folder = new File(event.getWorld().getSaveHandler().getWorldDirectory(), "elec332/");
 
-                if (ServerHelper.this.generalData != null) {
-                    toFile(ServerHelper.this.generalData.serializeNBT(), new File(folder, "generalData.dat"));
-                } else {
-                    ElecCore.logger.error("General save data is null upon world save, something has probably been corrupted...");
-                }
+                toFile(ServerHelper.this.generalData.serializeNBT(), new File(folder, "generalData.dat"));
 
-                if (ServerHelper.this.playerData != null) {
-                    NBTTagList tagList1 = playerData.serializeNBT();
-                    toFile(new NBTHelper().addToTag(tagList1, "playerData").serializeNBT(), new File(folder, "playerData.dat"));
-                } else {
-                    ElecCore.logger.error("Player save data is null upon world save, something has probably been corrupted...");
-                }
+                NBTTagList tagList1 = playerData.serializeNBT();
+                toFile(new NBTHelper().addToTag(tagList1, "playerData").serializeNBT(), new File(folder, "playerData.dat"));
 
-                if (ServerHelper.this.worldData != null) {
-                    NBTTagList tagList2 = worldData.serializeNBT();
-                    toFile(new NBTHelper().addToTag(tagList2, "dimData").serializeNBT(), new File(folder, "worldData.dat"));
-                } else {
-                    ElecCore.logger.error("World save data is null upon world save, something has probably been corrupted...");
-                }
+                NBTTagList tagList2 = worldData.serializeNBT();
+                toFile(new NBTHelper().addToTag(tagList2, "dimData").serializeNBT(), new File(folder, "worldData.dat"));
+
 
                 /*String s = null;
                 for (Map.Entry<String, INBTSerializable<NBTTagCompound>> entry : saveDataInstances.entrySet()){
@@ -366,6 +361,7 @@ public class ServerHelper {
                 //if (s != null){
                 //    throw new IllegalStateException("Duplicate names were used: "+s);
                 //}
+                ServerHelper.this.loaded = false;
             }
         }
 
