@@ -6,6 +6,7 @@ import com.google.common.collect.Maps;
 import elec332.core.api.util.IASMDataHelper;
 import elec332.core.api.util.IASMDataProcessor;
 import elec332.core.compat.ElecCoreCompatHandler;
+import elec332.core.compat.forestry.ForestryCompatHandler;
 import elec332.core.effects.AbilityHandler;
 import elec332.core.grid.v2.internal.GridEventHandler;
 import elec332.core.grid.v2.internal.GridEventInputHandler;
@@ -21,6 +22,7 @@ import elec332.core.util.OredictHelper;
 import net.minecraft.launchwrapper.Launch;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
+import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.LoaderState;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
@@ -37,7 +39,7 @@ import java.util.Set;
 /**
  * Created by Elec332.
  */
-@Mod(modid = ElecCore.MODID, name = ElecCore.MODNAME, dependencies = "required-after:Forge@[12.16.0.1832,)",
+@Mod(modid = ElecCore.MODID, name = ElecCore.MODNAME, dependencies = "required-after:Forge@[12.16.0.1832,);after:forestry;",
 acceptedMinecraftVersions = "[1.9,)", version = ElecCore.ElecCoreVersion, useMetadata = true)
 public class ElecCore {
 
@@ -64,6 +66,7 @@ public class ElecCore {
 	public static boolean oldBlocks = true;
 	public static boolean debug = false;
 	public static boolean removeJSONErrors = true;
+	private static ForestryCompatHandler forestryCompat;
 
 
 	@EventHandler
@@ -80,6 +83,7 @@ public class ElecCore {
 		networkHandler.registerClientPacket(PacketReRenderBlock.class);
 
 		compatHandler = new ElecCoreCompatHandler(config, logger);
+		compatHandler.addHandler(forestryCompat = new ForestryCompatHandler());
 		dataTable = event.getAsmData();
 		asmDataProcessor = new ASMDataProcessor();
 		asmDataProcessor.init();
@@ -118,6 +122,9 @@ public class ElecCore {
 	@EventHandler
 	public void postInit(FMLPostInitializationEvent event){
 		loadTimer.startPhase(event);
+		if (Loader.isModLoaded(forestryCompat.getName())){
+			forestryCompat.postInit();
+		}
 		asmDataProcessor.process(LoaderState.POSTINITIALIZATION);
 		OredictHelper.initLists();
 		loadTimer.endPhase(event);
