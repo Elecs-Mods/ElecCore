@@ -331,10 +331,10 @@ public class ServerHelper {
         @SubscribeEvent
         public void onWorldSave(WorldEvent.Save event){
             if (isServer(event.getWorld()) && WorldHelper.getDimID(event.getWorld()) == 0 && event.getWorld().getClass() == WorldServer.class){
-                if (!ServerHelper.this.loaded){
-                    ElecCore.logger.error("World is unloading before data has been loaded, skipping data saving...");
-                    return;
-                }
+               // if (!ServerHelper.this.loaded){
+               //     ElecCore.logger.error("World is unloading before data has been loaded, skipping data saving...");
+               //     return;
+               // }
                 //System.out.println("saving: "+event.world);
                 File folder = new File(event.getWorld().getSaveHandler().getWorldDirectory(), "elec332/");
 
