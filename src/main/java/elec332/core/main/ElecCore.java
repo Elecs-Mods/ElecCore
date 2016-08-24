@@ -6,7 +6,6 @@ import com.google.common.collect.Maps;
 import elec332.core.api.util.IASMDataHelper;
 import elec332.core.api.util.IASMDataProcessor;
 import elec332.core.compat.ElecCoreCompatHandler;
-import elec332.core.compat.forestry.ForestryCompatHandler;
 import elec332.core.effects.AbilityHandler;
 import elec332.core.grid.v2.internal.GridEventHandler;
 import elec332.core.grid.v2.internal.GridEventInputHandler;
@@ -66,7 +65,7 @@ public class ElecCore {
 	public static boolean oldBlocks = true;
 	public static boolean debug = false;
 	public static boolean removeJSONErrors = true;
-	private static ForestryCompatHandler forestryCompat;
+//	private static ForestryCompatHandler forestryCompat;
 
 
 	@EventHandler
@@ -83,7 +82,7 @@ public class ElecCore {
 		networkHandler.registerClientPacket(PacketReRenderBlock.class);
 
 		compatHandler = new ElecCoreCompatHandler(config, logger);
-		compatHandler.addHandler(forestryCompat = new ForestryCompatHandler());
+//		compatHandler.addHandler(forestryCompat = new ForestryCompatHandler());
 		dataTable = event.getAsmData();
 		asmDataProcessor = new ASMDataProcessor();
 		asmDataProcessor.init();
@@ -122,11 +121,12 @@ public class ElecCore {
 	@EventHandler
 	public void postInit(FMLPostInitializationEvent event){
 		loadTimer.startPhase(event);
-		if (Loader.isModLoaded(forestryCompat.getName())){
-			forestryCompat.postInit();
-		}
+//		if (Loader.isModLoaded(forestryCompat.getName())){
+//			forestryCompat.postInit();
+//		}
 		asmDataProcessor.process(LoaderState.POSTINITIALIZATION);
 		OredictHelper.initLists();
+		proxy.postInitRendering();
 		loadTimer.endPhase(event);
 	}
 

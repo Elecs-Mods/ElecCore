@@ -87,19 +87,30 @@ public enum GridEventInputHandler {
     }
 
     public void tickEnd(){
+        Set<DimensionCoordinate> bud = Sets.newHashSet(this.bud);
+        Set<DimensionCoordinate> notify = Sets.newHashSet(this.notify);
+        this.bud.clear();
+        this.notify.clear();
         for (AbstractGridHandler gridHandler : cachedHandlers) {
-            Set<DimensionCoordinate> chunkAdd = this.chunkAdd.get(gridHandler);
-            Set<DimensionCoordinate> chunkRemove = this.chunkRemove.get(gridHandler);
             gridHandler.checkNotifyStuff(notify);
-            notify.clear();
             gridHandler.checkBlockUpdates(bud);
-            bud.clear();
+
+            Set<DimensionCoordinate> chunkRemove, chunkRemove_ = this.chunkRemove.get(gridHandler);
+            chunkRemove = Sets.newHashSet(chunkRemove_);
+            chunkRemove_.clear();
             gridHandler.checkChunkUnload(chunkRemove);
             chunkRemove.clear();
+
+            Set<DimensionCoordinate> chunkAdd, chunkAdd_ = this.chunkAdd.get(gridHandler);
+            chunkAdd = Sets.newHashSet(chunkAdd_);
+            chunkAdd_.clear();
             gridHandler.checkChunkLoad(chunkAdd);
             chunkAdd.clear();
+
             gridHandler.tick();
         }
+        notify.clear();
+        bud.clear();
     }
 
     public void worldUnload(World world){

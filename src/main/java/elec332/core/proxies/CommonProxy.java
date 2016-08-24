@@ -14,6 +14,9 @@ public class CommonProxy {
 	public void preInitRendering(){
 	}
 
+	public void postInitRendering(){
+	}
+
 	public void addPersonalMessageToPlayer(String s){
 	}
 

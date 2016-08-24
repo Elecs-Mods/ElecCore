@@ -34,6 +34,10 @@ repositories {
 	maven {
 		url "http://maven.amadornes.com/"
 	}
+	maven {
+        name = "forestry"
+        url = "http://maven.ic2.player.to/"
+    }
 }
 
 apply plugin: 'net.minecraftforge.gradle.forge'
@@ -74,6 +78,7 @@ dependencies {
 	//compile "codechicken:NotEnoughItems:${config.NEI_version}:dev"//${config.minecraft_version}-${config.NEI_version}:dev"
 	deobfCompile "mezz.jei:jei_${config.minecraft_version}:${config.jei_version}"
 	deobfCompile "MCMultiPart:MCMultiPart-experimental:${config.mcmp_version}:universal"
+	//deobfCompile "net.sengir.forestry:forestry_${config.minecraft_version}:${config.forestry_version}"
 }
 
 processResources

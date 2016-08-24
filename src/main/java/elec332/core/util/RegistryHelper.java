@@ -89,15 +89,15 @@ public class RegistryHelper {
         NULL_CALLBACK = new FullRegistryCallback() {
 
             @Override
-            public void onCreate(Map slaveset, BiMap registries) {
+            public void onCreate(Map slaveset) {
             }
 
             @Override
-            public void onClear(IForgeRegistry is, Map slaveset) {
+            public void onClear(Map slaveset) {
             }
 
             @Override
-            public void onAdd(IForgeRegistryEntry obj, int id, Map slaveset) {
+            public void onAdd(Object obj, int id, Map slaveset) {
             }
 
         };

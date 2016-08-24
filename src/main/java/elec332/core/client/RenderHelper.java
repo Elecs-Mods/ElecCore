@@ -7,6 +7,7 @@ import net.minecraft.client.particle.Particle;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.VertexBuffer;
+import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.block.model.ModelRotation;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.culling.ICamera;
@@ -40,6 +41,7 @@ public class RenderHelper {
     private static final RenderBlocks renderBlocks;
     private static final Map<VertexBuffer, ITessellator> worldRenderTessellators;
     private static final Map<EnumFacing, ITransformation[]> rotateAroundMap;
+    private static IBakedModel nullModel;
 
     public static ITessellator forWorldRenderer(VertexBuffer renderer){
         ITessellator ret = worldRenderTessellators.get(renderer);
@@ -60,6 +62,10 @@ public class RenderHelper {
 
     public static ITessellator getTessellator(){
         return tessellator;
+    }
+
+    public static IBakedModel getMissingModel(){
+        return Minecraft.getMinecraft().modelManager.getMissingModel();
     }
 
     public static boolean isBufferDrawing(VertexBuffer buffer){

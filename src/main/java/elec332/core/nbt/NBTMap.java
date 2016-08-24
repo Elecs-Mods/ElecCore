@@ -172,11 +172,11 @@ public class NBTMap<K, V> extends HashMap<K, V> implements INBTSerializable<NBTT
         } else if (type == UUID.class){
             return (T) UUID.fromString(((NBTTagString)data).getString());
         } else if (type.equals(Byte.class)){
-            return (T) (Byte) ((NBTPrimitive)data).getByte();
+            return (T) (Byte) ((NBTBase.NBTPrimitive)data).getByte();
         } else if (type.equals(Short.class)){
-            return (T) (Short) ((NBTPrimitive)data).getShort();
+            return (T) (Short) ((NBTBase.NBTPrimitive)data).getShort();
         } else if (type.equals((Integer.class))){
-            return (T) (Integer) ((NBTPrimitive)data).getInt();
+            return (T) (Integer) ((NBTBase.NBTPrimitive)data).getInt();
         } else if (ResourceLocation.class.isAssignableFrom(type)){
             return (T) new ResourceLocation(((NBTTagString)data).getString());
         }
