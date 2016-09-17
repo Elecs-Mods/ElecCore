@@ -3,6 +3,7 @@ package elec332.core.proxies;
 import elec332.core.client.model.ElecResourceManager;
 import elec332.core.client.model.IColoredBlock;
 import elec332.core.client.model.IColoredItem;
+import elec332.core.client.model.replace.ElecTileEntityItemStackRenderer;
 import elec332.core.client.newstuff.ElecModelHandler;
 import elec332.core.main.ElecCore;
 import elec332.core.util.RegistryHelper;
@@ -12,6 +13,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.ModelManager;
 import net.minecraft.client.renderer.color.IBlockColor;
 import net.minecraft.client.renderer.color.IItemColor;
+import net.minecraft.client.renderer.tileentity.TileEntityItemStackRenderer;
 import net.minecraft.client.resources.IReloadableResourceManager;
 import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.client.resources.IResourceManagerReloadListener;
@@ -83,6 +85,7 @@ public class ClientProxy extends CommonProxy {
 				minecraft.blockColors.registerBlockColorHandler(COLORED_BLOCK, block);
 			}
 		}
+		TileEntityItemStackRenderer.instance = new ElecTileEntityItemStackRenderer();
 	}
 
 	@Override
