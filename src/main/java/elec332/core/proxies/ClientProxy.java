@@ -1,10 +1,12 @@
 package elec332.core.proxies;
 
 import elec332.core.client.model.ElecResourceManager;
+import elec332.core.client.model.IColoredBlock;
+import elec332.core.client.model.IColoredItem;
 import elec332.core.client.newstuff.ElecModelHandler;
-import elec332.core.item.IColoredItem;
 import elec332.core.main.ElecCore;
 import elec332.core.util.RegistryHelper;
+import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.ModelManager;
@@ -15,6 +17,7 @@ import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.client.resources.IResourceManagerReloadListener;
 import net.minecraft.client.resources.SimpleReloadableResourceManager;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
@@ -65,6 +68,19 @@ public class ClientProxy extends CommonProxy {
 		for (Item item : RegistryHelper.getItemRegistry()){
 			if (item instanceof IColoredItem){
 				minecraft.itemColors.registerItemColorHandler(COLORED_ITEM, item);
+			}
+			if (item instanceof ItemBlock){
+				Block block = ((ItemBlock) item).getBlock();
+				if (block instanceof IColoredItem){
+					minecraft.itemColors.registerItemColorHandler(COLORED_ITEM, block);
+				} else if (block instanceof IColoredBlock){
+					minecraft.itemColors.registerItemColorHandler(COLORED_ITEMBLOCK, item);
+				}
+			}
+		}
+		for (Block block : RegistryHelper.getBlockRegistry()){
+			if (block instanceof IColoredBlock) {
+				minecraft.blockColors.registerBlockColorHandler(COLORED_BLOCK, block);
 			}
 		}
 	}
@@ -142,7 +158,8 @@ public class ClientProxy extends CommonProxy {
 
 			@Override
 			public int getColorFromItemstack(@Nonnull ItemStack stack, int tintIndex) {
-				return ((IColoredItem)stack.getItem()).getColorFromItemStack(stack, tintIndex);
+				Block block = ((ItemBlock) stack.getItem()).getBlock();
+				return ((IColoredBlock) block).colorMultiplier(block.getStateFromMeta(stack.getItemDamage()), null, null, tintIndex);
 			}
 
 		};
@@ -151,7 +168,7 @@ public class ClientProxy extends CommonProxy {
 
 			@Override
 			public int colorMultiplier(@Nonnull IBlockState state, @Nullable IBlockAccess worldIn, @Nullable BlockPos pos, int tintIndex) {
-				return 0;
+				return ((IColoredBlock) state.getBlock()).colorMultiplier(state, worldIn, pos, tintIndex);
 			}
 
 		};

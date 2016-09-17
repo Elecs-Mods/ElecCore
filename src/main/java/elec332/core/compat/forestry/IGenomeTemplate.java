@@ -18,4 +18,12 @@ public interface IGenomeTemplate<S extends IAlleleSpecies> {
     @Nonnull
     public IAllele[] getAlleles();
 
+    /**
+     * Used to get the species from a genome.
+     *
+     * @param alleles The genome
+     * @return The species defined the the genome
+     */
+    public S getSpecies(IAllele[] alleles);
+
 }

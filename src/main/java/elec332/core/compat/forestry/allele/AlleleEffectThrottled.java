@@ -2,7 +2,6 @@ package elec332.core.compat.forestry.allele;
 
 import forestry.api.apiculture.IBeeGenome;
 import forestry.api.apiculture.IBeeHousing;
-import forestry.api.genetics.IChromosomeType;
 import forestry.api.genetics.IEffectData;
 import net.minecraft.util.ResourceLocation;
 
@@ -11,20 +10,20 @@ import net.minecraft.util.ResourceLocation;
  */
 public abstract class AlleleEffectThrottled extends AlleleEffect {
 
-    public AlleleEffectThrottled(ResourceLocation rl, IChromosomeType... types) {
-        super(rl, types);
+    public AlleleEffectThrottled(ResourceLocation rl) {
+        super(rl);
     }
 
-    public AlleleEffectThrottled(String s, IChromosomeType... types) {
-        super(s, types);
+    public AlleleEffectThrottled(String s) {
+        super(s);
     }
 
-    public AlleleEffectThrottled(String uid, String unlocalizedName, IChromosomeType... types) {
-        super(uid, unlocalizedName, types);
+    public AlleleEffectThrottled(String uid, String unlocalizedName) {
+        super(uid, unlocalizedName);
     }
 
     private int throttle = 20;
-    private boolean requiresWorkingQueen = false;
+    protected boolean requiresWorkingQueen = false;
 
     public AlleleEffectThrottled setThrottle(int throttle){
         this.throttle = throttle;

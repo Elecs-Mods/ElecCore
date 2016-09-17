@@ -102,6 +102,11 @@ public class BeeGenomeTemplate implements IGenomeTemplate<IAlleleBeeSpecies> {
         return alleles;
     }
 
+    @Override
+    public IAlleleBeeSpecies getSpecies(IAllele[] alleles) {
+        return (IAlleleBeeSpecies) alleles[EnumBeeChromosome.SPECIES.ordinal()];
+    }
+
     private void setAllele(EnumBeeChromosome chromosome, IAllele allele){
         alleles[chromosome.ordinal()] = allele;
     }

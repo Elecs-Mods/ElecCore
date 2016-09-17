@@ -2,7 +2,6 @@ package elec332.core.compat.forestry;
 
 import forestry.api.apiculture.EnumBeeChromosome;
 import forestry.api.genetics.*;
-import forestry.apiculture.flowers.Flower;
 import forestry.apiculture.flowers.FlowerProvider;
 import forestry.core.genetics.alleles.AlleleHelper;
 import forestry.core.genetics.alleles.EnumAllele;
@@ -53,6 +52,9 @@ public class ForestryAlleles {
     private static IAllele getAllele(EnumBeeChromosome chromosome, IAlleleValue value){
         AlleleHelper.instance.set(cache, chromosome, value);
         return cache[chromosome.ordinal()];
+    }
+
+    static void dummyLoad(){
     }
 
     private static IAllele[] cache;

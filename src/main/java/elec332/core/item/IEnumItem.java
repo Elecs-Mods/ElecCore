@@ -1,5 +1,6 @@
 package elec332.core.item;
 
+import elec332.core.client.model.IColoredItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 

@@ -49,6 +49,10 @@ public interface IIndividualTemplate<T extends IGenomeTemplate, B extends IAllel
 
     public void registerMutations();
 
+    default public boolean isActive(){
+        return true;
+    }
+
     public void setIndividualDefinition(IIndividualDefinition<G, I, S> iIndividualDefinition);
 
     public IIndividualDefinition<G, I, S> getIndividualDefinition();

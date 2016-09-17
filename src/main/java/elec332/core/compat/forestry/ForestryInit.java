@@ -3,12 +3,14 @@ package elec332.core.compat.forestry;
 import elec332.core.client.ITextureLoader;
 import elec332.core.client.model.RenderingRegistry;
 import elec332.core.client.model.model.IModelLoader;
+import elec332.core.compat.forestry.bee.ForestryBeeEffects;
 import elec332.core.java.ReflectionHelper;
 import elec332.core.main.ElecCore;
-import forestry.api.apiculture.*;
+import forestry.api.apiculture.BeeManager;
+import forestry.api.apiculture.IBeeModelProvider;
+import forestry.api.apiculture.IBeeRoot;
 import forestry.api.core.Tabs;
 import forestry.api.genetics.*;
-import forestry.apiculture.PluginApiculture;
 import forestry.apiculture.genetics.alleles.AlleleBeeSpecies;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 
@@ -19,11 +21,9 @@ import java.lang.reflect.Field;
  */
 public class ForestryInit {
 
-    public static IAlleleBeeEffect forestryEffectNone;
     public static IBeeRoot beeRoot;
 
     static void init(){
-        forestryEffectNone = (IAlleleBeeEffect) AlleleManager.alleleRegistry.getAllele("forestry.none");
         beeRoot = BeeManager.beeRoot;
         //ForestryAlleles.init();
         if (FMLCommonHandler.instance().getSide().isClient()) {
@@ -64,12 +64,26 @@ public class ForestryInit {
             });
         }
         ForestryCompatHandler.tabBees = Tabs.tabApiculture;
+        ForestryAlleles.dummyLoad();
+        ForestryBeeEffects.init();
     }
 
     public static void postInit(){
         IndividualDefinitionRegistry.locked = true;
         for (IIndividualTemplate iIndividualTemplate : IndividualDefinitionRegistry.templates){
-            iIndividualTemplate.registerMutations();
+            if (iIndividualTemplate.isActive()) {
+                iIndividualTemplate.registerMutations();
+            } else {
+                IAlleleSpecies allele;
+                try {
+                    allele = ((IGenomeTemplate)iIndividualTemplate.getGenomeTemplateType().newInstance()).getSpecies(iIndividualTemplate.getAlleles());
+                } catch (Exception e){
+                    ElecCore.logger.info("Error invocating class: "+iIndividualTemplate.getGenomeTemplateType().getCanonicalName());
+                    ElecCore.logger.info("Attempting backup method to fetch species allele...");
+                    allele = (IAlleleSpecies) iIndividualTemplate.getAlleles()[0];
+                }
+                AlleleManager.alleleRegistry.blacklistAllele(allele.getUID());
+            }
         }
     }
 

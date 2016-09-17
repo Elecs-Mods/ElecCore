@@ -1,6 +1,5 @@
 package elec332.core.compat.forestry.bee;
 
-import elec332.core.compat.forestry.bee.AbstractBeeModelProvider;
 import forestry.api.apiculture.EnumBeeType;
 import net.minecraft.util.ResourceLocation;
 

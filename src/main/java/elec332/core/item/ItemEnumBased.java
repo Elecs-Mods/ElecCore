@@ -4,6 +4,7 @@ import elec332.core.client.IIconRegistrar;
 import elec332.core.client.RenderHelper;
 import elec332.core.client.model.ElecModelBakery;
 import elec332.core.client.model.ElecQuadBakery;
+import elec332.core.client.model.IColoredItem;
 import elec332.core.client.model.INoJsonItem;
 import elec332.core.client.model.template.ElecTemplateBakery;
 import net.minecraft.client.renderer.block.model.IBakedModel;

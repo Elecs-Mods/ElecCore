@@ -2,7 +2,10 @@ package elec332.core.compat.forestry;
 
 import com.google.common.collect.Lists;
 import elec332.core.main.ElecCore;
-import forestry.api.genetics.*;
+import forestry.api.genetics.IAllele;
+import forestry.api.genetics.IAlleleSpecies;
+import forestry.api.genetics.IAlleleSpeciesBuilder;
+import forestry.api.genetics.ISpeciesRoot;
 
 import java.util.List;
 
@@ -31,6 +34,7 @@ public class IndividualDefinitionRegistry {
         template.getIndividualBranch().setBranchProperties(genomeTemplate);
         ISpeciesRoot speciesRoot = template.getSpeciesRoot();
         B speciesBuilder = template.getSpeciesBuilder();
+        template.getIndividualBranch().setIndividualProperties(speciesBuilder);
         template.setSpeciesProperties(speciesBuilder);
         @SuppressWarnings("unchecked")
         S species = (S) speciesBuilder.build();

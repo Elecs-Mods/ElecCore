@@ -1,8 +1,10 @@
 package elec332.core.compat.forestry.allele;
 
-import elec332.core.compat.forestry.ForestryInit;
-import forestry.api.apiculture.*;
-import forestry.api.genetics.IChromosomeType;
+import elec332.core.compat.forestry.bee.ForestryBeeEffects;
+import forestry.api.apiculture.EnumBeeChromosome;
+import forestry.api.apiculture.IAlleleBeeEffect;
+import forestry.api.apiculture.IBeeGenome;
+import forestry.api.apiculture.IBeeHousing;
 import forestry.api.genetics.IEffectData;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.ResourceLocation;
@@ -15,16 +17,16 @@ import java.util.List;
  */
 public abstract class AlleleEffect extends AbstractAllele implements IAlleleBeeEffect {
 
-    public AlleleEffect(ResourceLocation rl, IChromosomeType... types) {
-        super(rl, types);
+    public AlleleEffect(ResourceLocation rl) {
+        super(rl, EnumBeeChromosome.EFFECT);
     }
 
-    public AlleleEffect(String s, IChromosomeType... types) {
-        super(s, types);
+    public AlleleEffect(String s) {
+        super(s, EnumBeeChromosome.EFFECT);
     }
 
-    public AlleleEffect(String uid, String unlocalizedName, IChromosomeType... types) {
-        super(uid, unlocalizedName, types);
+    public AlleleEffect(String uid, String unlocalizedName) {
+        super(uid, unlocalizedName, EnumBeeChromosome.EFFECT);
     }
 
     private boolean combinable;
@@ -42,7 +44,7 @@ public abstract class AlleleEffect extends AbstractAllele implements IAlleleBeeE
 
     @Override
     public IEffectData doFX(IBeeGenome genome, IEffectData storedData, IBeeHousing housing) {
-        ForestryInit.forestryEffectNone.doFX(genome, storedData, housing);
+        ForestryBeeEffects.effectNone.doFX(genome, storedData, housing);
         return storedData;
     }
 
