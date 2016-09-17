@@ -2,6 +2,8 @@ package elec332.core.client.model.replace;
 
 import elec332.core.client.model.INoJsonBlock;
 import elec332.core.client.model.INoJsonItem;
+import elec332.core.client.model.model.TESRItemModel;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.tileentity.TileEntityItemStackRenderer;
 import net.minecraft.item.Item;
@@ -30,8 +32,13 @@ public class ElecTileEntityItemStackRenderer extends TileEntityItemStackRenderer
         } else if (item instanceof ItemBlock && ((ItemBlock) item).getBlock() instanceof INoJsonBlock){
             model = ((INoJsonBlock) ((ItemBlock) item).getBlock()).getItemModel(itemStackIn, null, null);
         }
-        if (model != null && model.isBuiltInRenderer()){
-            model.getQuads(null, null, 0L); //See TESRItemModel
+        if (model != null && model.isBuiltInRenderer() && model instanceof TESRItemModel){
+            GlStateManager.pushMatrix();
+            GlStateManager.rotate(180.0F, 0.0F, 1.0F, 0.0F);
+            GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+            GlStateManager.enableRescaleNormal();
+            ((TESRItemModel) model).renderTesr();
+            GlStateManager.popMatrix();
             return;
         }
 
