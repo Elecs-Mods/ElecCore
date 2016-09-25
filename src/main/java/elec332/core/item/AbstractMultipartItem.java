@@ -1,14 +1,14 @@
 package elec332.core.item;
 
-import net.minecraft.item.Item;
+import mcmultipart.item.ItemMultiPart;
 import net.minecraft.util.ResourceLocation;
 
 /**
- * Created by Elec332 on 21-8-2016.
+ * Created by Elec332 on 22-9-2016.
  */
-public abstract class AbstractItem extends Item {
+public abstract class AbstractMultipartItem extends ItemMultiPart {
 
-    public AbstractItem(ResourceLocation rl){
+    public AbstractMultipartItem(ResourceLocation rl){
         if (rl != null) {
             setRegistryName(rl);
             setUnlocalizedNameFromName();

@@ -5,6 +5,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.RenderGlobal;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.block.model.IBakedModel;
@@ -16,6 +17,7 @@ import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.common.model.ITransformation;
@@ -24,6 +26,7 @@ import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import javax.annotation.Nonnull;
 import javax.vecmath.Vector3f;
 import java.util.Map;
 
@@ -70,6 +73,18 @@ public class RenderHelper {
 
     public static boolean isBufferDrawing(VertexBuffer buffer){
         return buffer.isDrawing;
+    }
+
+    public static void drawExpandedSelectionBoundingBox(@Nonnull AxisAlignedBB aabb){
+        drawSelectionBoundingBox(expandAABB(aabb));
+    }
+
+    public static void drawSelectionBoundingBox(@Nonnull AxisAlignedBB aabb){
+        RenderGlobal.func_189697_a(aabb, 0.0F, 0.0F, 0.0F, 0.4F);
+    }
+
+    public static AxisAlignedBB expandAABB(@Nonnull AxisAlignedBB aabb){
+        return aabb.expandXyz(BB_EXPAND_NUMBER);
     }
 
     public static ITransformation getTransformation(int x, int y, int z){

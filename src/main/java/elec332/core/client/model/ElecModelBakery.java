@@ -24,8 +24,8 @@ import java.util.List;
 /**
  * Created by Elec332 on 5-12-2015.
  */
-@SuppressWarnings({"deprecation", "unused"})
 @SideOnly(Side.CLIENT)
+@SuppressWarnings({"WeakerAccess", "deprecation", "unused"})
 public class ElecModelBakery {
 
     protected static final ElecModelBakery instance = new ElecModelBakery();
@@ -82,10 +82,13 @@ public class ElecModelBakery {
 
     public IBakedModel forQuadProvider(IModelTemplate template, final IQuadProvider quadProvider){
         return new DefaultBakedModel(template){
+
             @Override
+            @Nonnull
             public List<BakedQuad> getQuads(IBlockState state, EnumFacing facing, long rand) {
                 return quadProvider.getBakedQuads(state, facing, rand);
             }
+
         };
     }
 
@@ -121,7 +124,6 @@ public class ElecModelBakery {
 
     }
 
-    @SuppressWarnings("deprecation")
     private class DefaultBakedModel implements IBakedModel {
 
         private DefaultBakedModel(IModelTemplate template){
@@ -151,6 +153,7 @@ public class ElecModelBakery {
         }
 
         @Override
+        @Nonnull
         public List<BakedQuad> getQuads(IBlockState state, EnumFacing facing, long rand) {
             return facing == null ? generalQuads : sidedQuads.getForSide(facing);
         }
@@ -171,16 +174,19 @@ public class ElecModelBakery {
         }
 
         @Override
+        @Nonnull
         public TextureAtlasSprite getParticleTexture() {
             return this.texture;
         }
 
         @Override
+        @Nonnull
         public ItemCameraTransforms getItemCameraTransforms() {
             return this.ict;
         }
 
         @Override
+        @Nonnull
         public ItemOverrideList getOverrides() {
             return ItemOverrideList.NONE;
         }

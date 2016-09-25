@@ -5,6 +5,7 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import elec332.core.client.IIconRegistrar;
 import elec332.core.client.ITextureLoader;
+import elec332.core.client.RenderHelper;
 import elec332.core.client.model.model.IModelAndTextureLoader;
 import elec332.core.client.model.model.IModelLoader;
 import elec332.core.client.model.template.ElecTemplateBakery;
@@ -20,11 +21,14 @@ import net.minecraft.client.renderer.block.model.ModelBakery;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.registry.IRegistry;
 import net.minecraftforge.client.event.TextureStitchEvent;
+import net.minecraftforge.client.model.IModel;
 import net.minecraftforge.client.model.ModelLoader;
+import net.minecraftforge.client.model.ModelLoaderRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -51,6 +55,7 @@ public final class RenderingRegistry {
         textureLoaders = Lists.newArrayList();
         extraItems = Lists.newArrayList();
         extraBlocks = Lists.newArrayList();
+        extraModels = Lists.newArrayList();
     }
 
     public static final int SPECIAL_BLOCK_RENDERER_ID = 39;
@@ -62,6 +67,12 @@ public final class RenderingRegistry {
 
     private final List<Item> extraItems;
     private final List<Block> extraBlocks;
+
+    private final List<ModelResourceLocation> extraModels;
+
+    public void registerLoadableModel(ModelResourceLocation mrl){
+        extraModels.add(mrl);
+    }
 
     public void registerFakeItem(Item item){
         extraItems.add(item);
@@ -158,6 +169,18 @@ public final class RenderingRegistry {
     protected Set<ModelResourceLocation> getValidLocations(Collection<ModelResourceLocation> loop, ModelBakery modelLoader){
         //Set<ModelResourceLocation> toRemove = Sets.newHashSet();
         IRegistry<ModelResourceLocation, IBakedModel> registry = modelLoader.blockModelShapes.modelManager.modelRegistry;
+
+        for (ModelResourceLocation mrl : extraModels){
+            IBakedModel model;
+            try {
+                IModel model_ = ModelLoaderRegistry.getModel(mrl);
+                model = model_.bake(model_.getDefaultState(), DefaultVertexFormats.ITEM, ModelLoader.defaultTextureGetter());
+            } catch (Exception e){
+                model = RenderHelper.getMissingModel();
+            }
+            registry.putObject(mrl, model);
+        }
+
         /*for (ModelResourceLocation rl : loop){
             String[] sa = rl.toString().split("#");
             String name = sa[0];
@@ -252,7 +275,7 @@ public final class RenderingRegistry {
         instance.registerLoader(new IModelAndTextureLoader() {
             @Override
             public void registerModels(ElecQuadBakery quadBakery, ElecModelBakery modelBakery, ElecTemplateBakery templateBakery) {
-                for (Item item : getAllValiditems()) {
+                for (Item item : getAllValidItems()) {
                     if (item instanceof IModelLoader) {
                         ((IModelLoader) item).registerModels(quadBakery, modelBakery, templateBakery);
                     }
@@ -266,7 +289,7 @@ public final class RenderingRegistry {
 
             @Override
             public void registerTextures(IIconRegistrar iconRegistrar) {
-                for (Item item : getAllValiditems()) {
+                for (Item item : getAllValidItems()) {
                     if (item instanceof ITextureLoader) {
                         ((ITextureLoader) item).registerTextures(iconRegistrar);
                     }
@@ -281,13 +304,13 @@ public final class RenderingRegistry {
     }
 
     public static Iterable<Block> getAllValidBlocks(){
-        List<Block> list = Lists.newArrayList(RegistryHelper.getBlockRegistry().typeSafeIterable());
+        List<Block> list = Lists.newArrayList(RegistryHelper.getBlockRegistry());
         list.addAll(instance.extraBlocks);
         return list;
     }
 
-    public static Iterable<Item> getAllValiditems(){
-        List<Item> list = Lists.newArrayList(RegistryHelper.getItemRegistry().typeSafeIterable());
+    public static Iterable<Item> getAllValidItems(){
+        List<Item> list = Lists.newArrayList(RegistryHelper.getItemRegistry());
         list.addAll(instance.extraItems);
         return list;
     }

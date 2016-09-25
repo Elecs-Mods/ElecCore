@@ -9,6 +9,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.util.List;
 import java.util.Set;
@@ -36,7 +37,7 @@ public final class ElecResourceManager extends SimpleReloadableResourceManager i
     }
 
     @Override
-    public void registerReloadListener(IResourceManagerReloadListener reloadListener) {
+    public void registerReloadListener(@Nonnull IResourceManagerReloadListener reloadListener) {
         boolean register = true;
         for (IElecResourceManager.IResourceHook hook : hooks){
             if (!hook.onRegister(this, reloadListener)){
@@ -51,7 +52,7 @@ public final class ElecResourceManager extends SimpleReloadableResourceManager i
     /* Link-through */
 
     @Override
-    public void reloadResources(List<IResourcePack> resourcePacks) {
+    public void reloadResources(@Nonnull List<IResourcePack> resourcePacks) {
         resourceManager.reloadResources(resourcePacks);
     }
 
@@ -61,12 +62,12 @@ public final class ElecResourceManager extends SimpleReloadableResourceManager i
     }
 
     @Override
-    public IResource getResource(ResourceLocation location) throws IOException {
+    public IResource getResource(@Nonnull ResourceLocation location) throws IOException {
         return resourceManager.getResource(location);
     }
 
     @Override
-    public List<IResource> getAllResources(ResourceLocation location) throws IOException {
+    public List<IResource> getAllResources(@Nonnull ResourceLocation location) throws IOException {
         return resourceManager.getAllResources(location);
     }
 

@@ -10,7 +10,6 @@ import net.minecraft.client.renderer.block.model.*;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.ModelBakeEvent;
 import net.minecraftforge.client.model.ItemLayerModel;
 import net.minecraftforge.common.MinecraftForge;
@@ -30,16 +29,15 @@ import java.util.List;
  * Created by Elec332 on 15-11-2015.
  */
 @SideOnly(Side.CLIENT)
+@SuppressWarnings({"WeakerAccess", "unused"})
 public class ElecQuadBakery {
 
     protected static final ElecQuadBakery instance = new ElecQuadBakery();
     private ElecQuadBakery(){
         this.faceBakery = new FaceBakery(); //Because MC is selfish and keeps his private...
-        this.dummy = new ItemLayerModel((ImmutableList<ResourceLocation>)null); //Because I need a method that should be static...
     }
 
     private final FaceBakery faceBakery;
-    private final ItemLayerModel dummy;
     private static final List<BakedQuad> EMPTY_LIST;
 
     /**
@@ -125,6 +123,7 @@ public class ElecQuadBakery {
         return bakeQuad(v1, v2, texture, facing, rotation, uvData.getUMin(), uvData.getVMin(), uvData.getUMax(), uvData.getVMax(), tint);
     }
 
+    @SuppressWarnings("ConstantConditions")
     public BakedQuad bakeQuad(Vector3f v1, Vector3f v2, TextureAtlasSprite texture, EnumFacing facing, ITransformation rotation, float f1, float f2, float f3, float f4, int tint){
         BlockFaceUV bfuv = new BlockFaceUV(new float[]{f1, f2, f3, f4}, 0);
         BlockPartFace bpf = new BlockPartFace(facing, tint, null, bfuv);
@@ -141,7 +140,7 @@ public class ElecQuadBakery {
     public List<BakedQuad> getGeneralItemQuads(TextureAtlasSprite... textures){
         ImmutableList.Builder<BakedQuad> builder = ImmutableList.builder();
         for (int i = 0; i < textures.length; i++) {
-            builder.addAll(dummy.getQuadsForSprite(i, textures[i], DefaultVertexFormats.ITEM, Optional.of(TRSRTransformation.identity())));
+            builder.addAll(ItemLayerModel.getQuadsForSprite(i, textures[i], DefaultVertexFormats.ITEM, Optional.of(TRSRTransformation.identity())));
         }
         return builder.build();
     }

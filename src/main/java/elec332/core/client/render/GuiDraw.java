@@ -51,7 +51,7 @@ public class GuiDraw {
 
     private static class GuiDrawGui extends Gui {
 
-        public GuiDrawGui(){
+        private GuiDrawGui(){
             zLevel = 300.0F;
         }
 

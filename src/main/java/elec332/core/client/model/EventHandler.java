@@ -12,6 +12,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
  * Created by Elec332 on 21-11-2015.
  */
 @SideOnly(Side.CLIENT)
+@SuppressWarnings("unused")
 public class EventHandler {
 
     public EventHandler(){
@@ -35,7 +36,6 @@ public class EventHandler {
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public void afterAllModelsBaked(ModelBakeEvent event){
-        //RenderingRegistry.instance().setItemBlockModels(event);
         RenderingRegistry.instance().removeJsonErrors(event.getModelLoader());
     }
 

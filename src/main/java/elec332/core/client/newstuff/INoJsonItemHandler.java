@@ -15,6 +15,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import javax.annotation.Nonnull;
 import java.util.List;
 
 /**
@@ -50,10 +51,13 @@ public class INoJsonItemHandler implements IItemModelHandler {
 
         private LinkedItemModel() {
             super(new NoJsonItemOverrideList(null){
+
                 @Override
-                public IBakedModel handleItemState(IBakedModel originalModel, ItemStack stack, World world, EntityLivingBase entity) {
+                @Nonnull
+                public IBakedModel handleItemState(@Nonnull IBakedModel originalModel, ItemStack stack, @Nonnull World world, @Nonnull EntityLivingBase entity) {
                     return ((INoJsonItem)stack.getItem()).getItemModel(stack, world, entity);
                 }
+
             });
         }
 
@@ -63,10 +67,13 @@ public class INoJsonItemHandler implements IItemModelHandler {
 
         private LinkedItemBlockModel() {
             super(new NoJsonItemOverrideList(null){
+
                 @Override
-                public IBakedModel handleItemState(IBakedModel originalModel, ItemStack stack, World world, EntityLivingBase entity) {
+                @Nonnull
+                public IBakedModel handleItemState(@Nonnull IBakedModel originalModel, ItemStack stack, @Nonnull World world, @Nonnull EntityLivingBase entity) {
                     return ((INoJsonItem)(((ItemBlock)stack.getItem()).getBlock())).getItemModel(stack, world, entity);
                 }
+
             });
         }
 
@@ -75,7 +82,7 @@ public class INoJsonItemHandler implements IItemModelHandler {
 
     private class NoJsonItemOverrideList extends ItemOverrideList {
 
-        public NoJsonItemOverrideList(INoJsonItem item) {
+        private NoJsonItemOverrideList(INoJsonItem item) {
             super(ImmutableList.<ItemOverride>of());
             this.item = item;
         }
@@ -83,7 +90,8 @@ public class INoJsonItemHandler implements IItemModelHandler {
         private final INoJsonItem item;
 
         @Override
-        public IBakedModel handleItemState(IBakedModel originalModel, ItemStack stack, World world, EntityLivingBase entity) {
+        @Nonnull
+        public IBakedModel handleItemState(@Nonnull IBakedModel originalModel, ItemStack stack, @Nonnull World world, @Nonnull EntityLivingBase entity) {
             return item.getItemModel(stack, world, entity);
         }
 
@@ -98,6 +106,7 @@ public class INoJsonItemHandler implements IItemModelHandler {
         private final ItemOverrideList iol;
 
         @Override
+        @Nonnull
         public List<BakedQuad> getQuads(IBlockState p_188616_1_, EnumFacing p_188616_2_, long p_188616_3_) {
             throw new UnsupportedOperationException();
         }
@@ -118,17 +127,20 @@ public class INoJsonItemHandler implements IItemModelHandler {
         }
 
         @Override
+        @Nonnull
         public TextureAtlasSprite getParticleTexture() {
             return RenderHelper.getMissingTextureIcon();
         }
 
         @Override
         @SuppressWarnings("deprecation")
+        @Nonnull
         public ItemCameraTransforms getItemCameraTransforms() {
             throw new UnsupportedOperationException();
         }
 
         @Override
+        @Nonnull
         public ItemOverrideList getOverrides() {
             return iol;
         }

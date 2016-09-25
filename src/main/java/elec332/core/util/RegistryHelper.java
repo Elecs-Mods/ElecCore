@@ -20,12 +20,12 @@ import java.util.Map;
  */
 public class RegistryHelper {
 
-    public static <T extends IForgeRegistryEntry<T>, C extends IForgeRegistry.AddCallback<T> & IForgeRegistry.ClearCallback<T> & IForgeRegistry.CreateCallback<T>> FMLControlledNamespacedRegistry<T> createRegistry(ResourceLocation registryName, Class<T> registryType, C callback){
+    public static <T extends IForgeRegistryEntry<T>, C extends IForgeRegistry.AddCallback<T> & IForgeRegistry.ClearCallback<T> & IForgeRegistry.CreateCallback<T> & IForgeRegistry.SubstitutionCallback<T>> FMLControlledNamespacedRegistry<T> createRegistry(ResourceLocation registryName, Class<T> registryType, C callback){
         return createRegistry(registryName, registryType, 0, Byte.MAX_VALUE, callback);
     }
 
-    public static <T extends IForgeRegistryEntry<T>, C extends IForgeRegistry.AddCallback<T> & IForgeRegistry.ClearCallback<T> & IForgeRegistry.CreateCallback<T>> FMLControlledNamespacedRegistry<T> createRegistry(ResourceLocation registryName, Class<T> registryType, int minId, int maxId, C callback){
-        return PersistentRegistryManager.createRegistry(registryName, registryType, null, minId, maxId, true, callback, callback, callback);
+    public static <T extends IForgeRegistryEntry<T>, C extends IForgeRegistry.AddCallback<T> & IForgeRegistry.ClearCallback<T> & IForgeRegistry.CreateCallback<T> & IForgeRegistry.SubstitutionCallback<T>> FMLControlledNamespacedRegistry<T> createRegistry(ResourceLocation registryName, Class<T> registryType, int minId, int maxId, C callback){
+        return PersistentRegistryManager.createRegistry(registryName, registryType, null, minId, maxId, true, callback, callback, callback, callback);
     }
 
     public static FMLControlledNamespacedRegistry<Block> getBlockRegistry() {
@@ -74,7 +74,7 @@ public class RegistryHelper {
 
     //Callback helpers
 
-    public interface FullRegistryCallback<T extends IForgeRegistryEntry<T>> extends IForgeRegistry.AddCallback<T>, IForgeRegistry.ClearCallback<T>, IForgeRegistry.CreateCallback<T> {
+    public interface FullRegistryCallback<T extends IForgeRegistryEntry<T>> extends IForgeRegistry.AddCallback<T>, IForgeRegistry.ClearCallback<T>, IForgeRegistry.CreateCallback<T>, IForgeRegistry.SubstitutionCallback<T> {
 
     }
 
@@ -98,6 +98,10 @@ public class RegistryHelper {
 
             @Override
             public void onAdd(IForgeRegistryEntry obj, int id, Map slaveset) {
+            }
+
+            @Override
+            public void onSubstituteActivated(Map slaveset, IForgeRegistryEntry original, IForgeRegistryEntry replacement, ResourceLocation name) {
             }
 
         };
