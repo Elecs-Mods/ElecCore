@@ -15,8 +15,8 @@ import forestry.api.genetics.*;
 import forestry.apiculture.genetics.alleles.AlleleBeeSpecies;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
 import java.lang.reflect.Field;
 
@@ -34,7 +34,7 @@ public class ForestryCompatHandler  {
     }
 
     @ElecModule.EventHandler
-    public void preInit(FMLPreInitializationEvent event){
+    public void preInit(FMLInitializationEvent event){
         beeRoot = BeeManager.beeRoot;
         if (FMLCommonHandler.instance().getSide().isClient()) {
             AlleleManager.alleleRegistry.registerAlleleHandler(new IAlleleHandler() {
