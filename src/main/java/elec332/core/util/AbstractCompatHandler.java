@@ -13,6 +13,7 @@ import java.util.List;
 /**
  * Created by Elec332 on 5-8-2015.
  */
+@Deprecated
 public abstract class AbstractCompatHandler {
 
     public AbstractCompatHandler(Configuration config, Logger logger){
@@ -132,6 +133,7 @@ public abstract class AbstractCompatHandler {
         MOD, API
     }
 
+    @Deprecated
     public static abstract class ICompatHandler{
 
         public ModType getType(){

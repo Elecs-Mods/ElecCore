@@ -5,13 +5,14 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import elec332.core.api.util.IASMDataHelper;
 import elec332.core.api.util.IASMDataProcessor;
-import elec332.core.compat.ElecCoreCompatHandler;
-import elec332.core.compat.forestry.ForestryCompatHandler;
 import elec332.core.effects.AbilityHandler;
 import elec332.core.grid.v2.internal.GridEventHandler;
 import elec332.core.grid.v2.internal.GridEventInputHandler;
+import elec332.core.handler.ModEventHandler;
 import elec332.core.handler.TickHandler;
 import elec332.core.modBaseUtils.ModInfo;
+import elec332.core.module.IModuleController;
+import elec332.core.module.ModuleHandler;
 import elec332.core.network.*;
 import elec332.core.proxies.CommonProxy;
 import elec332.core.server.ServerHelper;
@@ -22,7 +23,6 @@ import elec332.core.util.OredictHelper;
 import net.minecraft.launchwrapper.Launch;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
-import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.LoaderState;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
@@ -32,6 +32,7 @@ import net.minecraftforge.fml.common.event.*;
 import org.apache.logging.log4j.Logger;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -41,7 +42,7 @@ import java.util.Set;
  */
 @Mod(modid = ElecCore.MODID, name = ElecCore.MODNAME, dependencies = "required-after:Forge@[12.16.0.1832,);after:forestry;",
 acceptedMinecraftVersions = "[1.9,)", version = ElecCore.ElecCoreVersion, useMetadata = true)
-public class ElecCore {
+public class ElecCore implements IModuleController {
 
 	public static final String ElecCoreVersion = "#ELECCORE_VER#";
 	public static final String MODID = "ElecCore";
@@ -54,20 +55,16 @@ public class ElecCore {
 	public static ElecCore instance;
 	public static TickHandler tickHandler;
 	public static NetworkHandler networkHandler;
-	public static ElecCoreCompatHandler compatHandler;
 	public static Logger logger;
 	private static ASMDataTable dataTable;
 	private ASMDataProcessor asmDataProcessor;
 	private Configuration config;
 	private LoadTimer loadTimer;
+	private ModEventHandler modEventHandler;
 
 	public static final boolean developmentEnvironment;
-	@Deprecated
-	public static boolean oldBlocks = true;
 	public static boolean debug = false;
 	public static boolean removeJSONErrors = true;
-	private static ForestryCompatHandler forestryCompat;
-
 
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
@@ -82,8 +79,6 @@ public class ElecCore {
 		networkHandler.registerServerPacket(PacketWidgetDataToServer.class);
 		networkHandler.registerClientPacket(PacketReRenderBlock.class);
 
-		compatHandler = new ElecCoreCompatHandler(config, logger);
-		compatHandler.addHandler(forestryCompat = new ForestryCompatHandler());
 		dataTable = event.getAsmData();
 		asmDataProcessor = new ASMDataProcessor();
 		asmDataProcessor.init();
@@ -96,6 +91,8 @@ public class ElecCore {
 
 		proxy.preInitRendering();
 		asmDataProcessor.process(LoaderState.PREINITIALIZATION);
+
+		modEventHandler.postEvent(event);
 
 		loadTimer.endPhase(event);
 		MCModInfo.createMCModInfoElec(event, "Provides core functionality for Elec's Mods",
@@ -111,23 +108,22 @@ public class ElecCore {
 		if (config.hasChanged()){
 			config.save();
 		}
-		compatHandler.init();
+		ElecCoreRegistrar.dummyLoad();
 		AbilityHandler.instance.init();
 
 		asmDataProcessor.process(LoaderState.INITIALIZATION);
 		OredictHelper.initLists();
+		modEventHandler.postEvent(event);
 		loadTimer.endPhase(event);
     }
 
 	@EventHandler
 	public void postInit(FMLPostInitializationEvent event){
 		loadTimer.startPhase(event);
-		if (Loader.isModLoaded(forestryCompat.getName())){
-			forestryCompat.postInit();
-		}
 		asmDataProcessor.process(LoaderState.POSTINITIALIZATION);
 		OredictHelper.initLists();
 		proxy.postInitRendering();
+		modEventHandler.postEvent(event);
 		loadTimer.endPhase(event);
 	}
 
@@ -136,18 +132,45 @@ public class ElecCore {
 		loadTimer.startPhase(event);
 		asmDataProcessor.process(LoaderState.AVAILABLE);
 		OredictHelper.initLists();
+		modEventHandler.postEvent(event);
 		loadTimer.endPhase(event);
 	}
 
 	@EventHandler
-	public void onServerStarting(FMLServerAboutToStartEvent event){
+	public void onServerAboutToStart(FMLServerAboutToStartEvent event){
 		GridEventInputHandler.INSTANCE.reloadHandlers();
+		modEventHandler.postEvent(event);
+	}
+
+	@EventHandler
+	public void onServerStarting(FMLServerStartingEvent event){
+		modEventHandler.postEvent(event);
+	}
+
+	@EventHandler
+	public void onServerStarted(FMLServerStartedEvent event){
+		modEventHandler.postEvent(event);
+	}
+
+	@EventHandler
+	public void onServerStopping(FMLServerStoppingEvent event){
+		modEventHandler.postEvent(event);
+	}
+
+	@EventHandler
+	public void onServerStopped(FMLServerStoppedEvent event){
+		modEventHandler.postEvent(event);
 	}
 
 	public static void systemPrintDebug(Object s){
 		if (debug) {
 			System.out.println(s);
 		}
+	}
+
+	@Override
+	public boolean isModuleEnabled(String moduleName) {
+		return true;
 	}
 
 	private class ASMDataProcessor {
@@ -176,26 +199,68 @@ public class ElecCore {
 					return getASMDataTable().getAll(annotationClass.getName());
 				}
 			};
-			for (ASMDataTable.ASMData data : asmDataHelper.getAnnotationList(elec332.core.api.annotations.ASMDataProcessor.class)){
-				IASMDataProcessor dataProcessor;
+			for (ASMDataTable.ASMData data : asmDataHelper.getAnnotationList(elec332.core.api.annotations.ASMDataProcessor.class)) {
+				Map<IASMDataProcessor, LoaderState[]> dataMap = Maps.newHashMap();
+				boolean eb = false;
+				Class<?> clazz;
 				try {
-					dataProcessor = (IASMDataProcessor)Class.forName(data.getClassName()).newInstance();
-				} catch(ClassNotFoundException e){
+					clazz = Class.forName(data.getClassName());
+				} catch (ClassNotFoundException e) {
 					//Do nothing, class is probably annotated with @SideOnly
 					continue;
-				} catch (Exception e){
-					throw new RuntimeException("Error invocating annotated IASMData class: "+data.getClassName());
 				}
-				elec332.core.api.annotations.ASMDataProcessor annotation = dataProcessor.getClass().getAnnotation(elec332.core.api.annotations.ASMDataProcessor.class);
-				LoaderState[] hS = annotation.value();
-				if (hS == null || hS.length == 0){
-					throw new IllegalArgumentException("Invalid LoaderState parameters: Null or empty array; For "+data.getClassName());
+				if (clazz == null) {
+					continue;
 				}
-				for (LoaderState state : hS){
-					if (!validStates.contains(state)){
-						throw new IllegalArgumentException("Invalid LoaderState parameter: "+state+"; For "+data.getClassName());
+				if (clazz.isAnnotationPresent(elec332.core.api.annotations.ASMDataProcessor.class)) {
+					LoaderState[] ls = clazz.getAnnotation(elec332.core.api.annotations.ASMDataProcessor.class).value();
+					if (clazz.isEnum()) {
+						for (Object e : clazz.getEnumConstants()) {
+							if (e instanceof IASMDataProcessor) {
+								dataMap.put((IASMDataProcessor) e, ls);
+							}
+						}
+						eb = true;
+					} else {
+						Object o;
+						try {
+							o = clazz.newInstance();
+						} catch (Exception e) {
+							throw new RuntimeException("Error invocating annotated IASMData class: " + data.getClassName());
+						}
+						if (o instanceof IASMDataProcessor) {
+							dataMap.put((IASMDataProcessor) o, ls);
+						}
 					}
-					asmLoaderMap.get(state).add(dataProcessor);
+				}
+
+				if (!eb) {
+					for (Field field : clazz.getDeclaredFields()) {
+						if (field.isAnnotationPresent(elec332.core.api.annotations.ASMDataProcessor.class)) {
+							Object obj;
+							try {
+								obj = field.get(null);
+							} catch (Exception e) {
+								continue; //Not static
+							}
+							if (obj instanceof IASMDataProcessor) {
+								dataMap.put((IASMDataProcessor) obj, field.getAnnotation(elec332.core.api.annotations.ASMDataProcessor.class).value());
+							}
+						}
+					}
+				}
+
+				for (Map.Entry<IASMDataProcessor, LoaderState[]> entry : dataMap.entrySet()) {
+					LoaderState[] hS = entry.getValue();
+					if (hS == null || hS.length == 0) {
+						throw new IllegalArgumentException("Invalid LoaderState parameters: Null or empty array; For " + data.getClassName());
+					}
+					for (LoaderState state : hS) {
+						if (!validStates.contains(state)) {
+							throw new IllegalArgumentException("Invalid LoaderState parameter: " + state + "; For " + data.getClassName());
+						}
+						asmLoaderMap.get(state).add(entry.getKey());
+					}
 				}
 			}
 		}
@@ -212,6 +277,13 @@ public class ElecCore {
 			}
 		}
 
+	}
+
+	public void setModEventHandler(ModEventHandler handler){
+		if (this.modEventHandler != null){
+			throw new IllegalStateException();
+		}
+		this.modEventHandler = handler;
 	}
 
 	static {

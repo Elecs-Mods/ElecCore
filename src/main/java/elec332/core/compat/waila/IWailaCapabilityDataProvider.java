@@ -1,4 +1,4 @@
-package elec332.core.compat.handlers;
+package elec332.core.compat.waila;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -7,6 +7,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
+import net.minecraftforge.common.capabilities.Capability;
 
 import java.util.List;
 
@@ -19,5 +20,6 @@ public interface IWailaCapabilityDataProvider<T> {
 
     public NBTTagCompound getWailaTag(T capability, EntityPlayerMP player, TileEntity tile, NBTTagCompound tag, World world, BlockPos pos);
 
+    public boolean isCompatibleCapability(Capability<?> capability);
 
 }

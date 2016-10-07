@@ -1,4 +1,4 @@
-package elec332.core.module.annotations;
+package elec332.core.module;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -10,6 +10,7 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
+@SuppressWarnings("all")
 public @interface ElecModule {
 
     /**
@@ -29,6 +30,7 @@ public @interface ElecModule {
      * (owner mod does not count).
      * This gets parsed the same way as in the
      * {@link net.minecraftforge.fml.common.Mod} annotation.
+     * (Keep in mind that "before" and "after" does not work)
      *
      * @return The mod dependencies
      */
@@ -37,16 +39,34 @@ public @interface ElecModule {
     /**
      * Returns an array of module names this module depends on.
      * Format: modId:moduleName
+     * Splitter: ;
      *
      * @return The mod dependencies
      */
     String moduleDependencies() default "";
 
-    boolean enabled() default true;
+    /**
+     * If true, this module cannot be disabled
+     * by the module controller
+     *
+     * @return Whether the module-controller can disable this module.
+     */
+    boolean alwaysEnabled() default false;
+
+    boolean autoDisableIfRequirementsNotMet() default true;
 
     @Retention(RetentionPolicy.RUNTIME)
     @Target(ElementType.METHOD)
-    public @interface EventHandler {}
+    public @interface EventHandler {
+    }
+
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target(ElementType.FIELD)
+    public @interface Instance {
+
+        String module() default "";
+
+    }
 
 }
 

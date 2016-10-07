@@ -22,11 +22,11 @@ public class ElecTileEntityItemStackRenderer extends TileEntityItemStackRenderer
     public void renderByItem(ItemStack itemStackIn) {
         IBakedModel model = Minecraft.getMinecraft().renderItem.getItemModelWithOverrides(itemStackIn, null, null);
 
-        if ( model.isBuiltInRenderer() && model instanceof TESRItemModel){
+        if (model.isBuiltInRenderer() && model instanceof TESRItemModel){
             GlStateManager.pushMatrix();
-            GlStateManager.rotate(180.0F, 0.0F, 1.0F, 0.0F);
-            GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-            GlStateManager.enableRescaleNormal();
+            //GlStateManager.rotate(180.0F, 0.0F, 1.0F, 0.0F);
+            //GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+            //GlStateManager.enableRescaleNormal();
             ((TESRItemModel) model).renderTesr();
             GlStateManager.popMatrix();
             return;

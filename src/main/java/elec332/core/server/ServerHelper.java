@@ -1,6 +1,7 @@
 package elec332.core.server;
 
-import com.google.common.base.Function;
+import com.google.common.base.*;
+import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.io.Files;
@@ -288,7 +289,7 @@ public class ServerHelper {
 
         @SubscribeEvent
         public void onWorldLoad(WorldEvent.Load event){
-            if (isServer(event.getWorld()) && WorldHelper.getDimID(event.getWorld()) == 0 && event.getWorld().getClass() == WorldServer.class){
+            if (isOverworld(event.getWorld())){
                 //System.out.println("loading data: "+event.getWorld()+"  "+!event.world.isRemote);
 
                 if (!ServerHelper.this.locked) {
@@ -330,11 +331,12 @@ public class ServerHelper {
 
         @SubscribeEvent
         public void onWorldSave(WorldEvent.Save event){
-            if (isServer(event.getWorld()) && WorldHelper.getDimID(event.getWorld()) == 0 && event.getWorld().getClass() == WorldServer.class){
-               // if (!ServerHelper.this.loaded){
-               //     ElecCore.logger.error("World is unloading before data has been loaded, skipping data saving...");
-               //     return;
-               // }
+            if (isOverworld(event.getWorld())){
+                if (!ServerHelper.this.loaded){
+                    ElecCore.logger.error("World is unloading before data has been loaded, skipping data saving...");
+                    ElecCore.logger.error("This probably happened due to a crash in EG worldgen.");
+                    return;
+                }
                 //System.out.println("saving: "+event.world);
                 File folder = new File(event.getWorld().getSaveHandler().getWorldDirectory(), "elec332/");
 
@@ -361,7 +363,16 @@ public class ServerHelper {
                 //if (s != null){
                 //    throw new IllegalStateException("Duplicate names were used: "+s);
                 //}
+            }
+        }
+
+        @SubscribeEvent
+        public void worldUnload(WorldEvent.Unload event){
+            if (isOverworld(event.getWorld())){
                 ServerHelper.this.loaded = false;
+                ServerHelper.this.generalData = null;
+                ServerHelper.this.playerData = null;
+                ServerHelper.this.savedData = null;
             }
         }
 
@@ -387,15 +398,18 @@ public class ServerHelper {
                 return;
             ElecPlayer player = ServerHelper.this.playerData.get(PlayerHelper.getPlayerUUID(event.player));
             if (player == null){
-                for (int i = 0; i < 30; i++) {
-                    ElecCore.logger.error("A player disconnected from the server without connecting first!");
-                    ElecCore.logger.error("Player: "+event.player.getDisplayName());
-                }
+                ElecCore.logger.error("A player disconnected from the server without connecting first!");
+                ElecCore.logger.error("Player: "+event.player.getDisplayName());
                 investigateErrors(true);
                 return;
             }
             player.setOnline(false);
         }
+
+        private boolean isOverworld(World world){
+            return isServer(world) && WorldHelper.getDimID(world) == 0 && world.getClass() == WorldServer.class;
+        }
+
     }
 
     @Deprecated
