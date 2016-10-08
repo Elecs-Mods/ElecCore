@@ -96,6 +96,8 @@ public class ForestryCompatHandler  {
                 AlleleManager.alleleRegistry.blacklistAllele(allele.getUID());
             }
         }
+        IndividualDefinitionRegistry.registeredClasses.clear();
+        IndividualDefinitionRegistry.registeredTemplates.clear();
     }
 
 }
