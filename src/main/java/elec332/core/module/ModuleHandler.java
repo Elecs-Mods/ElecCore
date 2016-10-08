@@ -144,9 +144,9 @@ public enum ModuleHandler implements IASMDataProcessor {
             }
         }
         for (IModuleContainer module : activeModules){
-            for (Field field : module.getClass().getDeclaredFields()){
-                field.setAccessible(true);
+            for (Field field : module.getModule().getClass().getDeclaredFields()){
                 if (field.isAnnotationPresent(ElecModule.Instance.class)){
+                    field.setAccessible(true);
                     String name = field.getAnnotation(ElecModule.Instance.class).module();
                     if (Strings.isNullOrEmpty(name)){
                         try {
