@@ -1,12 +1,9 @@
 package elec332.core.module;
 
-import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.versioning.ArtifactVersion;
-import net.minecraftforge.fml.common.versioning.VersionParser;
 
 import javax.annotation.Nonnull;
 import java.lang.reflect.Method;
@@ -17,22 +14,26 @@ import java.util.List;
  */
 public class WrappedModule implements IModuleContainer {
 
-    WrappedModule(Object o, ElecModule moduleInfo){
+    WrappedModule(Object o, IModuleInfo moduleInfo){
         this.module = o;
-        this.name = moduleInfo.name();
-        this.owner = moduleInfo.owner();
+        this.name = moduleInfo.getName();
+        this.owner = moduleInfo.getOwner();
         this.comName = new ResourceLocation(owner, name);
         this.depB = moduleInfo.autoDisableIfRequirementsNotMet();
-        this.moduleDependencies = ImmutableList.copyOf(Lists.newArrayList(moduleInfo.moduleDependencies().split(";")));
-        this.modDependencies = parseDependencyInfo(moduleInfo.modDependencies());
+        this.moduleDependencies = ImmutableList.copyOf(moduleInfo.getModuleDependencies());
+        this.modDependencies = ImmutableList.copyOf(moduleInfo.getModDependencies());
+        this.clazz = moduleInfo.getModuleClass();
+        this.alwaysEnabled = moduleInfo.alwaysEnabled();
+        this.moduleController = moduleInfo.getModuleController();
     }
 
-    private final String name, owner;
+    private final String name, owner, clazz;
     private final ResourceLocation comName;
-    private final boolean depB;
+    private final boolean depB, alwaysEnabled;
     private final Object module;
     private final List<String> moduleDependencies;
     private final List<ArtifactVersion> modDependencies;
+    private final IModuleController moduleController;
 
     @Nonnull
     @Override
@@ -92,16 +93,21 @@ public class WrappedModule implements IModuleContainer {
         return this.moduleDependencies;
     }
 
-    public static List<ArtifactVersion> parseDependencyInfo(String modDependencies){
-        List<ArtifactVersion> ret = Lists.newArrayList();
-        if (Strings.isNullOrEmpty(modDependencies)){
-            return ImmutableList.of();
-        }
-        String[] parts = modDependencies.split(";");
-        for (String s : parts){
-            ret.add(VersionParser.parseVersionReference(s));
-        }
-        return ImmutableList.copyOf(ret);
+    @Nonnull
+    @Override
+    public String getModuleClass() {
+        return clazz;
+    }
+
+    @Override
+    public boolean alwaysEnabled() {
+        return alwaysEnabled;
+    }
+
+    @Override
+    @Nonnull
+    public IModuleController getModuleController() {
+        return moduleController;
     }
 
 }

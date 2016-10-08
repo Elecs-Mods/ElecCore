@@ -10,11 +10,15 @@ import elec332.core.api.util.IASMDataProcessor;
 import elec332.core.handler.ModEventHandler;
 import elec332.core.main.ElecCore;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.common.*;
+import net.minecraftforge.fml.common.Loader;
+import net.minecraftforge.fml.common.LoaderState;
+import net.minecraftforge.fml.common.MissingModsException;
+import net.minecraftforge.fml.common.ModContainer;
 import net.minecraftforge.fml.common.discovery.ASMDataTable;
-import net.minecraftforge.fml.common.event.*;
 import net.minecraftforge.fml.common.versioning.ArtifactVersion;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.lang.reflect.Field;
 import java.util.Collections;
 import java.util.List;
@@ -38,7 +42,8 @@ public enum ModuleHandler implements IASMDataProcessor {
     }
 
     private static final IModuleController DEFAULT_CONTROLLER;
-    private Set<IModuleContainer> registeredModules, activeModules, activeModules_;
+    private Set<IModuleContainer> activeModules, activeModules_;
+    private Set<IModuleInfo> registeredModules;
     private Map<ResourceLocation, IModuleContainer> activeModuleNames;
     private Map<String, IModuleController> moduleControllers;
     private boolean locked;
@@ -56,29 +61,17 @@ public enum ModuleHandler implements IASMDataProcessor {
         locked = true;
         for (ASMDataTable.ASMData data : asmData.getAnnotationList(ElecModule.class)){
             IModuleController moduleController = getModuleController((String) data.getAnnotationInfo().get("owner"));
-
-
-            Object oc = data.getAnnotationInfo().get("alwaysEnabled");
-            boolean b = oc != null && (boolean) oc;
-            boolean b1 = moduleController.isModuleEnabled((String) data.getAnnotationInfo().get("name"));
-
-
-            if (b || b1/*((Boolean) data.getAnnotationInfo().get("alwaysEnabled")) || moduleController.isModuleEnabled((String) data.getAnnotationInfo().get("name"))*/){
-                try {
-                    Class<?> clazz = Class.forName(data.getClassName());
-                    Object o = moduleController.invoke(clazz);
-                    if (o == null){
-                        continue;
-                    }
-                    IModuleContainer module = moduleController.wrap(o);
-                    if (module == null){
-                        continue;
-                    }
-                    registeredModules.add(module);
-                } catch (Exception e){
-                    ElecCore.logger.error("Error registering module "+data.getAnnotationInfo().get("name")+" from mod "+data.getAnnotationInfo().get("owner"));
-                    ElecCore.logger.error(e);
+            try {
+                IModuleInfo module = moduleController.getModuleInfo(data);
+                if (module == null){
+                    continue;
                 }
+                if (module.alwaysEnabled() || moduleController.isModuleEnabled(module.getName())){
+                    registeredModules.add(module);
+                }
+            } catch (Exception e) {
+                ElecCore.logger.error("Error fetching information for module " + data.getAnnotationInfo().get("name") + " from mod " + data.getAnnotationInfo().get("owner"));
+                ElecCore.logger.error(e);
             }
         }
         Map<String, ArtifactVersion> names = Maps.newHashMap();
@@ -86,9 +79,9 @@ public enum ModuleHandler implements IASMDataProcessor {
             names.put(mod.getModId(), mod.getProcessedVersion());
         }
 
-        List<IModuleContainer> list = Lists.newArrayList();
+        List<IModuleInfo> list = Lists.newArrayList();
 
-        for (IModuleContainer module : registeredModules){
+        for (IModuleInfo module : registeredModules){
             boolean add = true;
             Set<ArtifactVersion> missingMods = Sets.newHashSet();
             List<ArtifactVersion> requirements = module.getModDependencies();
@@ -110,10 +103,10 @@ public enum ModuleHandler implements IASMDataProcessor {
             }
         }
         Set<String> mNames = Sets.newHashSet();
-        for (IModuleContainer module : list){
+        for (IModuleInfo module : list){
             mNames.add(module.getCombinedName().toString());
         }
-        for (IModuleContainer module : list){
+        for (IModuleInfo module : list){
             boolean add = true;
             List<String> missingModules = Lists.newArrayList();
             for (String s : module.getModuleDependencies()){
@@ -128,14 +121,24 @@ public enum ModuleHandler implements IASMDataProcessor {
                 }
             }
             if (!missingModules.isEmpty()){
-                throw new RuntimeException("Module: "+module.getCombinedName()+" requires modules(s) "+missingModules+" to be present.");
+                throw new RuntimeException("Module: "+module.getCombinedName()+" requires module(s) "+missingModules+" to be present.");
             }
             if (add){
                 if (activeModuleNames.get(module.getCombinedName()) != null){
                     throw new RuntimeException("Found duplicate module name: "+module.getCombinedName());
                 }
-                activeModules.add(module);
-                activeModuleNames.put(module.getCombinedName(), module);
+                try {
+                    IModuleContainer module_ = module.getModuleController().wrap(module);
+                    if (module_ == null){
+                        continue;
+                    }
+                    activeModules.add(module_);
+                    activeModuleNames.put(module.getCombinedName(), module_);
+                    ElecCore.logger.info("Successfully registered module " + module.getName() + " from mod " + module.getOwner());
+                } catch (Exception e) {
+                    ElecCore.logger.error("Error registering module " + module.getName() + " from mod " + module.getOwner());
+                    ElecCore.logger.error(e);
+                }
             }
         }
         for (IModuleContainer module : activeModules){
@@ -162,7 +165,7 @@ public enum ModuleHandler implements IASMDataProcessor {
         }
     }
 
-    public void registerAdditionalModule(IModuleContainer module){
+    public void registerAdditionalModule(IModuleInfo module){
         if (locked){
             throw new IllegalStateException("Mod "+Loader.instance().activeModContainer().getModId()+" attempted to register a module too late!");
         }
@@ -172,8 +175,14 @@ public enum ModuleHandler implements IASMDataProcessor {
         registeredModules.add(module);
     }
 
+    @Nonnull
     public Set<IModuleContainer> getActiveModules(){
         return activeModules_;
+    }
+
+    @Nullable
+    public IModuleContainer getActiveModule(ResourceLocation module){
+        return activeModuleNames.get(module);
     }
 
     public void invokeEvent(Object event){
@@ -186,6 +195,7 @@ public enum ModuleHandler implements IASMDataProcessor {
         }
     }
 
+    @Nonnull
     private IModuleController getModuleController(String mod){
         IModuleController ret = moduleControllers.get(mod);
         if (ret == null){
