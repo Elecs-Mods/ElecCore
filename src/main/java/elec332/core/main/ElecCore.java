@@ -40,7 +40,7 @@ import java.util.Set;
 /**
  * Created by Elec332.
  */
-@Mod(modid = ElecCore.MODID, name = ElecCore.MODNAME, dependencies = "required-after:Forge@[12.16.0.1832,);after:forestry;",
+@Mod(modid = ElecCore.MODID, name = ElecCore.MODNAME, dependencies = "required-after:Forge@[12.18.1.2073,);after:forestry;",
 acceptedMinecraftVersions = "[1.9,)", version = ElecCore.ElecCoreVersion, useMetadata = true)
 public class ElecCore implements IModuleController {
 

@@ -39,6 +39,7 @@ public enum ModuleHandler implements IASMDataProcessor {
         this.activeModules = Sets.newHashSet();
         this.activeModules_ = Collections.unmodifiableSet(activeModules);
         this.activeModuleNames = Maps.newHashMap();
+        this.erroredMods = Sets.newHashSet();
     }
 
     private static final IModuleController DEFAULT_CONTROLLER;
@@ -46,6 +47,7 @@ public enum ModuleHandler implements IASMDataProcessor {
     private Set<IModuleInfo> registeredModules;
     private Map<ResourceLocation, IModuleContainer> activeModuleNames;
     private Map<String, IModuleController> moduleControllers;
+    private Set<String> erroredMods;
     private boolean locked;
 
     @Override
@@ -199,7 +201,9 @@ public enum ModuleHandler implements IASMDataProcessor {
     private IModuleController getModuleController(String mod){
         IModuleController ret = moduleControllers.get(mod);
         if (ret == null){
-            ElecCore.logger.error("Mod: "+mod+" does not have a module controller!");
+            if (erroredMods.add(mod)) {
+                ElecCore.logger.error("Mod: " + mod + " does not have a module controller!");
+            }
             return DEFAULT_CONTROLLER;
         }
         return ret;
