@@ -3,7 +3,6 @@ package elec332.core.world;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import it.unimi.dsi.fastutil.longs.Long2ObjectLinkedOpenHashMap;
-import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 
@@ -24,10 +23,28 @@ public class PositionedObjectHolder<T> {
 
     @SuppressWarnings("unused")
     private PositionedObjectHolder(int height){
-        positionedMap = new Long2ObjectLinkedOpenHashMap<PositionChunk>();
+        this(new Long2ObjectLinkedOpenHashMap<PositionChunk>());
     }
 
-    private final Long2ObjectMap<PositionChunk> positionedMap;
+    private PositionedObjectHolder(Map<Long, PositionChunk> positionedMap){
+        this.positionedMap = positionedMap;
+        this.callbacks = Sets.newHashSet();
+        this.hasCallbacks = false;
+    }
+
+    private final Map<Long, PositionChunk> positionedMap;
+    private final Set<ChangeCallback<T>> callbacks;
+    private boolean hasCallbacks;
+
+    public void registerCallback(ChangeCallback<T> callback){
+        if (callback == null){
+            return;
+        }
+        callbacks.add(callback);
+        if (!hasCallbacks){
+            hasCallbacks = true;
+        }
+    }
 
     @Nullable
     public T get(BlockPos pos){
@@ -101,12 +118,44 @@ public class PositionedObjectHolder<T> {
 
         private void put(T t, BlockPos pos){
             posMap.put(pos, t);
+            if (hasCallbacks){
+                for (ChangeCallback<T> callback : callbacks){
+                    callback.onChange(t, pos, true);
+                }
+            }
         }
 
         private void remove(BlockPos pos){
-            posMap.remove(pos);
+            T t = posMap.remove(pos);
+            if (hasCallbacks){
+                for (ChangeCallback<T> callback : callbacks){
+                    callback.onChange(t, pos, false);
+                }
+            }
         }
 
+    }
+
+    public interface ChangeCallback<T> {
+
+        public void onChange(T object, BlockPos pos, boolean add);
+
+    }
+
+    public static <T> PositionedObjectHolder<T> immutableCopy(PositionedObjectHolder<T> original){
+        return new PositionedObjectHolder<T>(original.positionedMap){
+
+            @Override
+            public void put(T t, BlockPos pos) {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public void remove(BlockPos pos) {
+                throw new UnsupportedOperationException();
+            }
+
+        };
     }
 
 }

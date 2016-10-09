@@ -7,10 +7,13 @@ import elec332.core.world.WorldHelper;
 import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
 
+import java.lang.reflect.Field;
 import java.util.Collections;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -19,13 +22,49 @@ import java.util.Set;
 public abstract class AbstractGridHandler<T extends ITileEntityLink> {
 
     public AbstractGridHandler(){
-        this.objects = new Int2ObjectArrayMap<PositionedObjectHolder<T>>();
+        this.objectsInternal = new Int2ObjectArrayMap<PositionedObjectHolder<T>>();
         this.extraUnload = Sets.newHashSet();
         this.changeCheck = Sets.newHashSet();
         this.add = Sets.newHashSet();
+        this.objects = Collections.unmodifiableMap(objectsInternal);
+        this.changeCallbacks = Sets.newHashSet();
+        registerChangeCallback(new PositionedObjectHolder.ChangeCallback<T>() {
+            @Override
+            public void onChange(T object, BlockPos pos, boolean add) {
+                Class type = object.getInformationType();
+                if (type == null){
+                    return;
+                }
+                TileEntity tile = object.getTileEntity();
+                if (tile != null) {
+                    for (Field field : tile.getClass().getDeclaredFields()) {
+                        if (field.isAnnotationPresent(GridInformation.class)){
+                            Class clazz = field.getAnnotation(GridInformation.class).value();
+                            if (clazz == type){
+                                if (!field.getType().isAssignableFrom(type)){
+                                    throw new IllegalArgumentException();
+                                }
+                                Object o = add ? object.getInformation() : null;
+                                if (o != null && !type.isAssignableFrom(o.getClass())){
+                                    throw new IllegalArgumentException();
+                                }
+                                try {
+                                    field.setAccessible(true);
+                                    field.set(tile, o);
+                                } catch (Exception e){
+                                    throw new RuntimeException(e);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        });
     }
 
-    protected final Int2ObjectMap<PositionedObjectHolder<T>> objects;
+    private final Int2ObjectMap<PositionedObjectHolder<T>> objectsInternal;
+    private final Set<PositionedObjectHolder.ChangeCallback<T>> changeCallbacks;
+    protected final Map<Integer, PositionedObjectHolder<T>> objects;
     protected final Set<DimensionCoordinate> extraUnload, changeCheck, add;
 
     //Block changed
@@ -80,7 +119,7 @@ public abstract class AbstractGridHandler<T extends ITileEntityLink> {
     }
 
     public void worldUnload(World world){
-        PositionedObjectHolder<T> worldObjects = objects.get(WorldHelper.getDimID(world));
+        PositionedObjectHolder<T> worldObjects = objectsInternal.get(WorldHelper.getDimID(world));
         if (worldObjects != null) {
             Set<DimensionCoordinate> unload = Sets.newHashSet();
             for (ChunkPos chunkPos : worldObjects.getChunks()) {
@@ -130,7 +169,7 @@ public abstract class AbstractGridHandler<T extends ITileEntityLink> {
                 }
             } else {
                 o = createNewObject(tile);
-                objects.get(WorldHelper.getDimID(tile.getWorld())).put(o, tile.getPos());
+                objectsInternal.get(WorldHelper.getDimID(tile.getWorld())).put(o, tile.getPos());
                 o.hasChanged(); //Set initial data
             }
             internalAdd(o);
@@ -156,12 +195,23 @@ public abstract class AbstractGridHandler<T extends ITileEntityLink> {
     }
 
     protected PositionedObjectHolder<T> getDim(DimensionCoordinate dimensionCoordinate){
-        PositionedObjectHolder<T> ret = objects.get(dimensionCoordinate.getDimension());
+        PositionedObjectHolder<T> ret = objectsInternal.get(dimensionCoordinate.getDimension());
         if (ret == null){
             ret = new PositionedObjectHolder<>();
-            objects.put(dimensionCoordinate.getDimension(), ret);
+            for (PositionedObjectHolder.ChangeCallback<T> callback : changeCallbacks){
+                ret.registerCallback(callback);
+            }
+            objectsInternal.put(dimensionCoordinate.getDimension(), ret);
         }
         return ret;
+    }
+
+    public void registerChangeCallback(PositionedObjectHolder.ChangeCallback<T> callback){
+        if (changeCallbacks.add(callback)){
+            for (PositionedObjectHolder<T> o : objectsInternal.values()){
+                o.registerCallback(callback);
+            }
+        }
     }
 
 }

@@ -87,7 +87,7 @@ public class PreInitAnnotationProcessor extends AbstractAnnotationProcessor {
                         logger.error("Field "+f.getName()+" in class "+clazz.getCanonicalName()+" is not static, skipping proxy injection...");
                         return;
                     }
-                    if (!f.getClass().isAssignableFrom(proxy.getClass())) {
+                    if (!f.getType().isAssignableFrom(proxy.getClass())) {
                         throw new IllegalArgumentException();
                     }
                     f.set(null, proxy);
