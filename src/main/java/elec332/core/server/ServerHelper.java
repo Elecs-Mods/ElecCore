@@ -53,6 +53,17 @@ public class ServerHelper {
 
     private ServerHelper(){
         MinecraftForge.EVENT_BUS.register(new EventHandler());
+        setMaps();
+        this.extendedPropertiesList_ = Maps.newHashMap();
+        this.extendedPropertiesList = Collections.unmodifiableMap(extendedPropertiesList_);
+        this.extendedSaveData_ = Maps.newHashMap();
+        this.extendedSaveData = Collections.unmodifiableMap(extendedSaveData_);
+        //this.saveDataInstances = Maps.newHashMap();
+        this.locked = false;
+        setInvalid();
+    }
+
+    private void setMaps(){
         this.playerData = NBTMap.newNBTMap(UUID.class, ElecPlayer.class, new Function<UUID, ElecPlayer>() {
             @Override
             public ElecPlayer apply(UUID input) {
@@ -73,13 +84,6 @@ public class ServerHelper {
                 }
             }
         });
-        this.extendedPropertiesList_ = Maps.newHashMap();
-        this.extendedPropertiesList = Collections.unmodifiableMap(extendedPropertiesList_);
-        this.extendedSaveData_ = Maps.newHashMap();
-        this.extendedSaveData = Collections.unmodifiableMap(extendedSaveData_);
-        //this.saveDataInstances = Maps.newHashMap();
-        this.locked = false;
-        setInvalid();
     }
 
     /**
@@ -299,6 +303,8 @@ public class ServerHelper {
                 File folder = new File(event.getWorld().getSaveHandler().getWorldDirectory(), "elec332/");
 
                 ServerHelper.this.generalData = new NBTHelper(fromFile(new File(folder, "generalData.dat")));
+
+                setMaps();
 
                 NBTTagList tagList1 = fromFile(new File(folder, "playerData.dat")).getTagList("playerData", 10);
                 playerData.deserializeNBT(tagList1);
