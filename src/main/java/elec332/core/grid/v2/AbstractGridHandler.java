@@ -31,6 +31,9 @@ public abstract class AbstractGridHandler<T extends ITileEntityLink> {
         registerChangeCallback(new PositionedObjectHolder.ChangeCallback<T>() {
             @Override
             public void onChange(T object, BlockPos pos, boolean add) {
+                if (object == null){
+                    return;
+                }
                 Class type = object.getInformationType();
                 if (type == null){
                     return;

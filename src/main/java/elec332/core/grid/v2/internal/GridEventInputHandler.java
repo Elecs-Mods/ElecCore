@@ -1,5 +1,6 @@
 package elec332.core.grid.v2.internal;
 
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -87,8 +88,8 @@ public enum GridEventInputHandler {
     }
 
     public void tickEnd(){
-        Set<DimensionCoordinate> bud = Sets.newHashSet(this.bud);
-        Set<DimensionCoordinate> notify = Sets.newHashSet(this.notify);
+        Set<DimensionCoordinate> bud = ImmutableSet.copyOf(this.bud);
+        Set<DimensionCoordinate> notify = ImmutableSet.copyOf(this.notify);
         this.bud.clear();
         this.notify.clear();
         for (AbstractGridHandler gridHandler : cachedHandlers) {
