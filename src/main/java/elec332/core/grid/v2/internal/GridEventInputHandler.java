@@ -110,8 +110,8 @@ public enum GridEventInputHandler {
 
             gridHandler.tick();
         }
-        notify.clear();
-        bud.clear();
+        //notify.clear();
+        //bud.clear();
     }
 
     public void worldUnload(World world){
