@@ -1,7 +1,7 @@
 package elec332.core.inventory.tooltip;
 
 import com.google.common.collect.Lists;
-import elec332.core.client.render.GuiDraw;
+import elec332.core.client.util.GuiDraw;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.GlStateManager;

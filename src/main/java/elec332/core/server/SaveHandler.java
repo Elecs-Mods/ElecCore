@@ -1,21 +1,22 @@
 package elec332.core.server;
 
-import com.google.common.collect.Lists;
-import elec332.core.api.annotations.ASMDataProcessor;
-import elec332.core.api.util.IASMDataHelper;
-import elec332.core.api.util.IASMDataProcessor;
+import com.google.common.base.Preconditions;
+import com.google.common.collect.LinkedListMultimap;
+import com.google.common.collect.ListMultimap;
+import elec332.core.api.data.IExternalSaveHandler;
 import elec332.core.main.ElecCore;
+import elec332.core.util.FMLUtil;
+import elec332.core.util.IOUtil;
 import elec332.core.world.WorldHelper;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.world.WorldEvent;
-import net.minecraftforge.fml.common.LoaderState;
-import net.minecraftforge.fml.common.discovery.ASMDataTable;
+import net.minecraftforge.fml.common.ModContainer;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import java.io.File;
-import java.util.List;
-import java.util.Set;
 
 /**
  * Created by Elec332 on 20-7-2016.
@@ -25,43 +26,103 @@ public enum SaveHandler {
     INSTANCE;
 
     SaveHandler(){
-        saveHandlers = Lists.newArrayList();
+        this.saveHandlers = LinkedListMultimap.create();
+        this.loaded = false;
     }
 
-    private final List<IExternalSaveHandler> saveHandlers;
+    private final ListMultimap<ModContainer, IExternalSaveHandler> saveHandlers;
+    private static final String folder = "extradata";
+    private boolean loaded;
 
     public void dummyLoad(){
     }
 
-    private void load(File worldDir){
-        for (IExternalSaveHandler saveHandler : saveHandlers){
-            saveHandler.load(worldDir);
+    public boolean registerSaveHandler(ModContainer mc, IExternalSaveHandler saveHandler){
+        if (!FMLUtil.isInModInitialisation()){
+            return false;
+        }
+        saveHandlers.put(mc, saveHandler);
+        return true;
+    }
+
+    private void load(World world){
+        NBTTagCompound tag;
+        File file = new File(world.getSaveHandler().getWorldDirectory(), folder);
+        if (!file.exists()){
+            file.mkdir();
+        }
+        for (ModContainer mc : saveHandlers.keySet()){
+            tag = IOUtil.NBT.readWithPossibleBackup(new File(file, mc.getModId()+".dat"));
+            for (IExternalSaveHandler saveHandler : saveHandlers.get(mc)) {
+                Preconditions.checkNotNull(world);
+                Preconditions.checkNotNull(saveHandler);
+                Preconditions.checkNotNull(tag);
+                saveHandler.load(world.getSaveHandler(), world.getWorldInfo(), tag.getCompoundTag(saveHandler.getName()));
+            }
+        }
+
+        this.loaded = true;
+    }
+
+    private void save(World world){
+        if (!this.loaded){
+            ElecCore.logger.error("World is unloading before data has been loaded, skipping data saving...");
+            ElecCore.logger.error("This probably happened due to a crash in EG worldgen.");
+            return;
+        }
+        NBTTagCompound tag;
+        File file = new File(world.getSaveHandler().getWorldDirectory(), folder);
+        for (ModContainer mc : saveHandlers.keySet()){
+            tag = new NBTTagCompound();
+            for (IExternalSaveHandler saveHandler : saveHandlers.get(mc)) {
+                NBTTagCompound n = saveHandler.save(world.getSaveHandler(), world.getWorldInfo());
+                if (n != null){
+                    tag.setTag(saveHandler.getName(), n);
+                }
+            }
+            IOUtil.NBT.writeWithBackup(new File(file, mc.getModId()+".dat"), tag);
         }
     }
 
-    private void save(File worldDir){
-        for (IExternalSaveHandler saveHandler : saveHandlers){
-            saveHandler.save(worldDir);
+    private void unLoad(World world){
+        this.loaded = false;
+        for (ModContainer mc : saveHandlers.keySet()){
+            for (IExternalSaveHandler saveHandler : saveHandlers.get(mc)) {
+                saveHandler.nullifyData();
+            }
         }
     }
 
-    public static class EventHandler{
+    private static class EventHandler {
 
         @SubscribeEvent
         public void onWorldLoad(WorldEvent.Load event){
-            if (ServerHelper.isServer(event.getWorld()) && WorldHelper.getDimID(event.getWorld()) == 0 && event.getWorld().getClass() == WorldServer.class){
-                INSTANCE.load(event.getWorld().getSaveHandler().getWorldDirectory());
+            if (isOverworld(event.getWorld())){
+                System.out.println("wl");
+                INSTANCE.load(event.getWorld());
             }
         }
 
         @SubscribeEvent
         public void onWorldSave(WorldEvent.Save event){
-            if (ServerHelper.isServer(event.getWorld()) && WorldHelper.getDimID(event.getWorld()) == 0 && event.getWorld().getClass() == WorldServer.class){
-                INSTANCE.save(event.getWorld().getSaveHandler().getWorldDirectory());
+            if (isOverworld(event.getWorld())){
+                INSTANCE.save(event.getWorld());
             }
         }
-    }
 
+        @SubscribeEvent
+        public void worldUnload(WorldEvent.Unload event){
+            if (isOverworld(event.getWorld())){
+                INSTANCE.unLoad(event.getWorld());
+            }
+        }
+
+        private boolean isOverworld(World world){
+            return ServerHelper.isServer(world) && WorldHelper.getDimID(world) == 0 && world.getClass() == WorldServer.class;
+        }
+
+    }
+/*
     @ASMDataProcessor(LoaderState.POSTINITIALIZATION)
     public static class ASMLoader implements IASMDataProcessor {
 
@@ -74,8 +135,8 @@ public enum SaveHandler {
                     try {
                         @SuppressWarnings("unchecked")
                         Class<?> clazz = getClass().getClassLoader().loadClass(data.getClassName());
-                        if (IExternalSaveHandler.class.isAssignableFrom(clazz)) {
-                            INSTANCE.saveHandlers.add((IExternalSaveHandler) clazz.newInstance());
+                        if (ISimpleExternalSaveHandler.class.isAssignableFrom(clazz)) {
+                            INSTANCE.saveHandlers.add((ISimpleExternalSaveHandler) clazz.newInstance());
                         }
                     } catch (ClassNotFoundException e) {
                         //;
@@ -89,7 +150,7 @@ public enum SaveHandler {
             }
         }
 
-    }
+    }*/
 
     static {
         MinecraftForge.EVENT_BUS.register(new EventHandler());

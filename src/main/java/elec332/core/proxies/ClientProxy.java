@@ -1,20 +1,18 @@
 package elec332.core.proxies;
 
-import elec332.core.client.model.ElecResourceManager;
-import elec332.core.client.model.IColoredBlock;
-import elec332.core.client.model.IColoredItem;
+import elec332.core.api.client.IColoredBlock;
+import elec332.core.api.client.IColoredItem;
+import elec332.core.client.model.ModelEventHandler;
+import elec332.core.client.model.loading.handler.ElecModelHandler;
 import elec332.core.client.model.replace.ElecTileEntityItemStackRenderer;
-import elec332.core.client.newstuff.ElecModelHandler;
 import elec332.core.main.ElecCore;
 import elec332.core.util.RegistryHelper;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.block.model.ModelManager;
 import net.minecraft.client.renderer.color.IBlockColor;
 import net.minecraft.client.renderer.color.IItemColor;
 import net.minecraft.client.renderer.tileentity.TileEntityItemStackRenderer;
-import net.minecraft.client.resources.IReloadableResourceManager;
 import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.client.resources.IResourceManagerReloadListener;
 import net.minecraft.client.resources.SimpleReloadableResourceManager;
@@ -57,12 +55,7 @@ public class ClientProxy extends CommonProxy {
 			throw new RuntimeException("Class: " + resourceManager.getClass().getCanonicalName() + " is not a valid replacement for the vanilla resource manager.");
 		}
 		((SimpleReloadableResourceManager) resourceManager).registerReloadListener(new ModelReloadListener());
-		/*
-		ElecResourceManager newResourceManager = new ElecResourceManager((SimpleReloadableResourceManager) resourceManager);
-		newResourceManager.addListenHook(new RenderReplacer());
-		minecraft.mcResourceManager = newResourceManager;
-		*/
-		MinecraftForge.EVENT_BUS.register(new elec332.core.client.model.EventHandler());
+		MinecraftForge.EVENT_BUS.register(new ModelEventHandler());
 	}
 
 	@Override
@@ -93,39 +86,9 @@ public class ClientProxy extends CommonProxy {
 		minecraft.thePlayer.addChatComponentMessage(new TextComponentString(s));
 	}
 
-	private boolean registered;
-
-	@SuppressWarnings({"unchecked", "unused"})
-	private class RenderReplacer implements ElecResourceManager.IResourceHook {
-
-		@Override
-		public boolean onRegister(IReloadableResourceManager resourceManager, final IResourceManagerReloadListener listener) {
-			/*if (listener.getClass() == RenderItem.class){
-				/*resourceManager.registerReloadListener(new IResourceManagerReloadListener() {
-					@Override
-					public void onResourceManagerReload(IResourceManager resourceManager) {
-						//ElecModelHandler.registerItemModels((RenderItem) listener);
-						listener.onResourceManagerReload(resourceManager);
-					}
-				});
-				return false;
-			} /*else if (listener.getClass() == BlockRendererDispatcher.class){
-				if (ElecCore.oldBlocks) {
-					minecraft.blockRenderDispatcher = ASMHooks.Client.newBlockRendererDispatcher();
-					resourceManager.registerReloadListener(minecraft.blockRenderDispatcher);
-					return false;
-				}
-				return true;
-			} else*/
-			if (listener instanceof ModelManager){
-				if (!registered) {
-					resourceManager.registerReloadListener(new ModelReloadListener());
-					registered = true;
-				}
-			}
-			return true;
-		}
-
+	@Override
+	public World getClientWorld() {
+		return Minecraft.getMinecraft().theWorld;
 	}
 
 	private class ModelReloadListener implements IResourceManagerReloadListener {
@@ -136,12 +99,6 @@ public class ClientProxy extends CommonProxy {
 				ElecModelHandler.registerModels();
 			}
 		}
-
-	}
-
-	@Override
-	public World getClientWorld() {
-		return Minecraft.getMinecraft().theWorld;
 	}
 
 	static {

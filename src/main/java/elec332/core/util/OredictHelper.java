@@ -3,7 +3,6 @@ package elec332.core.util;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import elec332.core.main.ElecCore;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.util.ResourceLocation;
@@ -89,40 +88,6 @@ public class OredictHelper {
 
     static {
         initLists();
-    }
-
-
-    /**
-     * Deprecated
-     */
-    @Deprecated
-    public static Item getFirstOredictEntry(String Oredictname){
-        return getOredictEntry(0, Oredictname);
-    }
-
-    @Deprecated
-    public static Item getOredictEntry(int number, String Oredictname){
-        return OreDictionary.getOres(Oredictname).get(number).getItem();
-    }
-
-    @Deprecated
-    public static int getFirstOredictItemDamage(String Oredictname){
-        return getOredictItemDamage(0, Oredictname);
-    }
-
-    @Deprecated
-    public static int getOredictItemDamage(int number, String OreDictname){
-        return OreDictionary.getOres(OreDictname).get(number).getItemDamage();
-    }
-
-    @Deprecated
-    public static ItemStack getFirstOreDictItemWithMeta(String Oredictname){
-        return getOreDictItemWithMeta(Oredictname, 0);
-    }
-
-    @Deprecated
-    public static ItemStack getOreDictItemWithMeta(String Oredictname, int entry){
-        return new ItemStack(getOredictEntry(entry, Oredictname), 1, getOredictItemDamage(entry, Oredictname));
     }
 
 }

@@ -1,8 +1,8 @@
 package elec332.core.handler;
 
 import com.google.common.collect.Maps;
-import elec332.core.api.util.IASMDataHelper;
-import elec332.core.api.util.IASMDataProcessor;
+import elec332.core.api.discovery.IASMDataHelper;
+import elec332.core.api.discovery.IASMDataProcessor;
 import elec332.core.main.ElecCore;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.LoaderState;

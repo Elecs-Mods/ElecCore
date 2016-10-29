@@ -1,7 +1,7 @@
 package elec332.core.world;
 
 import elec332.core.main.ElecCore;
-import elec332.core.network.PacketReRenderBlock;
+import elec332.core.network.packets.PacketReRenderBlock;
 import elec332.core.server.ServerHelper;
 import elec332.core.util.NBTHelper;
 import elec332.core.util.PlayerHelper;

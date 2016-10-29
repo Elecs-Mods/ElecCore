@@ -1,9 +1,9 @@
 package elec332.core.handler;
 
-import elec332.core.api.annotations.ASMDataProcessor;
 import elec332.core.api.annotations.RegisterTile;
-import elec332.core.api.annotations.RegisteredMultiPart;
-import elec332.core.api.annotations.RegisteredTileEntity;
+import elec332.core.api.discovery.ASMDataProcessor;
+import elec332.core.api.registration.RegisteredMultiPart;
+import elec332.core.api.registration.RegisteredTileEntity;
 import mcmultipart.multipart.Multipart;
 import mcmultipart.multipart.MultipartRegistry;
 import net.minecraft.tileentity.TileEntity;

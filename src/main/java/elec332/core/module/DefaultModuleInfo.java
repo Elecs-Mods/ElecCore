@@ -3,6 +3,8 @@ package elec332.core.module;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import elec332.core.api.module.IModuleController;
+import elec332.core.api.module.IModuleInfo;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.versioning.ArtifactVersion;
 
@@ -25,7 +27,7 @@ public class DefaultModuleInfo implements IModuleInfo {
         this.alwaysEnabled = alwaysOn;
         this.clazz = mainClazz;
         this.moduleController = moduleController;
-        this.combinedName = new ResourceLocation(this.owner, this.name);
+        this.combinedName = new ResourceLocation(this.owner, this.name.toLowerCase());
     }
 
     private final String owner, name, clazz;

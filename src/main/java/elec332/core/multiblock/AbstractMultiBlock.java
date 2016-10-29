@@ -1,11 +1,11 @@
 package elec332.core.multiblock;
 
-import elec332.core.compat.waila.WailaCompatHandler;
+import elec332.core.api.info.IInfoDataAccessorBlock;
+import elec332.core.api.info.IInfoProvider;
+import elec332.core.api.info.IInformation;
 import elec332.core.tile.IInventoryTile;
 import elec332.core.tile.TileBase;
 import elec332.core.world.WorldHelper;
-import mcp.mobius.waila.api.IWailaConfigHandler;
-import mcp.mobius.waila.api.IWailaDataAccessor;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -16,16 +16,14 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
 
 import javax.annotation.Nonnull;
-import java.util.List;
 
 /**
  * Created by Elec332 on 28-7-2015.
  */
-public abstract class AbstractMultiBlock extends IMultiBlock implements IInventoryTile, WailaCompatHandler.IWailaInfoTile, IMultiBlockCapabilityProvider, ISpecialMultiBlockCapabilityProvider {
+public abstract class AbstractMultiBlock extends IMultiBlock implements IInventoryTile, IInfoProvider, IMultiBlockCapabilityProvider, ISpecialMultiBlockCapabilityProvider {
 
     public boolean onAnyBlockActivated(EntityPlayer player, EnumHand hand, ItemStack stack, BlockPos pos, IBlockState state){
         return false;
@@ -66,15 +64,14 @@ public abstract class AbstractMultiBlock extends IMultiBlock implements IInvento
     }
 
     @Override
-    public List<String> getWailaBody(ItemStack itemStack, List<String> currentTip, IWailaDataAccessor accessor, IWailaConfigHandler config) {
-        return currentTip;
+    public void addInformation(@Nonnull IInformation information, @Nonnull IInfoDataAccessorBlock hitData) {
     }
 
+    @Nonnull
     @Override
-    public NBTTagCompound getWailaTag(EntityPlayerMP player, TileEntity te, NBTTagCompound tag, World world, BlockPos pos){
+    public NBTTagCompound getInfoNBTData(@Nonnull NBTTagCompound tag, TileEntity tile, @Nonnull EntityPlayerMP player, @Nonnull IInfoDataAccessorBlock hitData) {
         return tag;
     }
-
 
     public final boolean openGui(EntityPlayer player, Object mod, int ID){
         player.openGui(mod, ID, getWorldObj(), getLocation().getX(), getLocation().getY(), getLocation().getZ());

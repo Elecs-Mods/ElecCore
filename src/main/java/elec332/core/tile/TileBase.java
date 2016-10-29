@@ -66,21 +66,21 @@ public class TileBase extends TileEntityBase implements IElecCoreNetworkTile {
     }
 
     /**
-     * Reads NBT data from either the NBTTagCompound from readFromNBT when a tile loads,
+     * Reads NBTTypes data from either the NBTTagCompound from readFromNBT when a tile loads,
      * or the ItemStack, if the block is placed.
      *
-     * @param tagCompound The NBT Tag compound
+     * @param tagCompound The NBTTypes Tag compound
      */
     public void readItemStackNBT(NBTTagCompound tagCompound){
     }
 
 
     /**
-     * Writes the NBT data, gets run when the tile unloads and when the block is broken,
+     * Writes the NBTTypes data, gets run when the tile unloads and when the block is broken,
      * when the block is broken, this data will be stored on the ItemStack, if the tile unloads,
      * this gets treated as the writeToNBT method.
      *
-     * @param tagCompound The NBT Tag compound
+     * @param tagCompound The NBTTypes Tag compound
      */
     public void writeToItemStack(NBTTagCompound tagCompound){
     }

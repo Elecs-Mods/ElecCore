@@ -3,9 +3,12 @@ package elec332.core.client.model;
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
+import elec332.core.api.client.model.IElecQuadBakery;
+import elec332.core.api.client.model.model.IQuadProvider;
+import elec332.core.api.client.model.template.IQuadTemplate;
+import elec332.core.api.client.model.template.IQuadTemplateSidedMap;
 import elec332.core.client.model.template.ElecTemplateBakery;
-import elec332.core.client.model.template.IQuadTemplate;
-import elec332.core.client.model.template.ITemplateSidedMap;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.model.*;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
@@ -21,7 +24,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.util.vector.Vector3f;
 
-import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.EnumMap;
 import java.util.List;
 
@@ -30,7 +33,7 @@ import java.util.List;
  */
 @SideOnly(Side.CLIENT)
 @SuppressWarnings({"WeakerAccess", "unused"})
-public class ElecQuadBakery {
+public class ElecQuadBakery implements IElecQuadBakery {
 
     protected static final ElecQuadBakery instance = new ElecQuadBakery();
     private ElecQuadBakery(){
@@ -41,33 +44,26 @@ public class ElecQuadBakery {
     private static final List<BakedQuad> EMPTY_LIST;
 
     /**
-     * Creates a SidedMap, this cannot be rotated, you need to fill the map yourself.
+     * Bakes all the template quads in the IQuadTemplateSidedMap
      *
-     * @return A new SidedMap
-     */
-    public ISidedMap newSidedMap(){
-        return new SidedMap();
-    }
-
-    /**
-     * Bakes all the template quads in the ITemplateSidedMap
-     *
-     * @param from The ITemplateSidedMap containing the template quads.
+     * @param from The IQuadTemplateSidedMap containing the template quads.
      * @return The ISidedMap with the baked quads.
      */
-    public ISidedMap bakeQuads(ITemplateSidedMap from){
+    @Override
+    public IQuadProvider bakeQuads(IQuadTemplateSidedMap from){
         return bakeQuads(from, null);
     }
 
     /**
      * Bakes all the template quads in the ITemplateMap for a fixed rotation
      *
-     * @param from The ITemplateSidedMap containing the template quads.
+     * @param from The IQuadTemplateSidedMap containing the template quads.
      * @param rotation The fixed quad rotation.
      * @return The ISidedMap with the baked quads.
      */
-    public ISidedMap bakeQuads(ITemplateSidedMap from, ITransformation rotation){
-        ISidedMap ret = newSidedMap();
+    @Override
+    public IQuadProvider bakeQuads(IQuadTemplateSidedMap from, ITransformation rotation){
+        SidedMap ret = new SidedMap();
         for (EnumFacing facing : EnumFacing.VALUES){
             ret.setQuadsForSide(rotation == null ? facing : rotation.rotate(facing), bakeQuads(from.getForSide(facing), rotation));
         }
@@ -80,6 +76,7 @@ public class ElecQuadBakery {
      * @param from A list containing template quads.
      * @return A new list with the baked quads.
      */
+    @Override
     public List<BakedQuad> bakeQuads(List<IQuadTemplate> from){
         return bakeQuads(from, null);
     }
@@ -91,6 +88,7 @@ public class ElecQuadBakery {
      * @param rotation The fixed quad rotation.
      * @return A new list with the baked quads.
      */
+    @Override
     public List<BakedQuad> bakeQuads(List<IQuadTemplate> from, ITransformation rotation){
         ImmutableList.Builder<BakedQuad> builder = new ImmutableList.Builder<BakedQuad>();
         for (IQuadTemplate quadTemplate : from){
@@ -99,31 +97,38 @@ public class ElecQuadBakery {
         return builder.build();
     }
 
+    @Override
     public BakedQuad bakeQuad(Vector3f v1, Vector3f v2, TextureAtlasSprite texture, EnumFacing facing){
         return bakeQuad(v1, v2, texture, facing, ModelRotation.X0_Y0);
     }
 
+    @Override
     public BakedQuad bakeQuad(Vector3f v1, Vector3f v2, TextureAtlasSprite texture, EnumFacing facing, ITransformation rotation){
         return bakeQuad(v1, v2, texture, facing, rotation, 0, 0, 16, 16);
     }
 
+    @Override
     public BakedQuad bakeQuad(Vector3f v1, Vector3f v2, TextureAtlasSprite texture, EnumFacing facing, ITransformation rotation, float f1, float f2, float f3, float f4){
         return bakeQuad(v1, v2, texture, facing, rotation, f1, f2, f3, f4, -1);
     }
 
+    @Override
     public BakedQuad bakeQuad(IQuadTemplate template){
         return bakeQuad(template, template.getRotation());
     }
 
+    @Override
     public BakedQuad bakeQuad(IQuadTemplate template, ITransformation rotation){
         return bakeQuad(template.getV1(), template.getV2(), template.getTexture(), template.getSide(), rotation, template.getUVData(), template.getTintIndex());
     }
 
+    @Override
     public BakedQuad bakeQuad(Vector3f v1, Vector3f v2, TextureAtlasSprite texture, EnumFacing facing, ITransformation rotation, IQuadTemplate.IUVData uvData, int tint){
         return bakeQuad(v1, v2, texture, facing, rotation, uvData.getUMin(), uvData.getVMin(), uvData.getUMax(), uvData.getVMax(), tint);
     }
 
     @SuppressWarnings("ConstantConditions")
+    @Override
     public BakedQuad bakeQuad(Vector3f v1, Vector3f v2, TextureAtlasSprite texture, EnumFacing facing, ITransformation rotation, float f1, float f2, float f3, float f4, int tint){
         BlockFaceUV bfuv = new BlockFaceUV(new float[]{f1, f2, f3, f4}, 0);
         BlockPartFace bpf = new BlockPartFace(facing, tint, null, bfuv);
@@ -137,6 +142,7 @@ public class ElecQuadBakery {
      * @param textures The layer textures.
      * @return the list of baked quads for the given textures.
      */
+    @Override
     public List<BakedQuad> getGeneralItemQuads(TextureAtlasSprite... textures){
         ImmutableList.Builder<BakedQuad> builder = ImmutableList.builder();
         for (int i = 0; i < textures.length; i++) {
@@ -152,10 +158,10 @@ public class ElecQuadBakery {
     @SubscribeEvent(priority = EventPriority.HIGH)
     @SideOnly(Side.CLIENT)
     public void bakeModels(ModelBakeEvent event){
-        MinecraftForge.EVENT_BUS.post(new ReplaceJsonEvent(this, ElecModelBakery.instance, ElecTemplateBakery.instance));
+        MinecraftForge.EVENT_BUS.post(new ModelLoadEventImpl(this, ElecModelBakery.instance, ElecTemplateBakery.instance, event.getModelRegistry()));
     }
 
-    private class SidedMap implements ISidedMap {
+    private class SidedMap implements IQuadProvider {
 
         private SidedMap(){
             this(Maps.<EnumFacing, List<BakedQuad>>newEnumMap(EnumFacing.class));
@@ -167,29 +173,18 @@ public class ElecQuadBakery {
 
         private final EnumMap<EnumFacing, List<BakedQuad>> quads;
 
-        @Override
         public void setQuadsForSide(EnumFacing side, List<BakedQuad> newQuads){
             quads.put(side, newQuads);
         }
 
         @Override
-        @Nonnull
-        public List<BakedQuad> getForSide(EnumFacing side) {
+        public List<BakedQuad> getBakedQuads(@Nullable IBlockState state, EnumFacing side, long random) {
             List<BakedQuad> ret = quads.get(side);
             if (ret == null){
                 ret = EMPTY_LIST;
             }
             return ret;
         }
-
-    }
-
-    public interface ISidedMap {
-
-        public void setQuadsForSide(EnumFacing side, List<BakedQuad> newQuads);
-
-        @Nonnull
-        public List<BakedQuad> getForSide(EnumFacing side);
 
     }
 

@@ -2,7 +2,7 @@ package elec332.core.tile;
 
 import elec332.core.main.ElecCore;
 import elec332.core.network.IElecCoreNetworkTile;
-import elec332.core.network.PacketTileDataToServer;
+import elec332.core.network.packets.PacketTileDataToServer;
 import elec332.core.server.ServerHelper;
 import elec332.core.world.WorldHelper;
 import net.minecraft.block.state.IBlockState;
@@ -50,7 +50,7 @@ public class TileEntityBase extends TileEntity implements IElecCoreNetworkTile {
 
     @SideOnly(Side.CLIENT)
     public void sendPacketToServer(int ID, NBTTagCompound data){
-        ElecCore.networkHandler.getNetworkWrapper().sendToServer(new PacketTileDataToServer(this, ID, data));
+        ElecCore.networkHandler.sendToServer(new PacketTileDataToServer(this, ID, data));
     }
 
     public void onPacketReceivedFromClient(EntityPlayerMP sender, int ID, NBTTagCompound data){

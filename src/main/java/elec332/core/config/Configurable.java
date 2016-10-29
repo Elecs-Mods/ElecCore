@@ -29,7 +29,7 @@ public @interface Configurable {
 
     @Retention(RetentionPolicy.RUNTIME)
     @Target(ElementType.TYPE)
-    public @interface Class{
+    public @interface Class {
 
         String category() default Configuration.CATEGORY_GENERAL;
 

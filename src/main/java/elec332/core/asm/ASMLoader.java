@@ -2,7 +2,6 @@ package elec332.core.asm;
 
 import com.google.common.collect.Lists;
 import com.google.common.reflect.ClassPath;
-import elec332.core.asm.asmload.ASMHooks;
 import net.minecraft.launchwrapper.IClassTransformer;
 
 import java.lang.reflect.Modifier;
@@ -34,7 +33,6 @@ public final class ASMLoader implements IClassTransformer {
     }
 
     private static final List<IASMClassTransformer> classTransformers;
-    private static final String asmHooksClass, asmHooksClassClient;
 
     @Override
     public byte[] transform(String obf, String deobf, byte[] bytes) {
@@ -46,18 +44,8 @@ public final class ASMLoader implements IClassTransformer {
         return bytes;
     }
 
-    public static String getAsmHooksClass() {
-        return asmHooksClass;
-    }
-
-    public static String getAsmHooksClassClient() {
-        return asmHooksClassClient;
-    }
-
     static {
         classTransformers = Lists.newArrayList();
-        asmHooksClass = ASMHelper.getInternalName(ASMHooks.class);
-        asmHooksClassClient = ASMHelper.getInternalName(ASMHooks.Client.class);
     }
 
 }

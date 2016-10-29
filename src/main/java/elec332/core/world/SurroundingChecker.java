@@ -16,6 +16,7 @@ import java.util.Map;
 /**
  * Created by Elec332 on 5-3-2016.
  */
+@Deprecated
 public class SurroundingChecker<O> {
 
     public SurroundingChecker(IFacedSurroundingDataFactory<O> factory, World world, ISurroundingHandler<O> surroundingHandler){

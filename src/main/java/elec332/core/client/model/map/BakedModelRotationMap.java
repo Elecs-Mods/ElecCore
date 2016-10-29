@@ -1,6 +1,7 @@
 package elec332.core.client.model.map;
 
 import com.google.common.collect.Maps;
+import elec332.core.api.client.model.map.IBakedModelRotationMap;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.block.model.ModelRotation;
 
@@ -40,7 +41,7 @@ public class BakedModelRotationMap<M extends IBakedModel> extends AbstractModelR
      *
      * @param rotation The rotation of the model.
      * @param model    The model for the rotation
-     * @throws elec332.core.client.model.map.IBakedModelRotationMap.RotationNotSupportedException If the specified rotation is not supported.
+     * @throws IBakedModelRotationMap.RotationNotSupportedException If the specified rotation is not supported.
      */
     @Override
     public void setModel(ModelRotation rotation, M model) throws RotationNotSupportedException {

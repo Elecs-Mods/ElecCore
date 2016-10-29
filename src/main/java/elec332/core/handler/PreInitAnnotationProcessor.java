@@ -1,15 +1,12 @@
 package elec332.core.handler;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
-import elec332.core.api.annotations.ASMDataProcessor;
-import elec332.core.api.annotations.CallbackProcessor;
-import elec332.core.api.annotations.RegisteredCallback;
-import elec332.core.api.annotations.StaticProxy;
-import elec332.core.api.util.ICallbackProcessor;
-import elec332.core.main.ElecCore;
+import elec332.core.api.callback.CallbackProcessor;
+import elec332.core.api.callback.ICallbackProcessor;
+import elec332.core.api.callback.RegisteredCallback;
+import elec332.core.api.discovery.ASMDataProcessor;
+import elec332.core.api.util.StaticProxy;
 import net.minecraftforge.fml.common.FMLCommonHandler;
-import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.LoaderState;
 import net.minecraftforge.fml.common.discovery.ASMDataTable;
 import net.minecraftforge.fml.relauncher.Side;
@@ -18,7 +15,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 import java.util.function.Consumer;
 
 /**

@@ -1,14 +1,14 @@
 package elec332.core.client.model;
 
 import com.google.common.collect.ImmutableList;
+import elec332.core.api.client.model.IElecModelBakery;
+import elec332.core.api.client.model.map.IBakedModelRotationMap;
+import elec332.core.api.client.model.model.IQuadProvider;
+import elec332.core.api.client.model.template.IModelTemplate;
+import elec332.core.api.client.model.template.IQuadTemplate;
+import elec332.core.api.client.model.template.IQuadTemplateSidedMap;
 import elec332.core.client.model.map.BakedModelRotationMap;
-import elec332.core.client.model.map.IBakedModelRotationMap;
-import elec332.core.client.model.model.IItemModel;
-import elec332.core.client.model.model.IQuadProvider;
 import elec332.core.client.model.template.ElecTemplateBakery;
-import elec332.core.client.model.template.IModelTemplate;
-import elec332.core.client.model.template.IQuadTemplate;
-import elec332.core.client.model.template.ITemplateSidedMap;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.model.*;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -26,7 +26,7 @@ import java.util.List;
  */
 @SideOnly(Side.CLIENT)
 @SuppressWarnings({"WeakerAccess", "deprecation", "unused"})
-public class ElecModelBakery {
+public class ElecModelBakery implements IElecModelBakery {
 
     protected static final ElecModelBakery instance = new ElecModelBakery();
     private ElecModelBakery(){
@@ -37,12 +37,14 @@ public class ElecModelBakery {
     private static final IModelTemplate defaultBlockTemplate, defaultItemTemplate;
     public static final ItemCameraTransforms DEFAULT_ITEM, DEFAULT_BLOCK;
 
+    @Override
     public IBakedModelRotationMap<IBakedModel> forTemplateRotation(IModelTemplate template){
         return forTemplate(template, false, true);
     }
 
+    @Override
     public IBakedModelRotationMap<IBakedModel> forTemplate(IModelTemplate template, boolean x, boolean y){
-        BakedModelRotationMap<IBakedModel> ret = new BakedModelRotationMap<IBakedModel>(x, y);
+        BakedModelRotationMap<IBakedModel> ret = new BakedModelRotationMap<>(x, y);
         for (ModelRotation rotation : ModelRotation.values()){
             if (ret.isRotationSupported(rotation)){
                 ret.setModel(rotation, forTemplate(template, rotation));
@@ -51,19 +53,23 @@ public class ElecModelBakery {
         return ret;
     }
 
+    @Override
     public IBakedModel forTemplate(IModelTemplate template){
         return forTemplate(template, null);
     }
 
+    @Override
     public IBakedModel forTemplate(IModelTemplate template, ModelRotation rotation){
         return forTemplateOverrideQuads(template, rotation, template.getSidedQuads(), template.getGeneralQuads());
     }
 
-    public IBakedModel forTemplateOverrideQuads(IModelTemplate template, @Nullable ITemplateSidedMap sidedQuads, @Nullable List<IQuadTemplate> generalQuads){
+    @Override
+    public IBakedModel forTemplateOverrideQuads(IModelTemplate template, @Nullable IQuadTemplateSidedMap sidedQuads, @Nullable List<IQuadTemplate> generalQuads){
         return forTemplateOverrideQuads(template, null, sidedQuads, generalQuads);
     }
 
-    public IBakedModel forTemplateOverrideQuads(IModelTemplate template, ModelRotation rotation, @Nullable ITemplateSidedMap sidedQuads, @Nullable List<IQuadTemplate> generalQuads) {
+    @Override
+    public IBakedModel forTemplateOverrideQuads(IModelTemplate template, ModelRotation rotation, @Nullable IQuadTemplateSidedMap sidedQuads, @Nullable List<IQuadTemplate> generalQuads) {
         if (sidedQuads == null) {
             sidedQuads = ElecTemplateBakery.instance.newQuadSidedMap();
         }
@@ -76,10 +82,12 @@ public class ElecModelBakery {
         return ret;
     }
 
-    public IItemModel itemModelForTextures(TextureAtlasSprite... textures){
+    @Override
+    public IBakedModel itemModelForTextures(TextureAtlasSprite... textures){
         return itemModelForTextures(defaultItemTemplate, textures);
     }
 
+    @Override
     public IBakedModel forQuadProvider(IModelTemplate template, final IQuadProvider quadProvider){
         return new DefaultBakedModel(template){
 
@@ -92,31 +100,26 @@ public class ElecModelBakery {
         };
     }
 
-    /*private class BakedQuadProvider implements IQuadProvider {
+    @Override
+    public IBakedModel itemModelForTextures(IModelTemplate template, TextureAtlasSprite... textures){
+        return _forTemplateNoQuadsI(template).setGeneralQuads(quadBakery.getGeneralItemQuads(textures));
+    }
 
-        private BakedQuadProvider(){
-            generalQuads = ImmutableList.of();
-        }
+    @Override
+    public ItemCameraTransforms getDefaultItemTransformation() {
+        return DEFAULT_ITEM;
+    }
 
-        private List<BakedQuad> generalQuads;
-        private ElecQuadBakery.ISidedMap sidedMap;
-
-        @Override
-        public List<BakedQuad> getBakedQuads(IBlockState state, EnumFacing side, long random) {
-            return side == null ? generalQuads : sidedMap.getForSide(side);
-        }
-
-    }*/
-
-    public IItemModel itemModelForTextures(IModelTemplate template, TextureAtlasSprite... textures){
-        return (IItemModel) _forTemplateNoQuadsI(template).setGeneralQuads(quadBakery.getGeneralItemQuads(textures));
+    @Override
+    public ItemCameraTransforms getDefaultBlockTransformation() {
+        return DEFAULT_BLOCK;
     }
 
     private BakedItemModel _forTemplateNoQuadsI(IModelTemplate template){
         return new BakedItemModel(template);
     }
 
-    private class BakedItemModel extends DefaultBakedModel implements IItemModel {
+    private class BakedItemModel extends DefaultBakedModel implements IBakedModel {
 
         private BakedItemModel(IModelTemplate template) {
             super(template);
@@ -127,7 +130,7 @@ public class ElecModelBakery {
     private class DefaultBakedModel implements IBakedModel {
 
         private DefaultBakedModel(IModelTemplate template){
-            this.sidedQuads = quadBakery.newSidedMap();
+            this.sidedQuads = null;
             this.generalQuads = EMPTY_LIST;
             this.ao = template.isAmbientOcclusion();
             this.gui3D = template.isGui3d();
@@ -136,13 +139,13 @@ public class ElecModelBakery {
             this.ict = template.getItemCameraTransforms();
         }
 
-        private ElecQuadBakery.ISidedMap sidedQuads;
+        private IQuadProvider sidedQuads;
         private List<BakedQuad> generalQuads;
         private final boolean ao, gui3D, builtIn;
         private final TextureAtlasSprite texture;
         private final ItemCameraTransforms ict;
 
-        DefaultBakedModel setSidedQuads(@Nonnull ElecQuadBakery.ISidedMap sidedQuads){
+        DefaultBakedModel setSidedQuads(@Nonnull IQuadProvider sidedQuads){
             this.sidedQuads = sidedQuads;
             return this;
         }
@@ -155,7 +158,7 @@ public class ElecModelBakery {
         @Override
         @Nonnull
         public List<BakedQuad> getQuads(IBlockState state, EnumFacing facing, long rand) {
-            return facing == null ? generalQuads : sidedQuads.getForSide(facing);
+            return facing == null ? generalQuads : sidedQuads == null ? EMPTY_LIST : sidedQuads.getBakedQuads(state, facing, rand);
         }
 
         @Override

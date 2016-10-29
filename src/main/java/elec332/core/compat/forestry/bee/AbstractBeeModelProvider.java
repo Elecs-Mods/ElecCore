@@ -1,10 +1,10 @@
 package elec332.core.compat.forestry.bee;
 
-import elec332.core.client.IIconRegistrar;
-import elec332.core.client.model.ElecModelBakery;
-import elec332.core.client.model.ElecQuadBakery;
-import elec332.core.client.model.model.IModelAndTextureLoader;
-import elec332.core.client.model.template.ElecTemplateBakery;
+import elec332.core.api.client.IIconRegistrar;
+import elec332.core.api.client.model.IElecModelBakery;
+import elec332.core.api.client.model.IElecQuadBakery;
+import elec332.core.api.client.model.IElecTemplateBakery;
+import elec332.core.client.model.loading.IModelAndTextureLoader;
 import forestry.api.apiculture.EnumBeeType;
 import forestry.api.apiculture.IBeeModelProvider;
 import forestry.api.core.IModelManager;
@@ -57,7 +57,7 @@ public abstract class AbstractBeeModelProvider implements IBeeModelProvider, IMo
 
     @Override
     @SideOnly(Side.CLIENT)
-    public void registerModels(ElecQuadBakery quadBakery, ElecModelBakery modelBakery, ElecTemplateBakery templateBakery) {
+    public void registerModels(IElecQuadBakery quadBakery, IElecModelBakery modelBakery, IElecTemplateBakery templateBakery) {
         for (EnumBeeType beeType : EnumBeeType.VALUES) {
             Minecraft.getMinecraft().modelManager.modelRegistry.putObject(getModel(beeType), modelBakery.itemModelForTextures(textures[beeType.ordinal()]));
         }

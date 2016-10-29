@@ -6,7 +6,7 @@ import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
 import elec332.core.util.MineTweakerHelper;
-import elec332.core.util.NBT;
+import elec332.core.util.NBTTypes;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.*;
@@ -17,7 +17,7 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 import java.io.IOException;
 import java.util.List;
 
-import static elec332.core.util.NBT.NBTData.*;
+import static elec332.core.util.NBTTypes.*;
 
 /**
  * Created by Elec332 on 11-7-2015.
@@ -113,7 +113,7 @@ public class ExtraTypeAdapters {
                         String toAdd = in.nextName();
                         NBTBase tagToAdd;
                         in.beginObject();
-                        tagToAdd = handleIn(in, NBT.NBTData.valueOf(in.nextName()));
+                        tagToAdd = handleIn(in, NBTTypes.valueOf(in.nextName()));
                         in.endObject();
                         ret.setTag(toAdd, tagToAdd);
                     }
@@ -121,7 +121,7 @@ public class ExtraTypeAdapters {
                     return ret;
                 }
 
-                private NBTBase handleIn(JsonReader in, NBT.NBTData type) throws IOException {
+                private NBTBase handleIn(JsonReader in, NBTTypes type) throws IOException {
                     switch (type){
                         case BYTE:
                             return new NBTTagByte((byte) in.nextInt());
@@ -148,7 +148,7 @@ public class ExtraTypeAdapters {
                             in.beginArray();
                             while (in.hasNext()){
                                 in.beginObject();
-                                nbtList.add(handleIn(in, NBT.NBTData.valueOf(in.nextName())));
+                                nbtList.add(handleIn(in, NBTTypes.valueOf(in.nextName())));
                                 in.endObject();
                             }
                             in.endArray();
@@ -262,7 +262,7 @@ public class ExtraTypeAdapters {
         }
     };
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("all")
     public static final List<JsonHandler.ElecFactory<?>> allFactories = Lists.newArrayList(
             itemStack, nbtTagCompound, fluid
     );

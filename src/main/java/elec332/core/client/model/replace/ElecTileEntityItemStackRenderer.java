@@ -11,8 +11,6 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 /**
  * Created by Elec332 on 27-11-2015.
- *
- * Unused
  */
 @SideOnly(Side.CLIENT)
 @SuppressWarnings("unused")

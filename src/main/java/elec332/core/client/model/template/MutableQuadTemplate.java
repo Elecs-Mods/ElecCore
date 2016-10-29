@@ -1,5 +1,7 @@
 package elec332.core.client.model.template;
 
+import elec332.core.api.client.model.template.IMutableQuadTemplate;
+import elec332.core.api.client.model.template.IQuadTemplate;
 import elec332.core.client.RenderHelper;
 import net.minecraft.client.renderer.block.model.ModelRotation;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -14,7 +16,7 @@ import javax.annotation.Nonnull;
  * Created by Elec332 on 6-12-2015.
  */
 @SideOnly(Side.CLIENT)
-public class MutableQuadTemplate implements IQuadTemplate {
+public class MutableQuadTemplate implements IMutableQuadTemplate {
 
     @Nonnull
     public static MutableQuadTemplate templateForTexture(EnumFacing side, TextureAtlasSprite texture){
@@ -49,44 +51,51 @@ public class MutableQuadTemplate implements IQuadTemplate {
         this.tintIndex = -1;
     }
 
-    private static final IUVData DEFAULT_UV;
+    private static final IQuadTemplate.IUVData DEFAULT_UV;
     private Vector3f v1, v2;
     private TextureAtlasSprite texture;
     private EnumFacing side;
     private ModelRotation rotation;
-    private IUVData uvData;
+    private IQuadTemplate.IUVData uvData;
     private int tintIndex;
 
+    @Override
     public MutableQuadTemplate setV1(Vector3f v1) {
         this.v1 = v1;
         return this;
     }
 
+    @Override
     public MutableQuadTemplate setV2(Vector3f v2) {
         this.v2 = v2;
         return this;
     }
 
+    @Override
     public MutableQuadTemplate setTexture(TextureAtlasSprite texture) {
         this.texture = texture;
         return this;
     }
 
+    @Override
     public MutableQuadTemplate setSide(EnumFacing side) {
         this.side = side;
         return this;
     }
 
+    @Override
     public MutableQuadTemplate setRotation(ModelRotation rotation) {
         this.rotation = rotation;
         return this;
     }
 
-    public MutableQuadTemplate setUvData(IUVData uvData) {
+    @Override
+    public MutableQuadTemplate setUvData(IQuadTemplate.IUVData uvData) {
         this.uvData = uvData;
         return this;
     }
 
+    @Override
     public MutableQuadTemplate setTintIndex(int tintIndex) {
         if (tintIndex < -1)
             throw new IllegalArgumentException();

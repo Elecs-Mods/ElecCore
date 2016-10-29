@@ -1,6 +1,7 @@
 package elec332.core.client.model.model;
 
 import com.google.common.collect.ImmutableList;
+import elec332.core.api.client.model.model.IModelWithoutQuads;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
@@ -14,7 +15,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
  */
 @SideOnly(Side.CLIENT)
 @SuppressWarnings({"deprecation", "unused"})
-public abstract class AbstractBlockModel implements IBlockModelWithoutQuads {
+public abstract class AbstractBlockModel implements IModelWithoutQuads {
 
     protected static final ImmutableList<BakedQuad> EMPTY_LIST;
 

@@ -1,6 +1,9 @@
 package elec332.core.client;
 
 import com.google.common.collect.Maps;
+import elec332.core.api.client.ITessellator;
+import elec332.core.client.tesselator.ElecTessellator;
+import elec332.core.client.tesselator.RenderBlocks;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.particle.Particle;

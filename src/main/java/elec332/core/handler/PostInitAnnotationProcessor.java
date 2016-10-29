@@ -1,6 +1,6 @@
 package elec332.core.handler;
 
-import elec332.core.api.annotations.ASMDataProcessor;
+import elec332.core.api.discovery.ASMDataProcessor;
 import elec332.core.compat.forestry.IIndividualTemplate;
 import elec332.core.compat.forestry.IndividualDefinitionRegistry;
 import elec332.core.compat.forestry.RegisteredForestryIndividual;

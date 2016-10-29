@@ -1,8 +1,8 @@
 package elec332.core.handler;
 
 import com.google.common.collect.Sets;
-import elec332.core.api.annotations.CallbackProcessor;
-import elec332.core.api.util.ICallbackProcessor;
+import elec332.core.api.callback.CallbackProcessor;
+import elec332.core.api.callback.ICallbackProcessor;
 import elec332.core.main.ElecCore;
 import net.minecraftforge.fml.common.event.FMLConstructionEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;

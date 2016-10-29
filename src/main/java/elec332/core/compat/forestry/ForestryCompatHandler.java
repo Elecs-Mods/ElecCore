@@ -1,12 +1,12 @@
 package elec332.core.compat.forestry;
 
-import elec332.core.client.ITextureLoader;
+import elec332.core.api.client.ITextureLoader;
+import elec332.core.api.module.ElecModule;
 import elec332.core.client.model.RenderingRegistry;
-import elec332.core.client.model.model.IModelLoader;
+import elec332.core.client.model.loading.IModelLoader;
 import elec332.core.compat.forestry.bee.ForestryBeeEffects;
 import elec332.core.java.ReflectionHelper;
 import elec332.core.main.ElecCore;
-import elec332.core.module.ElecModule;
 import forestry.api.apiculture.BeeManager;
 import forestry.api.apiculture.IBeeModelProvider;
 import forestry.api.apiculture.IBeeRoot;

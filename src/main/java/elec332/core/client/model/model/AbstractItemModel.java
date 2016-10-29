@@ -5,6 +5,7 @@ import elec332.core.client.model.ElecModelBakery;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.BakedQuad;
+import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.block.model.ItemOverrideList;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -21,7 +22,7 @@ import java.util.List;
  */
 @SuppressWarnings("deprecation")
 @SideOnly(Side.CLIENT)
-public abstract class AbstractItemModel implements IItemModel {
+public abstract class AbstractItemModel implements IBakedModel {
 
     protected static final ItemCameraTransforms DEFAULT_ITEM_TRANSFORM;
     protected static final ImmutableList<BakedQuad> EMPTY_LIST;

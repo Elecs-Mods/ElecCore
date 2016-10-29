@@ -1,20 +1,23 @@
 package elec332.core.main;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import elec332.core.api.util.IASMDataHelper;
-import elec332.core.api.util.IASMDataProcessor;
+import elec332.core.api.IElecCoreMod;
+import elec332.core.api.data.IExternalSaveHandler;
+import elec332.core.api.module.IModuleController;
+import elec332.core.api.network.ModNetworkHandler;
+import elec332.core.api.registry.ISingleRegister;
 import elec332.core.effects.AbilityHandler;
-import elec332.core.grid.v2.internal.GridEventHandler;
-import elec332.core.grid.v2.internal.GridEventInputHandler;
+import elec332.core.grid.internal.GridEventHandler;
+import elec332.core.grid.internal.GridEventInputHandler;
 import elec332.core.handler.ModEventHandler;
 import elec332.core.handler.TickHandler;
-import elec332.core.modBaseUtils.ModInfo;
-import elec332.core.module.IModuleController;
-import elec332.core.module.ModuleHandler;
-import elec332.core.network.*;
+import elec332.core.network.IElecNetworkHandler;
+import elec332.core.network.impl.NetworkManager;
+import elec332.core.network.packets.PacketReRenderBlock;
+import elec332.core.network.packets.PacketSyncWidget;
+import elec332.core.network.packets.PacketTileDataToServer;
+import elec332.core.network.packets.PacketWidgetDataToServer;
 import elec332.core.proxies.CommonProxy;
+import elec332.core.server.SaveHandler;
 import elec332.core.server.ServerHelper;
 import elec332.core.util.FileHelper;
 import elec332.core.util.LoadTimer;
@@ -29,35 +32,31 @@ import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.discovery.ASMDataTable;
 import net.minecraftforge.fml.common.event.*;
+import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * Created by Elec332.
  */
 @Mod(modid = ElecCore.MODID, name = ElecCore.MODNAME, dependencies = "required-after:Forge@[12.18.1.2073,);after:forestry;",
-acceptedMinecraftVersions = "[1.9,)", version = ElecCore.ElecCoreVersion, useMetadata = true)
-public class ElecCore implements IModuleController {
+acceptedMinecraftVersions = "[1.10,)", version = ElecCore.ElecCoreVersion, useMetadata = true)
+public class ElecCore implements IModuleController, IElecCoreMod {
 
 	public static final String ElecCoreVersion = "#ELECCORE_VER#";
 	public static final String MODID = "ElecCore";
 	public static final String MODNAME = "ElecCore";
 
-	@SidedProxy(clientSide = ModInfo.CLIENTPROXY, serverSide = ModInfo.COMMONPROXY)
+	@SidedProxy(clientSide = "elec332.core.proxies.ClientProxy", serverSide = "elec332.core.proxies.CommonProxy")
 	public static CommonProxy proxy;
 
 	@Mod.Instance(MODID)
 	public static ElecCore instance;
+	@ModNetworkHandler
+	public static IElecNetworkHandler networkHandler;
 	public static TickHandler tickHandler;
-	public static NetworkHandler networkHandler;
 	public static Logger logger;
 	private static ASMDataTable dataTable;
-	private ASMDataProcessor asmDataProcessor;
+	protected ElecCoreDiscoverer asmDataProcessor;
 	private Configuration config;
 	private LoadTimer loadTimer;
 	private ModEventHandler modEventHandler;
@@ -67,21 +66,28 @@ public class ElecCore implements IModuleController {
 	public static boolean removeJSONErrors = true;
 
 	@EventHandler
+	public void construction(FMLConstructionEvent event){
+		logger = LogManager.getLogger("ElecCore");
+		dataTable = event.getASMHarvestedData();
+		asmDataProcessor = new ElecCoreDiscoverer();
+		asmDataProcessor.identify(dataTable);
+		asmDataProcessor.process(LoaderState.CONSTRUCTING);
+	}
+
+	@EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
-		logger = event.getModLog();
+		ElecModHandler.identifyMods();
+		ElecModHandler.initAnnotations(event.getAsmData());
 		loadTimer = new LoadTimer(logger, MODNAME);
 		loadTimer.startPhase(event);
 		this.config = new Configuration(FileHelper.getConfigFileElec(event));
 		tickHandler = new TickHandler();
-		networkHandler = new NetworkHandler(MODID);
+		networkHandler = NetworkManager.INSTANCE.getNetworkHandler(this);
 		networkHandler.registerClientPacket(PacketSyncWidget.class);
 		networkHandler.registerServerPacket(PacketTileDataToServer.class);
 		networkHandler.registerServerPacket(PacketWidgetDataToServer.class);
 		networkHandler.registerClientPacket(PacketReRenderBlock.class);
 
-		dataTable = event.getAsmData();
-		asmDataProcessor = new ASMDataProcessor();
-		asmDataProcessor.init();
 		MinecraftForge.EVENT_BUS.register(tickHandler);
 		debug = config.getBoolean("debug", Configuration.CATEGORY_GENERAL, false, "Set to true to print debug info to the log.");
 		removeJSONErrors = config.getBoolean("removeJsonExceptions", Configuration.CATEGORY_CLIENT, true, "Set to true to remove all the Json model errors from the log.") && !developmentEnvironment;
@@ -109,8 +115,9 @@ public class ElecCore implements IModuleController {
 			config.save();
 		}
 		ElecCoreRegistrar.dummyLoad();
+		SaveHandler.INSTANCE.dummyLoad();
 		AbilityHandler.instance.init();
-
+		ElecModHandler.init();
 		asmDataProcessor.process(LoaderState.INITIALIZATION);
 		OredictHelper.initLists();
 		modEventHandler.postEvent(event);
@@ -162,6 +169,11 @@ public class ElecCore implements IModuleController {
 		modEventHandler.postEvent(event);
 	}
 
+	@Override
+	public void registerSaveHandlers(ISingleRegister<IExternalSaveHandler> saveHandlerRegistry) {
+		saveHandlerRegistry.register(ServerHelper.instance);
+	}
+
 	public static void systemPrintDebug(Object s){
 		if (debug) {
 			System.out.println(s);
@@ -171,112 +183,6 @@ public class ElecCore implements IModuleController {
 	@Override
 	public boolean isModuleEnabled(String moduleName) {
 		return true;
-	}
-
-	private class ASMDataProcessor {
-
-		private ASMDataProcessor(){
-			asmLoaderMap = Maps.newHashMap();
-			validStates = ImmutableList.of(LoaderState.PREINITIALIZATION, LoaderState.INITIALIZATION, LoaderState.POSTINITIALIZATION, LoaderState.AVAILABLE);
-		}
-
-		private final Map<LoaderState, List<IASMDataProcessor>> asmLoaderMap;
-		private final List<LoaderState> validStates;
-		private IASMDataHelper asmDataHelper;
-
-		private void init(){
-			for (LoaderState state : validStates){
-				asmLoaderMap.put(state, Lists.<IASMDataProcessor>newArrayList());
-			}
-			asmDataHelper = new IASMDataHelper() {
-				@Override
-				public ASMDataTable getASMDataTable() {
-					return dataTable;
-				}
-
-				@Override
-				public Set<ASMDataTable.ASMData> getAnnotationList(Class<? extends Annotation> annotationClass) {
-					return getASMDataTable().getAll(annotationClass.getName());
-				}
-			};
-			for (ASMDataTable.ASMData data : asmDataHelper.getAnnotationList(elec332.core.api.annotations.ASMDataProcessor.class)) {
-				Map<IASMDataProcessor, LoaderState[]> dataMap = Maps.newHashMap();
-				boolean eb = false;
-				Class<?> clazz;
-				try {
-					clazz = Class.forName(data.getClassName());
-				} catch (ClassNotFoundException e) {
-					//Do nothing, class is probably annotated with @SideOnly
-					continue;
-				}
-				if (clazz == null) {
-					continue;
-				}
-				if (clazz.isAnnotationPresent(elec332.core.api.annotations.ASMDataProcessor.class)) {
-					LoaderState[] ls = clazz.getAnnotation(elec332.core.api.annotations.ASMDataProcessor.class).value();
-					if (clazz.isEnum()) {
-						for (Object e : clazz.getEnumConstants()) {
-							if (e instanceof IASMDataProcessor) {
-								dataMap.put((IASMDataProcessor) e, ls);
-							}
-						}
-						eb = true;
-					} else {
-						Object o;
-						try {
-							o = clazz.newInstance();
-						} catch (Exception e) {
-							throw new RuntimeException("Error invocating annotated IASMData class: " + data.getClassName());
-						}
-						if (o instanceof IASMDataProcessor) {
-							dataMap.put((IASMDataProcessor) o, ls);
-						}
-					}
-				}
-
-				if (!eb) {
-					for (Field field : clazz.getDeclaredFields()) {
-						if (field.isAnnotationPresent(elec332.core.api.annotations.ASMDataProcessor.class)) {
-							Object obj;
-							try {
-								obj = field.get(null);
-							} catch (Exception e) {
-								continue; //Not static
-							}
-							if (obj instanceof IASMDataProcessor) {
-								dataMap.put((IASMDataProcessor) obj, field.getAnnotation(elec332.core.api.annotations.ASMDataProcessor.class).value());
-							}
-						}
-					}
-				}
-
-				for (Map.Entry<IASMDataProcessor, LoaderState[]> entry : dataMap.entrySet()) {
-					LoaderState[] hS = entry.getValue();
-					if (hS == null || hS.length == 0) {
-						throw new IllegalArgumentException("Invalid LoaderState parameters: Null or empty array; For " + data.getClassName());
-					}
-					for (LoaderState state : hS) {
-						if (!validStates.contains(state)) {
-							throw new IllegalArgumentException("Invalid LoaderState parameter: " + state + "; For " + data.getClassName());
-						}
-						asmLoaderMap.get(state).add(entry.getKey());
-					}
-				}
-			}
-		}
-
-		private void process(LoaderState state){
-			if (validStates.contains(state)){
-				List<IASMDataProcessor> dataProcessors = asmLoaderMap.get(state);
-				for (IASMDataProcessor dataProcessor : dataProcessors){
-					dataProcessor.processASMData(asmDataHelper, state);
-				}
-				asmLoaderMap.remove(state);
-			} else {
-				throw new IllegalArgumentException();
-			}
-		}
-
 	}
 
 	public void setModEventHandler(ModEventHandler handler){

@@ -1,6 +1,10 @@
 package elec332.core.client.model.template;
 
 import com.google.common.collect.Lists;
+import elec332.core.api.client.model.template.IModelTemplate;
+import elec332.core.api.client.model.template.IMutableModelTemplate;
+import elec332.core.api.client.model.template.IQuadTemplate;
+import elec332.core.api.client.model.template.IQuadTemplateSidedMap;
 import elec332.core.client.model.ElecModelBakery;
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -16,7 +20,7 @@ import java.util.List;
  */
 @SuppressWarnings({"deprecation", "unused"})
 @SideOnly(Side.CLIENT)
-public class MutableModelTemplate implements IModelTemplate {
+public class MutableModelTemplate implements IMutableModelTemplate {
 
     @Nonnull
     public static MutableModelTemplate newDefaultItemTemplate(){
@@ -64,38 +68,45 @@ public class MutableModelTemplate implements IModelTemplate {
     private TextureAtlasSprite texture;
     private ItemCameraTransforms transforms;
     private List<IQuadTemplate> generalQuads;
-    private ITemplateSidedMap sidedQuads;
+    private IQuadTemplateSidedMap sidedQuads;
 
+    @Override
     public MutableModelTemplate setGeneralQuads(List<IQuadTemplate> generalQuads) {
         this.generalQuads = generalQuads;
         return this;
     }
 
-    public MutableModelTemplate setSidedQuads(ITemplateSidedMap sidedQuads) {
+    @Override
+    public MutableModelTemplate setSidedQuads(IQuadTemplateSidedMap sidedQuads) {
         this.sidedQuads = sidedQuads;
         return this;
     }
 
+    @Override
     public MutableModelTemplate setAmbientOcclusion(boolean ao) {
         this.ao = ao;
         return this;
     }
 
+    @Override
     public MutableModelTemplate setGui3d(boolean gui3d) {
         this.gui3d = gui3d;
         return this;
     }
 
+    @Override
     public MutableModelTemplate setBuiltIn(boolean builtIn) {
         this.builtIn = builtIn;
         return this;
     }
 
+    @Override
     public MutableModelTemplate setTexture(TextureAtlasSprite texture) {
         this.texture = texture;
         return this;
     }
 
+    @Override
     public MutableModelTemplate setItemCameraTransforms(ItemCameraTransforms transforms) {
         this.transforms = transforms;
         return this;
@@ -107,7 +118,7 @@ public class MutableModelTemplate implements IModelTemplate {
     }
 
     @Override
-    public ITemplateSidedMap getSidedQuads() {
+    public IQuadTemplateSidedMap getSidedQuads() {
         return sidedQuads;
     }
 
@@ -128,7 +139,7 @@ public class MutableModelTemplate implements IModelTemplate {
 
     @Override
     public TextureAtlasSprite getTexture() {
-        return texture;//RenderHelper.checkIcon(this.texture);
+        return texture;
     }
 
     @Override

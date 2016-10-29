@@ -1,11 +1,16 @@
 package elec332.core.nbt;
 
 import com.google.common.base.Function;
+import elec332.core.api.data.IExternalSaveHandler;
 import net.minecraft.nbt.*;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.storage.ISaveHandler;
+import net.minecraft.world.storage.WorldInfo;
 import net.minecraftforge.common.util.INBTSerializable;
+import scala.collection.generic.Clearable;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -14,7 +19,8 @@ import java.util.concurrent.Callable;
 /**
  * Created by Elec332 on 18-2-2016.
  */
-public class NBTMap<K, V> extends HashMap<K, V> implements INBTSerializable<NBTTagList> {
+@SuppressWarnings("all")
+public class NBTMap<K, V> extends HashMap<K, V> implements INBTSerializable<NBTTagList>, Clearable {
 
     public static <K extends INBTSerializable, V extends INBTSerializable> NBTMap<K, V> newNBTMap(@Nonnull Class<K> kClazz, @Nonnull Callable<K> kCallable, @Nonnull Class<V> vClazz, @Nonnull Function<K, V> vCallable){
         return newNBTMap_(kClazz, kCallable, vClazz, vCallable);
@@ -55,28 +61,60 @@ public class NBTMap<K, V> extends HashMap<K, V> implements INBTSerializable<NBTT
         this.vNBT = vCallable != null;
         this.kCallable = kCallable;
         this.vCallable = vCallable;
-        //this.serializeNull = false;
     }
 
     private final Class<K> kClass;
     private final Class<V> vClass;
 
-    //private boolean serializeNull;
-
     private final boolean kNBT, vNBT;
     private final Callable<K> kCallable;
     private final Function<K, V> vCallable;
 
-    //public NBTMap<K, V> setSerializeNull(boolean serializeNull){
-    //    this.serializeNull = serializeNull;
-    //    return this;
-    //}
+    private IExternalSaveHandler saveHandler;
+    private String saveHandlerName;
+
+    public IExternalSaveHandler getSaveHandler(final String name){
+        if (saveHandler != null){
+            if (!saveHandlerName.equals(name)) {
+                throw new IllegalArgumentException();
+            }
+            return saveHandler;
+        }
+        saveHandlerName = name;
+        saveHandler = new IExternalSaveHandler() {
+
+            @Override
+            public String getName() {
+                return name;
+            }
+
+            @Override
+            public void load(ISaveHandler saveHandler, WorldInfo info, NBTTagCompound tag) {
+                deserializeNBT(tag.getTagList("mapData", 10));
+            }
+
+            @Nullable
+            @Override
+            public NBTTagCompound save(ISaveHandler saveHandler, WorldInfo info) {
+                NBTTagCompound ret = new NBTTagCompound();
+                ret.setTag("mapData", serializeNBT());
+                return ret;
+            }
+
+            @Override
+            public void nullifyData() {
+                clear();
+            }
+
+        };
+        return saveHandler;
+    }
 
     @Override
     public NBTTagList serializeNBT() {
         NBTTagList ret = new NBTTagList();
         for (final Map.Entry<K, V> entry : entrySet()){
-            if (entry.getValue() == null/*&& !serializeNull*/){
+            if (entry.getValue() == null){
                 continue;
             }
             NBTTagCompound tag = new NBTTagCompound();
@@ -183,6 +221,11 @@ public class NBTMap<K, V> extends HashMap<K, V> implements INBTSerializable<NBTT
 
 
         throw new IllegalArgumentException();
+    }
+
+    @Override
+    public void clear() {
+        super.clear();
     }
 
     private static boolean isValidNBT(Class clazz){

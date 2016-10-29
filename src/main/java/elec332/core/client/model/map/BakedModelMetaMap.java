@@ -1,6 +1,7 @@
 package elec332.core.client.model.map;
 
 import com.google.common.collect.Maps;
+import elec332.core.api.client.model.map.IBakedModelMetaMap;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;

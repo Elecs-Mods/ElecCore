@@ -1,5 +1,6 @@
 package elec332.core.asm;
 
+import net.minecraft.launchwrapper.Launch;
 import net.minecraftforge.fml.common.asm.transformers.deobf.FMLDeobfuscatingRemapper;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.*;
@@ -14,7 +15,7 @@ import java.util.regex.Pattern;
  */
 public class ASMHelper {
 
-    private static boolean isObfuscated;
+    private static final boolean isObfuscated;
 
     public static String getClassName(String deobf){
         if (isObfuscated)
@@ -118,6 +119,10 @@ public class ASMHelper {
 
     public static boolean isType(AbstractInsnNode node, int type){
         return node != null && node.getType() == type;
+    }
+
+    static {
+        isObfuscated = !(Boolean) Launch.blackboard.get("fml.deobfuscatedEnvironment");
     }
 
 }

@@ -2,8 +2,9 @@ package elec332.core.world;
 
 import com.google.common.collect.Sets;
 import elec332.core.api.structure.GenerationType;
+import elec332.core.api.structure.ISchematic;
+import elec332.core.api.util.Area;
 import elec332.core.main.ElecCore;
-import elec332.core.world.schematic.Area;
 import elec332.core.world.schematic.Schematic;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -57,22 +58,22 @@ public class StructureTemplate {
                 return;
             }
 
-            Schematic schematic = getSchematic();
+            ISchematic schematic = getSchematic();
             Area schematicArea = schematic.getAreaFromWorldCoordinates(xCoord, yCoord, zCoord);
             int chunkX = location.getX() >> 4;
             int chunkZ = location.getZ() >> 4;
 
             if (schematicArea.doAreasIntersect(new Area(chunkX << 4, 0, chunkZ << 4, (chunkX << 4) + 16, 255, (chunkZ << 4) + 16))) {
-                for (int x = 0; x < schematic.width; x++) {
-                    for (int y = 0; y < schematic.height; y++) {
-                        for (int z = 0; z < schematic.length; z++) {
+                for (int x = 0; x < schematic.getBlockWidth(); x++) {
+                    for (int y = 0; y < schematic.getBlockHeight(); y++) {
+                        for (int z = 0; z < schematic.getBlockLength(); z++) {
                             int worldX = xCoord + x;
                             int worldY = yCoord + y;
                             int worldZ = zCoord + z;
                             BlockPos schematicPos = new BlockPos(x, y, z);
                             BlockPos worldPos = new BlockPos(worldX, worldY, worldZ);
                             Block block = schematic.getBlock(schematicPos);
-                            IBlockState state = schematic.getState(schematicPos);
+                            IBlockState state = schematic.getBlockState(schematicPos);
 
                             if (block != null) {
                                 WorldHelper.setBlockState(world, worldPos, Blocks.AIR.getDefaultState(), 2);
@@ -90,8 +91,8 @@ public class StructureTemplate {
                         }
                     }
                 }
-                for (int i = chunkX; i < chunkX + (schematicArea.getWidth() >> 4); i++) {
-                    for (int j = chunkZ; j < chunkZ + (schematicArea.getLength() >> 4); j++) {
+                for (int i = chunkX; i < chunkX + (schematicArea.getBlockWidth() >> 4); i++) {
+                    for (int j = chunkZ; j < chunkZ + (schematicArea.getBlockLength() >> 4); j++) {
                         Chunk chunk = world.getChunkFromChunkCoords(chunkX, chunkZ);
                         chunk.setChunkModified();
                         chunk.enqueueRelightChecks();
@@ -101,7 +102,7 @@ public class StructureTemplate {
         }
     }
 
-    public Schematic getSchematic() {
+    public ISchematic getSchematic() {
         return schematic;
     }
 

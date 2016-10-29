@@ -3,12 +3,18 @@ package elec332.core.java;
 import com.google.common.collect.Lists;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Member;
+import java.lang.reflect.Modifier;
 import java.util.List;
 
 /**
  * Created by Elec332 on 29-7-2015.
  */
 public class ReflectionHelper {
+
+    public static boolean isStatic(Member member){
+        return (member.getModifiers() & Modifier.STATIC) == Modifier.STATIC;
+    }
 
     public static Class[] getAllTillMainClass(Class innerClass){
         if (!isInnerClass(innerClass)) {

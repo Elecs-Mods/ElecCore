@@ -6,9 +6,9 @@ import net.minecraftforge.common.config.Configuration;
 /**
  * Created by Elec332 on 11-4-2015.
  */
-public class CategoryAsConfig extends Configuration {
+class CategoryAsConfig extends Configuration {
 
-    public CategoryAsConfig(String m, Configuration ma){
+    CategoryAsConfig(String m, Configuration ma){
         this.name = m;
         this.m = ma;
     }

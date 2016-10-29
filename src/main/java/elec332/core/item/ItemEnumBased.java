@@ -1,12 +1,12 @@
 package elec332.core.item;
 
-import elec332.core.client.IIconRegistrar;
+import elec332.core.api.client.IColoredItem;
+import elec332.core.api.client.IIconRegistrar;
+import elec332.core.api.client.model.IElecModelBakery;
+import elec332.core.api.client.model.IElecQuadBakery;
+import elec332.core.api.client.model.IElecTemplateBakery;
 import elec332.core.client.RenderHelper;
-import elec332.core.client.model.ElecModelBakery;
-import elec332.core.client.model.ElecQuadBakery;
-import elec332.core.client.model.IColoredItem;
-import elec332.core.client.model.INoJsonItem;
-import elec332.core.client.model.template.ElecTemplateBakery;
+import elec332.core.client.model.loading.INoJsonItem;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.creativetab.CreativeTabs;
@@ -110,7 +110,7 @@ public class ItemEnumBased<E extends Enum<E> & IEnumItem> extends AbstractItem i
     }
 
     @Override
-    public void registerModels(ElecQuadBakery quadBakery, ElecModelBakery modelBakery, ElecTemplateBakery templateBakery) {
+    public void registerModels(IElecQuadBakery quadBakery, IElecModelBakery modelBakery, IElecTemplateBakery templateBakery) {
         models = new IBakedModel[values.length];
         for (E e : values) {
             if (nji) {

@@ -1,6 +1,6 @@
 package elec332.core.inventory.widget;
 
-import elec332.core.inventory.IHasProgressBar;
+import elec332.core.api.inventory.IHasProgressBar;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.inventory.IContainerListener;
 import net.minecraft.util.ResourceLocation;

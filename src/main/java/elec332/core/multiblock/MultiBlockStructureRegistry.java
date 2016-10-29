@@ -3,14 +3,13 @@ package elec332.core.multiblock;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import elec332.core.main.ElecCore;
-import elec332.core.network.AbstractMessage;
+import elec332.core.network.packets.AbstractMessage;
 import elec332.core.server.ServerHelper;
 import elec332.core.util.EnumHelper;
 import elec332.core.util.NBTHelper;
 import elec332.core.world.WorldHelper;
 import elec332.core.world.location.BlockStateWrapper;
 import net.minecraft.block.Block;
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
@@ -24,7 +23,6 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.List;
 import java.util.Map;
@@ -37,7 +35,7 @@ public final class MultiBlockStructureRegistry implements IMessageHandler<MultiB
     protected MultiBlockStructureRegistry(MultiBlockRegistry multiBlockRegistry){
         this.multiBlockStructures = Maps.newHashMap();
         this.multiBlockRegistry = multiBlockRegistry;
-        multiBlockRegistry.networkHandler.getNetworkWrapper().registerMessage(this, SyncMultiBlockPacket.class, 0, Side.CLIENT);
+        multiBlockRegistry.networkHandler.registerPacket(this, SyncMultiBlockPacket.class, Side.CLIENT);
     }
 
     private final MultiBlockRegistry multiBlockRegistry;
@@ -153,7 +151,7 @@ public final class MultiBlockStructureRegistry implements IMessageHandler<MultiB
             multiBlockRegistry.get(world).createNewMultiBlock(multiBlock, new BlockPos(newX, newY, newZ), getAllMultiBlockLocations(multiBlock.getStructure(), newX, newY, newZ, side), world, side);
             if (!recreate && !world.isRemote){
                 for (EntityPlayerMP player : ServerHelper.instance.getAllPlayersWatchingBlock(world, newX, newZ))
-                    multiBlockRegistry.networkHandler.getNetworkWrapper().sendTo(new SyncMultiBlockPacket(multiBlock, x, y, z, side, this), player);
+                    multiBlockRegistry.networkHandler.sendTo(new SyncMultiBlockPacket(multiBlock, x, y, z, side, this), player);
             }
             int hn = multiBlock.getStructure().getHn();
             world.markBlockRangeForRenderUpdate(newX, newY, newZ, newX + hn, newY + hn, newZ + hn);
@@ -279,15 +277,10 @@ public final class MultiBlockStructureRegistry implements IMessageHandler<MultiB
             @Override
             public void run() {
                 NBTTagCompound tag = message.networkPackageObject;
-                tryCreateStructure(multiBlockStructures.get(tag.getString("mbs")), getClientWorld(), new BlockPos(tag.getInteger("x"), tag.getInteger("y"), tag.getInteger("z")), EnumHelper.fromString(tag.getString("side"), EnumFacing.class), false);
+                tryCreateStructure(multiBlockStructures.get(tag.getString("mbs")), ElecCore.proxy.getClientWorld(), new BlockPos(tag.getInteger("x"), tag.getInteger("y"), tag.getInteger("z")), EnumHelper.fromString(tag.getString("side"), EnumFacing.class), false);
             }
         }, ctx.side);
         return null;
-    }
-
-    @SideOnly(Side.CLIENT)
-    private World getClientWorld(){
-        return Minecraft.getMinecraft().theWorld;
     }
 
 }

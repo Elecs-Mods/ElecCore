@@ -14,6 +14,7 @@ import java.util.List;
 /**
  * Created by Elec332 on 8-5-2016.
  */
+@Deprecated
 public interface IWailaCapabilityDataProvider<T> {
 
     public List<String> getWailaBody(List<String> currentTip, T capability, NBTTagCompound tag, EntityPlayer player, RayTraceResult rts,World world, BlockPos pos, TileEntity tile);

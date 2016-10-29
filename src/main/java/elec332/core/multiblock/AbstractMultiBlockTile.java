@@ -1,11 +1,11 @@
 package elec332.core.multiblock;
 
-import elec332.core.compat.waila.WailaCompatHandler;
+import elec332.core.api.info.IInfoDataAccessorBlock;
+import elec332.core.api.info.IInfoProvider;
+import elec332.core.api.info.IInformation;
 import elec332.core.main.ElecCore;
 import elec332.core.tile.IInventoryTile;
 import elec332.core.tile.TileBase;
-import mcp.mobius.waila.api.IWailaConfigHandler;
-import mcp.mobius.waila.api.IWailaDataAccessor;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -15,17 +15,15 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 
-import java.util.List;
+import javax.annotation.Nonnull;
 
 /**
  * Created by Elec332 on 28-7-2015.
  */
-public abstract class AbstractMultiBlockTile extends TileBase implements IMultiBlockTile, IInventoryTile, WailaCompatHandler.IWailaInfoTile{
+public abstract class AbstractMultiBlockTile extends TileBase implements IMultiBlockTile, IInventoryTile, IInfoProvider {
 
     public AbstractMultiBlockTile(MultiBlockRegistry registry){
         super();
@@ -170,16 +168,18 @@ public abstract class AbstractMultiBlockTile extends TileBase implements IMultiB
     }
 
     @Override
-    public List<String> getWailaBody(ItemStack itemStack, List<String> currentTip, IWailaDataAccessor accessor, IWailaConfigHandler config) {
-        if (getMultiBlock() != null)
-            return getMultiBlock().getWailaBody(itemStack, currentTip, accessor, config);
-        return currentTip;
+    public void addInformation(@Nonnull IInformation information, @Nonnull IInfoDataAccessorBlock hitData) {
+        if (getMultiBlock() != null) {
+            getMultiBlock().addInformation(information, hitData);
+        }
     }
 
+    @Nonnull
     @Override
-    public NBTTagCompound getWailaTag(EntityPlayerMP player, TileEntity te, NBTTagCompound tag, World world, BlockPos pos){
-        if (getMultiBlock() != null)
-            return getMultiBlock().getWailaTag(player, te, tag, world, pos);
+    public NBTTagCompound getInfoNBTData(@Nonnull NBTTagCompound tag, TileEntity tile, @Nonnull EntityPlayerMP player, @Nonnull IInfoDataAccessorBlock hitData) {
+        if (getMultiBlock() != null) {
+            return getMultiBlock().getInfoNBTData(tag, tile, player, hitData);
+        }
         return tag;
     }
 

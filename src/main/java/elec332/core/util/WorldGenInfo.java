@@ -5,6 +5,7 @@ import net.minecraft.block.Block;
 /**
  * Created by Elec332 on 8-2-2015.
  */
+@Deprecated
 public class WorldGenInfo {
     int clusterSize = 0;
 

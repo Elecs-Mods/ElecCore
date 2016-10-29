@@ -1,12 +1,9 @@
 package elec332.core.util;
 
-import elec332.core.world.WorldHelper;
 import net.minecraft.client.renderer.block.model.ModelRotation;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -93,26 +90,6 @@ public class DirectionHelper {
         }
     }
 
-    @Deprecated
-    public static EnumFacing getOppositeSide(EnumFacing direction){
-        switch (direction){
-            case SOUTH:
-                return EnumFacing.NORTH;
-            case WEST:
-                return EnumFacing.EAST;
-            case NORTH:
-                return EnumFacing.SOUTH;
-            case EAST:
-                return EnumFacing.WEST;
-            case UP:
-                return EnumFacing.DOWN;
-            case DOWN:
-                return EnumFacing.UP;
-            default:
-                return null;
-        }
-    }
-
     public static final int[][] ROTATION_MATRIX_YAW = {
             {0, 1, 2, 3, 4, 5},
             {0, 1, 4, 5, 3, 2},
@@ -124,10 +101,4 @@ public class DirectionHelper {
         return MathHelper.floor_double((double) (entityLivingBase.rotationYaw * 4.0F / 360.0F) + 0.5D) & 3;
     }
 
-    @Deprecated
-    public static void setFacing_YAW(World world, BlockPos blockPos, EnumFacing forgeDirection) {
-        WorldHelper.markBlockForUpdate(world, blockPos);
-        //world.setBlockMetadataWithNotify(i, i1, i2, getNumberForDirection(forgeDirection), 2);
-        throw new UnsupportedOperationException();
-    }
 }

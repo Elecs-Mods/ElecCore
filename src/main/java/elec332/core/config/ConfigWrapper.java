@@ -2,9 +2,12 @@ package elec332.core.config;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import elec332.core.api.config.IConfigWrapper;
+import elec332.core.api.config.IConfigurableElement;
 import elec332.core.java.ReflectionHelper;
 import net.minecraftforge.common.config.Configuration;
 
+import javax.annotation.Nonnull;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.List;
@@ -12,7 +15,7 @@ import java.util.List;
 /**
  * Created by Elec332 on 12-4-2015.
  */
-public class ConfigWrapper {
+public class ConfigWrapper implements IConfigWrapper {
 
     public ConfigWrapper(Configuration configuration){
         this.configuration = configuration;
@@ -20,6 +23,7 @@ public class ConfigWrapper {
         this.hasInit = false;
         this.categoryDataList = Lists.newArrayList();
         this.categories = Lists.newArrayList();
+        this.configurableElements = Lists.newArrayList();
     }
 
     private Configuration configuration;
@@ -27,13 +31,17 @@ public class ConfigWrapper {
     private boolean hasInit;
     private List<CategoryData> categoryDataList;
     private List<String> categories;
+    private List<IConfigurableElement> configurableElements;
 
+    @Override
     public void registerConfig(Object o){
         if (!hasInit)
             this.instances.add(o);
         else throw new RuntimeException("You cannot register configs after init");
     }
 
+    @Nonnull
+    @Override
     public ConfigWrapper setCategoryData(String category, String description){
         for (CategoryData cat: this.categoryDataList){
             if (category.equals(cat.getCategory()))
@@ -45,18 +53,23 @@ public class ConfigWrapper {
     }
 
     private void addRegisteredCategory(String category){
-        if (!categories.contains(category.toLowerCase()))
+        if (!categories.contains(category.toLowerCase())) {
             this.categories.add(category.toLowerCase());
+        }
     }
 
+    @Nonnull
+    @Override
     public List<String> getRegisteredCategories() {
         return ImmutableList.copyOf(categories);
     }
 
+    @Override
     public boolean hasBeenLoaded() {
         return hasInit;
     }
 
+    @Override
     public void registerConfigWithInnerClasses(Object obj){
         registerConfig(obj);
         for (Class<?> clazz : Lists.reverse(Lists.newArrayList(obj.getClass().getDeclaredClasses()))){
@@ -70,14 +83,23 @@ public class ConfigWrapper {
         }
     }
 
+    @Override
+    public void registerConfigurableElement(IConfigurableElement configurableElement) {
+        this.configurableElements.add(configurableElement);
+    }
+
+    @Nonnull
+    @Override
     public Configuration getConfiguration() {
         return this.configuration;
     }
 
+    @Override
     public void refresh(){
         configuration.load();
-        if (!this.hasInit)
+        if (!this.hasInit) {
             this.hasInit = true;
+        }
         for (CategoryData categoryData : categoryDataList){
             configuration.setCategoryComment(categoryData.getCategory(), categoryData.getDescription());
         }
@@ -156,14 +178,26 @@ public class ConfigWrapper {
             }
         }
 
-        configuration.save();
+        for (IConfigurableElement cfgElement : configurableElements){
+            cfgElement.reconfigure(configuration);
+        }
+
+        if (configuration.hasChanged()) {
+            configuration.save();
+        }
+    }
+
+    @Nonnull
+    @Override
+    public Configuration wrapCategoryAsConfig(String category) {
+        return wrapCategoryAsConfig(configuration, category);
     }
 
     public static Configuration wrapCategoryAsConfig(Configuration configuration, String category){
         return new CategoryAsConfig(category, configuration);
     }
 
-    private final class CategoryData{
+    private final class CategoryData {
 
         private CategoryData(String category, String desc){
             this.category = category;

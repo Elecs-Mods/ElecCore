@@ -25,7 +25,7 @@ public class MCModInfo {
 
 	@SuppressWarnings("deprecation")
 	public static void createMCModInfo(FMLPreInitializationEvent event, String credits, String desc, String url, String logo, String[] authors) {
-		createMCModInfo(event, ModInfoHelper.getModID(event), ModInfoHelper.getModName(event), credits, desc, url, logo, authors);
+		createMCModInfo(event, event.getModMetadata().modId, event.getModMetadata().name, credits, desc, url, logo, authors);
 	}
 
 	public static void createMCModInfoElec(FMLPreInitializationEvent event, String desc, String url, String logo, String[] authors) {

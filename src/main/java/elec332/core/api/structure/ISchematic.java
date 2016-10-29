@@ -1,14 +1,26 @@
 package elec332.core.api.structure;
 
+import elec332.core.api.util.Area;
 import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
-
-import java.util.List;
+import net.minecraft.util.math.BlockPos;
 
 /**
  * Created by Elec332 on 11-11-2015.
  */
 public interface ISchematic {
+
+    /**
+     * Gets the block at the specified coordinates, ranging from 0 to the width (x), height (y) and length (z).
+     * 0 is inclusive, the width, height and length values are exclusive.
+     *
+     * @param pos Coordinate within the local schematic coordinates.
+     * @return The blocks located at the specified local schematic coordinates, or null if out of bounds.
+     */
+    default public Block getBlock(BlockPos pos){
+        return getBlock(pos.getX(), pos.getY(), pos.getZ());
+    }
 
     /**
      * Gets the block at the specified coordinates, ranging from 0 to the width (x), height (y) and length (z).
@@ -47,21 +59,76 @@ public interface ISchematic {
      * Gets the metadata for the block at the specified coordinates, ranging from 0 to the width (x), height (y) and
      * length (z). 0 is inclusive, the width, height and length values are exclusive.
      *
+     * @param pos Coordinate within the local schematic coordinates.
+     * @return The metadata for the block at the specified local schematic coordinates.
+     */
+    default public byte getMetaData(BlockPos pos){
+        return getMetadata(pos.getX(), pos.getY(), pos.getZ());
+    }
+
+    /**
+     * Gets the metadata for the block at the specified coordinates, ranging from 0 to the width (x), height (y) and
+     * length (z). 0 is inclusive, the width, height and length values are exclusive.
+     *
      * @param x Coordinate x within the local schematic coordinates.
      * @param y Coordinate y within the local schematic coordinates.
      * @param z Coordinate z within the local schematic coordinates.
      * @return The metadata for the block at the specified local schematic coordinates.
      */
+
     public byte getMetadata(int x, int y, int z);
 
-    public interface IModSchematic extends ISchematic {
-
-        /**
-         * Gets the blocks that are missing in the MC instance for this structure.
-         *
-         * @return A list of the missing blocks
-         */
-        public List<String> getMissingBlocks();
-
+    @SuppressWarnings("deprecation")
+    default public IBlockState getBlockState(BlockPos pos){
+        return getBlock(pos).getStateFromMeta(getMetaData(pos));
     }
+
+    public short getBlockLength();
+
+    public short getBlockWidth();
+
+    public short getBlockHeight();
+
+    /**
+     * Horizon sets the "ground" or how far down to translate this.
+     *
+     * @return The horizon for this schematic.
+     */
+    default public short getHorizon(){
+        return 0;
+    }
+
+    /**
+     * Gets this schematic's area based on a centered coordinate on the horizon.
+     *
+     * @param x The x coordinate in world-space this is to be centered on.
+     * @param y The horizon coordinate in world-space this schematic's horizon is to be matched with.
+     * @param z The z coordinate in world-space this is to be centered on.
+     * @return The area in world space that this schematic will fill.
+     */
+    default public Area getAreaFromWorldCoordinates(int x, int y, int z) {
+        int minX, maxX, minY, maxY, minZ, maxZ;
+        int width = getBlockWidth(), height = getBlockHeight(), length = getBlockLength(), horizon = getHorizon();
+        if (width % 2 == 0) {
+            minX = x + 1 - width / 2;
+            maxX = x + width / 2;
+        } else {
+            minX = x - (width - 1) / 2;
+            maxX = x + (width - 1) / 2;
+        }
+
+        minY = y - horizon;
+        maxY = (y - horizon) + height;
+
+        if (length % 2 == 0) {
+            minZ = z + 1 - length / 2;
+            maxZ = z + length / 2;
+        } else {
+            minZ = z - (length - 1) / 2;
+            maxZ = z + (length - 1) / 2;
+        }
+
+        return new Area(minX, minY, minZ, maxX, maxY, maxZ);
+    }
+
 }

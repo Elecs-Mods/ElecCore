@@ -30,7 +30,7 @@ import java.util.Random;
 /**
  * Created by Elec332 on 30-4-2015.
  */
-public class BlockTileBase extends Block implements IWrenchable, ITileEntityProvider{
+public class BlockTileBase extends Block implements IWrenchable, ITileEntityProvider {
 
     public BlockTileBase(Material mat, Class<? extends TileEntity> tileClass, String blockName, String modID) {
         this(mat, tileClass, new ResourceLocation(modID.toLowerCase(), blockName.toLowerCase()));

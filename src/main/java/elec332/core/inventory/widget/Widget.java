@@ -5,8 +5,8 @@ import elec332.core.client.RenderHelper;
 import elec332.core.inventory.IWidgetContainer;
 import elec332.core.inventory.tooltip.ToolTip;
 import elec332.core.main.ElecCore;
-import elec332.core.network.PacketSyncWidget;
-import elec332.core.network.PacketWidgetDataToServer;
+import elec332.core.network.packets.PacketSyncWidget;
+import elec332.core.network.packets.PacketWidgetDataToServer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.Container;
@@ -67,11 +67,11 @@ public class Widget {
     }
 
     public final void sendNBTChangesToPlayer(EntityPlayerMP player, NBTTagCompound tagCompound){
-        ElecCore.networkHandler.getNetworkWrapper().sendTo(new PacketSyncWidget(tagCompound, container, this), player);
+        ElecCore.networkHandler.sendTo(new PacketSyncWidget(tagCompound, container, this), player);
     }
 
     public final void sendNBTChangesToServer(NBTTagCompound tagCompound){
-        ElecCore.networkHandler.getNetworkWrapper().sendToServer(new PacketWidgetDataToServer(tagCompound, container, this));
+        ElecCore.networkHandler.sendToServer(new PacketWidgetDataToServer(tagCompound, container, this));
     }
 
     public final void readNBTChangesFromPacket(NBTTagCompound tagCompound, Side receiver){

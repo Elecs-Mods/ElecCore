@@ -19,6 +19,7 @@ import java.util.Random;
 /**
  * Created by Elec332 on 2-4-2015.
  */
+@Deprecated
 public abstract class WorldGen implements IWorldGenerator {
 
     public WorldGen(File configFile){

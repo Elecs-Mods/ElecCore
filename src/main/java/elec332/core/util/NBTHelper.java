@@ -34,17 +34,13 @@ public class NBTHelper implements INBTSerializable<NBTTagCompound> {
     /*
      * Add methods
      */
-    public NBTHelper addToTag(INBTSavable nbtSavable, String s){
-        nbtSavable.writeToNBT(tagCompound, s);
-        return this;
-    }
 
     public NBTHelper addToTag(List<String> list, String s){
         if (list.size() > 0){
             NBTTagList tagList = new NBTTagList();
-                for (String string : list){
-                    tagList.appendTag(new NBTHelper().addToTag(string, s).toNBT());
-                }
+            for (String string : list){
+                tagList.appendTag(new NBTHelper().addToTag(string, s).serializeNBT());
+            }
             tagCompound.setTag(s, tagList);
         }
         return this;

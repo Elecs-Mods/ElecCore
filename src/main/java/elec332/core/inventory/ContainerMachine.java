@@ -1,5 +1,6 @@
 package elec332.core.inventory;
 
+import elec332.core.api.inventory.IHasProgressBar;
 import net.minecraft.entity.player.EntityPlayer;
 
 /**

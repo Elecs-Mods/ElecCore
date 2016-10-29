@@ -1,17 +1,17 @@
 package elec332.core.client.model;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import elec332.core.client.IIconRegistrar;
-import elec332.core.client.ITextureLoader;
+import elec332.core.api.client.IIconRegistrar;
+import elec332.core.api.client.ITextureLoader;
+import elec332.core.api.client.model.IElecModelBakery;
+import elec332.core.api.client.model.IElecQuadBakery;
+import elec332.core.api.client.model.IElecRenderingRegistry;
+import elec332.core.api.client.model.IElecTemplateBakery;
 import elec332.core.client.RenderHelper;
-import elec332.core.client.model.model.IModelAndTextureLoader;
-import elec332.core.client.model.model.IModelLoader;
-import elec332.core.client.model.template.ElecTemplateBakery;
-import elec332.core.client.newstuff.ElecModelHandler;
-import elec332.core.client.render.ISpecialBlockRenderer;
-import elec332.core.client.render.ISpecialItemRenderer;
+import elec332.core.client.model.loading.IModelAndTextureLoader;
+import elec332.core.client.model.loading.IModelLoader;
+import elec332.core.client.model.loading.handler.ElecModelHandler;
 import elec332.core.java.ReflectionHelper;
 import elec332.core.main.ElecCore;
 import elec332.core.util.RegistryHelper;
@@ -32,7 +32,6 @@ import net.minecraftforge.client.model.ModelLoaderRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -41,111 +40,99 @@ import java.util.Set;
  * Created by Elec332 on 18-11-2015.
  */
 @SideOnly(Side.CLIENT)
-public final class RenderingRegistry {
+public final class RenderingRegistry implements IElecRenderingRegistry {
 
     public static RenderingRegistry instance(){
         return instance;
     }
 
     private static final RenderingRegistry instance;
+
     private RenderingRegistry(){
-        blockRendererMap = Maps.newHashMap();
-        itemRendererMap = Maps.newHashMap();
-        modelLoaders = Lists.newArrayList();
-        textureLoaders = Lists.newArrayList();
+        modelLoaders = Sets.newHashSet();
+        textureLoaders = Sets.newHashSet();
         extraItems = Lists.newArrayList();
         extraBlocks = Lists.newArrayList();
         extraModels = Lists.newArrayList();
     }
 
-    public static final int SPECIAL_BLOCK_RENDERER_ID = 39;
-
-    private final Map<Block, ISpecialBlockRenderer> blockRendererMap;
-    private final Map<Item, ISpecialItemRenderer> itemRendererMap;
-    private final List<IModelLoader> modelLoaders;
-    private final List<ITextureLoader> textureLoaders;
+    private final Set<IModelLoader> modelLoaders;
+    private final Set<ITextureLoader> textureLoaders;
 
     private final List<Item> extraItems;
     private final List<Block> extraBlocks;
 
     private final List<ModelResourceLocation> extraModels;
 
+    @Override
     public void registerLoadableModel(ModelResourceLocation mrl){
         extraModels.add(mrl);
     }
 
+    @Override
     public void registerFakeItem(Item item){
         extraItems.add(item);
     }
 
+    @Override
     public void registerFakeBlock(Block block){
         extraBlocks.add(block);
     }
 
+    @Override
     public void registerLoader(IModelLoader modelLoader){
-        this.modelLoaders.add(modelLoader);
+        registerLoader((Object) modelLoader);
     }
 
+    @Override
     public void registerLoader(ITextureLoader textureLoader){
-        this.textureLoaders.add(textureLoader);
+        registerLoader((Object) textureLoader);
     }
 
+    @Override
     public void registerLoader(IModelAndTextureLoader loader){
-        registerLoader((IModelLoader)loader);
-        registerLoader((ITextureLoader)loader);
+        registerLoader((Object) loader);
     }
 
-    public void registerRenderer(Block block, ISpecialBlockRenderer renderer){
-        //if (block.getRenderType() != SPECIAL_BLOCK_RENDERER_ID)
-        //    System.out.println("Detected useless registering of special blockrenderer, block "+"todo"+" is using the wrong renderer ID: "+block.getRenderType()+", expected "+SPECIAL_BLOCK_RENDERER_ID);
-        if (blockRendererMap.containsKey(block)){
-            System.out.println("Replacing renderer for: "+ "todo");
+    @Override
+    public Iterable<Block> getAllValidBlocks(){
+        List<Block> list = Lists.newArrayList(RegistryHelper.getBlockRegistry());
+        list.addAll(extraBlocks);
+        return list;
+    }
+
+    @Override
+    public Iterable<Item> getAllValidItems(){
+        List<Item> list = Lists.newArrayList(RegistryHelper.getItemRegistry());
+        list.addAll(extraItems);
+        return list;
+    }
+
+    private void registerLoader(Object obj){
+        if (obj instanceof IModelLoader){
+            this.modelLoaders.add((IModelLoader) obj);
         }
-        blockRendererMap.put(block, renderer);
-    }
-
-    public void registerRenderer(Item item, ISpecialItemRenderer renderer){
-        if (itemRendererMap.containsKey(item)){
-            System.out.println("Replacing renderer for: "+ "todo");
+        if (obj instanceof ITextureLoader){
+            this.textureLoaders.add((ITextureLoader) obj);
         }
-        itemRendererMap.put(item, renderer);
     }
 
-    public ISpecialBlockRenderer getRendererFor(Block block){
-        return blockRendererMap.get(block);
-    }
-
-    public ISpecialItemRenderer getRendererFor(Item item){
-        return itemRendererMap.get(item);
-    }
-
-    public boolean hasSpecialFirstPersonRenderer(Item item){
-        return itemRendererMap.containsKey(item);
-    }
-
-    protected void invokeEvent(TextureStitchEvent event){
+    void invokeEvent(TextureStitchEvent event){
         IIconRegistrar iconRegistrar = new IconRegistrar(event);
         for (ITextureLoader loader : textureLoaders){
             loader.registerTextures(iconRegistrar);
         }
     }
 
-    protected void invokeEvent(ReplaceJsonEvent event){
+    void invokeEvent(ModelLoadEventImpl event){
         for (IModelLoader loader : modelLoaders){
-            loader.registerModels(event.quadBakery, event.modelBakery, event.templateBakery);
+            loader.registerModels(event.getQuadBakery(), event.getModelBakery(), event.getTemplateBakery());
         }
     }
 
-    /*protected void setItemBlockModels(ModelBakeEvent event){
-        for (Item item : Util.getItemIterator()){
-            if (item instanceof ItemBlock && ((ItemBlock) item).getBlock() instanceof INoJsonBlock){
-                event.modelRegistry.putObject(new ModelResourceLocation((ResourceLocation) GameData.getBlockRegistry().getNameForObject(((ItemBlock) item).getBlock()), "inventory"), ((INoJsonBlock) ((ItemBlock) item).getBlock()).getBlockModel());
-            }
-        }
-    }*/
 
     @SuppressWarnings("all")
-    protected void removeJsonErrors(ModelLoader modelLoader){
+    void removeJsonErrors(ModelLoader modelLoader){
         ElecCore.logger.info("Cleaning up internal Json stuff...");
         try {
             Set<ModelResourceLocation> set = (Set<ModelResourceLocation>) ReflectionHelper.makeFinalFieldModifiable(ModelLoader.class.getDeclaredField("missingVariants")).get(modelLoader);
@@ -153,10 +140,7 @@ public final class RenderingRegistry {
             if (ElecCore.removeJSONErrors){
                 exceptionMap.clear();
             }
-            Set<ModelResourceLocation> toRemove = Sets.newHashSet();
-            Set<ModelResourceLocation> loop = Sets.newHashSet(set);
-            loop.addAll(exceptionMap.keySet());
-            for (ModelResourceLocation rl : getValidLocations(loop, modelLoader)){
+            for (ModelResourceLocation rl : getValidLocations(modelLoader)){
                 set.remove(rl);
                 exceptionMap.remove(rl);
             }
@@ -166,8 +150,7 @@ public final class RenderingRegistry {
         ElecCore.logger.info("Finished cleaning up internal Json stuff.");
     }
 
-    protected Set<ModelResourceLocation> getValidLocations(Collection<ModelResourceLocation> loop, ModelBakery modelLoader){
-        //Set<ModelResourceLocation> toRemove = Sets.newHashSet();
+    private Set<ModelResourceLocation> getValidLocations(ModelBakery modelLoader){
         IRegistry<ModelResourceLocation, IBakedModel> registry = modelLoader.blockModelShapes.modelManager.modelRegistry;
 
         for (ModelResourceLocation mrl : extraModels){
@@ -181,77 +164,12 @@ public final class RenderingRegistry {
             registry.putObject(mrl, model);
         }
 
-        /*for (ModelResourceLocation rl : loop){
-            String[] sa = rl.toString().split("#");
-            String name = sa[0];
-            if (sa[1].equals("inventory")){
-                Item item = Item.getByNameOrId(name);
-                if (item instanceof INoJsonItem){
-                    toRemove.add(rl);
-                    registry.putObject(rl, modelItemLink);
-                } else if (item instanceof ItemBlock && ((ItemBlock) item).getBlock() instanceof INoJsonItem){
-                    toRemove.add(rl);
-                    registry.putObject(rl, modelItemBlockLink);
-                }
-            } else {
-                Block block = Block.getBlockFromName(name);
-                if (block instanceof INoJsonBlock) {
-                    toRemove.add(rl);
-                    registry.putObject(rl, forBlock((INoJsonBlock) block, block.getStateFromMeta(Integer.parseInt(sa[1]))));
-                }
-            }
-        }
-        return toRemove;*/
         return ElecModelHandler.registerBakedModels(registry);
     }
 
-    /*private IBakedModel forBlock(final INoJsonBlock block, final IBlockState state){
-        return new IBakedModel() {
-
-            private final IBlockModelWithoutQuads bm = block.getBlockModel(state);
-            private final IQuadProvider quadProvider = block.getQuadProvider(state);
-            private final ItemOverrideList iol = new NoJsonItemOverrideList(block);
-
-            @Override
-            public List<BakedQuad> func_188616_a(IBlockState p_188616_1_, EnumFacing p_188616_2_, long p_188616_3_) {
-                return quadProvider.getBakedQuads(p_188616_1_, p_188616_2_, p_188616_3_);
-            }
-
-            @Override
-            public boolean isAmbientOcclusion() {
-                return bm.isAmbientOcclusion();
-            }
-
-            @Override
-            public boolean isGui3d() {
-                return bm.isGui3d();
-            }
-
-            @Override
-            public boolean func_188618_c() {
-                return bm.isTESRItem();
-            }
-
-            @Override
-            public TextureAtlasSprite getParticleTexture() {
-                return bm.getParticleTexture();
-            }
-
-            @Override
-            public ItemCameraTransforms getItemCameraTransforms() {
-                return bm.getItemCameraTransforms();
-            }
-
-            @Override
-            public ItemOverrideList func_188617_f() {
-                return iol;
-            }
-        };
-    }*/
-
     private class IconRegistrar implements IIconRegistrar {
 
-        public IconRegistrar(TextureStitchEvent event){
+        private IconRegistrar(TextureStitchEvent event){
             this.textureMap = event.getMap();
         }
 
@@ -274,13 +192,13 @@ public final class RenderingRegistry {
         instance = new RenderingRegistry();
         instance.registerLoader(new IModelAndTextureLoader() {
             @Override
-            public void registerModels(ElecQuadBakery quadBakery, ElecModelBakery modelBakery, ElecTemplateBakery templateBakery) {
-                for (Item item : getAllValidItems()) {
+            public void registerModels(IElecQuadBakery quadBakery, IElecModelBakery modelBakery, IElecTemplateBakery templateBakery) {
+                for (Item item : instance.getAllValidItems()) {
                     if (item instanceof IModelLoader) {
                         ((IModelLoader) item).registerModels(quadBakery, modelBakery, templateBakery);
                     }
                 }
-                for (Block block : getAllValidBlocks()) {
+                for (Block block : instance.getAllValidBlocks()) {
                     if (block instanceof IModelLoader) {
                         ((IModelLoader) block).registerModels(quadBakery, modelBakery, templateBakery);
                     }
@@ -289,30 +207,18 @@ public final class RenderingRegistry {
 
             @Override
             public void registerTextures(IIconRegistrar iconRegistrar) {
-                for (Item item : getAllValidItems()) {
+                for (Item item : instance.getAllValidItems()) {
                     if (item instanceof ITextureLoader) {
                         ((ITextureLoader) item).registerTextures(iconRegistrar);
                     }
                 }
-                for (Block block : getAllValidBlocks()) {
+                for (Block block : instance.getAllValidBlocks()) {
                     if (block instanceof ITextureLoader) {
                         ((ITextureLoader) block).registerTextures(iconRegistrar);
                     }
                 }
             }
         });
-    }
-
-    public static Iterable<Block> getAllValidBlocks(){
-        List<Block> list = Lists.newArrayList(RegistryHelper.getBlockRegistry());
-        list.addAll(instance.extraBlocks);
-        return list;
-    }
-
-    public static Iterable<Item> getAllValidItems(){
-        List<Item> list = Lists.newArrayList(RegistryHelper.getItemRegistry());
-        list.addAll(instance.extraItems);
-        return list;
     }
 
 }

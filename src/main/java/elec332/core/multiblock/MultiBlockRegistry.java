@@ -2,10 +2,13 @@ package elec332.core.multiblock;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import elec332.core.api.network.INetworkHandler;
 import elec332.core.client.RenderHelper;
-import elec332.core.network.NetworkHandler;
+import elec332.core.main.ElecCore;
+import elec332.core.network.impl.NetworkManager;
 import elec332.core.registry.AbstractWorldRegistryHolder;
 import elec332.core.registry.IWorldRegistry;
+import elec332.core.util.FMLUtil;
 import elec332.core.world.WorldHelper;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.culling.ICamera;
@@ -15,7 +18,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -30,10 +32,10 @@ import java.util.Map;
 public final class MultiBlockRegistry extends AbstractWorldRegistryHolder<MultiBlockRegistry.MultiBlockWorldRegistry>{
 
     public MultiBlockRegistry(){
-        this(new NetworkHandler(Loader.instance().activeModContainer().getModId()+"|MultiBlocks"));
+        this(NetworkManager.INSTANCE.getNetworkHandler(FMLUtil.getLoader().activeModContainer()));
     }
 
-    public MultiBlockRegistry(NetworkHandler networkHandler){
+    public MultiBlockRegistry(INetworkHandler networkHandler){
         this.registry = Maps.newHashMap();
         this.multiBlockRendererMap = Maps.newHashMap();
         this.networkHandler = networkHandler;
@@ -54,7 +56,7 @@ public final class MultiBlockRegistry extends AbstractWorldRegistryHolder<MultiB
     private Map<Class<? extends IMultiBlockStructure>, Class<? extends IMultiBlock>> registry;
     private Map<Class<? extends IMultiBlock>, IMultiBlockRenderer<? extends IMultiBlock>> multiBlockRendererMap;
     private final MultiBlockStructureRegistry structureRegistry;
-    protected final NetworkHandler networkHandler;
+    protected final INetworkHandler networkHandler;
 
 
     public void registerMultiBlock(IMultiBlockStructure multiBlockStructure, String name, Class<? extends IMultiBlock> multiBlock){
@@ -70,7 +72,7 @@ public final class MultiBlockRegistry extends AbstractWorldRegistryHolder<MultiB
     @SubscribeEvent
     @SuppressWarnings({"unchecked", "unused"})
     public void renderMultiBlocks(RenderWorldLastEvent event){
-        MultiBlockWorldRegistry mbwr = get(net.minecraft.client.Minecraft.getMinecraft().theWorld, false);
+        MultiBlockWorldRegistry mbwr = get(ElecCore.proxy.getClientWorld(), false);
         if (mbwr != null){
             ICamera camera = RenderHelper.getPlayerCamera(event.getPartialTicks());
             for (IMultiBlock multiBlock : mbwr.activeMultiBlocks){
