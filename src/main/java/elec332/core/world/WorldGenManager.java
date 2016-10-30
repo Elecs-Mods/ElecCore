@@ -73,6 +73,7 @@ enum WorldGenManager implements ISingleObjectRegistry<IWorldGenHook>, IWorldGenM
         for (IWorldGenHook wgh : set_){
             wgh.chunkSavedToDisk(chunk, tag, this);
         }
+        event.getData().setTag(KEY, tag);
     }
 
     @SubscribeEvent
@@ -179,7 +180,7 @@ enum WorldGenManager implements ISingleObjectRegistry<IWorldGenHook>, IWorldGenM
 
     @Override
     public boolean register(IWorldGenHook wgh) {
-        return Loader.instance().hasReachedState(LoaderState.AVAILABLE) && set.add(wgh);
+        return FMLUtil.isInModInitialisation() && set.add(wgh);
     }
 
     @Override

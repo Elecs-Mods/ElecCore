@@ -12,8 +12,6 @@ import net.minecraftforge.common.config.Configuration;
  */
 public class FeatureWorldGenMinable extends FeatureWorldGenerator {
 
-
-
     public static FeatureWorldGenMinable newOreGenerator(String name, int times, int maxY, int clusterSize, IBlockState state, Predicate<IBlockState> predicate){
         return newOreGenerator(name, clusterSize, times, state, predicate).setMaxY(maxY);
     }

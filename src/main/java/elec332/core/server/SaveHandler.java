@@ -98,7 +98,6 @@ public enum SaveHandler {
         @SubscribeEvent
         public void onWorldLoad(WorldEvent.Load event){
             if (isOverworld(event.getWorld())){
-                System.out.println("wl");
                 INSTANCE.load(event.getWorld());
             }
         }
