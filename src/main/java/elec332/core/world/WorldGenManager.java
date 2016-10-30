@@ -121,8 +121,10 @@ enum WorldGenManager implements ISingleObjectRegistry<IWorldGenHook>, IWorldGenM
         public void chunkLoadedFromDisk(Chunk chunk, NBTTagCompound data, IWorldGenManager worldGenManager) {
             NBTTagCompound tag = data.getCompoundTag(owner);
             boolean b = tag.hasKey(chunkPopulator.getName());
-            if ((!b || !this.lastKey.equals(tag.getString(chunkPopulator.getName()))) && chunkPopulator.shouldRegen(b)){
+            if ((!b || !chunkPopulator.getGenKey().equals(tag.getString(chunkPopulator.getName()))) && chunkPopulator.shouldRegen(b)){
                 worldGenManager.registerForRetroGen(chunk.getWorld(), chunk.getChunkCoordIntPair(), this);
+            }  else {
+                this.lastKey = chunkPopulator.getGenKey();
             }
         }
 

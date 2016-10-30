@@ -63,7 +63,7 @@ public class FeatureWorldGenMinable extends FeatureWorldGenerator {
     public void reconfigure(Configuration config) {
         super.reconfigure(config);
         int old = ((WorldGenMinable)worldGenMinable).numberOfBlocks;
-        int size = config.getInt("ClusterSize", getConfigCategoryName(), old, 0, getMaxClusterSize(), "Sets the max cluster size.");
+        int size = config.getInt("clusterSize", getConfigCategoryName(), old, 0, getMaxClusterSize(), "Sets the max cluster size.");
         if (size != old){
             setClusterSize(size);
         }

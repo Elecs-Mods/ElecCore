@@ -24,6 +24,7 @@ public class FeatureWorldGenerator implements IFeatureGenerator, IConfigurableEl
         this.maxY = 64;
         this.times = times;
         this.multiplier = 1;
+        this.generate = true;
     }
 
     protected final String name;
@@ -83,7 +84,7 @@ public class FeatureWorldGenerator implements IFeatureGenerator, IConfigurableEl
     @Override
     public void reconfigure(Configuration config) {
         this.generate = config.getBoolean("shouldGenerate", getConfigCategoryName(), this.generate, "Value which determines whether the feature should generate in the world or not");
-        String s = times <= 1 ? "Sets the chance this feature will generate in a chunk." : "Sets how many times the mod will attempt to generate ores per chunk. 1 is normal, 0 is not, 2 is 200%";
+        String s = times <= 1 ? "Sets the chance this feature will generate in a chunk." : "Sets how many times the mod will attempt to generate ores per chunk. 1 is normal, 0 is not, 2 is 200%, ect.";
         this.multiplier = config.getFloat("generationMultiplier", getConfigCategoryName(), this.multiplier, 0, 1000, s);
     }
 
