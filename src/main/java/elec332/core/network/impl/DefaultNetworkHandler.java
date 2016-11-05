@@ -29,7 +29,7 @@ import java.util.Map;
 /**
  * Created by Elec332 on 23-2-2015.
  */
-class DefaultNetworkHandler implements IElecNetworkHandler {
+class DefaultNetworkHandler implements IElecNetworkHandler, DefaultByteBufFactory {
 
     DefaultNetworkHandler(SimpleNetworkWrapper networkWrapper){
         this.networkWrapper = networkWrapper;

@@ -4,10 +4,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import elec332.core.api.client.IIconRegistrar;
 import elec332.core.api.client.ITextureLoader;
-import elec332.core.api.client.model.IElecModelBakery;
-import elec332.core.api.client.model.IElecQuadBakery;
-import elec332.core.api.client.model.IElecRenderingRegistry;
-import elec332.core.api.client.model.IElecTemplateBakery;
+import elec332.core.api.client.model.*;
 import elec332.core.client.RenderHelper;
 import elec332.core.client.model.loading.IModelAndTextureLoader;
 import elec332.core.client.model.loading.IModelLoader;
@@ -124,7 +121,7 @@ public final class RenderingRegistry implements IElecRenderingRegistry {
         }
     }
 
-    void invokeEvent(ModelLoadEventImpl event){
+    void invokeEvent(ModelLoadEvent event){
         for (IModelLoader loader : modelLoaders){
             loader.registerModels(event.getQuadBakery(), event.getModelBakery(), event.getTemplateBakery());
         }

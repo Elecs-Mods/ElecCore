@@ -1,17 +1,24 @@
 package elec332.core.util;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ListMultimap;
 import net.minecraftforge.fml.common.*;
 import net.minecraftforge.fml.common.discovery.ASMDataTable;
+import net.minecraftforge.fml.common.event.FMLEvent;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 
 /**
  * Created by Elec332 on 17-10-2016.
  */
 public class FMLUtil {
+
+    public static Class<?> loadClass(String clazz) throws ClassNotFoundException {
+        return Class.forName(clazz, true, FMLUtil.getLoader().getModClassLoader());
+    }
 
     public static String getOwnerName(Class<?> clazz){
         ModContainer mod = getOwner(clazz);
@@ -60,6 +67,18 @@ public class FMLUtil {
         return dataTable;
     }
 
+    @SuppressWarnings("unchecked")
+    public static void hookEvent(FMLModContainer modContainer, Method method){
+        try {
+            ListMultimap<Class<? extends FMLEvent>, Method> map = (ListMultimap<Class<? extends FMLEvent>, Method>) eventMethods.get(modContainer);
+            if (method.getParameterCount() == 1 && FMLEvent.class.isAssignableFrom(method.getParameterTypes()[0])){
+                map.get((Class<? extends FMLEvent>) method.getParameterTypes()[0]).add(method);
+            }
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     @Nonnull
     public static LoadController getLoadController(){
         if (lc == null){
@@ -86,5 +105,14 @@ public class FMLUtil {
 
     private static ASMDataTable dataTable;
     private static LoadController lc;
+    private static final Field eventMethods;
+
+    static {
+        try {
+            eventMethods = FMLModContainer.class.getDeclaredField("eventMethods");
+        } catch (Exception e){
+            throw new RuntimeException(e);
+        }
+    }
 
 }

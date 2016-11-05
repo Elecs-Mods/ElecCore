@@ -11,7 +11,6 @@ import elec332.core.grid.internal.GridEventInputHandler;
 import elec332.core.handler.ModEventHandler;
 import elec332.core.handler.TickHandler;
 import elec332.core.network.IElecNetworkHandler;
-import elec332.core.network.impl.NetworkManager;
 import elec332.core.network.packets.PacketReRenderBlock;
 import elec332.core.network.packets.PacketSyncWidget;
 import elec332.core.network.packets.PacketTileDataToServer;
@@ -30,7 +29,6 @@ import net.minecraftforge.fml.common.LoaderState;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.SidedProxy;
-import net.minecraftforge.fml.common.discovery.ASMDataTable;
 import net.minecraftforge.fml.common.event.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -55,7 +53,6 @@ public class ElecCore implements IModuleController, IElecCoreMod {
 	public static IElecNetworkHandler networkHandler;
 	public static TickHandler tickHandler;
 	public static Logger logger;
-	private static ASMDataTable dataTable;
 	protected ElecCoreDiscoverer asmDataProcessor;
 	private Configuration config;
 	private LoadTimer loadTimer;
@@ -68,9 +65,8 @@ public class ElecCore implements IModuleController, IElecCoreMod {
 	@EventHandler
 	public void construction(FMLConstructionEvent event){
 		logger = LogManager.getLogger("ElecCore");
-		dataTable = event.getASMHarvestedData();
 		asmDataProcessor = new ElecCoreDiscoverer();
-		asmDataProcessor.identify(dataTable);
+		asmDataProcessor.identify(event.getASMHarvestedData());
 		asmDataProcessor.process(LoaderState.CONSTRUCTING);
 	}
 
@@ -82,7 +78,6 @@ public class ElecCore implements IModuleController, IElecCoreMod {
 		loadTimer.startPhase(event);
 		this.config = new Configuration(FileHelper.getConfigFileElec(event));
 		tickHandler = new TickHandler();
-		networkHandler = NetworkManager.INSTANCE.getNetworkHandler(this);
 		networkHandler.registerClientPacket(PacketSyncWidget.class);
 		networkHandler.registerServerPacket(PacketTileDataToServer.class);
 		networkHandler.registerServerPacket(PacketWidgetDataToServer.class);

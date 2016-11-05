@@ -2,10 +2,11 @@ package elec332.core.multiblock;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import elec332.core.api.APIHandlerInject;
 import elec332.core.api.network.INetworkHandler;
+import elec332.core.api.network.INetworkManager;
 import elec332.core.client.RenderHelper;
 import elec332.core.main.ElecCore;
-import elec332.core.network.impl.NetworkManager;
 import elec332.core.registry.AbstractWorldRegistryHolder;
 import elec332.core.registry.IWorldRegistry;
 import elec332.core.util.FMLUtil;
@@ -32,8 +33,11 @@ import java.util.Map;
 public final class MultiBlockRegistry extends AbstractWorldRegistryHolder<MultiBlockRegistry.MultiBlockWorldRegistry>{
 
     public MultiBlockRegistry(){
-        this(NetworkManager.INSTANCE.getNetworkHandler(FMLUtil.getLoader().activeModContainer()));
+        this(networkManager.getNetworkHandler(FMLUtil.getLoader().activeModContainer()));
     }
+
+    @APIHandlerInject
+    private static INetworkManager networkManager;
 
     public MultiBlockRegistry(INetworkHandler networkHandler){
         this.registry = Maps.newHashMap();

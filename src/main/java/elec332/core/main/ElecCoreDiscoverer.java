@@ -4,6 +4,7 @@ import com.google.common.collect.*;
 import elec332.core.api.discovery.IASMDataHelper;
 import elec332.core.api.discovery.IASMDataProcessor;
 import elec332.core.api.discovery.IAdvancedASMData;
+import elec332.core.util.FMLUtil;
 import net.minecraftforge.fml.common.LoaderState;
 import net.minecraftforge.fml.common.discovery.ASMDataTable;
 import net.minecraftforge.fml.common.discovery.ModCandidate;
@@ -195,7 +196,7 @@ public class ElecCoreDiscoverer {
                 return clazz;
             }
             try {
-                return clazz = Class.forName(asmData.getClassName());
+                return clazz = FMLUtil.loadClass(asmData.getClassName());
             } catch (Exception e){
                 throw new RuntimeException(e);
             }

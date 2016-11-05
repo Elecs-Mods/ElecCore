@@ -78,7 +78,7 @@ public class ClientProxy extends CommonProxy {
 				minecraft.blockColors.registerBlockColorHandler(COLORED_BLOCK, block);
 			}
 		}
-		TileEntityItemStackRenderer.instance = new ElecTileEntityItemStackRenderer();
+		TileEntityItemStackRenderer.instance = new ElecTileEntityItemStackRenderer(TileEntityItemStackRenderer.instance);
 	}
 
 	@Override
@@ -99,6 +99,7 @@ public class ClientProxy extends CommonProxy {
 				ElecModelHandler.registerModels();
 			}
 		}
+
 	}
 
 	static {

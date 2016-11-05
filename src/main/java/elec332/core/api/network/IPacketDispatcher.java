@@ -12,7 +12,7 @@ import java.util.List;
 /**
  * Created by Elec332 on 15-10-2016.
  */
-public interface IPacketDispatcher {
+public interface IPacketDispatcher extends ElecByteBuf.Factory {
 
     /**
      * Returns the name of this channel.

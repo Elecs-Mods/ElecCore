@@ -10,18 +10,21 @@ import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
+import javax.annotation.Nullable;
+
 /**
  * Created by Elec332 on 15-10-2015.
  */
 public class RayTraceHelper {
 
+    @Nullable
     public static RayTraceResult retraceBlock(World world, EntityPlayerMP player, BlockPos pos) {
-        IBlockState block = WorldHelper.getBlockState(world, pos);
+        IBlockState blockState = WorldHelper.getBlockState(world, pos);
         Vec3d headVec = PlayerHelper.getCorrectedHeadVec(player);
         Vec3d lookVec = player.getLook(1.0F);
         double reach = PlayerHelper.getBlockReachDistance(player);
         Vec3d endVec = headVec.addVector(lookVec.xCoord * reach, lookVec.yCoord * reach, lookVec.zCoord * reach);
-        return block.getBlock().collisionRayTrace(block, world, pos, headVec, endVec);
+        return blockState.collisionRayTrace(world, pos, headVec, endVec);
     }
 
     public static RayTraceResult rayTrace(EntityPlayer player, double distance){

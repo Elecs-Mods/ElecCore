@@ -4,21 +4,44 @@ import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraftforge.fml.common.eventhandler.Event;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 /**
  * Created by Elec332 on 29-10-2016.
+ *
+ * This class used to be abstract, but you cannot
+ * subscribe to abstract events :(
  */
-public abstract class ModelLoadEvent extends Event {
+public class ModelLoadEvent extends Event {
 
-    public abstract IElecQuadBakery getQuadBakery();
+    @Nonnull
+    public IElecQuadBakery getQuadBakery() {
+        throw new UnsupportedOperationException();
+    }
 
-    public abstract IElecModelBakery getModelBakery();
+    @Nonnull
+    public IElecModelBakery getModelBakery() {
+        throw new UnsupportedOperationException();
+    }
 
-    public abstract IElecTemplateBakery getTemplateBakery();
+    @Nonnull
+    public IElecTemplateBakery getTemplateBakery() {
+        throw new UnsupportedOperationException();
+    }
 
-    public abstract void registerModel(ModelResourceLocation mrl, IBakedModel model);
+    public void registerModel(ModelResourceLocation mrl, IBakedModel model) {
+        throw new UnsupportedOperationException();
+    }
 
-    public abstract IBakedModel getModel(ModelResourceLocation mrl);
+    @Nullable
+    public IBakedModel getModel(ModelResourceLocation mrl) {
+        throw new UnsupportedOperationException();
+    }
 
-    public abstract IBakedModel getMissingModel();
+    @Nonnull
+    public IBakedModel getMissingModel() {
+        throw new UnsupportedOperationException();
+    }
 
 }

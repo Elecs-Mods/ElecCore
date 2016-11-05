@@ -321,4 +321,12 @@ public abstract class ElecByteBuf extends ByteBuf {
     @Override
     public abstract ElecByteBuf retain();
 
+    public interface Factory {
+
+        public ElecByteBuf createByteBuf();
+
+        public ElecByteBuf createByteBuf(ByteBuf parent);
+
+    }
+
 }

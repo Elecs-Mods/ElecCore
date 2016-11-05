@@ -1,5 +1,6 @@
 package elec332.core.api.network.object;
 
+import elec332.core.api.network.ElecByteBuf;
 import elec332.core.api.util.IEntityFilter;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -13,7 +14,7 @@ import java.util.List;
 /**
  * Created by Elec332 on 23-10-2016.
  */
-public interface INetworkObjectHandler<N extends INetworkObjectSender> {
+public interface INetworkObjectHandler<N extends INetworkObjectSender> extends ElecByteBuf.Factory {
 
     public void sendToAll(int id);
 

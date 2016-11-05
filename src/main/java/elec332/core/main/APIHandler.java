@@ -4,6 +4,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.SetMultimap;
 import elec332.core.api.APIHandlerInject;
+import elec332.core.api.IAPIHandler;
 import elec332.core.api.discovery.ASMDataProcessor;
 import elec332.core.api.discovery.IASMDataHelper;
 import elec332.core.api.discovery.IASMDataProcessor;
@@ -13,17 +14,14 @@ import elec332.core.java.ReflectionHelper;
 import net.minecraftforge.common.util.EnumHelper;
 import net.minecraftforge.fml.common.LoaderState;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.lang.annotation.*;
 import java.util.function.Consumer;
 
 /**
  * Created by Elec332 on 29-10-2016.
  */
 @ASMDataProcessor(LoaderState.CONSTRUCTING)
-public enum APIHandler implements IASMDataProcessor {
+public enum APIHandler implements IASMDataProcessor, IAPIHandler {
 
     INSTANCE;
 
@@ -35,7 +33,20 @@ public enum APIHandler implements IASMDataProcessor {
 
     @Override
     public void processASMData(IASMDataHelper asmData, LoaderState state) {
-        for (IAdvancedASMData data : asmData.getAdvancedAnnotationList(APIHandlerInject.class)){
+        collect(asmData, APIHandlerInject.class);
+
+        inject(INSTANCE, IAPIHandler.class);
+
+        inject(ElecCore.instance.asmDataProcessor.asmDataHelper, IASMDataHelper.class);
+
+        for (IAdvancedASMData data : asmData.getAdvancedAnnotationList(StaticLoad.class)){
+            data.loadClass();
+        }
+
+    }
+
+    private void collect(IASMDataHelper asmData, Class<? extends Annotation> annotationClass){
+        for (IAdvancedASMData data : asmData.getAdvancedAnnotationList(annotationClass)){
 
             Consumer<?> ret;
             Class<?> type;
@@ -85,16 +96,10 @@ public enum APIHandler implements IASMDataProcessor {
             callBacks.put(Preconditions.checkNotNull(type), Preconditions.checkNotNull(ret));
 
         }
-
-        inject(ElecCore.instance.asmDataProcessor.asmDataHelper, IASMDataHelper.class);
-
-        for (IAdvancedASMData data : asmData.getAdvancedAnnotationList(StaticLoad.class)){
-            data.loadClass();
-        }
-
     }
 
     @SuppressWarnings("unchecked")
+    @Override
     public void inject(Object o, Class<?>... classes){
         for (Class<?> clazz : classes){
             if (!clazz.isAssignableFrom(o.getClass())){

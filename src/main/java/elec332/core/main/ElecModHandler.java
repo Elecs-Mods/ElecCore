@@ -7,13 +7,14 @@ import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.SetMultimap;
+import elec332.core.api.APIHandlerInject;
 import elec332.core.api.IElecCoreMod;
 import elec332.core.api.data.IExternalSaveHandler;
 import elec332.core.api.module.IModuleContainer;
+import elec332.core.api.network.INetworkManager;
 import elec332.core.api.network.ModNetworkHandler;
 import elec332.core.api.registry.ISingleRegister;
 import elec332.core.module.ModuleManager;
-import elec332.core.network.impl.NetworkManager;
 import elec332.core.server.SaveHandler;
 import elec332.core.util.CommandHelper;
 import elec332.core.util.FMLUtil;
@@ -36,6 +37,8 @@ import java.util.Map;
  */
 public class ElecModHandler {
 
+    @APIHandlerInject
+    private static INetworkManager networkManager;
     private static List<Pair<ModContainer, IElecCoreMod>> mods;
 
     static void identifyMods(){
@@ -85,7 +88,7 @@ public class ElecModHandler {
             @Nullable
             @Override
             public Object apply(@Nullable ModContainer input) {
-                return NetworkManager.INSTANCE.getNetworkHandler(input);
+                return networkManager.getNetworkHandler(input);
             }
 
         });
@@ -114,41 +117,30 @@ public class ElecModHandler {
                 ModContainer mc = mc_;
                 boolean isStatic = false;
                 Class<?> clz = mc_.getMod().getClass();
-                if (!Strings.isNullOrEmpty(targetMod))
-                {
-                    if (Loader.isModLoaded(targetMod))
-                    {
+                if (!Strings.isNullOrEmpty(targetMod)) {
+                    if (Loader.isModLoaded(targetMod)) {
                         mc = Loader.instance().getIndexedModList().get(targetMod);
-                    }
-                    else
-                    {
+                    } else {
                         mc = null;
                     }
                 }
-                if (mc != null)
-                {
-                    try
-                    {
+                if (mc != null) {
+                    try {
                         clz = Class.forName(targets.getClassName(), true, Loader.instance().getModClassLoader());
                         f = clz.getDeclaredField(targets.getObjectName());
                         f.setAccessible(true);
                         isStatic = Modifier.isStatic(f.getModifiers());
                         injectedMod = retriever.apply(mc);
-                    }
-                    catch (Exception e)
-                    {
+                    } catch (Exception e) {
                         Throwables.propagateIfPossible(e);
                         FMLLog.log(mc_.getModId(), Level.WARN, e, "Attempting to load @%s in class %s for %s and failing", annotationName, targets.getClassName(), mc.getModId());
                     }
                 }
-                if (f != null)
-                {
+                if (f != null) {
                     Object target = null;
-                    if (!isStatic)
-                    {
+                    if (!isStatic) {
                         target = mc_.getMod();
-                        if (!target.getClass().equals(clz))
-                        {
+                        if (!target.getClass().equals(clz)) {
                             FMLLog.log(mc_.getModId(), Level.WARN, "Unable to inject @%s in non-static field %s.%s for %s as it is NOT the primary mod instance", annotationName, targets.getClassName(), targets.getObjectName(), mc.getModId());
                             continue;
                         }

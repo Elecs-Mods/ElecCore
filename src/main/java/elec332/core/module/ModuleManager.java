@@ -9,11 +9,13 @@ import elec332.core.api.discovery.IASMDataHelper;
 import elec332.core.api.discovery.IASMDataProcessor;
 import elec332.core.api.module.*;
 import elec332.core.handler.ModEventHandler;
+import elec332.core.main.APIHandler;
 import elec332.core.main.ElecCore;
 import elec332.core.util.FMLUtil;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.*;
 import net.minecraftforge.fml.common.discovery.ASMDataTable;
+import net.minecraftforge.fml.common.event.FMLInterModComms;
 import net.minecraftforge.fml.common.versioning.ArtifactVersion;
 
 import javax.annotation.Nonnull;
@@ -31,6 +33,7 @@ import java.util.function.Function;
 /**
  * Created by Elec332 on 24-9-2016.
  */
+@APIHandler.StaticLoad
 @ASMDataProcessor(LoaderState.PREINITIALIZATION)
 public enum ModuleManager implements IASMDataProcessor, IModuleManager {
 
@@ -154,6 +157,24 @@ public enum ModuleManager implements IASMDataProcessor, IModuleManager {
                 }
             }
         }
+        for (IModuleContainer module : activeModules){
+            Class objClass = module.getModule().getClass();
+            for (Method method : objClass.getDeclaredMethods()) {
+                if (method.isAnnotationPresent(ElecModule.EventHandler.class) || method.isAnnotationPresent(Mod.EventHandler.class)) {
+                    if (method.getParameterTypes().length != 1) {
+                        continue;
+                    }
+                    if (!(method.getParameterTypes()[0] == FMLInterModComms.IMCEvent.class)) {
+                        continue;
+                    }
+                    ModContainer mc = module.getOwnerMod();
+                    if (!(mc instanceof FMLModContainer)){
+                        throw new UnsupportedOperationException();
+                    }
+                    FMLUtil.hookEvent((FMLModContainer) mc, method);
+                }
+            }
+        }
         processModuleField(ElecModule.Instance.class, new Function<IModuleContainer, Object>() {
 
             @Override
@@ -170,6 +191,7 @@ public enum ModuleManager implements IASMDataProcessor, IModuleManager {
             }
 
         });
+
         loaded = true;
     }
 
@@ -297,6 +319,7 @@ public enum ModuleManager implements IASMDataProcessor, IModuleManager {
         } catch (Exception e){
             throw new RuntimeException();
         }
+        APIHandler.INSTANCE.inject(INSTANCE, IModuleManager.class);
     }
 
 }

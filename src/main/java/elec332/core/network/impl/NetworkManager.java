@@ -5,6 +5,7 @@ import com.google.common.collect.Maps;
 import elec332.core.api.network.INetworkManager;
 import elec332.core.api.network.IPacketRegistry;
 import elec332.core.api.network.simple.ISimpleNetworkPacketManager;
+import elec332.core.main.APIHandler;
 import elec332.core.util.FMLUtil;
 import net.minecraftforge.fml.common.ModContainer;
 import net.minecraftforge.fml.common.network.FMLEmbeddedChannel;
@@ -18,7 +19,8 @@ import java.util.UUID;
 /**
  * Created by Elec332 on 23-10-2016.
  */
-public enum NetworkManager implements INetworkManager<DefaultNetworkHandler> {
+@APIHandler.StaticLoad
+enum NetworkManager implements INetworkManager<DefaultNetworkHandler> {
 
     INSTANCE;
 
@@ -82,6 +84,10 @@ public enum NetworkManager implements INetworkManager<DefaultNetworkHandler> {
     @Override
     public IPacketRegistry newPacketRegistry() {
         return new DefaultPacketRegistry();
+    }
+
+    static {
+        APIHandler.INSTANCE.inject(INSTANCE, INetworkManager.class);
     }
 
 }

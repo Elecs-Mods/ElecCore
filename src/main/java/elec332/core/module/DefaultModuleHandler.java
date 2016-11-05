@@ -1,10 +1,11 @@
 package elec332.core.module;
 
+import elec332.core.api.APIHandlerInject;
 import elec332.core.api.module.IModuleContainer;
 import elec332.core.api.module.IModuleHandler;
+import elec332.core.api.network.INetworkManager;
 import elec332.core.api.network.simple.ISimpleNetworkPacketManager;
 import elec332.core.api.registry.ISingleObjectRegistry;
-import elec332.core.network.impl.NetworkManager;
 import elec332.core.util.CommandHelper;
 import net.minecraft.command.ICommand;
 import org.apache.logging.log4j.LogManager;
@@ -19,6 +20,8 @@ public class DefaultModuleHandler implements IModuleHandler {
         this.module = module;
     }
 
+    @APIHandlerInject
+    private static INetworkManager networkManager;
     private final IModuleContainer module;
     private ISimpleNetworkPacketManager packetManager;
 
@@ -30,7 +33,7 @@ public class DefaultModuleHandler implements IModuleHandler {
     @Override
     public ISimpleNetworkPacketManager getPacketHandler() {
         if (packetManager == null){
-            packetManager = NetworkManager.INSTANCE.getAdditionalSimpleNetworkManager(module.getOwnerMod(), module.getName());
+            packetManager = networkManager.getAdditionalSimpleNetworkManager(module.getOwnerMod(), module.getName());
         }
         return packetManager;
     }

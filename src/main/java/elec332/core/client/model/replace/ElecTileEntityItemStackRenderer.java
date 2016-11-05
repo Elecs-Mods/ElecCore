@@ -13,8 +13,13 @@ import net.minecraftforge.fml.relauncher.SideOnly;
  * Created by Elec332 on 27-11-2015.
  */
 @SideOnly(Side.CLIENT)
-@SuppressWarnings("unused")
 public class ElecTileEntityItemStackRenderer extends TileEntityItemStackRenderer {
+
+    public ElecTileEntityItemStackRenderer(TileEntityItemStackRenderer old){
+        this.oldRenderer = old;
+    }
+
+    private final TileEntityItemStackRenderer oldRenderer;
 
     @Override
     public void renderByItem(ItemStack itemStackIn) {
@@ -30,7 +35,7 @@ public class ElecTileEntityItemStackRenderer extends TileEntityItemStackRenderer
             return;
         }
 
-        super.renderByItem(itemStackIn);
+        oldRenderer.renderByItem(itemStackIn);
     }
 
 }

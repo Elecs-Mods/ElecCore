@@ -1,5 +1,6 @@
 package elec332.core.client.model;
 
+import elec332.core.api.client.model.ModelLoadEvent;
 import net.minecraftforge.client.event.ModelBakeEvent;
 import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.common.MinecraftForge;
@@ -30,7 +31,7 @@ public class ModelEventHandler {
     }
 
     @SubscribeEvent(priority = EventPriority.HIGH)
-    public void onJsonModelLoad(ModelLoadEventImpl event){
+    public void onJsonModelLoad(ModelLoadEvent event){
         RenderingRegistry.instance().invokeEvent(event);
     }
 

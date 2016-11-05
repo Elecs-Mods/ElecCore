@@ -108,7 +108,7 @@ class DefaultNetworkObjectManager implements INetworkObjectManager, IMessageHand
         return null;
     }
 
-    private class NOH<T extends INetworkObjectSender> implements INetworkObjectHandler<T> {
+    private class NOH<T extends INetworkObjectSender> implements INetworkObjectHandler<T>, DefaultByteBufFactory {
 
         private NOH(byte i, @Nullable T obj, @Nullable INetworkObjectReceiver receiver){
             this.b = i;

@@ -11,13 +11,16 @@ import net.minecraft.util.registry.IRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 /**
  * Created by Elec332 on 21-11-2015.
  */
 @SideOnly(Side.CLIENT)
-public class ModelLoadEventImpl extends ModelLoadEvent {
+class ModelLoadEventImpl extends ModelLoadEvent {
 
-    public ModelLoadEventImpl(IElecQuadBakery quadBakery, IElecModelBakery modelBakery, IElecTemplateBakery templateBakery, IRegistry<ModelResourceLocation, IBakedModel> registry){
+    ModelLoadEventImpl(IElecQuadBakery quadBakery, IElecModelBakery modelBakery, IElecTemplateBakery templateBakery, IRegistry<ModelResourceLocation, IBakedModel> registry){
         this.quadBakery = quadBakery;
         this.modelBakery = modelBakery;
         this.templateBakery = templateBakery;
@@ -30,16 +33,19 @@ public class ModelLoadEventImpl extends ModelLoadEvent {
     private final IRegistry<ModelResourceLocation, IBakedModel> registry;
 
     @Override
+    @Nonnull
     public IElecQuadBakery getQuadBakery() {
         return quadBakery;
     }
 
     @Override
+    @Nonnull
     public IElecModelBakery getModelBakery() {
         return modelBakery;
     }
 
     @Override
+    @Nonnull
     public IElecTemplateBakery getTemplateBakery() {
         return templateBakery;
     }
@@ -50,11 +56,13 @@ public class ModelLoadEventImpl extends ModelLoadEvent {
     }
 
     @Override
+    @Nullable
     public IBakedModel getModel(ModelResourceLocation mrl) {
         return registry.getObject(mrl);
     }
 
     @Override
+    @Nonnull
     public IBakedModel getMissingModel() {
         return RenderHelper.getMissingModel();
     }

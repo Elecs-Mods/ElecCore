@@ -73,87 +73,90 @@ public class WailaCompatHandler implements IWailaDataProvider {
     public List<String> getWailaBody(ItemStack itemStack, List<String> currentTip, IWailaDataAccessor accessor, IWailaConfigHandler config) {
         TileEntity tile = accessor.getTileEntity();
         if (tile instanceof IWailaInfoTile){
-            ((IWailaInfoTile) accessor.getTileEntity()).getWailaBody(itemStack, currentTip, accessor, config);
+            currentTip = ((IWailaInfoTile) accessor.getTileEntity()).getWailaBody(itemStack, currentTip, accessor, config);
         }
-        InformationHandler.INSTANCE.addInformation(new IInformation() {
+        final List<String> currentTipF = currentTip;
+        if (accessor.getNBTData() != null && !accessor.getNBTData().getBoolean("_nope_")) {
+            InformationHandler.INSTANCE.addInformation(new IInformation() {
 
-            @Nonnull
-            @Override
-            public InfoMod getProviderType() {
-                return InfoMod.WAILA;
-            }
+                @Nonnull
+                @Override
+                public InfoMod getProviderType() {
+                    return InfoMod.WAILA;
+                }
 
-            @Override
-            public void addInformation(String line) {
-                currentTip.add(line);
-            }
+                @Override
+                public void addInformation(String line) {
+                    currentTipF.add(line);
+                }
 
-        }, new IInfoDataAccessorBlock() {
+            }, new IInfoDataAccessorBlock() {
 
-            @Nonnull
-            @Override
-            public EntityPlayer getPlayer() {
-                return accessor.getPlayer();
-            }
+                @Nonnull
+                @Override
+                public EntityPlayer getPlayer() {
+                    return accessor.getPlayer();
+                }
 
-            @Nonnull
-            @Override
-            public World getWorld() {
-                return accessor.getWorld();
-            }
+                @Nonnull
+                @Override
+                public World getWorld() {
+                    return accessor.getWorld();
+                }
 
-            @Nonnull
-            @Override
-            public BlockPos getPos() {
-                return accessor.getPosition();
-            }
+                @Nonnull
+                @Override
+                public BlockPos getPos() {
+                    return accessor.getPosition();
+                }
 
-            @Nonnull
-            @Override
-            public NBTTagCompound getData() {
-                return accessor.getNBTData();
-            }
+                @Nonnull
+                @Override
+                public NBTTagCompound getData() {
+                    return accessor.getNBTData();
+                }
 
-            @Nonnull
-            @Override
-            public EnumFacing getSide() {
-                return accessor.getSide();
-            }
+                @Nonnull
+                @Override
+                public EnumFacing getSide() {
+                    return accessor.getSide();
+                }
 
-            @Override
-            public Vec3d getHitVec() {
-                return accessor.getMOP() == null ? null : accessor.getMOP().hitVec;
-            }
+                @Override
+                public Vec3d getHitVec() {
+                    return accessor.getMOP() == null ? null : accessor.getMOP().hitVec;
+                }
 
-            @Nonnull
-            @Override
-            public IBlockState getBlockState() {
-                return accessor.getBlockState();
-            }
+                @Nonnull
+                @Override
+                public IBlockState getBlockState() {
+                    return accessor.getBlockState();
+                }
 
-            @Nonnull
-            @Override
-            public Block getBlock() {
-                return accessor.getBlock();
-            }
+                @Nonnull
+                @Override
+                public Block getBlock() {
+                    return accessor.getBlock();
+                }
 
-            @Nullable
-            @Override
-            public TileEntity getTileEntity() {
-                return accessor.getTileEntity();
-            }
+                @Nullable
+                @Override
+                public TileEntity getTileEntity() {
+                    return accessor.getTileEntity();
+                }
 
-            @Override
-            public ItemStack getStack() {
-                return accessor.getStack();
-            }
+                @Override
+                public ItemStack getStack() {
+                    return accessor.getStack();
+                }
 
-            @Override
-            public RayTraceResult getRayTraceResult() {
-                return accessor.getMOP();
-            }
+                @Override
+                public RayTraceResult getRayTraceResult() {
+                    return accessor.getMOP();
+                }
 
-        });
+            });
+        }
         return currentTip;
     }
 
@@ -165,15 +168,21 @@ public class WailaCompatHandler implements IWailaDataProvider {
     @Override
     public NBTTagCompound getNBTData(EntityPlayerMP player, TileEntity te, NBTTagCompound tag, World world, BlockPos pos) {
         if (te instanceof IWailaInfoTile && tag != null){
-            return ((IWailaInfoTile) te).getWailaTag(player, te, tag, world, pos);
+            tag = ((IWailaInfoTile) te).getWailaTag(player, te, tag, world, pos);
         }
         if (tag == null){
             tag = new NBTTagCompound();
         }
         final NBTTagCompound fTag = tag;
+        RayTraceResult rtr = RayTraceHelper.retraceBlock(world, player, pos);
+        if (rtr == null){
+            fTag.setBoolean("_nope_", true);
+            return fTag;
+
+        }
+        final RayTraceResult rtrF = rtr;
         return InformationHandler.INSTANCE.getInfoNBTData(fTag, te, player, new IInfoDataAccessorBlock() {
 
-            private RayTraceResult rtr;
             private IBlockState ibs;
 
             @Nonnull
@@ -238,10 +247,7 @@ public class WailaCompatHandler implements IWailaDataProvider {
 
             @Override
             public RayTraceResult getRayTraceResult() {
-                if (rtr == null){
-                    rtr = RayTraceHelper.retraceBlock(world, player, pos);
-                }
-                return rtr;
+                return rtrF;
             }
 
         });
