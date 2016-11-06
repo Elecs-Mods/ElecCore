@@ -145,13 +145,14 @@ public class TileBase extends TileEntityBase implements IElecCoreNetworkTile {
         return Lists.newArrayList(itemStackFromNBTTile());
     }
 
-    public void onWrenched(EnumFacing forgeDirection) {
-        if ((forgeDirection != EnumFacing.UP && forgeDirection != EnumFacing.DOWN) || canFaceUpOrDown()) {
+    public boolean onWrenched(EnumFacing forgeDirection) {
+        /*if ((forgeDirection != EnumFacing.UP && forgeDirection != EnumFacing.DOWN) || canFaceUpOrDown()) {
             setFacing(forgeDirection);
             markDirty();
             syncData();
             reRenderBlock();
-        }
+        }*/
+        return false;
     }
 
     public boolean canFaceUpOrDown(){

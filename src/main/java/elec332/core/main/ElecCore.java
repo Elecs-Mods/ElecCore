@@ -5,6 +5,7 @@ import elec332.core.api.data.IExternalSaveHandler;
 import elec332.core.api.module.IModuleController;
 import elec332.core.api.network.ModNetworkHandler;
 import elec332.core.api.registry.ISingleRegister;
+import elec332.core.api.util.IRightClickCancel;
 import elec332.core.effects.AbilityHandler;
 import elec332.core.grid.internal.GridEventHandler;
 import elec332.core.grid.internal.GridEventInputHandler;
@@ -18,18 +19,21 @@ import elec332.core.network.packets.PacketWidgetDataToServer;
 import elec332.core.proxies.CommonProxy;
 import elec332.core.server.SaveHandler;
 import elec332.core.server.ServerHelper;
-import elec332.core.util.FileHelper;
-import elec332.core.util.LoadTimer;
-import elec332.core.util.MCModInfo;
-import elec332.core.util.OredictHelper;
+import elec332.core.util.*;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.launchwrapper.Launch;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.fml.common.LoaderState;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.*;
+import net.minecraftforge.fml.common.eventhandler.Event;
+import net.minecraftforge.fml.common.eventhandler.EventPriority;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -126,6 +130,20 @@ public class ElecCore implements IModuleController, IElecCoreMod {
 		OredictHelper.initLists();
 		proxy.postInitRendering();
 		modEventHandler.postEvent(event);
+		MinecraftForge.EVENT_BUS.register(new Object(){
+
+			@SubscribeEvent(priority = EventPriority.LOWEST)
+			public void onItemRightClick(PlayerInteractEvent.RightClickBlock event){
+				ItemStack stack = event.getItemStack();
+				if (stack != null && stack.getItem() instanceof IRightClickCancel && ((IRightClickCancel) stack.getItem()).cancelInteraction(stack)) {
+					stack.getItem().onItemUse(stack, event.getEntityPlayer(), event.getWorld(), event.getPos(), event.getHand(), event.getFace(), (float) event.getHitVec().xCoord, (float) event.getHitVec().yCoord, (float) event.getHitVec().zCoord);
+					event.setUseItem(Event.Result.DENY);
+					event.setUseBlock(Event.Result.DENY);
+					event.setCanceled(true);
+				}
+			}
+
+		});
 		loadTimer.endPhase(event);
 	}
 

@@ -1,6 +1,5 @@
 package elec332.core.tile;
 
-import elec332.core.api.wrench.IRightClickCancel;
 import elec332.core.api.wrench.IWrenchable;
 import elec332.core.util.BlockStateHelper;
 import elec332.core.util.DirectionHelper;
@@ -14,9 +13,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
@@ -24,6 +21,7 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.Random;
 
@@ -52,6 +50,7 @@ public class BlockTileBase extends Block implements IWrenchable, ITileEntityProv
         }
     }
 
+    private static final EnumFacing[] HORIZONTAL, ALL;
     private Class<? extends TileEntity> tileClass;
     private boolean randomDisplayTick, comparatorInputOverride;
     public final String blockName;
@@ -76,9 +75,6 @@ public class BlockTileBase extends Block implements IWrenchable, ITileEntityProv
 
     @Override
     public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, ItemStack stack, EnumFacing side, float hitX, float hitY, float hitZ) {
-        if (stack != null && stack.getItem() instanceof IRightClickCancel) {
-            return false;
-        }
         TileEntity tile = WorldHelper.getTileAt(world, pos);
         if (tile instanceof TileBase) {
             return ((TileBase) tile).onBlockActivated(state, player, hand, stack, side, hitX, hitY, hitZ);
@@ -104,7 +100,7 @@ public class BlockTileBase extends Block implements IWrenchable, ITileEntityProv
     }
 
     @Override
-    public ItemStack ItemDropped(World world, BlockPos pos) {
+    public ItemStack itemDropped(World world, BlockPos pos) {
         return new ItemStack(this);
     }
 
@@ -114,10 +110,9 @@ public class BlockTileBase extends Block implements IWrenchable, ITileEntityProv
     }
 
     @Override
-    public void onWrenched(World world, BlockPos pos, EnumFacing forgeDirection) {
+    public boolean onWrenched(World world, BlockPos pos, EnumFacing forgeDirection) {
         TileEntity tile = WorldHelper.getTileAt(world, pos);
-        if (tile instanceof TileBase)
-            ((TileBase) tile).onWrenched(forgeDirection);
+        return tile instanceof TileBase && ((TileBase) tile).onWrenched(forgeDirection);
     }
 
     @Override
@@ -222,6 +217,47 @@ public class BlockTileBase extends Block implements IWrenchable, ITileEntityProv
         if (tile instanceof IComparatorOverride)
             return ((IComparatorOverride) tile).getComparatorInputOverride();
         return super.getComparatorInputOverride(state, world, pos);
+    }
+
+    //Rotating 'n stuff
+
+    @Override
+    public boolean rotateBlock(World world, @Nonnull BlockPos pos, EnumFacing sideHit) {
+        if ((sideHit != EnumFacing.UP && sideHit != EnumFacing.DOWN) || canFaceUpOrDown(world, pos)) {
+            WorldHelper.setBlockState(world, pos, getDefaultState().withProperty(BlockStateHelper.FACING_NORMAL.getProperty(), sideHit), 2);
+            return true;
+        }
+        return false;
+    }
+
+    public boolean canFaceUpOrDown(World world, BlockPos pos) {
+        TileEntity tile = WorldHelper.getTileAt(world, pos);
+        return tile instanceof TileBase && ((TileBase) tile).canFaceUpOrDown();
+    }
+
+    @Override
+    @SuppressWarnings("deprecation")
+    @Nonnull
+    public IBlockState withMirror(@Nonnull IBlockState state, Mirror mirrorIn) {
+        return getDefaultState().withProperty(BlockStateHelper.FACING_NORMAL.getProperty(), mirrorIn.mirror(state.getValue(BlockStateHelper.FACING_NORMAL.getProperty())));
+    }
+
+    @Override
+    @Nonnull
+    public EnumFacing[] getValidRotations(World world, @Nonnull BlockPos pos) {
+        return canFaceUpOrDown(world, pos) ? ALL : HORIZONTAL;
+    }
+
+    @Override
+    @SuppressWarnings("deprecation")
+    @Nonnull
+    public IBlockState withRotation(@Nonnull IBlockState state, Rotation rot) {
+        return getDefaultState().withProperty(BlockStateHelper.FACING_NORMAL.getProperty(), rot.rotate(state.getValue(BlockStateHelper.FACING_NORMAL.getProperty())));
+    }
+
+    static {
+        ALL = EnumFacing.VALUES;
+        HORIZONTAL = EnumFacing.HORIZONTALS;
     }
 
 }
