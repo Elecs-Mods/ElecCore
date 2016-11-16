@@ -33,6 +33,7 @@ public final class BlockStateWrapper implements IBlockDataEqualiser {
         return new ItemStack(block, 1, meta);
     }
 
+    @SuppressWarnings("deprecation")
     public IBlockState getBlockState(){
         return block.getStateFromMeta(meta);
     }

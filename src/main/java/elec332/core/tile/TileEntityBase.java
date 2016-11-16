@@ -67,6 +67,7 @@ public class TileEntityBase extends TileEntity implements IElecCoreNetworkTile {
     }
 
     @Override
+    @Nonnull
     public NBTTagCompound getUpdateTag() {
         return writeToNBT(new NBTTagCompound());
     }

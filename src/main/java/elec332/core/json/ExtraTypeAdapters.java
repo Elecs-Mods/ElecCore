@@ -7,12 +7,13 @@ import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
 import elec332.core.util.MineTweakerHelper;
 import elec332.core.util.NBTTypes;
+import elec332.core.util.RegistryHelper;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.*;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
-import net.minecraftforge.fml.common.registry.GameRegistry;
 
 import java.io.IOException;
 import java.util.List;
@@ -67,7 +68,7 @@ public class ExtraTypeAdapters {
                         }
                     }
                     in.endObject();
-                    ItemStack ret = new ItemStack(GameRegistry.findItem(name.replace(":", " ").split(" ")[0], name.replace(":", " ").split(" ")[1]), count, damage);
+                    ItemStack ret = new ItemStack(RegistryHelper.getItemRegistry().getObject(new ResourceLocation(name)), count, damage);
                     ret.setTagCompound(tag);
                     return ret;
                 }

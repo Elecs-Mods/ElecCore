@@ -21,6 +21,7 @@ import javax.annotation.Nullable;
 /**
  * Created by Elec332 on 15-10-2016.
  */
+@SuppressWarnings("deprecation")
 public class FluidHelper {
 
     @Nullable
@@ -45,7 +46,7 @@ public class FluidHelper {
     }
 
     public static boolean tryDrainItem(EntityPlayer player, EnumHand hand, IFluidTank tank) {
-        return tryDrainItem(player, hand, FluidTankWrapper.of(tank), tank.getCapacity());
+        return tryDrainItem(player, hand, tank instanceof IFluidHandler ? (IFluidHandler) tank : FluidTankWrapper.of(tank), tank.getCapacity());
     }
 
     @SuppressWarnings("all")
@@ -113,7 +114,7 @@ public class FluidHelper {
     }
 
     public static boolean tryFillItem(EntityPlayer player, EnumHand hand, IFluidTank tank) {
-        return tryFillItem(player, hand, FluidTankWrapper.of(tank), tank.getCapacity());
+        return tryFillItem(player, hand, tank instanceof IFluidHandler ? (IFluidHandler) tank : FluidTankWrapper.of(tank), tank.getCapacity());
     }
 
     @SuppressWarnings("all")

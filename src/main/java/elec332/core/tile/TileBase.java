@@ -15,6 +15,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 
+import javax.annotation.Nonnull;
 import java.util.List;
 
 /**
@@ -59,6 +60,7 @@ public class TileBase extends TileEntityBase implements IElecCoreNetworkTile {
     }
 
     @Override
+    @Nonnull
     public NBTTagCompound writeToNBT(NBTTagCompound tagCompound) {
         super.writeToNBT(tagCompound);
         writeToItemStack(tagCompound);
@@ -97,6 +99,7 @@ public class TileBase extends TileEntityBase implements IElecCoreNetworkTile {
         this.worldObj.notifyNeighborsOfStateChange(getPos(), blockType);
     }
 
+    @SuppressWarnings("deprecation")
     public EnumFacing getTileFacing(){
         return getBlockType().getStateFromMeta(getBlockMetadata()).getValue(BlockStateHelper.FACING_NORMAL.getProperty());
     }

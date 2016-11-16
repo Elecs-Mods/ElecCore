@@ -194,7 +194,7 @@ public final class MultiBlockStructureRegistry implements IMessageHandler<MultiB
                 public void forPos(int length, int width, int height) {
                     BlockPos translated = getTranslated(x, y, z, side, length, width, height);
                     BlockStateWrapper bsw = multiBlock.getStructure()[length][width][height];
-                    if (bsw != null && !bsw.equals(atLocation(world, translated)) || hasMultiBlock(translated, world)){
+                    if (!WorldHelper.chunkLoaded(world, translated) || bsw != null && !bsw.equals(atLocation(world, translated)) || hasMultiBlock(translated, world)){
                         System.out.println("Checking MB failed at relative: "+length+", "+width+", "+height);
                         System.out.println("Found: "+atLocation(world, translated)+", expected: "+multiBlock.getStructure()[length][width][height]);
                         throw new RuntimeException("INVALID");

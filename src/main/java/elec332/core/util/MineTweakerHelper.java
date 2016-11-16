@@ -1,7 +1,6 @@
 package elec332.core.util;
 
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.fml.common.registry.GameData;
 import net.minecraftforge.oredict.OreDictionary;
 
 import java.io.File;
@@ -37,12 +36,11 @@ public class MineTweakerHelper {
         return builder.toString();
     }
 
-    @SuppressWarnings("unchecked")
     public static String getItemRegistryName(ItemStack stack){
         if (stack.getItem() == null){
             throw new NullPointerException();
         }
-        return GameData.getItemRegistry().getNameForObject(stack.getItem()).toString();
+        return RegistryHelper.getItemRegistry().getNameForObject(stack.getItem()).toString();
     }
 
     public static void reloadMineTweakerScripts(){

@@ -76,18 +76,18 @@ public class InventoryHelper {
         List<ItemStack> contents = storeContents(inventory);
         int maxStack = Math.min(inventory.getInventoryStackLimit(), itemstack.getMaxStackSize());
         for (int i = start; i < end; i++) {
-            if (areEqualNoSize(itemstack, inventory.getStackInSlot(i))) {
-                ItemStack is = inventory.getStackInSlot(i);
-                if (is.stackSize >= maxStack) {
+            ItemStack stack = inventory.getStackInSlot(i);
+            if (areEqualNoSize(itemstack, stack)) {
+                if (stack.stackSize >= maxStack) {
                     continue;
                 }
-                if (is.stackSize + itemstack.stackSize <= maxStack) {
-                    is.stackSize += itemstack.stackSize;
+                if (stack.stackSize + itemstack.stackSize <= maxStack) {
+                    stack.stackSize += itemstack.stackSize;
                     inventory.markDirty();
                     return true;
                 } else {
-                    itemstack.stackSize -= maxStack - is.stackSize;
-                    is.stackSize = maxStack;
+                    itemstack.stackSize -= maxStack - stack.stackSize;
+                    stack.stackSize = maxStack;
                 }
             }
         }

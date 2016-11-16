@@ -37,6 +37,7 @@ import java.util.Map;
 /**
  * Created by Elec332 on 15-8-2015.
  */
+@SuppressWarnings("deprecation")
 @ElecModule(owner = ElecCore.MODID, name = "WailaCompat", modDependencies = "Waila")
 public class WailaCompatHandler implements IWailaDataProvider {
 

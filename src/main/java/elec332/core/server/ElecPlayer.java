@@ -60,8 +60,9 @@ public class ElecPlayer implements INBTSerializable<NBTTagCompound> {
             NBTTagCompound tagCompound = tagList.getCompoundTagAt(i);
             String name = tagCompound.getString("name");
             NBTTagCompound data = tagCompound.getCompoundTag("data");
-            if (data == null)
+            if (data == null) {
                 data = new NBTTagCompound();
+            }
             ExtendedProperties properties = extendedProperties.get(name);
             if (properties != null){
                 properties.readFromNBT(data);
@@ -97,6 +98,7 @@ public class ElecPlayer implements INBTSerializable<NBTTagCompound> {
         return data;
     }
 
+    //TODO: interface?
     public abstract static class ExtendedProperties{
 
         public EntityPlayer getPlayer(){

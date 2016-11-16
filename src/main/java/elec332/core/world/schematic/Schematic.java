@@ -42,7 +42,7 @@ public class Schematic implements ISchematic {
     private void reloadTileMap(){
         tiles.clear();
         for (int i = 0; i < tileDataList.tagCount(); i++) {
-            NBTTagCompound tag = (NBTTagCompound) tileDataList.getCompoundTagAt(i).copy();
+            NBTTagCompound tag = tileDataList.getCompoundTagAt(i).copy();
             BlockPos pos = new BlockPos(tag.getInteger("x"), tag.getInteger("y"), tag.getInteger("z"));
             tiles.put(pos, tag);
         }
@@ -95,8 +95,9 @@ public class Schematic implements ISchematic {
     @Override
     public NBTTagCompound getTileData(int x, int y, int z) {
         NBTTagCompound tag = tiles.get(new BlockPos(x, y, z));
-        if (tag != null)
-            return (NBTTagCompound) tag.copy();
+        if (tag != null) {
+            return tag.copy();
+        }
         return null;
     }
 

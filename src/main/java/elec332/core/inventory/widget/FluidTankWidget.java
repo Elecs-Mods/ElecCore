@@ -10,6 +10,7 @@ import net.minecraft.inventory.IContainerListener;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTank;
+import net.minecraftforge.fluids.IFluidTank;
 import org.lwjgl.opengl.GL11;
 
 import java.util.List;
@@ -19,12 +20,12 @@ import java.util.List;
  */
 public class FluidTankWidget extends Widget {
 
-    public FluidTankWidget(int x, int y, int u, int v, int width, int height, FluidTank tank) {
+    public FluidTankWidget(int x, int y, int u, int v, int width, int height, IFluidTank tank) {
         super(x, y, u, v, width, height);
         this.tank = tank;
     }
 
-    private FluidTank tank;
+    private IFluidTank tank;
     private FluidStack fluidStack;
     private int capacity;
 
@@ -80,4 +81,5 @@ public class FluidTankWidget extends Widget {
         //gui.drawTexturedModalRect(guiX + x-1, guiY + y - 1, 0, 0, width+1, height - (int) Math.floor(height * scale) + 1);
         //gui.drawTexturedModalRect(guiX + x, guiY + y, width+2, height+2, width, height);
     }
+
 }

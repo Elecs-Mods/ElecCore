@@ -24,6 +24,7 @@ public class RegistryHelper {
         return createRegistry(registryName, registryType, 0, Byte.MAX_VALUE, callback);
     }
 
+    @SuppressWarnings("deprecation")
     public static <T extends IForgeRegistryEntry<T>, C extends IForgeRegistry.AddCallback<T> & IForgeRegistry.ClearCallback<T> & IForgeRegistry.CreateCallback<T> & IForgeRegistry.SubstitutionCallback<T>> FMLControlledNamespacedRegistry<T> createRegistry(ResourceLocation registryName, Class<T> registryType, int minId, int maxId, C callback){
         return PersistentRegistryManager.createRegistry(registryName, registryType, null, minId, maxId, true, callback, callback, callback, callback);
     }

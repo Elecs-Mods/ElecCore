@@ -7,7 +7,6 @@ import elec332.core.api.util.Area;
 import elec332.core.main.ElecCore;
 import elec332.core.world.schematic.Schematic;
 import net.minecraft.block.Block;
-import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
@@ -77,7 +76,7 @@ public class StructureTemplate {
 
                             if (block != null) {
                                 WorldHelper.setBlockState(world, worldPos, Blocks.AIR.getDefaultState(), 2);
-                                if (!block.getMaterial(state).equals(Material.AIR)) {
+                                if (!block.isAir(state, world, worldPos)) {
                                     WorldHelper.setBlockState(world, worldPos, state, 2);
                                     if (block.hasTileEntity(state)) {
                                         NBTTagCompound tileData = schematic.getTileData(x, y, z, worldX, worldY, worldZ);

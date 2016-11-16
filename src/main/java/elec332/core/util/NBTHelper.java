@@ -135,11 +135,6 @@ public class NBTHelper implements INBTSerializable<NBTTagCompound> {
     }
 
 
-    @Deprecated
-    public NBTTagCompound toNBT(){
-        return this.tagCompound;
-    }
-
     @Override
     public NBTTagCompound serializeNBT() {
         return this.tagCompound;

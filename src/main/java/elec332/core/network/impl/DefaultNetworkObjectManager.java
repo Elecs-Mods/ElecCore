@@ -287,7 +287,7 @@ class DefaultNetworkObjectManager implements INetworkObjectManager, IMessageHand
         public void fromBytes(ByteBuf buf) {
             this.i = buf.readByte();
             this.i2 = buf.readByte();
-            this.data = buf.readBytes(Unpooled.buffer());
+            this.data = buf.readBytes(Unpooled.buffer(buf.readableBytes()));
         }
 
         @Override

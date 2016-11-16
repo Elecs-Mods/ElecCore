@@ -28,6 +28,7 @@ import java.util.Random;
 /**
  * Created by Elec332 on 30-4-2015.
  */
+@SuppressWarnings("deprecation")
 public class BlockTileBase extends Block implements IWrenchable, ITileEntityProvider {
 
     public BlockTileBase(Material mat, Class<? extends TileEntity> tileClass, String blockName, String modID) {
@@ -69,6 +70,7 @@ public class BlockTileBase extends Block implements IWrenchable, ITileEntityProv
     }
 
     @Override
+    @Nonnull
     public IBlockState onBlockPlaced(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer) {
         return getBlockState().getBaseState().withProperty(BlockStateHelper.FACING_NORMAL.getProperty(), DirectionHelper.getFacingOnPlacement(placer));
     }
@@ -91,7 +93,8 @@ public class BlockTileBase extends Block implements IWrenchable, ITileEntityProv
     }
 
     @Override
-    public TileEntity createNewTileEntity(World world, int metadata) {
+    @SuppressWarnings("all")
+    public TileEntity createNewTileEntity(@Nonnull World world, int metadata) {
         try {
             return this.tileClass.newInstance();
         } catch (Exception ex) {
@@ -105,7 +108,7 @@ public class BlockTileBase extends Block implements IWrenchable, ITileEntityProv
     }
 
     @Override
-    public boolean canBeReplacedByLeaves(IBlockState state, IBlockAccess world, BlockPos pos) {
+    public boolean canBeReplacedByLeaves(@Nonnull IBlockState state, @Nonnull IBlockAccess world, @Nonnull BlockPos pos) {
         return false;
     }
 
@@ -148,7 +151,7 @@ public class BlockTileBase extends Block implements IWrenchable, ITileEntityProv
     }
 
     @Override
-    public void breakBlock(World world, BlockPos pos, IBlockState state) {
+    public void breakBlock(@Nonnull World world, @Nonnull BlockPos pos, @Nonnull IBlockState state) {
         TileEntity tile = WorldHelper.getTileAt(world, pos);
         if (tile instanceof TileBase)
             ((TileBase) tile).onBlockRemoved();
@@ -156,7 +159,7 @@ public class BlockTileBase extends Block implements IWrenchable, ITileEntityProv
     }
 
     @Override
-    public int getLightValue(IBlockState state, IBlockAccess world, BlockPos pos) {
+    public int getLightValue(@Nonnull IBlockState state, IBlockAccess world, @Nonnull BlockPos pos) {
         TileEntity tile = WorldHelper.getTileAt(world, pos);
         if (tile instanceof TileBase)
             return ((TileBase) tile).getLightValue();
@@ -183,7 +186,8 @@ public class BlockTileBase extends Block implements IWrenchable, ITileEntityProv
     }
 
     @Override
-    public List<ItemStack> getDrops(IBlockAccess world, BlockPos pos, IBlockState state, int fortune) {
+    @Nonnull
+    public List<ItemStack> getDrops(IBlockAccess world, BlockPos pos, @Nonnull IBlockState state, int fortune) {
         TileEntity tile = WorldHelper.getTileAt(world, pos);
         if (tile instanceof TileBase)
             return ((TileBase) tile).getDrops(fortune);

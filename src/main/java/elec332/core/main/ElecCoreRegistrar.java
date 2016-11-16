@@ -22,7 +22,7 @@ import javax.annotation.Nullable;
 /**
  * Created by Elec332 on 1-8-2016.
  */
-@SuppressWarnings("all")
+@SuppressWarnings({"deprecation", "unchecked"})
 public final class ElecCoreRegistrar {
 
     private ElecCoreRegistrar(){

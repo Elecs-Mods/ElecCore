@@ -116,6 +116,7 @@ public class ClientProxy extends CommonProxy {
 		COLORED_ITEMBLOCK = new IItemColor() {
 
 			@Override
+			@SuppressWarnings("deprecation")
 			public int getColorFromItemstack(@Nonnull ItemStack stack, int tintIndex) {
 				Block block = ((ItemBlock) stack.getItem()).getBlock();
 				return ((IColoredBlock) block).colorMultiplier(block.getStateFromMeta(stack.getItemDamage()), null, null, tintIndex);

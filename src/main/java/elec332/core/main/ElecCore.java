@@ -19,10 +19,13 @@ import elec332.core.network.packets.PacketWidgetDataToServer;
 import elec332.core.proxies.CommonProxy;
 import elec332.core.server.SaveHandler;
 import elec332.core.server.ServerHelper;
-import elec332.core.util.*;
-import net.minecraft.item.Item;
+import elec332.core.util.FileHelper;
+import elec332.core.util.LoadTimer;
+import elec332.core.util.MCModInfo;
+import elec332.core.util.OredictHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.launchwrapper.Launch;
+import net.minecraft.util.EnumHand;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
@@ -31,7 +34,6 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.*;
-import net.minecraftforge.fml.common.eventhandler.Event;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import org.apache.logging.log4j.LogManager;
@@ -134,12 +136,18 @@ public class ElecCore implements IModuleController, IElecCoreMod {
 
 			@SubscribeEvent(priority = EventPriority.LOWEST)
 			public void onItemRightClick(PlayerInteractEvent.RightClickBlock event){
-				ItemStack stack = event.getItemStack();
+				ItemStack stack;
+				if (event.getHand() == EnumHand.OFF_HAND){
+					stack = event.getEntityPlayer().getHeldItem(EnumHand.MAIN_HAND);
+					if (stack != null && stack.getItem() instanceof IRightClickCancel && ((IRightClickCancel) stack.getItem()).cancelInteraction(stack)){
+						event.setCanceled(true);
+						return;
+					}
+				}
+				stack = event.getItemStack();
 				if (stack != null && stack.getItem() instanceof IRightClickCancel && ((IRightClickCancel) stack.getItem()).cancelInteraction(stack)) {
-					stack.getItem().onItemUse(stack, event.getEntityPlayer(), event.getWorld(), event.getPos(), event.getHand(), event.getFace(), (float) event.getHitVec().xCoord, (float) event.getHitVec().yCoord, (float) event.getHitVec().zCoord);
-					event.setUseItem(Event.Result.DENY);
-					event.setUseBlock(Event.Result.DENY);
 					event.setCanceled(true);
+					stack.getItem().onItemUse(stack, event.getEntityPlayer(), event.getWorld(), event.getPos(), event.getHand(), event.getFace(), (float) event.getHitVec().xCoord, (float) event.getHitVec().yCoord, (float) event.getHitVec().zCoord);
 				}
 			}
 

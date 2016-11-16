@@ -125,8 +125,9 @@ public abstract class FluidTankWrapper implements IFluidHandler, IFluidTank, INB
             return ((FluidTankWrapper) getTank()).serializeNBT();
         } else if (getTank() instanceof FluidTank){
             return ((FluidTank) getTank()).writeToNBT(new NBTTagCompound());
+        } else {
+            throw new UnsupportedOperationException();
         }
-        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -135,8 +136,9 @@ public abstract class FluidTankWrapper implements IFluidHandler, IFluidTank, INB
             ((FluidTankWrapper) getTank()).deserializeNBT(nbt);
         } else if (getTank() instanceof FluidTank){
             ((FluidTank) getTank()).readFromNBT(nbt);
+        } else {
+            throw new UnsupportedOperationException();
         }
-        throw new UnsupportedOperationException();
     }
 
     private class Properties implements IFluidTankProperties {

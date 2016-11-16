@@ -18,7 +18,7 @@ import java.util.function.Consumer;
  * Created by Elec332 on 7-3-2016.
  */
 
-@SuppressWarnings("unused")
+@SuppressWarnings("deprecation")
 @ASMDataProcessor(LoaderState.INITIALIZATION)
 public class InitAnnotationProcessor extends AbstractAnnotationProcessor {
 

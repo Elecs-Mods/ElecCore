@@ -9,6 +9,8 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 
+import javax.annotation.Nonnull;
+
 /**
  * Created by Elec332 on 4-5-2015.
  */
@@ -113,6 +115,7 @@ public class BasicInventory implements IInventory {
     }
 
     @Override
+    @Nonnull
     public String getName() {
         return this.inventoryTitle;
     }
@@ -135,22 +138,23 @@ public class BasicInventory implements IInventory {
     }
 
     @Override
-    public boolean isUseableByPlayer(EntityPlayer player) {
+    public boolean isUseableByPlayer(@Nonnull EntityPlayer player) {
         return true;
     }
 
     @Override
-    public void openInventory(EntityPlayer player) {}
+    public void openInventory(@Nonnull EntityPlayer player) {}
 
     @Override
-    public void closeInventory(EntityPlayer player) {}
+    public void closeInventory(@Nonnull EntityPlayer player) {}
 
     @Override
-    public boolean isItemValidForSlot(int id, ItemStack stack) {
+    public boolean isItemValidForSlot(int id, @Nonnull ItemStack stack) {
         return true;
     }
 
     @Override
+    @Nonnull
     public ITextComponent getDisplayName() {
         return new TextComponentString(getName());
     }

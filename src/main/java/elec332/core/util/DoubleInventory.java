@@ -5,6 +5,7 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.ITextComponent;
 
+import javax.annotation.Nonnull;
 import java.util.List;
 
 /**
@@ -76,6 +77,7 @@ public class DoubleInventory<I1 extends IInventory, I2 extends IInventory> imple
     }
 
     @Override
+    @Nonnull
     public String getName() {
         return inventory1.getName()+" & "+inventory2.getName();
     }
@@ -97,24 +99,24 @@ public class DoubleInventory<I1 extends IInventory, I2 extends IInventory> imple
     }
 
     @Override
-    public boolean isUseableByPlayer(EntityPlayer player) {
+    public boolean isUseableByPlayer(@Nonnull EntityPlayer player) {
         return inventory1.isUseableByPlayer(player) && inventory2.isUseableByPlayer(player);
     }
 
     @Override
-    public void openInventory(EntityPlayer player) {
+    public void openInventory(@Nonnull EntityPlayer player) {
         inventory1.openInventory(player);
         inventory2.openInventory(player);
     }
 
     @Override
-    public void closeInventory(EntityPlayer player) {
+    public void closeInventory(@Nonnull EntityPlayer player) {
         inventory1.closeInventory(player);
         inventory2.closeInventory(player);
     }
 
     @Override
-    public boolean isItemValidForSlot(int slot, ItemStack stack) {
+    public boolean isItemValidForSlot(int slot, @Nonnull ItemStack stack) {
         if (slot < size1) {
             return inventory1.isItemValidForSlot(slot, stack);
         } else {
@@ -127,8 +129,9 @@ public class DoubleInventory<I1 extends IInventory, I2 extends IInventory> imple
      */
 
     @Override
+    @Nonnull
     public ITextComponent getDisplayName() {
-        return null; //TODO
+        return inventory1.getDisplayName().appendSibling(inventory2.getDisplayName());
     }
 
     @Override
@@ -208,4 +211,5 @@ public class DoubleInventory<I1 extends IInventory, I2 extends IInventory> imple
             setInventorySlotContents(i, ItemStack.copyItemStack(inventory.getStackInSlot(i)));
         }
     }
+
 }
