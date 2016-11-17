@@ -28,12 +28,16 @@ import net.minecraftforge.common.ForgeChunkManager;
 @SuppressWarnings("unused")
 public class WorldHelper {
 
+    public static void notifyNeighborsOfStateChange(World world, BlockPos pos, Block block){
+        world.notifyNeighborsOfStateChange(pos, block, false);
+    }
+
     public static ChunkPos chunkCoordFromBlockPos(BlockPos pos){
         return new ChunkPos(pos.getX() >> 4, pos.getZ() >> 4);
     }
 
     public static long longFromBlockPos(BlockPos pos){
-        return ChunkPos.chunkXZ2Int(pos.getX() >> 4, pos.getZ() >> 4);
+        return ChunkPos.asLong(pos.getX() >> 4, pos.getZ() >> 4);
     }
 
     public static long longFromChunk(Chunk chunk){
@@ -41,7 +45,7 @@ public class WorldHelper {
     }
 
     public static long longFromChunkXZ(ChunkPos chunkCoordIntPair){
-        return ChunkPos.chunkXZ2Int(chunkCoordIntPair.chunkXPos, chunkCoordIntPair.chunkZPos);
+        return ChunkPos.asLong(chunkCoordIntPair.chunkXPos, chunkCoordIntPair.chunkZPos);
     }
 
     public static void reRenderBlock(TileEntity tile){

@@ -83,7 +83,7 @@ public class RenderHelper {
     }
 
     public static void drawSelectionBoundingBox(@Nonnull AxisAlignedBB aabb){
-        RenderGlobal.func_189697_a(aabb, 0.0F, 0.0F, 0.0F, 0.4F);
+        RenderGlobal.drawSelectionBoundingBox(aabb, 0.0F, 0.0F, 0.0F, 0.4F);
     }
 
     public static AxisAlignedBB expandAABB(@Nonnull AxisAlignedBB aabb){

@@ -76,12 +76,12 @@ public class BlockTileBase extends Block implements IWrenchable, ITileEntityProv
     }
 
     @Override
-    public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, ItemStack stack, EnumFacing side, float hitX, float hitY, float hitZ) {
+    public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ) {
         TileEntity tile = WorldHelper.getTileAt(world, pos);
         if (tile instanceof TileBase) {
-            return ((TileBase) tile).onBlockActivated(state, player, hand, stack, side, hitX, hitY, hitZ);
+            return ((TileBase) tile).onBlockActivated(state, player, hand, side, hitX, hitY, hitZ);
         }
-        return super.onBlockActivated(world, pos, state, player, hand, stack, side, hitX, hitY, hitZ);
+        return super.onBlockActivated(world, pos, state, player, hand, side, hitX, hitY, hitZ);
     }
 
     @Override
@@ -126,12 +126,12 @@ public class BlockTileBase extends Block implements IWrenchable, ITileEntityProv
         super.onBlockPlacedBy(world, pos, state, entityLiving, stack);
     }
 
-    @Override
-    public void neighborChanged(IBlockState state, World world, BlockPos pos, Block neighbor) {
+    @Override //TODO: New param == changed pos??
+    public void neighborChanged(IBlockState state, World world, BlockPos pos, Block neighbor, BlockPos p_189540_5_) {
         TileEntity tile = WorldHelper.getTileAt(world, pos);
         if (tile instanceof TileBase)
             ((TileBase) tile).onNeighborBlockChange(neighbor);
-        super.neighborChanged(state, world, pos, neighbor);
+        super.neighborChanged(state, world, pos, neighbor, p_189540_5_);
     }
 
     @Override

@@ -49,21 +49,17 @@ public class FluidHelper {
         return tryDrainItem(player, hand, tank instanceof IFluidHandler ? (IFluidHandler) tank : FluidTankWrapper.of(tank), tank.getCapacity());
     }
 
-    @SuppressWarnings("all")
     public static boolean tryDrainItem(EntityPlayer player, EnumHand hand, IFluidHandler fluidHandler, int capacity) {
         if (fluidHandler == null) {
             return false;
         }
         ItemStack stack = player.getHeldItem(hand);
-        if (stack == null) {
+        if (!ItemStackHelper.isStackValid(stack)) {
             return false;
         }
         ///////Start
         if (stack.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, null)){
             IFluidHandler item = stack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, null);
-            if (item == null){
-                return false;
-            }
             FluidStack stack1 = item.drain(capacity, false);
             if (stack1 == null){
                 return false;
@@ -104,7 +100,7 @@ public class FluidHelper {
                     fluidHandler.fill(stack1.copy(), true);
                     ItemStack s = FluidContainerRegistry.drainFluidContainer(stack);
                     if (!PlayerHelper.isPlayerInCreative(player)) {
-                        player.setHeldItem(hand, s == null ? null : s.copy());
+                        player.setHeldItem(hand, s == null ? ItemStackHelper.NULL_STACK : s.copy());
                     }
                     return true;
                 }
@@ -117,21 +113,17 @@ public class FluidHelper {
         return tryFillItem(player, hand, tank instanceof IFluidHandler ? (IFluidHandler) tank : FluidTankWrapper.of(tank), tank.getCapacity());
     }
 
-    @SuppressWarnings("all")
     public static boolean tryFillItem(EntityPlayer player, EnumHand hand, IFluidHandler fluidHandler, int capacity) {
         if (fluidHandler == null) {
             return false;
         }
         ItemStack stack = player.getHeldItem(hand);
-        if (stack == null) {
+        if (!ItemStackHelper.isStackValid(stack)) {
             return false;
         }
         ///////Start
         if (stack.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, null)){
             IFluidHandler item = stack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, null);
-            if (item == null){
-                return false;
-            }
             FluidStack fluid = fluidHandler.drain(capacity, false);
             if (fluid == null){
                 return false;

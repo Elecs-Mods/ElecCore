@@ -42,12 +42,12 @@ import org.apache.logging.log4j.Logger;
 /**
  * Created by Elec332.
  */
-@Mod(modid = ElecCore.MODID, name = ElecCore.MODNAME, dependencies = "required-after:Forge@[12.18.1.2073,);after:forestry;",
-acceptedMinecraftVersions = "[1.10,)", version = ElecCore.ElecCoreVersion, useMetadata = true)
+@Mod(modid = ElecCore.MODID, name = ElecCore.MODNAME, dependencies = "required-after:forge@[13.19.0.2130,);after:forestry;",
+acceptedMinecraftVersions = "[1.11,)", version = ElecCore.ElecCoreVersion, useMetadata = true)
 public class ElecCore implements IModuleController, IElecCoreMod {
 
 	public static final String ElecCoreVersion = "#ELECCORE_VER#";
-	public static final String MODID = "ElecCore";
+	public static final String MODID = "eleccore";
 	public static final String MODNAME = "ElecCore";
 
 	@SidedProxy(clientSide = "elec332.core.proxies.ClientProxy", serverSide = "elec332.core.proxies.CommonProxy")
@@ -139,15 +139,15 @@ public class ElecCore implements IModuleController, IElecCoreMod {
 				ItemStack stack;
 				if (event.getHand() == EnumHand.OFF_HAND){
 					stack = event.getEntityPlayer().getHeldItem(EnumHand.MAIN_HAND);
-					if (stack != null && stack.getItem() instanceof IRightClickCancel && ((IRightClickCancel) stack.getItem()).cancelInteraction(stack)){
+					if (stack.getItem() instanceof IRightClickCancel && ((IRightClickCancel) stack.getItem()).cancelInteraction(stack)){
 						event.setCanceled(true);
 						return;
 					}
 				}
 				stack = event.getItemStack();
-				if (stack != null && stack.getItem() instanceof IRightClickCancel && ((IRightClickCancel) stack.getItem()).cancelInteraction(stack)) {
+				if (stack.getItem() instanceof IRightClickCancel && ((IRightClickCancel) stack.getItem()).cancelInteraction(stack)) {
 					event.setCanceled(true);
-					stack.getItem().onItemUse(stack, event.getEntityPlayer(), event.getWorld(), event.getPos(), event.getHand(), event.getFace(), (float) event.getHitVec().xCoord, (float) event.getHitVec().yCoord, (float) event.getHitVec().zCoord);
+					stack.getItem().onItemUse(event.getEntityPlayer(), event.getWorld(), event.getPos(), event.getHand(), event.getFace(), (float) event.getHitVec().xCoord, (float) event.getHitVec().yCoord, (float) event.getHitVec().zCoord);
 				}
 			}
 

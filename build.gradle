@@ -73,11 +73,20 @@ minecraft {
 }
 
 dependencies {
+
+	//WAILA
 	compile "mcp.mobius.waila:Waila:${config.WAILA_version}"
 	//compile "mcp.mobius.waila:Waila:${config.WAILA_version}"//_${config.minecraft_version}"
+	
+	//JEI
 	deobfCompile "mezz.jei:jei_${config.minecraft_version}:${config.jei_version}"
+	
+	//MCMP
 	deobfCompile "MCMultiPart:MCMultiPart-experimental:${config.mcmp_version}:universal"
-	deobfCompile "net.sengir.forestry:forestry_${config.minecraft_version}:${config.forestry_version}"
+	
+	//Forestry
+	//deobfCompile "net.sengir.forestry:forestry_${config.minecraft_version}:${config.forestry_version}"
+	deobfCompile "net.sengir.forestry:forestry_${config.forestry_version}"
 }
 
 processResources

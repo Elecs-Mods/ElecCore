@@ -39,7 +39,7 @@ public class PlayerHelper {
 
     public static void sendMessageToPlayer(EntityPlayer player, String s){
         try {
-            player.addChatComponentMessage(new TextComponentString(s));
+            player.addChatComponentMessage(new TextComponentString(s), false);
         } catch (NullPointerException e){
             //Null player, whoops
         }

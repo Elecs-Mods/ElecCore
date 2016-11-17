@@ -5,8 +5,11 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.util.NonNullList;
 import net.minecraftforge.oredict.OreDictionary;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,49 +18,36 @@ import java.util.List;
  */
 public class InventoryHelper {
 
-    public static NBTTagCompound writeStacksToNBT(ItemStack[] stacks){
-        NBTTagCompound compound = new NBTTagCompound();
-        if (stacks != null) {
-            NBTTagList nbttaglist = new NBTTagList();
-            for (int i = 0; i < stacks.length; ++i) {
-                if (stacks[i] != null) {
-                    NBTTagCompound tag = new NBTTagCompound();
-                    tag.setByte("Slot", (byte) i);
-                    stacks[i].writeToNBT(tag);
-                    nbttaglist.appendTag(tag);
-                }
-            }
-            compound.setTag("Items", nbttaglist);
-            compound.setInteger("SlotCount", stacks.length);
-        }
-        return compound;
+    public static NonNullList<ItemStack> newItemStackList(int size){
+        return NonNullList.func_191197_a(size, ItemStackHelper.NULL_STACK);
     }
 
-    public static ItemStack[] readStacksFromNBT(NBTTagCompound compound){
-        if (compound.hasKey("SlotCount")) {
-            ItemStack[] inventoryContents = new ItemStack[compound.getInteger("SlotCount")];
-            NBTTagList nbttaglist = compound.getTagList("Items", 10);
-            for (int i = 0; i < nbttaglist.tagCount(); ++i) {
-                NBTTagCompound tag = nbttaglist.getCompoundTagAt(i);
-                int j = tag.getByte("Slot") & 255;
-                if (j >= 0 && j < inventoryContents.length) {
-                    inventoryContents[j] = ItemStack.loadItemStackFromNBT(tag);
-                }
-            }
-            return inventoryContents;
-        }
-        return null;
+    @Nonnull
+    public static NonNullList<ItemStack> readItemsFromNBT(@Nonnull NBTTagCompound data){
+        NonNullList<ItemStack> ret = InventoryHelper.newItemStackList(0);
+        readItemsFromNBT(data, ret);
+        return ret;
     }
 
-    public static boolean isValidStack(ItemStack stack){
-        return stack != null && stack.getItem() != null;
+    public static void readItemsFromNBT(@Nonnull NBTTagCompound data, @Nonnull NonNullList<ItemStack> items){
+        net.minecraft.inventory.ItemStackHelper.func_191283_b(data, items);
+    }
+
+    public static NBTTagCompound writeItemsToNBT(@Nonnull NonNullList<ItemStack> items){
+        return writeItemsToNBT(new NBTTagCompound(), items);
+    }
+
+    public static NBTTagCompound writeItemsToNBT(@Nonnull NBTTagCompound tag, @Nonnull NonNullList<ItemStack> items){
+        return net.minecraft.inventory.ItemStackHelper.func_191282_a(tag, items);
     }
 
     /*
      * I don't want to depend on MC methods where possible.
      */
-    public static ItemStack copyStack(ItemStack stack){
-        return stack == null ? null : stack.copy();
+    @Nonnull
+    @Deprecated
+    public static ItemStack copyItemStack(@Nullable ItemStack stack){
+        return ItemStackHelper.copyItemStack(stack);
     }
 
     public static boolean addItemToInventory(IInventory inventory, ItemStack itemstack) {
@@ -148,14 +138,14 @@ public class InventoryHelper {
             return;
         }
         for (int i = 0; i < list.size(); i++) {
-            inventory.setInventorySlotContents(i, ItemStack.copyItemStack(list.get(i)));
+            inventory.setInventorySlotContents(i, copyItemStack(list.get(i)));
         }
     }
 
     public static List<ItemStack> storeContents(IInventory inventory) {
         List<ItemStack> copy = new ArrayList<ItemStack>(inventory.getSizeInventory());
         for (int i = 0; i < inventory.getSizeInventory(); i++) {
-            copy.add(i, ItemStack.copyItemStack(inventory.getStackInSlot(i)));
+            copy.add(i, copyItemStack(inventory.getStackInSlot(i)));
         }
         return copy;
     }

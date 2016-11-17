@@ -193,7 +193,7 @@ public enum  SchematicHelper {
             public TileEntity getTileEntity(BlockPos pos) {
                 NBTTagCompound tag = schematic.getTileData(pos.getX(), pos.getY(), pos.getZ());
                 if (tag != null){
-                    TileEntity.func_190200_a(null, tag);
+                    TileEntity.create(null, tag);
                 }
                 return null;
             }
@@ -213,8 +213,9 @@ public enum  SchematicHelper {
                 throw new UnsupportedOperationException();
             }
 
+
             @Override
-            public Biome getBiomeGenForCoords(BlockPos pos) {
+            public Biome getBiome(BlockPos pos) {
                 throw new UnsupportedOperationException();
             }
 

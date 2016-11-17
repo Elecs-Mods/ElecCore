@@ -39,7 +39,7 @@ public class TileEntityBase extends TileEntity implements IElecCoreNetworkTile {
     }
 
     public void notifyNeighborsOfChange(){
-        worldObj.notifyNeighborsOfStateChange(pos, blockType);
+        WorldHelper.notifyNeighborsOfStateChange(worldObj, pos, blockType);
     }
 
     //NETWORK///////////////////////

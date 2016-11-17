@@ -96,7 +96,7 @@ public class TileBase extends TileEntityBase implements IElecCoreNetworkTile {
     @Deprecated
     public void notifyNeighboursOfDataChange(){
         this.markDirty();
-        this.worldObj.notifyNeighborsOfStateChange(getPos(), blockType);
+        WorldHelper.notifyNeighborsOfStateChange(worldObj, getPos(), blockType);
     }
 
     @SuppressWarnings("deprecation")
@@ -137,6 +137,11 @@ public class TileBase extends TileEntityBase implements IElecCoreNetworkTile {
 
     }
 
+    public boolean onBlockActivated(IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ) {
+        return onBlockActivated(state, player, hand, player.getHeldItem(hand), side, hitX, hitY, hitZ);
+    }
+
+    @Deprecated
     public boolean onBlockActivated(IBlockState state, EntityPlayer player, EnumHand hand, ItemStack stack, EnumFacing side, float hitX, float hitY, float hitZ) {
         return false;
     }
