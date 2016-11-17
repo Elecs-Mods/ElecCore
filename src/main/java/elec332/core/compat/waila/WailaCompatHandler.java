@@ -4,6 +4,7 @@ import elec332.core.api.info.IInfoDataAccessorBlock;
 import elec332.core.api.info.IInformation;
 import elec332.core.api.info.InfoMod;
 import elec332.core.api.module.ElecModule;
+import elec332.core.compat.ModNames;
 import elec332.core.handler.InformationHandler;
 import elec332.core.main.ElecCore;
 import elec332.core.main.ElecCoreRegistrar;
@@ -38,7 +39,7 @@ import java.util.Map;
  * Created by Elec332 on 15-8-2015.
  */
 @SuppressWarnings("deprecation")
-@ElecModule(owner = ElecCore.MODID, name = "WailaCompat", modDependencies = "Waila")
+@ElecModule(owner = ElecCore.MODID, name = "WailaCompat", modDependencies = ModNames.WAILA)
 public class WailaCompatHandler implements IWailaDataProvider {
 
     @ElecModule.Instance

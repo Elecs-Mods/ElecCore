@@ -6,6 +6,7 @@ import elec332.core.api.module.IModuleController;
 import elec332.core.api.network.ModNetworkHandler;
 import elec332.core.api.registry.ISingleRegister;
 import elec332.core.api.util.IRightClickCancel;
+import elec332.core.compat.ModNames;
 import elec332.core.effects.AbilityHandler;
 import elec332.core.grid.internal.GridEventHandler;
 import elec332.core.grid.internal.GridEventInputHandler;
@@ -19,20 +20,15 @@ import elec332.core.network.packets.PacketWidgetDataToServer;
 import elec332.core.proxies.CommonProxy;
 import elec332.core.server.SaveHandler;
 import elec332.core.server.ServerHelper;
-import elec332.core.util.FileHelper;
-import elec332.core.util.LoadTimer;
-import elec332.core.util.MCModInfo;
-import elec332.core.util.OredictHelper;
+import elec332.core.util.*;
 import net.minecraft.item.ItemStack;
 import net.minecraft.launchwrapper.Launch;
 import net.minecraft.util.EnumHand;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
-import net.minecraftforge.fml.common.LoaderState;
-import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.*;
 import net.minecraftforge.fml.common.Mod.EventHandler;
-import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.*;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -42,13 +38,14 @@ import org.apache.logging.log4j.Logger;
 /**
  * Created by Elec332.
  */
-@Mod(modid = ElecCore.MODID, name = ElecCore.MODNAME, dependencies = "required-after:forge@[13.19.0.2130,);after:forestry;",
+@Mod(modid = ElecCore.MODID, name = ElecCore.MODNAME, dependencies = "after:"+ ModNames.FORESTRY,
 acceptedMinecraftVersions = "[1.11,)", version = ElecCore.ElecCoreVersion, useMetadata = true)
 public class ElecCore implements IModuleController, IElecCoreMod {
 
 	public static final String ElecCoreVersion = "#ELECCORE_VER#";
 	public static final String MODID = "eleccore";
 	public static final String MODNAME = "ElecCore";
+	public static final String FORGE_VERSION = "13.19.0.2131";
 
 	@SidedProxy(clientSide = "elec332.core.proxies.ClientProxy", serverSide = "elec332.core.proxies.CommonProxy")
 	public static CommonProxy proxy;
@@ -71,6 +68,15 @@ public class ElecCore implements IModuleController, IElecCoreMod {
 	@EventHandler
 	public void construction(FMLConstructionEvent event){
 		logger = LogManager.getLogger("ElecCore");
+        for (ModContainer mc : FMLUtil.getLoader().getActiveModList()){
+			if (mc instanceof FMLModContainer){
+                ModEventHooks hook = new ModEventHooks((FMLModContainer) mc);
+				FMLUtil.registerToModBus((FMLModContainer) mc, hook);
+                if (mc.getMod() == this){
+                    hook.onConstuct(event);
+                }
+			}
+		}
 		asmDataProcessor = new ElecCoreDiscoverer();
 		asmDataProcessor.identify(event.getASMHarvestedData());
 		asmDataProcessor.process(LoaderState.CONSTRUCTING);
@@ -204,6 +210,11 @@ public class ElecCore implements IModuleController, IElecCoreMod {
 	@Override
 	public boolean isModuleEnabled(String moduleName) {
 		return true;
+	}
+
+	@Override
+	public String getRequiredForgeVersion() {
+		return FORGE_VERSION;
 	}
 
 	public void setModEventHandler(ModEventHandler handler){

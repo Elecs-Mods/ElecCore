@@ -9,6 +9,10 @@ import net.minecraft.command.ICommand;
  */
 public interface IElecCoreMod {
 
+    default public String getRequiredForgeVersion(){
+        return null;
+    }
+
     default public void registerServerCommands(ISingleRegister<ICommand> commandregistry){
     }
 

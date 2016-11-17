@@ -2,6 +2,7 @@ package elec332.core.util;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ListMultimap;
+import com.google.common.eventbus.EventBus;
 import net.minecraftforge.fml.common.*;
 import net.minecraftforge.fml.common.discovery.ASMDataTable;
 import net.minecraftforge.fml.common.event.FMLEvent;
@@ -79,6 +80,14 @@ public class FMLUtil {
         }
     }
 
+    public static void registerToModBus(FMLModContainer modContainer, Object o){
+        try {
+            ((EventBus)eventBus.get(modContainer)).register(o);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     @Nonnull
     public static LoadController getLoadController(){
         if (lc == null){
@@ -105,11 +114,14 @@ public class FMLUtil {
 
     private static ASMDataTable dataTable;
     private static LoadController lc;
-    private static final Field eventMethods;
+    private static final Field eventMethods, eventBus;
 
     static {
         try {
             eventMethods = FMLModContainer.class.getDeclaredField("eventMethods");
+            eventMethods.setAccessible(true);
+            eventBus = FMLModContainer.class.getDeclaredField("eventBus");
+            eventBus.setAccessible(true);
         } catch (Exception e){
             throw new RuntimeException(e);
         }

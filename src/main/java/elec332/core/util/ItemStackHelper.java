@@ -4,7 +4,6 @@ import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.NonNullList;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -22,6 +21,10 @@ public class ItemStackHelper {
     @Nonnull
     public static ItemStack copyItemStack(@Nullable ItemStack stack){
         return stack == null || stack == NULL_STACK ? NULL_STACK : stack.copy();
+    }
+
+    public static ItemStack loadItemStackFromNBT(NBTTagCompound tag){
+        return new ItemStack(tag);
     }
 
     public static ItemStack getAndSplit(List<ItemStack> stacks, int index, int amount) {

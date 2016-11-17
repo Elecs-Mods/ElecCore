@@ -2,9 +2,6 @@ package elec332.core.handler;
 
 import elec332.core.api.discovery.ASMDataProcessor;
 import net.minecraftforge.fml.common.LoaderState;
-import net.minecraftforge.fml.common.discovery.ASMDataTable;
-
-import java.util.function.Consumer;
 
 /**
  * Created by Elec332 on 7-10-2016.
