@@ -16,7 +16,7 @@ import java.util.List;
 public class ItemStackHelper {
 
     public static boolean isStackValid(ItemStack stack){
-        return stack != null && (stack == NULL_STACK || stack.getItem() == NULL_ITEM);
+        return stack != null && !(stack == NULL_STACK || stack.getItem() == NULL_ITEM);
     }
 
     @Nonnull
