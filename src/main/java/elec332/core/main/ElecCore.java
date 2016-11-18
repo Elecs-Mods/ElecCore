@@ -37,8 +37,8 @@ import org.apache.logging.log4j.Logger;
 /**
  * Created by Elec332.
  */
-@Mod(modid = ElecCore.MODID, name = ElecCore.MODNAME, dependencies = "required-after:forge@[12.18.1.2073,);after:forestry;",
-acceptedMinecraftVersions = "[1.10,)", version = ElecCore.ElecCoreVersion, useMetadata = true)
+@Mod(modid = ElecCore.MODID, name = ElecCore.MODNAME, dependencies = "required-after:Forge@[12.18.1.2073,);after:forestry;",
+acceptedMinecraftVersions = "[1.10, 1.10.2]", version = ElecCore.ElecCoreVersion, useMetadata = true)
 public class ElecCore implements IModuleController, IElecCoreMod {
 
 	public static final String ElecCoreVersion = "#ELECCORE_VER#";
