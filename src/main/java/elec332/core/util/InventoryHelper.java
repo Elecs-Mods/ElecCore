@@ -21,13 +21,6 @@ public class InventoryHelper {
         return NonNullList.func_191197_a(size, ItemStackHelper.NULL_STACK);
     }
 
-    @Nonnull
-    public static NonNullList<ItemStack> readItemsFromNBT(@Nonnull NBTTagCompound data){
-        NonNullList<ItemStack> ret = InventoryHelper.newItemStackList(0);
-        readItemsFromNBT(data, ret);
-        return ret;
-    }
-
     public static void readItemsFromNBT(@Nonnull NBTTagCompound data, @Nonnull NonNullList<ItemStack> items){
         net.minecraft.inventory.ItemStackHelper.func_191283_b(data, items);
     }
@@ -124,7 +117,7 @@ public class InventoryHelper {
 
     public static int getEmptySlot(IInventory inventory, int start, int end) {
         for (int i = start; i < end; i++) {
-            if (inventory.getStackInSlot(i) == null) {
+            if (!ItemStackHelper.isStackValid(inventory.getStackInSlot(i))) {
                 return i;
             }
         }
@@ -137,14 +130,14 @@ public class InventoryHelper {
             return;
         }
         for (int i = 0; i < list.size(); i++) {
-            inventory.setInventorySlotContents(i, copyItemStack(list.get(i)));
+            inventory.setInventorySlotContents(i, ItemStackHelper.copyItemStack(list.get(i)));
         }
     }
 
     public static List<ItemStack> storeContents(IInventory inventory) {
         List<ItemStack> copy = new ArrayList<ItemStack>(inventory.getSizeInventory());
         for (int i = 0; i < inventory.getSizeInventory(); i++) {
-            copy.add(i, copyItemStack(inventory.getStackInSlot(i)));
+            copy.add(i, ItemStackHelper.copyItemStack(inventory.getStackInSlot(i)));
         }
         return copy;
     }
@@ -185,7 +178,7 @@ public class InventoryHelper {
         ArrayList<Integer> ret = new ArrayList<Integer>();
         for(int i = 0; i < inventory.getSizeInventory(); i++) {
             ItemStack stackInSlot = inventory.getStackInSlot(i);
-            if(stackInSlot != null && stack != null && stackInSlot.getItem() == stack.getItem()) {
+            if(ItemStackHelper.isStackValid(stackInSlot) && stack != null && stackInSlot.getItem() == stack.getItem()) {
                 if (stackInSlot.getItemDamage() == stack.getItemDamage() || stack.getItemDamage() == OreDictionary.WILDCARD_VALUE)
                     ret.add(i);
                 if (!stackInSlot.getItem().getHasSubtypes() && !stack.getItem().getHasSubtypes())
@@ -200,7 +193,7 @@ public class InventoryHelper {
     public static int getFirstSlotWithItemStackNoNBT(IInventory inventory, ItemStack stack){
         for(int i = 0; i < inventory.getSizeInventory(); ++i) {
             ItemStack stackInSlot = inventory.getStackInSlot(i);
-            if(stackInSlot != null && stack != null && stackInSlot.getItem() == stack.getItem()) {
+            if(ItemStackHelper.isStackValid(stackInSlot) && stack != null && stackInSlot.getItem() == stack.getItem()) {
                 if(stackInSlot.getItemDamage() == stack.getItemDamage() || stack.getItemDamage() == OreDictionary.WILDCARD_VALUE) {
                     return i;
                 }

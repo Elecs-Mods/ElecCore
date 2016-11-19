@@ -13,7 +13,7 @@ public interface IElecPacketRegistry extends IPacketRegistry {
 
     @SuppressWarnings("unchecked")
     default public <T extends AbstractPacket> void registerServerPacket(Class<T> packetClass){
-        registerPacket((Class<? extends IMessageHandler<T, IMessage>>)packetClass, packetClass, Side.CLIENT);
+        registerPacket((Class<? extends IMessageHandler<T, IMessage>>)packetClass, packetClass, Side.SERVER);
     }
 
     @SuppressWarnings("unchecked")

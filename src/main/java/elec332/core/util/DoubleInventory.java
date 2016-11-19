@@ -198,22 +198,22 @@ public class DoubleInventory<I1 extends IInventory, I2 extends IInventory> imple
         if (list.size() != totalSize)
             throw new IllegalArgumentException();
         for (int i = 0; i < list.size(); i++) {
-            setInventorySlotContents(i, InventoryHelper.copyItemStack(list.get(i)));
+            setInventorySlotContents(i, ItemStackHelper.copyItemStack(list.get(i)));
         }
     }
 
     public void copyTo(I1 i1, I2 i2){
         for (int i = 0; i < size1; i++) {
-            i1.setInventorySlotContents(i, InventoryHelper.copyItemStack(inventory1.getStackInSlot(i)));
+            i1.setInventorySlotContents(i, ItemStackHelper.copyItemStack(inventory1.getStackInSlot(i)));
         }
         for (int i = 0; i < size2; i++) {
-            i2.setInventorySlotContents(i, InventoryHelper.copyItemStack(inventory2.getStackInSlot(i)));
+            i2.setInventorySlotContents(i, ItemStackHelper.copyItemStack(inventory2.getStackInSlot(i)));
         }
     }
 
     public void copyFrom(DoubleInventory<I1, I2> inventory){
         for (int i = 0; i < getSizeInventory(); i++) {
-            setInventorySlotContents(i, InventoryHelper.copyItemStack(inventory.getStackInSlot(i)));
+            setInventorySlotContents(i, ItemStackHelper.copyItemStack(inventory.getStackInSlot(i)));
         }
     }
 

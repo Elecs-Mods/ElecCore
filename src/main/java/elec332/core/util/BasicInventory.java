@@ -183,7 +183,8 @@ public class BasicInventory implements IInventory {
     }
 
     public void readFromNBT(NBTTagCompound compound) {
-        this.inventoryContents = InventoryHelper.readItemsFromNBT(compound);
+        this.inventoryContents = InventoryHelper.newItemStackList(getSizeInventory());
+        InventoryHelper.readItemsFromNBT(compound, this.inventoryContents);
     }
 
     public NBTTagCompound writeToNBT(NBTTagCompound compound) {
