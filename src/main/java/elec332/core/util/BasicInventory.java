@@ -193,7 +193,7 @@ public class BasicInventory implements IInventory {
         }
     }
 
-    public void writeToNBT(NBTTagCompound compound) {
+    public NBTTagCompound writeToNBT(NBTTagCompound compound) {
         NBTTagList nbttaglist = new NBTTagList();
         for(int i = 0; i < this.inventoryContents.length; ++i) {
             if(this.inventoryContents[i] != null) {
@@ -204,6 +204,7 @@ public class BasicInventory implements IInventory {
             }
         }
         compound.setTag("Items", nbttaglist);
+        return compound;
     }
 
     public void copyTo(IInventory inv){
