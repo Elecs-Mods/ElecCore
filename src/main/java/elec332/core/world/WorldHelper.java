@@ -7,11 +7,13 @@ import elec332.core.util.NBTHelper;
 import elec332.core.util.PlayerHelper;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.effect.EntityLightningBolt;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.RayTraceResult;
@@ -22,11 +24,17 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.ForgeChunkManager;
 
+import javax.annotation.Nullable;
+
 /**
  * Created by Elec332 on 20-3-2015.
  */
 @SuppressWarnings("unused")
 public class WorldHelper {
+
+    public static boolean canBlockBePlaced(World world, Block block, BlockPos pos, boolean b, EnumFacing facing, @Nullable Entity entity){
+        return world.canBlockBePlaced(block, pos, b, facing, entity, null);
+    }
 
     public static ChunkPos chunkCoordFromBlockPos(BlockPos pos){
         return new ChunkPos(pos.getX() >> 4, pos.getZ() >> 4);

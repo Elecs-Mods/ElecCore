@@ -5,6 +5,7 @@ import elec332.core.api.data.IExternalSaveHandler;
 import elec332.core.api.module.IModuleController;
 import elec332.core.api.network.ModNetworkHandler;
 import elec332.core.api.registry.ISingleRegister;
+import elec332.core.api.util.IDependencyHandler;
 import elec332.core.api.util.IRightClickCancel;
 import elec332.core.effects.AbilityHandler;
 import elec332.core.grid.internal.GridEventHandler;
@@ -39,7 +40,7 @@ import org.apache.logging.log4j.Logger;
  */
 @Mod(modid = ElecCore.MODID, name = ElecCore.MODNAME, dependencies = "required-after:Forge@[12.18.1.2073,);after:forestry;",
 acceptedMinecraftVersions = "[1.10, 1.10.2]", version = ElecCore.ElecCoreVersion, useMetadata = true)
-public class ElecCore implements IModuleController, IElecCoreMod {
+public class ElecCore implements IModuleController, IElecCoreMod, IDependencyHandler {
 
 	public static final String ElecCoreVersion = "#ELECCORE_VER#";
 	public static final String MODID = "eleccore";
@@ -77,12 +78,12 @@ public class ElecCore implements IModuleController, IElecCoreMod {
 		}
 		asmDataProcessor = new ElecCoreDiscoverer();
 		asmDataProcessor.identify(event.getASMHarvestedData());
+		ElecModHandler.identifyMods();
 		asmDataProcessor.process(LoaderState.CONSTRUCTING);
 	}
 
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
-		ElecModHandler.identifyMods();
 		ElecModHandler.initAnnotations(event.getAsmData());
 		loadTimer = new LoadTimer(logger, MODNAME);
 		loadTimer.startPhase(event);

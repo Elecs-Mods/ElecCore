@@ -4,7 +4,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
@@ -19,7 +18,7 @@ public class BasicInventory implements IInventory {
     public static BasicInventory copyOf(IInventory inventory){
         BasicInventory ret = new BasicInventory(inventory.getName(), inventory.getSizeInventory());
         for (int i = 0; i < inventory.getSizeInventory(); i++) {
-            ret.setInventorySlotContents(i, InventoryHelper.copyStack(inventory.getStackInSlot(i)));
+            ret.setInventorySlotContents(i, ItemStackHelper.copyItemStack(inventory.getStackInSlot(i)));
         }
         return ret;
     }
@@ -32,59 +31,57 @@ public class BasicInventory implements IInventory {
     public BasicInventory(String name, int slotsCount) {
         this.inventoryTitle = name;
         this.slotsCount = slotsCount;
-        this.inventoryContents = new ItemStack[slotsCount];
+        this.inventoryContents = InventoryHelper.newItemStackList(slotsCount);
     }
 
     private String inventoryTitle;
     private int slotsCount;
-    protected ItemStack[] inventoryContents;
+    protected MinecraftList<ItemStack> inventoryContents;
     private TileEntity tile;
 
     @Override
+    @Nonnull
     public ItemStack getStackInSlot(int slotID) {
-        return slotID >= 0 && slotID < this.inventoryContents.length ? this.inventoryContents[slotID] : null;
+        return slotID >= 0 && slotID < this.inventoryContents.size() ? this.inventoryContents.get(slotID) : ItemStackHelper.NULL_STACK;
     }
 
     @Override
+    @Nonnull
     public ItemStack decrStackSize(int slotID, int size) {
-        if (this.inventoryContents[slotID] != null) {
-            ItemStack itemstack;
-            if (this.inventoryContents[slotID].stackSize <= size) {
-                itemstack = this.inventoryContents[slotID];
-                setInventorySlotContents(slotID, null);
+        ItemStack itemstack = getStackInSlot(slotID);
+        if (ItemStackHelper.isStackValid(itemstack)) {
+            if (itemstack.stackSize <= size) {
+                setInventorySlotContents(slotID, ItemStackHelper.NULL_STACK);
                 this.markDirty();
                 return itemstack;
             } else {
-                itemstack = this.inventoryContents[slotID].splitStack(size);
-                if (this.inventoryContents[slotID].stackSize == 0) {
-                    setInventorySlotContents(slotID, null);
+                itemstack = itemstack.splitStack(size);
+                if (getStackInSlot(slotID).stackSize == 0) {
+                    setInventorySlotContents(slotID, ItemStackHelper.NULL_STACK);
                 }
                 this.markDirty();
                 return itemstack;
             }
-        }
-        else {
-            return null;
+        } else {
+            return ItemStackHelper.NULL_STACK;
         }
     }
 
     @Override
+    @Nonnull
     public ItemStack removeStackFromSlot(int slotID) {
-        //if (this.inventoryContents[slotID] != null) {
-        //    ItemStack itemstack = this.inventoryContents[slotID];
-        //    this.inventoryContents[slotID] = null;
-        ///   return itemstack;
-        //}
-        //else {
-        return null;
-        //
+        return ItemStackHelper.getAndRemove(inventoryContents, slotID);
     }
 
     @Override
-    public void setInventorySlotContents(int slotID, ItemStack stack) {
-        if (stack == null || isItemValidForSlot(slotID, stack)) {
-            this.inventoryContents[slotID] = stack;
-            if (stack != null && stack.stackSize > this.getInventoryStackLimit()) {
+    public void setInventorySlotContents(int slotID, @Nonnull ItemStack stack) {
+        if (!ItemStackHelper.isStackValid(stack)){
+            inventoryContents.set(slotID, ItemStackHelper.NULL_STACK);
+            return;
+        }
+        if (isItemValidForSlot(slotID, stack)) {
+            inventoryContents.set(slotID, stack);
+            if (stack.stackSize > this.getInventoryStackLimit()) {
                 stack.stackSize = this.getInventoryStackLimit();
             }
             this.markDirty();
@@ -95,7 +92,7 @@ public class BasicInventory implements IInventory {
         if (!isItemValidForSlot(i, itemStack))
             return false;
         ItemStack stackInSlot = getStackInSlot(i);
-        if (stackInSlot == null)
+        if (!ItemStackHelper.isStackValid(stackInSlot))
             return true;
         if (itemStack.getItem() == stackInSlot.getItem() && itemStack.getItemDamage() == stackInSlot.getItemDamage()){
             int j = itemStack.stackSize+stackInSlot.stackSize;
@@ -176,35 +173,16 @@ public class BasicInventory implements IInventory {
 
     @Override
     public void clear() {
-        for (int i = 0; i < inventoryContents.length; i++) {
-            setInventorySlotContents(i, null);
-        }
+        inventoryContents.clear();
     }
 
     public void readFromNBT(NBTTagCompound compound) {
-        NBTTagList nbttaglist = compound.getTagList("Items", 10);
-        this.inventoryContents = new ItemStack[this.getSizeInventory()];
-        for(int i = 0; i < nbttaglist.tagCount(); ++i) {
-            NBTTagCompound tag = nbttaglist.getCompoundTagAt(i);
-            int j = tag.getByte("Slot") & 255;
-            if(j >= 0 && j < this.inventoryContents.length) {
-                this.inventoryContents[j] = ItemStack.loadItemStackFromNBT(tag);
-            }
-        }
+        this.inventoryContents = InventoryHelper.newItemStackList(getSizeInventory());
+        InventoryHelper.readItemsFromNBT(compound, this.inventoryContents);
     }
 
     public NBTTagCompound writeToNBT(NBTTagCompound compound) {
-        NBTTagList nbttaglist = new NBTTagList();
-        for(int i = 0; i < this.inventoryContents.length; ++i) {
-            if(this.inventoryContents[i] != null) {
-                NBTTagCompound tag = new NBTTagCompound();
-                tag.setByte("Slot", (byte)i);
-                this.inventoryContents[i].writeToNBT(tag);
-                nbttaglist.appendTag(tag);
-            }
-        }
-        compound.setTag("Items", nbttaglist);
-        return compound;
+        return InventoryHelper.writeItemsToNBT(compound, inventoryContents);
     }
 
     public void copyTo(IInventory inv){
@@ -212,9 +190,9 @@ public class BasicInventory implements IInventory {
             throw new IllegalArgumentException();
         }
         for (int i = 0; i < inv.getSizeInventory(); i++) {
-            ItemStack stack = null;
+            ItemStack stack = ItemStackHelper.NULL_STACK;
             if (i < getSizeInventory()){
-                stack = InventoryHelper.copyStack(getStackInSlot(i));
+                stack = ItemStackHelper.copyItemStack(getStackInSlot(i));
             }
             inv.setInventorySlotContents(i, stack);
         }

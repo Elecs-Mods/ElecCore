@@ -10,7 +10,6 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.Container;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
@@ -33,11 +32,11 @@ public abstract class AbstractMultiBlockTile extends TileBase implements IMultiB
     private MultiBlockData multiBlockData;
 
     @Override
-    public boolean onBlockActivated(IBlockState state, EntityPlayer player, EnumHand hand, ItemStack stack, EnumFacing side, float hitX, float hitY, float hitZ) {
-        return getMultiBlock() == null ? onBlockActivatedBy(state, player, hand, stack, side, hitX, hitY, hitZ) : getMultiBlock().onAnyBlockActivated(player, hand, stack, pos, state);
+    public boolean onBlockActivated(IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ) {
+        return getMultiBlock() == null ? onBlockActivatedBy(state, player, hand, side, hitX, hitY, hitZ) : getMultiBlock().onAnyBlockActivated(player, hand, pos, state);
     }
 
-    public boolean onBlockActivatedBy(IBlockState state, EntityPlayer player, EnumHand hand, ItemStack stack, EnumFacing side, float hitX, float hitY, float hitZ){
+    public boolean onBlockActivatedBy(IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ){
         return false;
     }
 

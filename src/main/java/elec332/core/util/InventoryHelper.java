@@ -7,6 +7,8 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraftforge.oredict.OreDictionary;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,49 +17,51 @@ import java.util.List;
  */
 public class InventoryHelper {
 
-    public static NBTTagCompound writeStacksToNBT(ItemStack[] stacks){
-        NBTTagCompound compound = new NBTTagCompound();
-        if (stacks != null) {
-            NBTTagList nbttaglist = new NBTTagList();
-            for (int i = 0; i < stacks.length; ++i) {
-                if (stacks[i] != null) {
-                    NBTTagCompound tag = new NBTTagCompound();
-                    tag.setByte("Slot", (byte) i);
-                    stacks[i].writeToNBT(tag);
-                    nbttaglist.appendTag(tag);
-                }
-            }
-            compound.setTag("Items", nbttaglist);
-            compound.setInteger("SlotCount", stacks.length);
-        }
-        return compound;
+    public static MinecraftList<ItemStack> newItemStackList(int size){
+        return MinecraftList.create(size, ItemStackHelper.NULL_STACK);
     }
 
-    public static ItemStack[] readStacksFromNBT(NBTTagCompound compound){
-        if (compound.hasKey("SlotCount")) {
-            ItemStack[] inventoryContents = new ItemStack[compound.getInteger("SlotCount")];
-            NBTTagList nbttaglist = compound.getTagList("Items", 10);
-            for (int i = 0; i < nbttaglist.tagCount(); ++i) {
-                NBTTagCompound tag = nbttaglist.getCompoundTagAt(i);
-                int j = tag.getByte("Slot") & 255;
-                if (j >= 0 && j < inventoryContents.length) {
-                    inventoryContents[j] = ItemStack.loadItemStackFromNBT(tag);
-                }
+    public static void readItemsFromNBT(@Nonnull NBTTagCompound data, @Nonnull MinecraftList<ItemStack> items){
+        items.clear();
+        NBTTagList nbttaglist = data.getTagList("Items", 10);
+
+        for (int i = 0; i < nbttaglist.tagCount(); ++i) {
+            NBTTagCompound nbttagcompound = nbttaglist.getCompoundTagAt(i);
+            int j = nbttagcompound.getByte("Slot") & 255;
+
+            if (j >= 0 && j < items.size()) {
+                items.set(j, ItemStack.loadItemStackFromNBT(nbttagcompound));
             }
-            return inventoryContents;
         }
-        return null;
     }
 
-    public static boolean isValidStack(ItemStack stack){
-        return stack != null && stack.getItem() != null;
+    public static NBTTagCompound writeItemsToNBT(@Nonnull MinecraftList<ItemStack> items){
+        return writeItemsToNBT(new NBTTagCompound(), items);
+    }
+
+    public static NBTTagCompound writeItemsToNBT(@Nonnull NBTTagCompound tag, @Nonnull MinecraftList<ItemStack> items){
+        NBTTagList nbttaglist = new NBTTagList();
+
+        for (int i = 0; i < items.size(); ++i) {
+            ItemStack itemstack = items.get(i);
+            if (ItemStackHelper.isStackValid(itemstack)) {
+                NBTTagCompound nbttagcompound = new NBTTagCompound();
+                nbttagcompound.setByte("Slot", (byte)i);
+                itemstack.writeToNBT(nbttagcompound);
+                nbttaglist.appendTag(nbttagcompound);
+            }
+        }
+        tag.setTag("Items", nbttaglist);
+        return tag;
     }
 
     /*
      * I don't want to depend on MC methods where possible.
      */
-    public static ItemStack copyStack(ItemStack stack){
-        return stack == null ? null : stack.copy();
+    @Nonnull
+    @Deprecated
+    public static ItemStack copyItemStack(@Nullable ItemStack stack){
+        return ItemStackHelper.copyItemStack(stack);
     }
 
     public static boolean addItemToInventory(IInventory inventory, ItemStack itemstack) {
@@ -135,7 +139,7 @@ public class InventoryHelper {
 
     public static int getEmptySlot(IInventory inventory, int start, int end) {
         for (int i = start; i < end; i++) {
-            if (inventory.getStackInSlot(i) == null) {
+            if (!ItemStackHelper.isStackValid(inventory.getStackInSlot(i))) {
                 return i;
             }
         }
@@ -148,14 +152,14 @@ public class InventoryHelper {
             return;
         }
         for (int i = 0; i < list.size(); i++) {
-            inventory.setInventorySlotContents(i, ItemStack.copyItemStack(list.get(i)));
+            inventory.setInventorySlotContents(i, ItemStackHelper.copyItemStack(list.get(i)));
         }
     }
 
     public static List<ItemStack> storeContents(IInventory inventory) {
         List<ItemStack> copy = new ArrayList<ItemStack>(inventory.getSizeInventory());
         for (int i = 0; i < inventory.getSizeInventory(); i++) {
-            copy.add(i, ItemStack.copyItemStack(inventory.getStackInSlot(i)));
+            copy.add(i, ItemStackHelper.copyItemStack(inventory.getStackInSlot(i)));
         }
         return copy;
     }
@@ -196,7 +200,7 @@ public class InventoryHelper {
         ArrayList<Integer> ret = new ArrayList<Integer>();
         for(int i = 0; i < inventory.getSizeInventory(); i++) {
             ItemStack stackInSlot = inventory.getStackInSlot(i);
-            if(stackInSlot != null && stack != null && stackInSlot.getItem() == stack.getItem()) {
+            if(ItemStackHelper.isStackValid(stackInSlot) && stack != null && stackInSlot.getItem() == stack.getItem()) {
                 if (stackInSlot.getItemDamage() == stack.getItemDamage() || stack.getItemDamage() == OreDictionary.WILDCARD_VALUE)
                     ret.add(i);
                 if (!stackInSlot.getItem().getHasSubtypes() && !stack.getItem().getHasSubtypes())
@@ -211,7 +215,7 @@ public class InventoryHelper {
     public static int getFirstSlotWithItemStackNoNBT(IInventory inventory, ItemStack stack){
         for(int i = 0; i < inventory.getSizeInventory(); ++i) {
             ItemStack stackInSlot = inventory.getStackInSlot(i);
-            if(stackInSlot != null && stack != null && stackInSlot.getItem() == stack.getItem()) {
+            if(ItemStackHelper.isStackValid(stackInSlot) && stack != null && stackInSlot.getItem() == stack.getItem()) {
                 if(stackInSlot.getItemDamage() == stack.getItemDamage() || stack.getItemDamage() == OreDictionary.WILDCARD_VALUE) {
                     return i;
                 }

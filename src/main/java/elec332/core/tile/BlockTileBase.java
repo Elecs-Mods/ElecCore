@@ -29,7 +29,7 @@ import java.util.Random;
  * Created by Elec332 on 30-4-2015.
  */
 @SuppressWarnings("deprecation")
-public class BlockTileBase extends Block implements IWrenchable, ITileEntityProvider {
+public class BlockTileBase extends AbstractBlock implements IWrenchable, ITileEntityProvider {
 
     public BlockTileBase(Material mat, Class<? extends TileEntity> tileClass, String blockName, String modID) {
         this(mat, tileClass, new ResourceLocation(modID.toLowerCase(), blockName.toLowerCase()));
@@ -76,12 +76,12 @@ public class BlockTileBase extends Block implements IWrenchable, ITileEntityProv
     }
 
     @Override
-    public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, ItemStack stack, EnumFacing side, float hitX, float hitY, float hitZ) {
+    public boolean onBlockActivated(World world, BlockPos pos, EntityPlayer player, EnumHand hand, IBlockState state, EnumFacing side, float hitX, float hitY, float hitZ) {
         TileEntity tile = WorldHelper.getTileAt(world, pos);
         if (tile instanceof TileBase) {
-            return ((TileBase) tile).onBlockActivated(state, player, hand, stack, side, hitX, hitY, hitZ);
+            return ((TileBase) tile).onBlockActivated(state, player, hand, side, hitX, hitY, hitZ);
         }
-        return super.onBlockActivated(world, pos, state, player, hand, stack, side, hitX, hitY, hitZ);
+        return super.onBlockActivated(world, pos, player, hand, state, side, hitX, hitY, hitZ);
     }
 
     @Override
@@ -127,11 +127,11 @@ public class BlockTileBase extends Block implements IWrenchable, ITileEntityProv
     }
 
     @Override
-    public void neighborChanged(IBlockState state, World world, BlockPos pos, Block neighbor) {
+    public void neighborChanged(World world, BlockPos pos, IBlockState state, Block neighbor) {
         TileEntity tile = WorldHelper.getTileAt(world, pos);
         if (tile instanceof TileBase)
             ((TileBase) tile).onNeighborBlockChange(neighbor);
-        super.neighborChanged(state, world, pos, neighbor);
+        super.neighborChanged(world, pos, state, neighbor);
     }
 
     @Override
