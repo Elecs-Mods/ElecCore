@@ -37,7 +37,7 @@ public class BasicInventory implements IInventory {
 
     private String inventoryTitle;
     private int slotsCount;
-    protected NonNullList<ItemStack> inventoryContents;
+    protected MinecraftList<ItemStack> inventoryContents;
     private TileEntity tile;
 
     @Override

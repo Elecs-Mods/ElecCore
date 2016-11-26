@@ -20,6 +20,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nonnull;
+import java.util.List;
 
 /**
  * Created by Elec332 on 21-8-2016.
@@ -59,7 +60,7 @@ public class ItemEnumBased<E extends Enum<E> & IEnumItem> extends AbstractItem i
     }
 
     @Override
-    public void getSubItems(@Nonnull Item itemIn, CreativeTabs tab, NonNullList<ItemStack> subItems) {
+    protected void getSubItems(@Nonnull Item item, List<ItemStack> subItems, CreativeTabs creativeTab) {
         for (E e : values){
             if (e.shouldShow()){
                 subItems.add(getStackFromType(e));

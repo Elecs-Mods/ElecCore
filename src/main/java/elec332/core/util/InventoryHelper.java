@@ -17,20 +17,21 @@ import java.util.List;
  */
 public class InventoryHelper {
 
-    public static NonNullList<ItemStack> newItemStackList(int size){
-        return NonNullList.func_191197_a(size, ItemStackHelper.NULL_STACK);
+    public static MinecraftList<ItemStack> newItemStackList(int size){
+        return MinecraftList.create(size, ItemStackHelper.NULL_STACK);
     }
 
-    public static void readItemsFromNBT(@Nonnull NBTTagCompound data, @Nonnull NonNullList<ItemStack> items){
-        net.minecraft.inventory.ItemStackHelper.func_191283_b(data, items);
+    public static void readItemsFromNBT(@Nonnull NBTTagCompound data, @Nonnull MinecraftList<ItemStack> items){
+        items.clear();
+        net.minecraft.inventory.ItemStackHelper.func_191283_b(data, items.getUnderlyingList());
     }
 
-    public static NBTTagCompound writeItemsToNBT(@Nonnull NonNullList<ItemStack> items){
+    public static NBTTagCompound writeItemsToNBT(@Nonnull MinecraftList<ItemStack> items){
         return writeItemsToNBT(new NBTTagCompound(), items);
     }
 
-    public static NBTTagCompound writeItemsToNBT(@Nonnull NBTTagCompound tag, @Nonnull NonNullList<ItemStack> items){
-        return net.minecraft.inventory.ItemStackHelper.func_191282_a(tag, items);
+    public static NBTTagCompound writeItemsToNBT(@Nonnull NBTTagCompound tag, @Nonnull MinecraftList<ItemStack> items){
+        return net.minecraft.inventory.ItemStackHelper.func_191282_a(tag, items.getUnderlyingList());
     }
 
     /*

@@ -112,7 +112,7 @@ public interface IDefaultInventory extends IInventory {
 
     @Override
     default public boolean func_191420_l(){
-        return false;
+        return getInventory().func_191420_l();
     }
 
 }

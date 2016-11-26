@@ -5,6 +5,7 @@ import elec332.core.api.data.IExternalSaveHandler;
 import elec332.core.api.module.IModuleController;
 import elec332.core.api.network.ModNetworkHandler;
 import elec332.core.api.registry.ISingleRegister;
+import elec332.core.api.util.IDependencyHandler;
 import elec332.core.api.util.IRightClickCancel;
 import elec332.core.compat.ModNames;
 import elec332.core.effects.AbilityHandler;
@@ -40,12 +41,12 @@ import org.apache.logging.log4j.Logger;
  */
 @Mod(modid = ElecCore.MODID, name = ElecCore.MODNAME, dependencies = "after:"+ ModNames.FORESTRY,
 acceptedMinecraftVersions = "[1.11,)", version = ElecCore.ElecCoreVersion, useMetadata = true)
-public class ElecCore implements IModuleController, IElecCoreMod {
+public class ElecCore implements IModuleController, IElecCoreMod, IDependencyHandler {
 
 	public static final String ElecCoreVersion = "#ELECCORE_VER#";
 	public static final String MODID = "eleccore";
 	public static final String MODNAME = "ElecCore";
-	public static final String FORGE_VERSION = "13.19.0.2131";
+	public static final String FORGE_VERSION = "13.19.0.2160";
 
 	@SidedProxy(clientSide = "elec332.core.proxies.ClientProxy", serverSide = "elec332.core.proxies.CommonProxy")
 	public static CommonProxy proxy;
@@ -79,12 +80,12 @@ public class ElecCore implements IModuleController, IElecCoreMod {
 		}
 		asmDataProcessor = new ElecCoreDiscoverer();
 		asmDataProcessor.identify(event.getASMHarvestedData());
+		ElecModHandler.identifyMods();
 		asmDataProcessor.process(LoaderState.CONSTRUCTING);
 	}
 
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
-		ElecModHandler.identifyMods();
 		ElecModHandler.initAnnotations(event.getAsmData());
 		loadTimer = new LoadTimer(logger, MODNAME);
 		loadTimer.startPhase(event);
@@ -213,7 +214,7 @@ public class ElecCore implements IModuleController, IElecCoreMod {
 	}
 
 	@Override
-	public String getRequiredForgeVersion() {
+	public String getRequiredForgeVersion(String mcVersion) {
 		return FORGE_VERSION;
 	}
 

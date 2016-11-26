@@ -7,8 +7,10 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 
+import javax.annotation.Nonnull;
 import java.util.UUID;
 
 /**
@@ -37,12 +39,12 @@ public class PlayerHelper {
         return player.getGameProfile().getId();
     }
 
-    public static void sendMessageToPlayer(EntityPlayer player, String s){
-        try {
-            player.addChatComponentMessage(new TextComponentString(s), false);
-        } catch (NullPointerException e){
-            //Null player, whoops
-        }
+    public static void sendMessageToPlayer(@Nonnull EntityPlayer player, String s){
+        sendMessageToPlayer(player, new TextComponentString(s));
+    }
+
+    public static void sendMessageToPlayer(@Nonnull EntityPlayer player, ITextComponent s){
+        player.addChatComponentMessage(s, false);
     }
 
     public static void addPersonalMessageToClient(String s){

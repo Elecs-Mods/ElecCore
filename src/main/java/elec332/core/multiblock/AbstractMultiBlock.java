@@ -25,7 +25,7 @@ import javax.annotation.Nonnull;
  */
 public abstract class AbstractMultiBlock extends IMultiBlock implements IInventoryTile, IInfoProvider, IMultiBlockCapabilityProvider, ISpecialMultiBlockCapabilityProvider {
 
-    public boolean onAnyBlockActivated(EntityPlayer player, EnumHand hand, ItemStack stack, BlockPos pos, IBlockState state){
+    public boolean onAnyBlockActivated(EntityPlayer player, EnumHand hand, BlockPos pos, IBlockState state){
         return false;
     }
 

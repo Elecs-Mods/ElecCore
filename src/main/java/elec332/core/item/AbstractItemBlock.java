@@ -1,8 +1,10 @@
 package elec332.core.item;
 
+import net.minecraft.block.Block;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
@@ -14,15 +16,17 @@ import javax.annotation.Nonnull;
 import java.util.List;
 
 /**
- * Created by Elec332 on 21-8-2016.
+ * Created by Elec332 on 26-11-2016.
  */
-public abstract class AbstractItem extends Item {
+@SuppressWarnings("all")
+public class AbstractItemBlock extends ItemBlock {
 
-    public AbstractItem(){
-        this(null);
+    public AbstractItemBlock(Block block) {
+        super(block);
     }
 
-    public AbstractItem(ResourceLocation rl){
+    public AbstractItemBlock(Block block, ResourceLocation rl){
+        this(block);
         if (rl != null) {
             setRegistryName(rl);
             setUnlocalizedNameFromName();

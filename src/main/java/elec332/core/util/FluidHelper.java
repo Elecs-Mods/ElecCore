@@ -8,13 +8,10 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
-import net.minecraftforge.fluids.FluidContainerRegistry;
 import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.IFluidContainerItem;
 import net.minecraftforge.fluids.IFluidTank;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.fluids.capability.wrappers.FluidHandlerWrapper;
 
 import javax.annotation.Nullable;
 
@@ -30,8 +27,6 @@ public class FluidHelper {
         TileEntity tile = WorldHelper.getTileAt(iba, pos);
         if (tile.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, facing)){
             return tile.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, facing);
-        } else if (tile instanceof net.minecraftforge.fluids.IFluidHandler) {
-            return new FluidHandlerWrapper((net.minecraftforge.fluids.IFluidHandler) tile, facing);
         }
         return null;
     }
@@ -73,39 +68,6 @@ public class FluidHelper {
                 return true;
             }
         }
-        if (stack.getItem() instanceof IFluidContainerItem) {
-            IFluidContainerItem item = (IFluidContainerItem) stack.getItem();
-            FluidStack fluidStack = item.getFluid(stack);
-            if (fluidStack == null) {
-                return false;
-            } else {
-                int i = fluidHandler.fill(fluidStack, false);
-                if (i == fluidStack.amount) {
-                    if (player.worldObj.isRemote){
-                        return true;
-                    }
-                    fluidHandler.fill(item.drain(stack, i, !PlayerHelper.isPlayerInCreative(player)), true);
-                    return true;
-                }
-            }
-        }
-        if (FluidContainerRegistry.isFilledContainer(stack)) {
-            FluidStack stack1 = FluidContainerRegistry.getFluidForFilledItem(stack);
-            if (stack1 != null) {
-                int i = fluidHandler.fill(stack1.copy(), false);
-                if (i == stack1.amount) {
-                    if (player.worldObj.isRemote){
-                        return true;
-                    }
-                    fluidHandler.fill(stack1.copy(), true);
-                    ItemStack s = FluidContainerRegistry.drainFluidContainer(stack);
-                    if (!PlayerHelper.isPlayerInCreative(player)) {
-                        player.setHeldItem(hand, s == null ? ItemStackHelper.NULL_STACK : s.copy());
-                    }
-                    return true;
-                }
-            }
-        }
         return false;
     }
 
@@ -135,37 +97,6 @@ public class FluidHelper {
                 }
                 item.fill(fluidHandler.drain(capacity, !PlayerHelper.isPlayerInCreative(player)), true);
                 return true;
-            }
-        }
-        if (stack.getItem() instanceof IFluidContainerItem) {
-            IFluidContainerItem item = (IFluidContainerItem) stack.getItem();
-            int itemCapacity = item.getCapacity(stack);
-            FluidStack fluidStack = item.getFluid(stack);
-            if (fluidStack == null) {
-                FluidStack fs = fluidHandler.drain(itemCapacity, false);
-                if (item.fill(stack, fs, false) == itemCapacity) {
-
-                    item.fill(stack, fluidHandler.drain(itemCapacity, !PlayerHelper.isPlayerInCreative(player)), true);
-                    return true;
-                }
-            } else {
-                return false;
-            }
-        }
-        if (FluidContainerRegistry.isEmptyContainer(stack)) {
-            ItemStack s = FluidContainerRegistry.fillFluidContainer(fluidHandler.drain(1000, false), stack.copy());
-            if (s != null) {
-                FluidStack f = FluidContainerRegistry.getFluidForFilledItem(s.copy());
-                if (f != null && f.amount == 1000) {
-                    if (player.worldObj.isRemote){
-                        return true;
-                    }
-                    fluidHandler.drain(1000, true);
-                    if (!PlayerHelper.isPlayerInCreative(player)) {
-                        player.setHeldItem(hand, s.copy());
-                    }
-                    return true;
-                }
             }
         }
         return false;
