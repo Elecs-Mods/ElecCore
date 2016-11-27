@@ -11,6 +11,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by Elec332 on 31-7-2015.
@@ -26,10 +27,18 @@ public class ToolTip{
     }
 
     public ToolTip(List<ColouredString> s){
+        this.tooltip = s.stream().map(ColouredString::toString).collect(Collectors.toList());
+    }
+
+    public ToolTip(String s){
+        this(Lists.newArrayList(s));
+    }
+
+    public ToolTip(List<String> s, Object... o){
         this.tooltip = s;
     }
 
-    private final List<ColouredString> tooltip;
+    private final List<String> tooltip;
 
     @SideOnly(Side.CLIENT)
     public void renderTooltip(int mouseX, int mouseY, int guiLeft, int guiTop){
@@ -40,10 +49,11 @@ public class ToolTip{
             GlStateManager.disableLighting();
             GlStateManager.disableDepth();
             int k = 0;
-            for (ColouredString colouredString : tooltip){
-                int l = fontRenderer.getStringWidth(colouredString.toString());
-                if (l > k)
+            for (String colouredString : tooltip){
+                int l = fontRenderer.getStringWidth(colouredString);
+                if (l > k) {
                     k = l;
+                }
             }
             int j2 = mouseX + 12 - guiLeft;
             int k2 = mouseY - 12 - guiTop;
@@ -74,7 +84,7 @@ public class ToolTip{
             GuiDraw.drawGradientRect(j2 - 3, k2 - 3, j2 + k + 3, k2 - 3 + 1, k1, k1);
             GuiDraw.drawGradientRect(j2 - 3, k2 + i1 + 2, j2 + k + 3, k2 + i1 + 3, l1, l1);
             for (int i2 = 0; i2 < tooltip.size(); ++i2) {
-                String s1 = tooltip.get(i2).toString();
+                String s1 = tooltip.get(i2);
                 fontRenderer.drawStringWithShadow(s1, j2, k2, -1);
                 if (i2 == 0) {
                     k2 += 2;
@@ -85,6 +95,7 @@ public class ToolTip{
     }
 
     public static class ColouredString {
+
         public ColouredString(String s){
             this(TextFormatting.GRAY, s);
         }
@@ -99,5 +110,7 @@ public class ToolTip{
         public String toString() {
             return this.string;
         }
+
     }
+
 }

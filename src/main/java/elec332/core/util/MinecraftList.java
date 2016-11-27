@@ -22,7 +22,7 @@ public final class MinecraftList<E> extends AbstractList<E> {
         return new MinecraftList<E>((List<E>) Arrays.asList(o));
     }
 
-    private MinecraftList(List<E> underlyingList){
+    protected MinecraftList(List<E> underlyingList){
         this.underlyingList = underlyingList;
     }
 

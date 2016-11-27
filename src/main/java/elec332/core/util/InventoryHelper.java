@@ -30,7 +30,7 @@ public class InventoryHelper {
             int j = nbttagcompound.getByte("Slot") & 255;
 
             if (j >= 0 && j < items.size()) {
-                items.set(j, ItemStack.loadItemStackFromNBT(nbttagcompound));
+                items.set(j, ItemStackHelper.loadItemStackFromNBT(nbttagcompound));
             }
         }
     }

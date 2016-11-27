@@ -30,8 +30,7 @@ public class FluidTankWidget extends Widget {
 
     @Override
     public void detectAndSendChanges(List<IContainerListener> crafters) {
-        if (capacity != tank.getCapacity() || nullityDiffers(fluidStack, tank.getFluid()) || fluidStack != null && !fluidStack.isFluidStackIdentical(tank.getFluid())) {
-            for (IContainerListener iCrafting : crafters) {
+        if (capacity != tank.getCapacity() || fluidStack != null && !fluidStack.isFluidStackIdentical(tank.getFluid()) || tank.getFluid() != null) {            for (IContainerListener iCrafting : crafters) {
                 if (iCrafting instanceof EntityPlayerMP) {
                     NBTTagCompound tag = new NBTTagCompound();
                     if (tank.getFluid() != null) {
