@@ -20,10 +20,7 @@ import elec332.core.module.ModuleManager;
 import elec332.core.server.SaveHandler;
 import elec332.core.util.CommandHelper;
 import elec332.core.util.FMLUtil;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.IResourcePack;
-import net.minecraft.client.resources.Language;
-import net.minecraft.client.resources.Locale;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.common.FMLCommonHandler;
@@ -45,7 +42,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Created by Elec332 on 20-10-2016.

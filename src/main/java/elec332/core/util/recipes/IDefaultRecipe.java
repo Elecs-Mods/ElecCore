@@ -1,4 +1,4 @@
-package elec332.core.util;
+package elec332.core.util.recipes;
 
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.ItemStack;

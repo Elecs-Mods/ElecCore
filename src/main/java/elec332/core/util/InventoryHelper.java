@@ -4,7 +4,7 @@ import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.NonNullList;
+import net.minecraft.nbt.NBTTagList;
 import net.minecraftforge.oredict.OreDictionary;
 
 import javax.annotation.Nonnull;
@@ -23,7 +23,16 @@ public class InventoryHelper {
 
     public static void readItemsFromNBT(@Nonnull NBTTagCompound data, @Nonnull MinecraftList<ItemStack> items){
         items.clear();
-        net.minecraft.inventory.ItemStackHelper.func_191283_b(data, items.getUnderlyingList());
+        NBTTagList nbttaglist = data.getTagList("Items", 10);
+
+        for (int i = 0; i < nbttaglist.tagCount(); ++i) {
+            NBTTagCompound nbttagcompound = nbttaglist.getCompoundTagAt(i);
+            int j = nbttagcompound.getByte("Slot") & 255;
+
+            if (j >= 0 && j < items.size()) {
+                items.set(j, ItemStackHelper.loadItemStackFromNBT(nbttagcompound));
+            }
+        }
     }
 
     public static NBTTagCompound writeItemsToNBT(@Nonnull MinecraftList<ItemStack> items){
@@ -31,7 +40,19 @@ public class InventoryHelper {
     }
 
     public static NBTTagCompound writeItemsToNBT(@Nonnull NBTTagCompound tag, @Nonnull MinecraftList<ItemStack> items){
-        return net.minecraft.inventory.ItemStackHelper.func_191282_a(tag, items.getUnderlyingList());
+        NBTTagList nbttaglist = new NBTTagList();
+
+        for (int i = 0; i < items.size(); ++i) {
+            ItemStack itemstack = items.get(i);
+            if (ItemStackHelper.isStackValid(itemstack)) {
+                NBTTagCompound nbttagcompound = new NBTTagCompound();
+                nbttagcompound.setByte("Slot", (byte)i);
+                itemstack.writeToNBT(nbttagcompound);
+                nbttaglist.appendTag(nbttagcompound);
+            }
+        }
+        tag.setTag("Items", nbttaglist);
+        return tag;
     }
 
     /*

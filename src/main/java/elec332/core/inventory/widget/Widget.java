@@ -102,7 +102,7 @@ public class Widget {
     }
 
     @SideOnly(Side.CLIENT)
-    protected void bindTexture(ResourceLocation resourceLocation){
+    protected final void bindTexture(ResourceLocation resourceLocation){
         RenderHelper.bindTexture(resourceLocation);
     }
 
@@ -117,10 +117,6 @@ public class Widget {
 
     public ToolTip getToolTip(){
         return null;
-    }
-
-    protected boolean nullityDiffers(Object o1, Object o2){
-        return o1 == null && o2 == null || o1 != null && o2 != null;
     }
 
 }

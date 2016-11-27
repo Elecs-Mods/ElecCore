@@ -3,7 +3,6 @@ package elec332.core.util;
 import net.minecraft.util.NonNullList;
 
 import java.util.AbstractList;
-import java.util.List;
 
 /**
  * Created by Elec332 on 26-11-2016.
@@ -19,7 +18,7 @@ public final class MinecraftList<E> extends AbstractList<E> {
         return new MinecraftList<E>(NonNullList.func_191197_a(size, defaultObj));
     }
 
-    private MinecraftList(NonNullList<E> underlyingList){
+    protected MinecraftList(NonNullList<E> underlyingList){
         this.underlyingList = underlyingList;
     }
 
