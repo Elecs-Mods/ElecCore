@@ -75,12 +75,12 @@ public class OredictHelper {
         return OreDictionary.getOreIDs(stack);
     }
 
-    public static MinecraftList<ItemStack> getOres(String name){
+    public static List<ItemStack> getOres(String name){
         return getOres(name, false);
     }
 
-    public static MinecraftList<ItemStack> getOres(String name, boolean alwaysCreateEntry){
-        return new MinecraftList<ItemStack>(OreDictionary.getOres(name, alwaysCreateEntry));
+    public static List<ItemStack> getOres(String name, boolean alwaysCreateEntry){
+        return OreDictionary.getOres(name, alwaysCreateEntry);
     }
 
     static {
