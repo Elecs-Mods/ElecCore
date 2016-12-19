@@ -69,7 +69,7 @@ public abstract class AbstractExplosion extends Explosion {
                     double xDifference = entity.posX - location.getX();
                     double yDifference = entity.posY - location.getY();
                     double zDifference = entity.posZ - location.getZ();
-                    double d1 = MathHelper.sqrt_double(xDifference * xDifference + yDifference * yDifference + zDifference * zDifference);
+                    double d1 = MathHelper.sqrt(xDifference * xDifference + yDifference * yDifference + zDifference * zDifference);
                     xDifference /= d1;
                     yDifference /= d1;
                     zDifference /= d1;

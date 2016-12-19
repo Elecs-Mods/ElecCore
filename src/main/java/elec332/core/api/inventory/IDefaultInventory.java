@@ -54,8 +54,8 @@ public interface IDefaultInventory extends IInventory {
     }
 
     @Override
-    default public boolean isUseableByPlayer(@Nonnull EntityPlayer player) {
-        return getInventory().isUseableByPlayer(player);
+    default public boolean isUsableByPlayer(@Nonnull EntityPlayer player){
+        return getInventory().isUsableByPlayer(player);
     }
 
     @Override
@@ -111,8 +111,7 @@ public interface IDefaultInventory extends IInventory {
     }
 
     @Override
-    default public boolean func_191420_l(){
-        return getInventory().func_191420_l();
+    default public boolean isEmpty(){
+        return getInventory().isEmpty();
     }
-
 }

@@ -111,8 +111,8 @@ public class BasicInventory implements IInventory {
         return this.slotsCount;
     }
 
-    @Override //TODO: Whats this?
-    public boolean func_191420_l() {
+    @Override
+    public boolean isEmpty() {
         return false;
     }
 
@@ -140,7 +140,7 @@ public class BasicInventory implements IInventory {
     }
 
     @Override
-    public boolean isUseableByPlayer(@Nonnull EntityPlayer player) {
+    public boolean isUsableByPlayer(@Nonnull EntityPlayer player) {
         return true;
     }
 

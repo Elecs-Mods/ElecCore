@@ -18,7 +18,7 @@ public interface IElecTradeList {
         return new EntityVillager.ITradeList() {
 
             @Override
-            public void func_190888_a(@Nonnull IMerchant merchant, @Nonnull MerchantRecipeList recipeList, @Nonnull Random random) {
+            public void addMerchantRecipe(@Nonnull IMerchant merchant, @Nonnull MerchantRecipeList recipeList, @Nonnull Random random) {
                 tradeList.modifyMerchantRecipeList(merchant, recipeList, random);
             }
 

@@ -101,7 +101,7 @@ public final class AbilityHandler implements IElecCoreAbilitiesAPI {
     public void syncAbilityDataToClient(EntityLivingBase entity, WrappedAbility ability, IAbilityPacket.PacketType packetType){
         NBTTagCompound toSend = new NBTTagCompound();
         ability.writeToNBT(toSend);
-        for (EntityPlayerMP player : ServerHelper.instance.getAllPlayersWatchingBlock(entity.worldObj, (int) entity.posX, (int) entity.posZ)) {
+        for (EntityPlayerMP player : ServerHelper.instance.getAllPlayersWatchingBlock(entity.getEntityWorld(), (int) entity.posX, (int) entity.posZ)) {
             ElecCore.networkHandler.sendTo(new PacketSyncAbilities(entity, toSend, packetType), player);
         }
     }

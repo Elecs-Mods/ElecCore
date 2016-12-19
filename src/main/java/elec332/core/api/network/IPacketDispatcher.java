@@ -37,7 +37,7 @@ public interface IPacketDispatcher extends ElecByteBuf.Factory {
      * @param playerFilter The selector that determines what players to send the message to.
      */
     default public void sendTo(IMessage message, IEntityFilter<EntityPlayerMP> playerFilter, MinecraftServer server){
-        for (EntityPlayerMP player : playerFilter.filterEntities(server.getPlayerList().getPlayerList())){
+        for (EntityPlayerMP player : playerFilter.filterEntities(server.getPlayerList().getPlayers())){
             sendTo(message, player);
         }
     }

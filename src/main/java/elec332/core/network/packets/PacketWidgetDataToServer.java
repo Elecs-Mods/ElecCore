@@ -33,4 +33,8 @@ public class PacketWidgetDataToServer extends AbstractPacket {
         return null;
     }
 
+    static void handle(IWidgetContainer widgetContainer, int widget, NBTTagCompound tag, Side side){
+
+    }
+
 }

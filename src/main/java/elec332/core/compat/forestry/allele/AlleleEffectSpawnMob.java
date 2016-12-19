@@ -1,6 +1,7 @@
 package elec332.core.compat.forestry.allele;
 
 import elec332.core.compat.forestry.EffectData;
+import elec332.core.world.WorldHelper;
 import forestry.api.apiculture.BeeManager;
 import forestry.api.apiculture.IBeeGenome;
 import forestry.api.apiculture.IBeeHousing;
@@ -116,7 +117,7 @@ public class AlleleEffectSpawnMob extends AlleleEffectThrottled {
         Random random = housing.getWorldObj().rand;
         AxisAlignedBB aabb = getBounding(genome, housing);
         entity.setLocationAndAngles(aabb.minX + random.nextDouble() * (aabb.maxX - aabb.minX), aabb.minY + random.nextDouble() * (aabb.maxY - aabb.minY), aabb.minZ + random.nextDouble() * (aabb.maxZ - aabb.minZ), random.nextFloat() * 360 , 0);
-        if (housing.getWorldObj().spawnEntityInWorld(entity)){
+        if (WorldHelper.spawnEntityInWorld(housing.getWorldObj(), entity)){
             if (entity instanceof EntityLiving && angry && player != null){
                 ((EntityLiving) entity).setAttackTarget(player);
             }

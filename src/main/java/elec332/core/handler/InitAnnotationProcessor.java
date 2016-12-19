@@ -2,12 +2,8 @@ package elec332.core.handler;
 
 import elec332.core.api.annotations.RegisterTile;
 import elec332.core.api.discovery.ASMDataProcessor;
-import elec332.core.api.registration.RegisteredMultiPart;
 import elec332.core.api.registration.RegisteredTileEntity;
-import mcmultipart.multipart.Multipart;
-import mcmultipart.multipart.MultipartRegistry;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.LoaderState;
 import net.minecraftforge.fml.common.discovery.ASMDataTable;
 import net.minecraftforge.fml.common.registry.GameRegistry;
@@ -38,7 +34,7 @@ public class InitAnnotationProcessor extends AbstractAnnotationProcessor {
             }
 
         });
-
+/*
         registerDataProcessor(RegisteredMultiPart.class, new Consumer<ASMDataTable.ASMData>() {
 
             @Override
@@ -52,7 +48,7 @@ public class InitAnnotationProcessor extends AbstractAnnotationProcessor {
             }
 
         }, Loader.isModLoaded("mcmultipart"));
-
+*/
         registerDataProcessor(RegisteredTileEntity.class, new Consumer<ASMDataTable.ASMData>() {
 
             @Override

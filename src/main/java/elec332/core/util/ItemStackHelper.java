@@ -15,7 +15,7 @@ import java.util.List;
 public class ItemStackHelper {
 
     public static boolean isStackValid(ItemStack stack){
-        return stack != null && stack != NULL_STACK && !stack.field_190928_g && stack.getItem() != NULL_ITEM;
+        return stack != null && stack != NULL_STACK && !stack.isEmpty && stack.getItem() != NULL_ITEM;
     }
 
     @Nonnull
@@ -40,7 +40,7 @@ public class ItemStackHelper {
 
     static {
         NULL_ITEM = Item.getItemFromBlock(Blocks.AIR);
-        NULL_STACK = ItemStack.field_190927_a;
+        NULL_STACK = ItemStack.EMPTY;
     }
 
 }

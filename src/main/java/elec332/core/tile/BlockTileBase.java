@@ -70,8 +70,7 @@ public class BlockTileBase extends AbstractBlock implements IWrenchable, ITileEn
     }
 
     @Override
-    @Nonnull
-    public IBlockState onBlockPlaced(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer) {
+    public IBlockState getStateForPlacement(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer, EnumHand hand) {
         return getBlockState().getBaseState().withProperty(BlockStateHelper.FACING_NORMAL.getProperty(), DirectionHelper.getFacingOnPlacement(placer));
     }
 
@@ -97,10 +96,14 @@ public class BlockTileBase extends AbstractBlock implements IWrenchable, ITileEn
     @SuppressWarnings("all")
     public TileEntity createNewTileEntity(@Nonnull World world, int metadata) {
         try {
-            return this.tileClass.newInstance();
+            return createTile(tileClass, world, metadata);
         } catch (Exception ex) {
             return null;
         }
+    }
+
+    protected TileEntity createTile(Class<? extends TileEntity> clazz, @Nonnull World world, int metadata) throws Exception {
+        return clazz.newInstance();
     }
 
     @Override

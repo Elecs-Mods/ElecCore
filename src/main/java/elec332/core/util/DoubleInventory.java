@@ -40,9 +40,9 @@ public class DoubleInventory<I1 extends IInventory, I2 extends IInventory> imple
         return totalSize;
     }
 
-    @Override //TODO: Whats this?
-    public boolean func_191420_l() {
-        return inventory1.func_191420_l() && inventory2.func_191420_l();
+    @Override
+    public boolean isEmpty() {
+        return inventory1.isEmpty() && inventory2.isEmpty();
     }
 
     @Override
@@ -104,8 +104,8 @@ public class DoubleInventory<I1 extends IInventory, I2 extends IInventory> imple
     }
 
     @Override
-    public boolean isUseableByPlayer(@Nonnull EntityPlayer player) {
-        return inventory1.isUseableByPlayer(player) && inventory2.isUseableByPlayer(player);
+    public boolean isUsableByPlayer(@Nonnull EntityPlayer player) {
+        return inventory1.isUsableByPlayer(player) && inventory2.isUsableByPlayer(player);
     }
 
     @Override

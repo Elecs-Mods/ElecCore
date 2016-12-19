@@ -61,7 +61,7 @@ public class FluidHelper {
             }
             int i = fluidHandler.fill(stack1, false);
             if (i > 0) {
-                if (player.worldObj.isRemote){
+                if (player.getEntityWorld().isRemote){
                     return true;
                 }
                 fluidHandler.fill(item.drain(i, !PlayerHelper.isPlayerInCreative(player)), true);
@@ -92,7 +92,7 @@ public class FluidHelper {
             }
             int i = item.fill(fluid, false);
             if (i > 0){
-                if (player.worldObj.isRemote){
+                if (player.getEntityWorld().isRemote){
                     return true;
                 }
                 item.fill(fluidHandler.drain(capacity, !PlayerHelper.isPlayerInCreative(player)), true);

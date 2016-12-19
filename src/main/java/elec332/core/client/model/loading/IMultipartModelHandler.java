@@ -1,14 +1,9 @@
 package elec332.core.client.model.loading;
 
-import mcmultipart.multipart.IMultipart;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.renderer.block.model.IBakedModel;
-import net.minecraft.client.renderer.block.model.ModelResourceLocation;
-
 /**
  * Created by Elec332 on 27-4-2016.
  */
-public interface IMultipartModelHandler {
+public interface IMultipartModelHandler{}/* {
 
     public boolean handlePart(IMultipart multipart);
 
@@ -17,3 +12,4 @@ public interface IMultipartModelHandler {
     public IBakedModel getModelFor(IMultipart part, IBlockState state, String identifier, ModelResourceLocation fullResourceLocation);
 
 }
+*/

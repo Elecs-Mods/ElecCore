@@ -21,7 +21,7 @@ public class InventoryHelper {
         return MinecraftList.create(size, ItemStackHelper.NULL_STACK);
     }
 
-    public static void readItemsFromNBT(@Nonnull NBTTagCompound data, @Nonnull MinecraftList<ItemStack> items){
+    public static void readItemsFromNBT(@Nonnull NBTTagCompound data, @Nonnull List<ItemStack> items){
         items.clear();
         NBTTagList nbttaglist = data.getTagList("Items", 10);
 
@@ -35,11 +35,11 @@ public class InventoryHelper {
         }
     }
 
-    public static NBTTagCompound writeItemsToNBT(@Nonnull MinecraftList<ItemStack> items){
+    public static NBTTagCompound writeItemsToNBT(@Nonnull List<ItemStack> items){
         return writeItemsToNBT(new NBTTagCompound(), items);
     }
 
-    public static NBTTagCompound writeItemsToNBT(@Nonnull NBTTagCompound tag, @Nonnull MinecraftList<ItemStack> items){
+    public static NBTTagCompound writeItemsToNBT(@Nonnull NBTTagCompound tag, @Nonnull List<ItemStack> items){
         NBTTagList nbttaglist = new NBTTagList();
 
         for (int i = 0; i < items.size(); ++i) {

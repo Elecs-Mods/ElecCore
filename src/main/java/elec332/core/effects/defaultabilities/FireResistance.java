@@ -21,7 +21,7 @@ public class FireResistance extends Ability {
 
     @SubscribeEvent
     public void onLivingHurt(LivingHurtEvent event){
-        if (event.getEntityLiving() instanceof EntityPlayerMP && (event.getSource() == DamageSource.onFire || event.getSource() == DamageSource.inFire) && AbilityHelper.isEffectActive(event.getEntityLiving(), this)) {
+        if (event.getEntityLiving() instanceof EntityPlayerMP && (event.getSource() == DamageSource.ON_FIRE || event.getSource() == DamageSource.IN_FIRE) && AbilityHelper.isEffectActive(event.getEntityLiving(), this)) {
             event.setCanceled(true);
         }
     }

@@ -10,12 +10,12 @@ import java.util.AbstractList;
 public final class MinecraftList<E> extends AbstractList<E> {
 
     public static <E> MinecraftList<E> create(){
-        return new MinecraftList<E>(NonNullList.func_191196_a());
+        return new MinecraftList<E>(NonNullList.create());
     }
 
     @SuppressWarnings("unchecked")
     public static <E> MinecraftList<E> create(int size, E defaultObj){
-        return new MinecraftList<E>(NonNullList.func_191197_a(size, defaultObj));
+        return new MinecraftList<E>(NonNullList.withSize(size, defaultObj));
     }
 
     protected MinecraftList(NonNullList<E> underlyingList){

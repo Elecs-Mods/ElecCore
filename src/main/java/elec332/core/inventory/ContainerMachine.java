@@ -8,7 +8,7 @@ import net.minecraft.entity.player.EntityPlayer;
  */
 public class ContainerMachine extends BaseContainer {
 
-    public ContainerMachine(ITileWithSlots tileWithSlots, EntityPlayer player, int offset) {
+    private ContainerMachine(ITileWithSlots tileWithSlots, EntityPlayer player, int offset) {
         super(player, offset);
         if (tileWithSlots != null) {
             tileWithSlots.addSlots(this);

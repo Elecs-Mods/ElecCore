@@ -1,5 +1,7 @@
 package elec332.core.client.util;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraftforge.fml.relauncher.Side;
@@ -12,6 +14,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public class GuiDraw {
 
     private static final GuiDrawGui gui;
+    public static final Minecraft mc;
 
     public static void drawRect(int left, int top, int right, int bottom, int color){
         Gui.drawRect(left, top, right, bottom, color);
@@ -29,11 +32,11 @@ public class GuiDraw {
         gui.drawTexturedModalRect(x, y, textureX, textureY, width, height);
     }
 
-    public void drawTexturedModalRect(float xCoord, float yCoord, int minU, int minV, int maxU, int maxV){
+    public static void drawTexturedModalRect(float xCoord, float yCoord, int minU, int minV, int maxU, int maxV){
         gui.drawTexturedModalRect(xCoord, yCoord, minU, minV, maxU, maxV);
     }
 
-    public void drawTexturedModalRect(int xCoord, int yCoord, TextureAtlasSprite textureSprite, int widthIn, int heightIn){
+    public static void drawTexturedModalRect(int xCoord, int yCoord, TextureAtlasSprite textureSprite, int widthIn, int heightIn){
         gui.drawTexturedModalRect(xCoord, yCoord, textureSprite, widthIn, heightIn);
     }
 
@@ -41,12 +44,22 @@ public class GuiDraw {
         gui.drawGradientRect(left, top, right, bottom, startColor, endColor);
     }
 
+    public static void drawCenteredString(FontRenderer fontRenderer, String text, int x, int y, int color) {
+        gui.drawCenteredString(fontRenderer, text, x, y, color);
+    }
+
+    public static void drawString(FontRenderer fontRenderer, String text, int x, int y, int color) {
+        gui.drawString(fontRenderer, text, x, y, color);
+    }
+
+
     public static Gui getGui() {
         return gui;
     }
 
     static {
         gui = new GuiDrawGui();
+        mc = Minecraft.getMinecraft();
     }
 
     private static class GuiDrawGui extends Gui {

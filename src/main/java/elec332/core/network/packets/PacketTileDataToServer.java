@@ -27,7 +27,7 @@ public class PacketTileDataToServer extends AbstractPacket {
         NBTHelper data = new NBTHelper(message.networkPackageObject);
         int ID = data.getInteger("PacketId");
         EntityPlayerMP sender = ctx.getServerHandler().playerEntity;
-        IElecCoreNetworkTile tile = (IElecCoreNetworkTile) WorldHelper.getTileAt(sender.worldObj, data.getPos());
+        IElecCoreNetworkTile tile = (IElecCoreNetworkTile) WorldHelper.getTileAt(sender.getEntityWorld(), data.getPos());
         if (tile != null) {
             tile.onPacketReceivedFromClient(sender, ID, message.networkPackageObject.getCompoundTag("data"));
         }

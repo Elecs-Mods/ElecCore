@@ -98,7 +98,7 @@ public class DirectionHelper {
     };
 
     public static int getDirectionNumberOnPlacement(EntityLivingBase entityLivingBase){
-        return MathHelper.floor_double((double) (entityLivingBase.rotationYaw * 4.0F / 360.0F) + 0.5D) & 3;
+        return MathHelper.floor((double) (entityLivingBase.rotationYaw * 4.0F / 360.0F) + 0.5D) & 3;
     }
 
 }

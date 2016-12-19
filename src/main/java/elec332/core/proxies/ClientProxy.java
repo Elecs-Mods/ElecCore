@@ -5,6 +5,7 @@ import elec332.core.api.client.IColoredItem;
 import elec332.core.client.model.ModelEventHandler;
 import elec332.core.client.model.loading.handler.ElecModelHandler;
 import elec332.core.client.model.replace.ElecTileEntityItemStackRenderer;
+import elec332.core.inventory.window.WindowGui;
 import elec332.core.main.ElecCore;
 import elec332.core.util.RegistryHelper;
 import net.minecraft.block.Block;
@@ -16,6 +17,7 @@ import net.minecraft.client.renderer.tileentity.TileEntityItemStackRenderer;
 import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.client.resources.IResourceManagerReloadListener;
 import net.minecraft.client.resources.SimpleReloadableResourceManager;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
@@ -83,12 +85,22 @@ public class ClientProxy extends CommonProxy {
 
 	@Override
 	public void addPersonalMessageToPlayer(String s) {
-		minecraft.thePlayer.addChatComponentMessage(new TextComponentString(s), false);
+		minecraft.player.sendMessage(new TextComponentString(s));
 	}
 
 	@Override
 	public World getClientWorld() {
-		return Minecraft.getMinecraft().theWorld;
+		return Minecraft.getMinecraft().world;
+	}
+
+	@Override
+	public EntityPlayer getClientPlayer() {
+		return Minecraft.getMinecraft().player;
+	}
+
+	@Override
+	public synchronized Object getClientGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z) {
+		return new WindowGui(super.getServerGuiElement(ID, player, world, x, y, z));
 	}
 
 	private class ModelReloadListener implements IResourceManagerReloadListener {

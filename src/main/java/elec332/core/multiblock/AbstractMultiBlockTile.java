@@ -3,13 +3,13 @@ package elec332.core.multiblock;
 import elec332.core.api.info.IInfoDataAccessorBlock;
 import elec332.core.api.info.IInfoProvider;
 import elec332.core.api.info.IInformation;
+import elec332.core.inventory.window.IWindowFactory;
+import elec332.core.inventory.window.Window;
 import elec332.core.main.ElecCore;
-import elec332.core.tile.IInventoryTile;
 import elec332.core.tile.TileBase;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.inventory.Container;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
@@ -22,7 +22,7 @@ import javax.annotation.Nonnull;
 /**
  * Created by Elec332 on 28-7-2015.
  */
-public abstract class AbstractMultiBlockTile extends TileBase implements IMultiBlockTile, IInventoryTile, IInfoProvider {
+public abstract class AbstractMultiBlockTile extends TileBase implements IMultiBlockTile, IWindowFactory, IInfoProvider {
 
     public AbstractMultiBlockTile(MultiBlockRegistry registry){
         super();
@@ -157,13 +157,8 @@ public abstract class AbstractMultiBlockTile extends TileBase implements IMultiB
     }
 
     @Override
-    public Container getGuiServer(EntityPlayer player) {
-        return getMultiBlock() == null ? null : getMultiBlock().getGuiServer(player);
-    }
-
-    @Override
-    public Object getGuiClient(EntityPlayer player) {
-        return getMultiBlock() == null ? null : getMultiBlock().getGuiClient(player);
+    public Window createWindow(Object... args) {
+        return getMultiBlock() == null ? null : getMultiBlock().createWindow(args);
     }
 
     @Override

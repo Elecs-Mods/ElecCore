@@ -2,6 +2,7 @@ package elec332.core.network.impl;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
+import elec332.core.api.network.IExtendedMessageContext;
 import elec332.core.api.network.INetworkManager;
 import elec332.core.api.network.IPacketRegistry;
 import elec332.core.api.network.simple.ISimpleNetworkPacketManager;
@@ -9,6 +10,7 @@ import elec332.core.main.APIHandler;
 import elec332.core.util.FMLUtil;
 import net.minecraftforge.fml.common.ModContainer;
 import net.minecraftforge.fml.common.network.FMLEmbeddedChannel;
+import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.relauncher.Side;
 
@@ -84,6 +86,11 @@ enum NetworkManager implements INetworkManager<DefaultNetworkHandler> {
     @Override
     public IPacketRegistry newPacketRegistry() {
         return new DefaultPacketRegistry();
+    }
+
+    @Override
+    public IExtendedMessageContext wrapMessageContext(MessageContext messageContext) {
+        return null;
     }
 
     static {

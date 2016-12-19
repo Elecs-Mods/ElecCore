@@ -1,34 +1,10 @@
 package elec332.core.client.model.loading.handler;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import elec332.core.api.client.model.loading.IModelHandler;
-import elec332.core.api.client.model.loading.ModelHandler;
-import elec332.core.client.model.loading.IMultipartModelHandler;
-import elec332.core.main.ElecCore;
-import mcmultipart.client.multipart.MultipartRegistryClient;
-import mcmultipart.multipart.IMultipart;
-import mcmultipart.multipart.MultipartRegistry;
-import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.renderer.block.model.IBakedModel;
-import net.minecraft.client.renderer.block.model.ModelResourceLocation;
-import net.minecraft.client.renderer.block.statemap.StateMapperBase;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.common.Loader;
-import org.apache.commons.lang3.tuple.Pair;
-
-import javax.annotation.Nonnull;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
-
 /**
  * Created by Elec332 on 19-9-2016.
  */
-@ModelHandler
-public class MultiPartModelHandler implements IModelHandler {
+//@ModelHandler
+public class MultiPartModelHandler{}/* implements IModelHandler {
 
     public MultiPartModelHandler(){
         multipartModelHandlers = Lists.newArrayList();
@@ -101,4 +77,4 @@ public class MultiPartModelHandler implements IModelHandler {
         return ret;
     }
 
-}
+} */

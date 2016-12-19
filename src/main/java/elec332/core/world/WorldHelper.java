@@ -23,6 +23,7 @@ import net.minecraft.world.WorldServer;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.ForgeChunkManager;
+import net.minecraftforge.items.IItemHandler;
 
 import javax.annotation.Nullable;
 
@@ -32,8 +33,12 @@ import javax.annotation.Nullable;
 @SuppressWarnings("unused")
 public class WorldHelper {
 
+    public static boolean spawnEntityInWorld(World world, Entity entity){
+        return world.spawnEntity(entity);
+    }
+
     public static boolean canBlockBePlaced(World world, Block block, BlockPos pos, boolean b, EnumFacing facing, @Nullable Entity entity){
-        return world.func_190527_a(block, pos, b, facing, entity);
+        return world.mayPlace(block, pos, b, facing, entity);
     }
 
     public static void notifyNeighborsOfStateChange(World world, BlockPos pos, Block block){
@@ -106,6 +111,13 @@ public class WorldHelper {
         ForgeChunkManager.forceChunk(ticket, fromBlockLoc(new NBTHelper(ticket.getModData()).getPos()));
     }
 
+    public static void dropInventoryItems(World worldIn, BlockPos pos, IItemHandler inventory){
+        for (int i = 0; i < inventory.getSlots(); i++) {
+            dropStack(worldIn, pos, inventory.getStackInSlot(i));
+        }
+    }
+
+
     public static void dropStack(World world, BlockPos blockLoc, ItemStack stack){
         dropStack(world, blockLoc.getX(), blockLoc.getY(), blockLoc.getZ(), stack);
     }
@@ -118,7 +130,7 @@ public class WorldHelper {
             double d2 = (double)(world.rand.nextFloat() * f) + (double)(1.0F - f) * 0.5D;
             EntityItem entityitem = new EntityItem(world, (double)x + d0, (double)y + d1, (double)z + d2, itemStack);
             entityitem.setDefaultPickupDelay();
-            world.spawnEntityInWorld(entityitem);
+            world.spawnEntity(entityitem);
         }
     }
 
@@ -163,7 +175,7 @@ public class WorldHelper {
 
     public static void spawnLightningAtLookVec(EntityPlayer player, Double range){
         RayTraceResult position = PlayerHelper.getPosPlayerIsLookingAt(player, range);
-        spawnLightningAt(player.worldObj, position.getBlockPos());
+        spawnLightningAt(player.getEntityWorld(), position.getBlockPos());
     }
 
     public static void spawnLightningAt(World world, BlockPos blockPos){
@@ -173,6 +185,6 @@ public class WorldHelper {
     public static void spawnLightningAt(World world, double x, double y, double z){
         //world.pl(x, y, z,"ambient.weather.thunder", 10000.0F, 0.8F);
         //world.playSoundEffect(x, y, z,"random.explode", 10000.0F, 0.8F);
-        world.spawnEntityInWorld(new EntityLightningBolt(world, x, y, z, false));
+        world.spawnEntity(new EntityLightningBolt(world, x, y, z, false));
     }
 }

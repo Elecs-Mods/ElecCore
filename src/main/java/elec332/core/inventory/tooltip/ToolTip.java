@@ -85,7 +85,7 @@ public class ToolTip{
             GuiDraw.drawGradientRect(j2 - 3, k2 - 3, j2 + k + 3, k2 - 3 + 1, k1, k1);
             GuiDraw.drawGradientRect(j2 - 3, k2 + i1 + 2, j2 + k + 3, k2 + i1 + 3, l1, l1);
             for (int i2 = 0; i2 < tooltip.size(); ++i2) {
-                String s1 = tooltip.get(i2).toString();
+                String s1 = tooltip.get(i2);
                 fontRenderer.drawStringWithShadow(s1, j2, k2, -1);
                 if (i2 == 0) {
                     k2 += 2;

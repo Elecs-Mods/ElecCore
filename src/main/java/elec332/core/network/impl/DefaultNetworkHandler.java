@@ -260,7 +260,7 @@ class DefaultNetworkHandler implements IElecNetworkHandler, DefaultByteBufFactor
     }
 
     @Override
-    public void registerPacket(Class<ISimplePacket> packetType) {
+    public void registerPacket(Class<? extends ISimplePacket> packetType) {
         simpleNetworkPacketManager.registerPacket(packetType);
     }
 
@@ -275,7 +275,7 @@ class DefaultNetworkHandler implements IElecNetworkHandler, DefaultByteBufFactor
     }
 
     @Override
-    public void registerPacket(Class<ISimplePacket> packetType, ISimplePacketHandler packetHandler) {
+    public void registerPacket(Class<? extends ISimplePacket> packetType, ISimplePacketHandler packetHandler) {
         simpleNetworkPacketManager.registerPacket(packetType, packetHandler);
     }
 
