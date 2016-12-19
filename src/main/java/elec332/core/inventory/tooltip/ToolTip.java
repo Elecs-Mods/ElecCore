@@ -38,6 +38,7 @@ public class ToolTip{
         this.tooltip = s;
     }
 
+
     private final List<String> tooltip;
 
     @SideOnly(Side.CLIENT)
@@ -112,5 +113,4 @@ public class ToolTip{
         }
 
     }
-
 }

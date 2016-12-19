@@ -2,6 +2,7 @@ package elec332.core.compat.forestry.bee;
 
 import com.google.common.collect.Maps;
 import elec332.core.compat.forestry.ForestryCompatHandler;
+import elec332.core.tile.AbstractBlock;
 import forestry.api.apiculture.hives.HiveManager;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.MapColor;
@@ -25,7 +26,7 @@ import java.util.Map;
 /**
  * Created by Elec332 on 20-8-2016.
  */
-public abstract class BlockHive<T extends Enum<T> & IHiveEnum> extends Block {
+public abstract class BlockHive<T extends Enum<T> & IHiveEnum> extends AbstractBlock {
 
     public BlockHive(){
         this(null);
@@ -125,7 +126,7 @@ public abstract class BlockHive<T extends Enum<T> & IHiveEnum> extends Block {
     }
 
     @Override
-    public void getSubBlocks(Item itemIn, CreativeTabs tab, List<ItemStack> list) {
+    protected void getSubBlocks(@Nonnull Item item, List<ItemStack> list, CreativeTabs creativeTab) {
         for (T t : metaToObject.values()){
             list.add(new ItemStack(this, 1, t.getMeta()));
         }

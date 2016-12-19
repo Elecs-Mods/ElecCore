@@ -1,5 +1,7 @@
 package elec332.core.tile;
 
+import elec332.core.inventory.window.IWindowHandler;
+import elec332.core.inventory.window.WindowManager;
 import elec332.core.main.ElecCore;
 import elec332.core.network.IElecCoreNetworkTile;
 import elec332.core.network.packets.PacketTileDataToServer;
@@ -29,8 +31,14 @@ public class TileEntityBase extends TileEntity implements IElecCoreNetworkTile {
         return oldState.getBlock() != newSate.getBlock();
     }
 
+    @Deprecated
     public boolean openGui(EntityPlayer player, Object mod, int guiID){
-        player.openGui(mod, guiID, worldObj, getPos().getX(), getPos().getY(), getPos().getZ());
+        player.openGui(mod, guiID, getWorld(), getPos().getX(), getPos().getY(), getPos().getZ());
+        return true;
+    }
+
+    public boolean openWindow(EntityPlayer player, IWindowHandler windowHandler, int id){
+        WindowManager.openWindow(player, windowHandler, getWorld(), pos, (byte) id);
         return true;
     }
 
@@ -39,13 +47,13 @@ public class TileEntityBase extends TileEntity implements IElecCoreNetworkTile {
     }
 
     public void notifyNeighborsOfChange(){
-        worldObj.notifyNeighborsOfStateChange(pos, blockType);
+        WorldHelper.notifyNeighborsOfStateChange(getWorld(), pos, blockType);
     }
 
     //NETWORK///////////////////////
 
     public void syncData(){
-        WorldHelper.markBlockForUpdate(worldObj, pos);
+        WorldHelper.markBlockForUpdate(getWorld(), pos);
     }
 
     @SideOnly(Side.CLIENT)
@@ -57,7 +65,7 @@ public class TileEntityBase extends TileEntity implements IElecCoreNetworkTile {
     }
 
     public void sendPacket(int ID, NBTTagCompound data){
-        for (EntityPlayerMP player : ServerHelper.instance.getAllPlayersWatchingBlock(worldObj, getPos())) {
+        for (EntityPlayerMP player : ServerHelper.instance.getAllPlayersWatchingBlock(getWorld(), getPos())) {
             sendPacketTo(player, ID, data);
         }
     }
@@ -73,6 +81,7 @@ public class TileEntityBase extends TileEntity implements IElecCoreNetworkTile {
     }
 
     @Override
+    @Nonnull
     public SPacketUpdateTileEntity getUpdatePacket() {
         return new SPacketUpdateTileEntity(getPos(), 0, getUpdateTag());
     }

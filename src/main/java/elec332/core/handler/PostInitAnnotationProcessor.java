@@ -1,13 +1,7 @@
 package elec332.core.handler;
 
 import elec332.core.api.discovery.ASMDataProcessor;
-import elec332.core.compat.forestry.IIndividualTemplate;
-import elec332.core.compat.forestry.IndividualDefinitionRegistry;
-import elec332.core.compat.forestry.RegisteredForestryIndividual;
 import net.minecraftforge.fml.common.LoaderState;
-import net.minecraftforge.fml.common.discovery.ASMDataTable;
-
-import java.util.function.Consumer;
 
 /**
  * Created by Elec332 on 7-10-2016.
@@ -19,7 +13,7 @@ public class PostInitAnnotationProcessor extends AbstractAnnotationProcessor {
     @Override
     @SuppressWarnings("unchecked")
     protected void registerProcesses() {
-        registerDataProcessor(RegisteredForestryIndividual.class, new Consumer<ASMDataTable.ASMData>() {
+        /*registerDataProcessor(RegisteredForestryIndividual.class, new Consumer<ASMDataTable.ASMData>() {
             @Override
             public void accept(ASMDataTable.ASMData asmData) {
                 Class<?> clazz = loadClass(asmData);
@@ -29,7 +23,7 @@ public class PostInitAnnotationProcessor extends AbstractAnnotationProcessor {
                     }
                 }
             }
-        });
+        });*/
     }
 
 }

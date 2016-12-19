@@ -31,7 +31,7 @@ public class RayTraceHelper {
         Vec3d vec3d = new Vec3d(player.posX, player.posY + player.getEyeHeight(), player.posZ);
         Vec3d vec3d1 = getVectorForRotation(player.rotationPitch, player.rotationYawHead);
         Vec3d vec3d2 = vec3d.addVector(vec3d1.xCoord * distance, vec3d1.yCoord * distance, vec3d1.zCoord * distance);
-        return player.worldObj.rayTraceBlocks(vec3d, vec3d2, false, false, true);
+        return player.getEntityWorld().rayTraceBlocks(vec3d, vec3d2, false, false, true);
     }
 
     //Because this is protected in Entity -_-

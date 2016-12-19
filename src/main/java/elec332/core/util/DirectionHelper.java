@@ -3,7 +3,6 @@ package elec332.core.util;
 import net.minecraft.client.renderer.block.model.ModelRotation;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 

@@ -3,13 +3,15 @@ package elec332.core.multiblock;
 import elec332.core.api.info.IInfoDataAccessorBlock;
 import elec332.core.api.info.IInfoProvider;
 import elec332.core.api.info.IInformation;
-import elec332.core.tile.IInventoryTile;
+import elec332.core.inventory.window.IWindowFactory;
+import elec332.core.inventory.window.IWindowHandler;
+import elec332.core.inventory.window.Window;
+import elec332.core.inventory.window.WindowManager;
 import elec332.core.tile.TileBase;
 import elec332.core.world.WorldHelper;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.inventory.Container;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
@@ -22,7 +24,7 @@ import javax.annotation.Nonnull;
 /**
  * Created by Elec332 on 28-7-2015.
  */
-public abstract class AbstractMultiBlock extends IMultiBlock implements IInventoryTile, IInfoProvider, IMultiBlockCapabilityProvider, ISpecialMultiBlockCapabilityProvider {
+public abstract class AbstractMultiBlock extends IMultiBlock implements IWindowFactory, IInfoProvider, IMultiBlockCapabilityProvider, ISpecialMultiBlockCapabilityProvider {
 
     public boolean onAnyBlockActivated(EntityPlayer player, EnumHand hand, BlockPos pos, IBlockState state){
         return false;
@@ -72,26 +74,28 @@ public abstract class AbstractMultiBlock extends IMultiBlock implements IInvento
         return tag;
     }
 
+    @Deprecated
     public final boolean openGui(EntityPlayer player, Object mod, int ID){
         player.openGui(mod, ID, getWorldObj(), getLocation().getX(), getLocation().getY(), getLocation().getZ());
         return true;
     }
 
+    public final boolean openWindow(EntityPlayer player, IWindowHandler windowHandler, int ID){
+        WindowManager.openWindow(player, windowHandler, getWorldObj(), getLocation(), (byte) ID);
+        return true;
+    }
+
+    @Deprecated
     public final boolean openGui(EntityPlayer player, Object mod){
         return openGui(player, mod, 0);
     }
 
-    @Override
-    public final Container getGuiServer(EntityPlayer player){
-        return (Container) getGui(player, false);
+    public final boolean openWindow(EntityPlayer player, IWindowHandler windowHandler){
+        return openWindow(player, windowHandler, 0);
     }
 
     @Override
-    public final Object getGuiClient(EntityPlayer player) {
-        return getGui(player, true);
-    }
-
-    public Object getGui(EntityPlayer player, boolean client){
+    public Window createWindow(Object... args) {
         return null;
     }
 

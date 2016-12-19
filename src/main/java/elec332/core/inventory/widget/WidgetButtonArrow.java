@@ -1,6 +1,7 @@
 package elec332.core.inventory.widget;
 
-import net.minecraft.client.gui.Gui;
+import elec332.core.client.util.GuiDraw;
+import elec332.core.inventory.window.Window;
 import net.minecraft.util.ResourceLocation;
 
 /**
@@ -20,7 +21,7 @@ public class WidgetButtonArrow extends WidgetButton {
     }
 
     @Override
-    public void draw(Gui gui, int guiX, int guiY, int mouseX, int mouseY) {
+    public void draw(Window gui, int guiX, int guiY, int mouseX, int mouseY) {
         bindTexture(new ResourceLocation("eleccore", "buttons.png"));
         int u = this.u;
         int v = this.v;
@@ -31,11 +32,11 @@ public class WidgetButtonArrow extends WidgetButton {
             u += direction.tw;
             v += direction.th;
         }
-        gui.drawTexturedModalRect(guiX + x, guiY + y, u, v, width, height);
+        GuiDraw.drawTexturedModalRect(guiX + x, guiY + y, u, v, width, height);
     }
 
     @Override
-    public WidgetButtonArrow addButtonEvent(IButtonEvent event) {
+    public WidgetButtonArrow addButtonEvent(IButtonEventListener event) {
         super.addButtonEvent(event);
         return this;
     }

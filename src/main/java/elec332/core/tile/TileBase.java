@@ -30,7 +30,7 @@ public class TileBase extends TileEntityBase implements IElecCoreNetworkTile {
         ElecCore.tickHandler.registerCall(new Runnable() {
             @Override
             public void run() {
-                if (WorldHelper.chunkLoaded(worldObj, getPos())) {
+                if (WorldHelper.chunkLoaded(getWorld(), getPos())) {
                     onTileLoaded();
                 }
             }
@@ -96,7 +96,7 @@ public class TileBase extends TileEntityBase implements IElecCoreNetworkTile {
     @Deprecated
     public void notifyNeighboursOfDataChange(){
         this.markDirty();
-        this.worldObj.notifyNeighborsOfStateChange(getPos(), blockType);
+        WorldHelper.notifyNeighborsOfStateChange(getWorld(), getPos(), blockType);
     }
 
     @SuppressWarnings("deprecation")
@@ -105,7 +105,7 @@ public class TileBase extends TileEntityBase implements IElecCoreNetworkTile {
     }
 
     public boolean timeCheck() {
-        return this.worldObj.getTotalWorldTime() % 32L == 0L;
+        return this.getWorld().getTotalWorldTime() % 32L == 0L;
     }
 
     public int getLightOpacity() {
@@ -171,7 +171,7 @@ public class TileBase extends TileEntityBase implements IElecCoreNetworkTile {
     }
 
     public void setFacing(EnumFacing facing){
-        WorldHelper.setBlockState(worldObj, pos, getBlockType().getBlockState().getBaseState().withProperty(BlockStateHelper.FACING_NORMAL.getProperty(), facing), 2);
+        WorldHelper.setBlockState(getWorld(), pos, getBlockType().getBlockState().getBaseState().withProperty(BlockStateHelper.FACING_NORMAL.getProperty(), facing), 2);
         notifyNeighborsOfChange();
     }
 

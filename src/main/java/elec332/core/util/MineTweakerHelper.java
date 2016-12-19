@@ -18,7 +18,7 @@ public class MineTweakerHelper {
 
     public static String getItemStack(ItemStack stack, boolean stackSize){
         StringBuilder builder = newStringBuilder();
-        if (stack == null || stack.getItem() == null)
+        if (!ItemStackHelper.isStackValid(stack))
             return "null";
         builder.append("<");
         builder.append(getItemRegistryName(stack));
@@ -37,9 +37,6 @@ public class MineTweakerHelper {
     }
 
     public static String getItemRegistryName(ItemStack stack){
-        if (stack.getItem() == null){
-            throw new NullPointerException();
-        }
         return RegistryHelper.getItemRegistry().getNameForObject(stack.getItem()).toString();
     }
 

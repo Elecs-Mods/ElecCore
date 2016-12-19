@@ -2,8 +2,8 @@ package elec332.core.network.packets;
 
 import elec332.core.inventory.IWidgetContainer;
 import elec332.core.inventory.widget.Widget;
+import elec332.core.main.ElecCore;
 import elec332.core.util.NBTHelper;
-import net.minecraft.client.Minecraft;
 import net.minecraft.inventory.Container;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
@@ -27,10 +27,11 @@ public class PacketSyncWidget extends AbstractPacket {
     public IMessage onMessageThreadSafe(AbstractPacket message, MessageContext ctx) {
         NBTTagCompound data = message.networkPackageObject.getCompoundTag("data");
         NBTTagCompound containerData = message.networkPackageObject.getCompoundTag("containerData");
-        Container openContainer = Minecraft.getMinecraft().thePlayer.openContainer;
+        Container openContainer = ElecCore.proxy.getClientPlayer().openContainer;
         if (openContainer.windowId == containerData.getInteger("window")){
             ((IWidgetContainer)openContainer).getWidgets().get(containerData.getInteger("widget")).readNBTChangesFromPacket(data, Side.CLIENT);
         }
         return null;
     }
+
 }

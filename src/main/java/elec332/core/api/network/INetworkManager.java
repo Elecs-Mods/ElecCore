@@ -1,6 +1,7 @@
 package elec332.core.api.network;
 
 import elec332.core.api.network.simple.ISimpleNetworkPacketManager;
+import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 
 /**
@@ -17,5 +18,7 @@ public interface INetworkManager<T extends INetworkHandler> {
     public ISimpleNetworkPacketManager getAdditionalSimpleNetworkManager(Object mod, String name);
 
     public IPacketRegistry newPacketRegistry();
+
+    public IExtendedMessageContext wrapMessageContext(MessageContext messageContext);
 
 }

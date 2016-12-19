@@ -34,7 +34,7 @@ public abstract class AbstractPacketTileAction extends AbstractPacket {
         NBTTagCompound data = tag.getCompoundTag("data");
         World world;
         if (ctx.side.isServer()) {
-            world = ctx.getServerHandler().playerEntity.worldObj;
+            world = ctx.getServerHandler().playerEntity.getEntityWorld();
         } else {
             world = ElecCore.proxy.getClientWorld();
         }

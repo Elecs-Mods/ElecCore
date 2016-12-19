@@ -1,10 +1,13 @@
 package elec332.core.tile;
 
+import elec332.core.util.BlockStateHelper;
+import elec332.core.util.DirectionHelper;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -38,6 +41,17 @@ public abstract class AbstractBlock extends Block {
 
     protected boolean onBlockActivated(World world, BlockPos pos, EntityPlayer player, EnumHand hand, IBlockState state, EnumFacing facing, float hitX, float hitY, float hitZ) {
         return super.onBlockActivated(world, pos, state, player, hand, player.getHeldItem(hand), facing, hitX, hitY, hitZ);
+    }
+
+    @Override
+    @Nonnull
+    public final IBlockState onBlockPlaced(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer) {
+        return getBlockStateForPlacement(worldIn, pos, facing, hitX, hitY, hitZ, meta, placer, placer.getActiveHand());
+    }
+
+    @Nonnull
+    public IBlockState getBlockStateForPlacement(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer, EnumHand hand) {
+        return super.onBlockPlaced(worldIn, pos, facing, hitX, hitY, hitZ, meta, placer);
     }
 
     @Override

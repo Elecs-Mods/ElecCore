@@ -7,6 +7,7 @@ import com.google.common.eventbus.Subscribe;
 import elec332.core.api.IElecCoreMod;
 import elec332.core.api.module.IModuleInfo;
 import elec332.core.api.util.IDependencyHandler;
+import elec332.core.compat.ModNames;
 import elec332.core.util.FMLUtil;
 import net.minecraftforge.common.ForgeVersion;
 import net.minecraftforge.fml.client.FMLClientHandler;
@@ -56,7 +57,7 @@ class ModEventHooks {
                 if (!forge.startsWith("(") || !forge.startsWith("[")) {
                     forge = "[" + forge + ",)";
                 }
-                ArtifactVersion reqForgeVer = VersionParser.parseVersionReference("Forge@" + forge);
+                ArtifactVersion reqForgeVer = VersionParser.parseVersionReference(ModNames.FORGE + "@" + forge);
                 if (!reqForgeVer.containsVersion(actualForge)) {
                     missing.add(reqForgeVer);
                 }
@@ -126,7 +127,7 @@ class ModEventHooks {
 
 
     static {
-        actualForge = new DefaultArtifactVersion("Forge", ForgeVersion.getVersion());
+        actualForge = new DefaultArtifactVersion(ModNames.FORGE, ForgeVersion.getVersion());
         actualElecCore = new DefaultArtifactVersion(ElecCore.MODID, ElecCore.ElecCoreVersion);
     }
 

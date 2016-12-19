@@ -216,7 +216,7 @@ public final class ServerHelper implements IExternalSaveHandler {
     public List<EntityPlayerMP> getAllPlayersInDimension(int dimension){
         List<EntityPlayerMP> ret = Lists.newArrayList();
         for (EntityPlayerMP player : getOnlinePlayers()){
-            if (WorldHelper.getDimID(player.worldObj) == dimension){
+            if (WorldHelper.getDimID(player.getEntityWorld()) == dimension){
                 ret.add(player);
             }
         }

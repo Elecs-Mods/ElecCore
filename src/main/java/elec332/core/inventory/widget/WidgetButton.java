@@ -1,10 +1,11 @@
 package elec332.core.inventory.widget;
 
 import com.google.common.collect.Lists;
+import elec332.core.client.util.GuiDraw;
+import elec332.core.inventory.window.Window;
 import elec332.core.util.NBTHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
@@ -23,7 +24,7 @@ public class WidgetButton extends Widget {
         this(x, y, 0, 0, width, height);
     }
 
-    public WidgetButton(int x, int y, int width, int height, IButtonEvent... events) {
+    public WidgetButton(int x, int y, int width, int height, IButtonEventListener... events) {
         this(x, y, 0, 0, width, height, events);
     }
 
@@ -33,13 +34,13 @@ public class WidgetButton extends Widget {
         this.active = true;
     }
 
-    public WidgetButton(int x, int y, int u, int v, int width, int height, IButtonEvent... events){
+    public WidgetButton(int x, int y, int u, int v, int width, int height, IButtonEventListener... events){
         this(x, y, u, v, width, height);
         Collections.addAll(buttonEvents, events);
     }
 
     protected static final ResourceLocation buttonTextures = new ResourceLocation("textures/gui/widgets.png");
-    private List<IButtonEvent> buttonEvents;
+    private List<IButtonEventListener> buttonEvents;
     private boolean active;
     protected String displayString;
 
@@ -78,7 +79,7 @@ public class WidgetButton extends Widget {
     }
 
     @Override
-    public void draw(Gui gui, int guiX, int guiY, int mouseX, int mouseY) {
+    public void draw(Window gui, int guiX, int guiY, int mouseX, int mouseY) {
         if (!isHidden()) {
             FontRenderer fontrenderer = Minecraft.getMinecraft().fontRendererObj;
             bindTexture(buttonTextures);
@@ -89,11 +90,11 @@ public class WidgetButton extends Widget {
             OpenGlHelper.glBlendFunc(770, 771, 1, 0);
             GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
             //Left half
-            gui.drawTexturedModalRect(guiX + this.x, guiY + this.y, 0, 46 + k * 20, this.width / 2, this.height / 2);
-            gui.drawTexturedModalRect(guiX + this.x, guiY + this.y + this.height / 2, 0, 46 + k * 20 + 20 - this.height / 2, this.width / 2, this.height / 2);
+            GuiDraw.drawTexturedModalRect(guiX + this.x, guiY + this.y, 0, 46 + k * 20, this.width / 2, this.height / 2);
+            GuiDraw.drawTexturedModalRect(guiX + this.x, guiY + this.y + this.height / 2, 0, 46 + k * 20 + 20 - this.height / 2, this.width / 2, this.height / 2);
             //Right half
-            gui.drawTexturedModalRect(guiX + this.x + this.width / 2, guiY + this.y, 200 - this.width / 2, 46 + k * 20, this.width / 2, this.height / 2);
-            gui.drawTexturedModalRect(guiX + this.x + this.width / 2, guiY + this.y + this.height / 2, 200 - this.width / 2, 46 + k * 20 + 20 - this.height / 2, this.width / 2, this.height / 2);
+            GuiDraw.drawTexturedModalRect(guiX + this.x + this.width / 2, guiY + this.y, 200 - this.width / 2, 46 + k * 20, this.width / 2, this.height / 2);
+            GuiDraw.drawTexturedModalRect(guiX + this.x + this.width / 2, guiY + this.y + this.height / 2, 200 - this.width / 2, 46 + k * 20 + 20 - this.height / 2, this.width / 2, this.height / 2);
             //Vanilla code
             //gui.drawTexturedModalRect(guiX + this.x, guiY + this.y, 0, 46 + k * 20, this.width / 2, this.height);
             //gui.drawTexturedModalRect(guiX + this.x + this.width / 2, guiY + this.y, 200 - this.width / 2, 46 + k * 20, this.width / 2, this.height);
@@ -103,7 +104,7 @@ public class WidgetButton extends Widget {
             } else if (hovering) {
                 l = 16777120;
             }
-            gui.drawCenteredString(fontrenderer, this.displayString, guiX + this.x + this.width / 2, guiY + this.y + (this.height - 8) / 2, l);
+            GuiDraw.drawCenteredString(fontrenderer, this.displayString, guiX + this.x + this.width / 2, guiY + this.y + (this.height - 8) / 2, l);
         }
     }
 
@@ -118,17 +119,17 @@ public class WidgetButton extends Widget {
     }
 
     public void sendButtonEvents(){
-        for (IButtonEvent event : buttonEvents)
+        for (IButtonEventListener event : buttonEvents)
             event.onButtonClicked(this);
     }
 
-    public WidgetButton addButtonEvent(IButtonEvent event){
+    public WidgetButton addButtonEvent(IButtonEventListener event){
         if (!buttonEvents.contains(event))
             buttonEvents.add(event);
         return this;
     }
 
-    public void removeButtonEvent(IButtonEvent event){
+    public void removeButtonEvent(IButtonEventListener event){
         buttonEvents.remove(event);
     }
 
@@ -136,7 +137,7 @@ public class WidgetButton extends Widget {
         buttonEvents.clear();
     }
 
-    public static interface IButtonEvent{
+    public static interface IButtonEventListener {
 
         public void onButtonClicked(WidgetButton button);
 

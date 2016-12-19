@@ -1,7 +1,7 @@
 package elec332.core.client.inventory;
 
 import elec332.core.inventory.BaseContainer;
-import elec332.core.inventory.widget.Widget;
+import elec332.core.inventory.widget.IWidget;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
@@ -16,7 +16,7 @@ import java.io.IOException;
 @SideOnly(Side.CLIENT)
 public abstract class BaseGuiContainer extends GuiContainer implements IResourceLocationProvider {
 
-    public BaseGuiContainer(BaseContainer container) {
+     BaseGuiContainer(BaseContainer container) {
         super(container);
         this.container = container;
     }
@@ -24,8 +24,8 @@ public abstract class BaseGuiContainer extends GuiContainer implements IResource
     protected BaseContainer container;
 
     @Override
-    protected void mouseClicked(int mouseX, int mouseY, int button) throws IOException{
-        for (Widget widget : container.getWidgets()){
+    protected void mouseClicked(int mouseX, int mouseY, int button) throws IOException {
+        for (IWidget widget : container.getWidgets()){
             if (!widget.isHidden() && widget.isMouseOver(translatedMouseX(mouseX), translatedMouseY(mouseY)) && widget.mouseClicked(translatedMouseX(mouseX), translatedMouseY(mouseY), button))
                 return;
         }
@@ -41,7 +41,7 @@ public abstract class BaseGuiContainer extends GuiContainer implements IResource
         GlStateManager.translate((float) this.guiLeft, (float) this.guiTop, 0.0F);
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
         RenderHelper.disableStandardItemLighting();
-        for (Widget widget : container.getWidgets()){
+        for (IWidget widget : container.getWidgets()){
             if (widget.isHidden())
                 continue;
             if (widget.getToolTip() != null && widget.isMouseOver(translatedMouseX(mouseX), translatedMouseY(mouseY)))
@@ -59,9 +59,9 @@ public abstract class BaseGuiContainer extends GuiContainer implements IResource
         int k = (this.width - this.xSize) / 2;
         int l = (this.height - this.ySize) / 2;
         this.drawTexturedModalRect(k, l, 0, 0, this.xSize, this.ySize);
-        for (Widget widget : container.getWidgets()){
+        for (IWidget widget : container.getWidgets()){
             if (!widget.isHidden())
-                widget.draw(this, k, l, translatedMouseX(mouseX), translatedMouseY(mouseY));
+                widget.draw(null, k, l, translatedMouseX(mouseX), translatedMouseY(mouseY));
         }
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
     }

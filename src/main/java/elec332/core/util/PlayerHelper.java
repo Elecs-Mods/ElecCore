@@ -24,7 +24,7 @@ public class PlayerHelper {
 
     public static Vec3d getCorrectedHeadVec(EntityPlayer player) {
         double yCoord = player.posY;
-        if(player.worldObj.isRemote) {
+        if(player.getEntityWorld().isRemote) {
             yCoord += (player.getEyeHeight() - player.getDefaultEyeHeight());
         } else {
             yCoord += player.getEyeHeight();
@@ -44,7 +44,7 @@ public class PlayerHelper {
     }
 
     public static void sendMessageToPlayer(@Nonnull EntityPlayer player, ITextComponent s){
-        player.addChatComponentMessage(s);
+        player.addChatMessage(s);
     }
 
     public static void addPersonalMessageToClient(String s){

@@ -7,6 +7,7 @@ import elec332.core.api.network.ModNetworkHandler;
 import elec332.core.api.registry.ISingleRegister;
 import elec332.core.api.util.IDependencyHandler;
 import elec332.core.api.util.IRightClickCancel;
+import elec332.core.compat.ModNames;
 import elec332.core.effects.AbilityHandler;
 import elec332.core.grid.internal.GridEventHandler;
 import elec332.core.grid.internal.GridEventInputHandler;
@@ -38,13 +39,14 @@ import org.apache.logging.log4j.Logger;
 /**
  * Created by Elec332.
  */
-@Mod(modid = ElecCore.MODID, name = ElecCore.MODNAME, dependencies = "required-after:Forge@[12.18.1.2073,);after:forestry;",
-acceptedMinecraftVersions = "[1.10, 1.10.2]", version = ElecCore.ElecCoreVersion, useMetadata = true)
+@Mod(modid = ElecCore.MODID, name = ElecCore.MODNAME, dependencies = "after:"+ ModNames.FORESTRY,
+acceptedMinecraftVersions = "[1.11,)", version = ElecCore.ElecCoreVersion, useMetadata = true)
 public class ElecCore implements IModuleController, IElecCoreMod, IDependencyHandler {
 
 	public static final String ElecCoreVersion = "#ELECCORE_VER#";
 	public static final String MODID = "eleccore";
 	public static final String MODNAME = "ElecCore";
+	public static final String FORGE_VERSION = "13.19.0.2160";
 
 	@SidedProxy(clientSide = "elec332.core.proxies.ClientProxy", serverSide = "elec332.core.proxies.CommonProxy")
 	public static CommonProxy proxy;
@@ -67,13 +69,13 @@ public class ElecCore implements IModuleController, IElecCoreMod, IDependencyHan
 	@EventHandler
 	public void construction(FMLConstructionEvent event){
 		logger = LogManager.getLogger("ElecCore");
-		for (ModContainer mc : FMLUtil.getLoader().getActiveModList()){
+        for (ModContainer mc : FMLUtil.getLoader().getActiveModList()){
 			if (mc instanceof FMLModContainer){
-				ModEventHooks hook = new ModEventHooks((FMLModContainer) mc);
+                ModEventHooks hook = new ModEventHooks((FMLModContainer) mc);
 				FMLUtil.registerToModBus((FMLModContainer) mc, hook);
-				if (mc.getMod() == this){
-					hook.onConstuct(event);
-				}
+                if (mc.getMod() == this){
+                    hook.onConstuct(event);
+                }
 			}
 		}
 		asmDataProcessor = new ElecCoreDiscoverer();
@@ -144,15 +146,15 @@ public class ElecCore implements IModuleController, IElecCoreMod, IDependencyHan
 				ItemStack stack;
 				if (event.getHand() == EnumHand.OFF_HAND){
 					stack = event.getEntityPlayer().getHeldItem(EnumHand.MAIN_HAND);
-					if (stack != null && stack.getItem() instanceof IRightClickCancel && ((IRightClickCancel) stack.getItem()).cancelInteraction(stack)){
+					if (stack.getItem() instanceof IRightClickCancel && ((IRightClickCancel) stack.getItem()).cancelInteraction(stack)){
 						event.setCanceled(true);
 						return;
 					}
 				}
 				stack = event.getItemStack();
-				if (stack != null && stack.getItem() instanceof IRightClickCancel && ((IRightClickCancel) stack.getItem()).cancelInteraction(stack)) {
+				if (stack.getItem() instanceof IRightClickCancel && ((IRightClickCancel) stack.getItem()).cancelInteraction(stack)) {
 					event.setCanceled(true);
-					stack.getItem().onItemUse(stack, event.getEntityPlayer(), event.getWorld(), event.getPos(), event.getHand(), event.getFace(), (float) event.getHitVec().xCoord, (float) event.getHitVec().yCoord, (float) event.getHitVec().zCoord);
+					stack.getItem().onItemUse(event.getItemStack(), event.getEntityPlayer(), event.getWorld(), event.getPos(), event.getHand(), event.getFace(), (float) event.getHitVec().xCoord, (float) event.getHitVec().yCoord, (float) event.getHitVec().zCoord);
 				}
 			}
 
@@ -209,6 +211,11 @@ public class ElecCore implements IModuleController, IElecCoreMod, IDependencyHan
 	@Override
 	public boolean isModuleEnabled(String moduleName) {
 		return true;
+	}
+
+	@Override
+	public String getRequiredForgeVersion(String mcVersion) {
+		return FORGE_VERSION;
 	}
 
 	public void setModEventHandler(ModEventHandler handler){

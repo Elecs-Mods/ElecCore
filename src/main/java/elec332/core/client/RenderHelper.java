@@ -4,6 +4,7 @@ import com.google.common.collect.Maps;
 import elec332.core.api.client.ITessellator;
 import elec332.core.client.tesselator.ElecTessellator;
 import elec332.core.client.tesselator.RenderBlocks;
+import elec332.core.main.ElecCore;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.particle.Particle;
@@ -132,7 +133,7 @@ public class RenderHelper {
     }
 
     public static Vec3d getPlayerVec(float partialTicks){
-        EntityPlayer player = mc.thePlayer;
+        EntityPlayer player = ElecCore.proxy.getClientPlayer();
         double dX = player.lastTickPosX + (player.posX - player.lastTickPosX) * partialTicks;
         double dY = player.lastTickPosY + (player.posY - player.lastTickPosY) * partialTicks;
         double dZ = player.lastTickPosZ + (player.posZ - player.lastTickPosZ) * partialTicks;
@@ -145,7 +146,7 @@ public class RenderHelper {
     }
 
     public static Vec3d getPlayerVec(){
-        EntityPlayer player = mc.thePlayer;
+        EntityPlayer player = ElecCore.proxy.getClientPlayer();
         return new Vec3d(player.posX, player.posY, player.posZ);
     }
 

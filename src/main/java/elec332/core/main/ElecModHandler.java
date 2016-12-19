@@ -178,6 +178,7 @@ public class ElecModHandler {
                     IResourcePack resourcePack = resourcePackMap.get(mod.getKey().getModId());
                     resourcePacks.remove(resourcePack);
                     resourcePack = new WrappedResourcePack(resourcePack, mod.getKey()){
+
                         @Nonnull
                         @Override
                         public InputStream getInputStream(@Nonnull ResourceLocation location) throws IOException {
@@ -193,6 +194,7 @@ public class ElecModHandler {
                                 throw e;
                             }
                         }
+
                     };
                     resourcePacks.add(resourcePack);
                     resourcePackMap.put(mod.getKey().getModId(), resourcePack);

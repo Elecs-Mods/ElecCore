@@ -2,13 +2,15 @@ package elec332.core.inventory;
 
 import com.google.common.collect.Lists;
 import elec332.core.inventory.slot.SlotOutput;
-import elec332.core.inventory.widget.Widget;
+import elec332.core.inventory.widget.IWidget;
+import elec332.core.util.ItemStackHelper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.IContainerListener;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 
+import javax.annotation.Nonnull;
 import java.util.List;
 
 /**
@@ -16,12 +18,12 @@ import java.util.List;
  */
 public class BaseContainer extends Container implements IWidgetContainer{
 
-    public BaseContainer(EntityPlayer player, int offset){
+    BaseContainer(EntityPlayer player, int offset){
         this(player);
         this.offset = offset;
     }
 
-    public BaseContainer(EntityPlayer player){
+    BaseContainer(EntityPlayer player){
         //this.tileEntity = tile;
         this.thePlayer = player;
         this.offset = 0;
@@ -30,22 +32,22 @@ public class BaseContainer extends Container implements IWidgetContainer{
 
     //private BaseTileWithInventory tileEntity;
     protected final EntityPlayer thePlayer;
-    protected final List<Widget> widgets;
+    protected final List<IWidget> widgets;
     private int offset;
     private int hotBarFactor = 0;
     private int playerInvIndexStart = 0;
     private int playerInvIndexStop = 0;
 
-    public List<Widget> getWidgets(){
+    public List<IWidget> getWidgets(){
         return this.widgets;
     }
 
     @Override
-    public <W extends Widget> W addWidget(W widget) {
+    public <W extends IWidget> W addWidget(W widget) {
         widget.setContainer(this);
         widget.setID(widgets.size());
         for (Object obj : listeners) {
-            widget.initWidget((IContainerListener) obj);
+            throw new RuntimeException();//widget.initWidget((IContainerListener) obj);
         }
         this.widgets.add(widget);
         return widget;
@@ -72,8 +74,8 @@ public class BaseContainer extends Container implements IWidgetContainer{
 
     @Override
     public void addListener(IContainerListener iCrafting) {
-        for (Widget widget : widgets)
-            widget.initWidget(iCrafting);
+        for (IWidget widget : widgets)
+            throw new RuntimeException();//widget.initWidget(iCrafting);
         super.addListener(iCrafting);
     }
 
@@ -81,21 +83,22 @@ public class BaseContainer extends Container implements IWidgetContainer{
     @SuppressWarnings("unchecked")
     public void detectAndSendChanges() {
         super.detectAndSendChanges();
-        for (Widget widget : widgets){
-            widget.detectAndSendChanges(listeners);
+        for (IWidget widget : widgets){
+            throw new RuntimeException();//widget.detectAndSendChanges(listeners);
         }
     }
 
     @Override
+    @Nonnull
     public ItemStack transferStackInSlot(EntityPlayer player, int slotID) {
-        ItemStack itemstack = null;
+        ItemStack itemstack = ItemStackHelper.NULL_STACK;
         Slot slot = getSlot(slotID);
         if (slot != null && slot.getHasStack()) {
             ItemStack itemstack1 = slot.getStack();
             itemstack = itemstack1.copy();
             if (slot instanceof SlotOutput) {
                 if (!this.mergeItemStack(itemstack1, playerInvIndexStart, playerInvIndexStop, true)) {
-                    return null;
+                    return ItemStackHelper.NULL_STACK;
                 }
                 slot.onSlotChange(itemstack1, itemstack);
             } else if (slotID >= playerInvIndexStart && slotID <= playerInvIndexStop) {
@@ -104,34 +107,34 @@ public class BaseContainer extends Container implements IWidgetContainer{
                     if (slot1.isItemValid(itemstack1)) {
                         if (!this.mergeItemStack(itemstack1, i, i + 1, false)) {
                             if (itemstack1.stackSize < 1)
-                                putStackInSlot(slotID, null);  //Workaround for ghost itemstacks
-                            return null;
+                                putStackInSlot(slotID, ItemStackHelper.NULL_STACK);  //Workaround for ghost itemstacks
+                            return ItemStackHelper.NULL_STACK;
                         }
                     }
                 }
                 if (slotID >= playerInvIndexStart && slotID < playerInvIndexStop-9) {
                     if (!this.mergeItemStack(itemstack1, playerInvIndexStop-9, playerInvIndexStop, false)) {
                         if (itemstack1.stackSize < 1)
-                            putStackInSlot(slotID, null);  //Workaround for ghost itemstacks
-                        return null;
+                            putStackInSlot(slotID, ItemStackHelper.NULL_STACK);  //Workaround for ghost itemstacks
+                        return ItemStackHelper.NULL_STACK;
                     }
                 } else if (slotID >= playerInvIndexStop-9 && slotID < playerInvIndexStop && !this.mergeItemStack(itemstack1, playerInvIndexStart, playerInvIndexStop-9, false)) {
                     if (itemstack1.stackSize < 1)
-                        putStackInSlot(slotID, null);  //Workaround for ghost itemstacks
-                    return null;
+                        putStackInSlot(slotID, ItemStackHelper.NULL_STACK);  //Workaround for ghost itemstacks
+                    return ItemStackHelper.NULL_STACK;
                 }
             } else if (!this.mergeItemStack(itemstack1, playerInvIndexStart, playerInvIndexStop, false)) {
-                return null;
+                return ItemStackHelper.NULL_STACK;
             }
 
             if (itemstack1.stackSize == 0) {
-                slot.putStack(null);
+                slot.putStack(ItemStackHelper.NULL_STACK);
             } else {
                 slot.onSlotChanged();
             }
 
             if (itemstack1.stackSize == itemstack.stackSize) {
-                return null;
+                return ItemStackHelper.NULL_STACK;
             }
 
             slot.onPickupFromSlot(player, itemstack1);

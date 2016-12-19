@@ -1,6 +1,7 @@
 package elec332.core.compat.forestry.allele;
 
 import elec332.core.compat.forestry.EffectData;
+import elec332.core.world.WorldHelper;
 import forestry.api.apiculture.BeeManager;
 import forestry.api.apiculture.IBeeGenome;
 import forestry.api.apiculture.IBeeHousing;
@@ -24,26 +25,26 @@ import java.util.Random;
  */
 public class AlleleEffectSpawnMob extends AlleleEffectThrottled {
 
-    public AlleleEffectSpawnMob(ResourceLocation rl, String mobType) {
+    public AlleleEffectSpawnMob(ResourceLocation rl, ResourceLocation mobType) {
         super(rl);
         this.requiresWorkingQueen = true;
         this.mobType = mobType;
     }
 
-    public AlleleEffectSpawnMob(String s, String mobType) {
+    public AlleleEffectSpawnMob(String s, ResourceLocation mobType) {
         super(s);
         this.requiresWorkingQueen = true;
         this.mobType = mobType;
     }
 
-    public AlleleEffectSpawnMob(String uid, String unlocalizedName, String mobType) {
+    public AlleleEffectSpawnMob(String uid, String unlocalizedName, ResourceLocation mobType) {
         super(uid, unlocalizedName);
         this.requiresWorkingQueen = true;
         this.mobType = mobType;
     }
 
-    private final String mobType;
-    private String mobTypePlayerNear;
+    private final ResourceLocation mobType;
+    private ResourceLocation mobTypePlayerNear;
     private int chance = 100;
     private int maxMobs = 5;
     private boolean angryOnPlayer = false, playerMustBeNear = false;
@@ -63,7 +64,7 @@ public class AlleleEffectSpawnMob extends AlleleEffectThrottled {
         return this;
     }
 
-    public AlleleEffectSpawnMob setMobTypeWhenPlayerNear(String mobType){
+    public AlleleEffectSpawnMob setMobTypeWhenPlayerNear(ResourceLocation mobType){
         this.mobTypePlayerNear = mobType;
         return this;
     }
@@ -102,10 +103,10 @@ public class AlleleEffectSpawnMob extends AlleleEffectThrottled {
     protected boolean spawn(EntityPlayer player, boolean angry, IBeeGenome genome, IBeeHousing housing){
         Entity entity = null;
         if (mobTypePlayerNear != null && player != null){
-             entity = EntityList.createEntityByName(mobTypePlayerNear, housing.getWorldObj());
+             entity = EntityList.createEntityByIDFromName(mobTypePlayerNear.getResourcePath(), housing.getWorldObj());
         }
         if (entity == null){
-            entity = EntityList.createEntityByName(mobType, housing.getWorldObj());
+            entity = EntityList.createEntityByIDFromName(mobType.getResourcePath(), housing.getWorldObj());
         }
         if (entity == null){
             return false;
@@ -116,7 +117,7 @@ public class AlleleEffectSpawnMob extends AlleleEffectThrottled {
         Random random = housing.getWorldObj().rand;
         AxisAlignedBB aabb = getBounding(genome, housing);
         entity.setLocationAndAngles(aabb.minX + random.nextDouble() * (aabb.maxX - aabb.minX), aabb.minY + random.nextDouble() * (aabb.maxY - aabb.minY), aabb.minZ + random.nextDouble() * (aabb.maxZ - aabb.minZ), random.nextFloat() * 360 , 0);
-        if (housing.getWorldObj().spawnEntityInWorld(entity)){
+        if (WorldHelper.spawnEntityInWorld(housing.getWorldObj(), entity)){
             if (entity instanceof EntityLiving && angry && player != null){
                 ((EntityLiving) entity).setAttackTarget(player);
             }

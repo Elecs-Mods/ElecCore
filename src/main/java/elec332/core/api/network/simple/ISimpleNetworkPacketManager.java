@@ -42,13 +42,13 @@ public interface ISimpleNetworkPacketManager {
 
     public void sendToServer(ByteBuf data, ISimplePacketHandler packetHandler);
 
-    public void registerPacket(Class<ISimplePacket> packetType);
+    public void registerPacket(Class<? extends ISimplePacket> packetType);
 
     public void registerPacket(ISimplePacket packet);
 
     public void registerPacketHandler(ISimplePacketHandler packetHandler);
 
-    public void registerPacket(Class<ISimplePacket> packetType, ISimplePacketHandler packetHandler);
+    public void registerPacket(Class<? extends ISimplePacket> packetType, ISimplePacketHandler packetHandler);
 
     public void registerPacket(ISimplePacket packet, ISimplePacketHandler packetHandler);
 

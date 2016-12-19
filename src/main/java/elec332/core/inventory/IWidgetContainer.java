@@ -1,6 +1,6 @@
 package elec332.core.inventory;
 
-import elec332.core.inventory.widget.Widget;
+import elec332.core.inventory.widget.IWidget;
 
 import java.util.List;
 
@@ -9,8 +9,8 @@ import java.util.List;
  */
 public interface IWidgetContainer {
 
-    public List<Widget> getWidgets();
+    public List<IWidget> getWidgets();
 
-    public <W extends Widget> W addWidget(W widget);
+    public <W extends IWidget> W addWidget(W widget);
 
 }

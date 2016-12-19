@@ -1,18 +1,15 @@
 package elec332.core.inventory.widget;
 
 import elec332.core.client.RenderHelper;
-import elec332.core.client.inventory.IResourceLocationProvider;
+import elec332.core.client.util.GuiDraw;
 import elec332.core.inventory.tooltip.ToolTip;
-import net.minecraft.client.gui.Gui;
+import elec332.core.inventory.window.Window;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.inventory.IContainerListener;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.IFluidTank;
 import org.lwjgl.opengl.GL11;
-
-import java.util.List;
 
 /**
  * Created by Elec332 on 31-7-2015.
@@ -29,8 +26,9 @@ public class FluidTankWidget extends Widget {
     private int capacity;
 
     @Override
-    public void detectAndSendChanges(List<IContainerListener> crafters) {
-        if (capacity != tank.getCapacity() || fluidStack != null && !fluidStack.isFluidStackIdentical(tank.getFluid()) || tank.getFluid() != null) {            for (IContainerListener iCrafting : crafters) {
+    public void detectAndSendChanges(Iterable<IWidgetListener> crafters) {
+        if (capacity != tank.getCapacity() || fluidStack != null && !fluidStack.isFluidStackIdentical(tank.getFluid()) || tank.getFluid() != null) {
+            for (IWidgetListener iCrafting : crafters) {
                 if (iCrafting instanceof EntityPlayerMP) {
                     NBTTagCompound tag = new NBTTagCompound();
                     if (tank.getFluid() != null) {
@@ -59,7 +57,7 @@ public class FluidTankWidget extends Widget {
     }
 
     @Override
-    public void draw(Gui gui, int guiX, int guiY, int mouseX, int mouseY) {
+    public void draw(Window gui, int guiX, int guiY, int mouseX, int mouseY) {
         if (capacity == 0)
             return;
         if (fluidStack == null || fluidStack.getFluid() == null || fluidStack.amount <= 0)
@@ -69,13 +67,13 @@ public class FluidTankWidget extends Widget {
         bindTexture(RenderHelper.getBlocksResourceLocation());
         for (int col = 0; col < width / 16; col++) {
             for (int row = 0; row <= height / 16; row++) {
-                gui.drawTexturedModalRect(guiX + x + col * 16, guiY + y + row * 16 - 1, fluidIcon, 16, 16);
+                GuiDraw.drawTexturedModalRect(guiX + x + col * 16, guiY + y + row * 16 - 1, fluidIcon, 16, 16);
             }
         }
         GL11.glColor4f(1, 1, 1, 1);
-        bindTexture(((IResourceLocationProvider)gui).getBackgroundImageLocation());
-        gui.drawTexturedModalRect(guiX + x, guiY + y - 1, x, y - 1, width, height - (int) Math.floor(height * scale) + 1);
-        gui.drawTexturedModalRect(guiX + x, guiY + y, u, v, width, height);
+        bindTexture(gui.getBackgroundImageLocation());
+        GuiDraw.drawTexturedModalRect(guiX + x, guiY + y - 1, x, y - 1, width, height - (int) Math.floor(height * scale) + 1);
+        GuiDraw.drawTexturedModalRect(guiX + x, guiY + y, u, v, width, height);
         //gui.drawTexturedModalRect(guiX + x-1, guiY + y - 1, 0, 0, width+1, height - (int) Math.floor(height * scale) + 1);
         //gui.drawTexturedModalRect(guiX + x, guiY + y, width+2, height+2, width, height);
     }
