@@ -1,6 +1,9 @@
 package elec332.core.inventory.widget.slot;
 
+import elec332.core.client.RenderHelper;
+import elec332.core.client.util.GuiDraw;
 import elec332.core.inventory.widget.Widget;
+import elec332.core.inventory.window.Window;
 import elec332.core.util.ItemStackHelper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
@@ -24,6 +27,12 @@ public class WidgetSlot extends Widget {
         super(x, y, 0, 0, 16, 16);
         this.inventory = inventory;
         this.slotIndex = index;
+    }
+
+    @Override
+    public void draw(Window window, int guiX, int guiY, int mouseX, int mouseY) {
+        RenderHelper.bindTexture(Window.DEFAULT_BACKGROUND);
+        GuiDraw.drawTexturedModalRect(guiX + x - 1, guiY + y - 1, 180, 0, 18, 18);
     }
 
     private final IItemHandler inventory;

@@ -21,17 +21,7 @@ public interface INoJsonBlock extends INoJsonItem {
      * @return The model to render for this block for the given arguments.
      */
     @SideOnly(Side.CLIENT)
-    //public IModelWithoutQuads getBlockModel(IBlockState state);
     public IBakedModel getBlockModel(IBlockState state);
-
-    /**
-     * This method is used when a model is requested for every valid BlockState,
-     * during the initialisation of the ModelRegistry.
-     *
-     * @param state The current BlockState, can NOT be an ExtendedBlockState.
-     * @return The QuadProvider.
-     */
-    //public IQuadProvider getQuadProvider(IBlockState state);
 
     /**
      * This method is used when a model is requested when its not placed, so for an item.

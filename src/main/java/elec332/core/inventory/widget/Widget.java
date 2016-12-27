@@ -103,6 +103,10 @@ public class Widget implements IWidget {
     }
 
     @Override
+    public void keyTyped(char typedChar, int keyCode) {
+    }
+
+    @Override
     @SideOnly(Side.CLIENT)
     public void draw(Window window, int guiX, int guiY, int mouseX, int mouseY) {
         GuiDraw.drawTexturedModalRect(guiX + x, guiY + y, u, v, width, height);

@@ -13,6 +13,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -32,7 +33,9 @@ public final class WindowContainer extends Container {
         this.window = window;
         this.slotStuff = Maps.newHashMap();
         window.setContainer(windowContainerHandler = new WindowContainerHandler());
-        window.initWindow();
+        if (!player.getEntityWorld().isRemote) {
+            window.initWindow_();
+        }
     }
 
     private final Window window;
@@ -84,7 +87,7 @@ public final class WindowContainer extends Container {
 
     @Override
     public void onContainerClosed(EntityPlayer player) {
-        window.onContainerClosed(player);
+        window.onWindowClosed(player);
         super.onContainerClosed(player);
     }
 
@@ -282,7 +285,6 @@ public final class WindowContainer extends Container {
             widget.setBackgroundName(name);
         }
 
-        @Nonnull
         @SideOnly(Side.CLIENT)
         @Override
         public net.minecraft.client.renderer.texture.TextureAtlasSprite getBackgroundSprite() {
@@ -315,7 +317,7 @@ public final class WindowContainer extends Container {
 
         @Override
         public WidgetSlot getSlot(int id) {
-            return id > 0 && id < inventorySlots.size() ? ((WidgetLinkedSlot)WindowContainer.this.getSlot(id)).widget : null;
+            return id >= 0 && id < inventorySlots.size() ? ((WidgetLinkedSlot)WindowContainer.this.getSlot(id)).widget : null;
         }
 
         @Override
@@ -350,8 +352,8 @@ public final class WindowContainer extends Container {
         @Override
         @SideOnly(Side.CLIENT)
         public void handleMouseClickDefault(WidgetSlot slotIn, int slotId, int mouseButton, @Nonnull ClickType type) {
-            Slot slot = slotStuff.get(slotIn);
-            if (slot == null){
+            Slot slot = slotIn == null ? null : slotStuff.get(slotIn);
+            if (slotIn != null && slot == null){
                 throw new IllegalArgumentException();
             }
             windowGui.handleMouseClickDefault(slot, slotId, mouseButton, type);

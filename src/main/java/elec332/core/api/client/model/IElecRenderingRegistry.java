@@ -7,6 +7,8 @@ import net.minecraft.block.Block;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;
 
+import javax.annotation.Nonnull;
+
 /**
  * Created by Elec332 on 29-10-2016.
  */
@@ -14,9 +16,9 @@ public interface IElecRenderingRegistry {
 
     public void registerLoadableModel(ModelResourceLocation mrl);
 
-    public void registerFakeItem(Item item);
+    public Item registerFakeItem(Item item);
 
-    public void registerFakeBlock(Block block);
+    public Block registerFakeBlock(Block block);
 
     public void registerLoader(IModelLoader modelLoader);
 
@@ -24,8 +26,10 @@ public interface IElecRenderingRegistry {
 
     public void registerLoader(IModelAndTextureLoader loader);
 
+    @Nonnull
     public Iterable<Block> getAllValidBlocks();
 
+    @Nonnull
     public Iterable<Item> getAllValidItems();
 
 }

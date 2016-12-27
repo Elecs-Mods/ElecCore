@@ -39,7 +39,7 @@ public class BasicItemHandler implements IItemHandler, IItemHandlerModifiable, I
     public void setStackInSlot(int slot, @Nonnull ItemStack stack) {
         validateSlotIndex(slot);
         ItemStack stackInSlot = this.stacks.get(slot);
-        if (stackInSlot.isEmpty() || ItemStack.areItemStacksEqual(stackInSlot, stack) || !isStackValidForSlot(slot, stack)) {
+        if (ItemStack.areItemStacksEqual(stackInSlot, stack) || !isStackValidForSlot(slot, stack)) {
             return;
         }
         this.stacks.set(slot, stack);

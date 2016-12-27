@@ -7,9 +7,7 @@ public interface ISimpleWindowFactory extends IWindowFactory, IWindowModifier {
 
     @Override
     default public Window createWindow(Object... args){
-        Window window = new Window(getXSize(), getYSize());
-        modifyWindow(window);
-        return window;
+        return new Window(getXSize(), getYSize(), this);
     }
 
     default public int getXSize(){

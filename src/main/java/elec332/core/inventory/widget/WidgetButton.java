@@ -6,6 +6,7 @@ import elec332.core.inventory.window.Window;
 import elec332.core.util.NBTHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
@@ -81,6 +82,7 @@ public class WidgetButton extends Widget {
     @Override
     public void draw(Window gui, int guiX, int guiY, int mouseX, int mouseY) {
         if (!isHidden()) {
+            GlStateManager.pushMatrix();
             FontRenderer fontrenderer = Minecraft.getMinecraft().fontRendererObj;
             bindTexture(buttonTextures);
             GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
@@ -105,6 +107,8 @@ public class WidgetButton extends Widget {
                 l = 16777120;
             }
             GuiDraw.drawCenteredString(fontrenderer, this.displayString, guiX + this.x + this.width / 2, guiY + this.y + (this.height - 8) / 2, l);
+            GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
+            GlStateManager.popMatrix();
         }
     }
 

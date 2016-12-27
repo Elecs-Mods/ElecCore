@@ -49,11 +49,11 @@ public class DirectionHelper {
     @SideOnly(Side.CLIENT)
     public static ModelRotation getRotationFromFacing(EnumFacing facing){
         switch (facing){
-            case EAST:
+            case WEST:
                 return ModelRotation.X0_Y270;
             case SOUTH:
                 return ModelRotation.X0_Y180;
-            case WEST:
+            case EAST:
                 return ModelRotation.X0_Y90;
             default:
                 return ModelRotation.X0_Y0;

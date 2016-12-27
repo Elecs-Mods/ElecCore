@@ -9,6 +9,7 @@ import elec332.core.api.network.simple.ISimplePacketHandler;
 import elec332.core.main.ElecCore;
 import elec332.core.util.FMLUtil;
 import elec332.core.util.NBTTypes;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.Container;
@@ -19,6 +20,8 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -70,6 +73,7 @@ public enum WindowManager implements ISimplePacket, ISimplePacketHandler {
             return;
         }
         map.put(entry.windowHandler, entry);
+        lookup.put(entry.name, entry.windowHandler);
         names.put(entry.id, entry.name);
     }
 
@@ -85,12 +89,8 @@ public enum WindowManager implements ISimplePacket, ISimplePacketHandler {
         return lookup.get(names.get(id));
     }
 
-    static int i = 0;
-
     @Override
     public void onPacket(ElecByteBuf data, IExtendedMessageContext messageContext, ISimpleNetworkPacketManager networkHandler) {
-        System.out.println("reading bytes "+i);
-        i++;
         NBTTagCompound tag1 = data.readNBTTagCompoundFromBuffer();
         NBTTagList list = tag1.getTagList("list", NBTTypes.COMPOUND.getID());
         names.clear();
@@ -113,7 +113,11 @@ public enum WindowManager implements ISimplePacket, ISimplePacketHandler {
         NBTTagCompound tag1 = new NBTTagCompound();
         tag1.setTag("list", list);
         byteBuf.writeNBTTagCompoundToBuffer(tag1);
-        System.out.println("wrote bytes");
+    }
+
+    @SideOnly(Side.CLIENT)
+    public static void openClientWindow(Window window){
+        Minecraft.getMinecraft().displayGuiScreen(new WindowGui(ElecCore.proxy.getClientPlayer(), window));
     }
 
     public static void openWindow(@Nonnull EntityPlayer player, IWindowHandler windowHandler, World world, BlockPos pos){
@@ -164,7 +168,6 @@ public enum WindowManager implements ISimplePacket, ISimplePacketHandler {
         }
         return null;
     }
-
 
     private class Entry {
 
