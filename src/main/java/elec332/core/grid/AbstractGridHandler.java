@@ -1,6 +1,7 @@
 package elec332.core.grid;
 
 import com.google.common.collect.Sets;
+import elec332.core.main.ElecCore;
 import elec332.core.world.DimensionCoordinate;
 import elec332.core.world.PositionedObjectHolder;
 import elec332.core.world.WorldHelper;
@@ -172,7 +173,7 @@ public abstract class AbstractGridHandler<T extends ITileEntityLink> implements 
             }
             T o = getObject(dimCoord);
             if (o != null){
-                if (oldUpdates.contains(dimCoord)) {
+                if (oldUpdates.contains(dimCoord) && !ElecCore.suppressSpongeIssues) {
                     throw new IllegalStateException();
                 }
             } else {

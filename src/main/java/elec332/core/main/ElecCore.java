@@ -1,8 +1,6 @@
 package elec332.core.main;
 
-import com.google.common.collect.Lists;
 import elec332.core.abstraction.*;
-import elec332.core.abstraction.abstracted.item.ItemType;
 import elec332.core.api.IElecCoreMod;
 import elec332.core.api.client.IIconRegistrar;
 import elec332.core.api.client.model.IElecModelBakery;
@@ -16,7 +14,6 @@ import elec332.core.api.util.IDependencyHandler;
 import elec332.core.api.util.IRightClickCancel;
 import elec332.core.client.model.loading.INoJsonItem;
 import elec332.core.compat.ModNames;
-import elec332.core.de;
 import elec332.core.effects.AbilityHandler;
 import elec332.core.grid.internal.GridEventHandler;
 import elec332.core.grid.internal.GridEventInputHandler;
@@ -31,18 +28,14 @@ import elec332.core.proxies.CommonProxy;
 import elec332.core.server.SaveHandler;
 import elec332.core.server.ServerHelper;
 import elec332.core.util.*;
-import elec332.core.util.ASMHelper;
-import net.minecraft.block.Block;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.launchwrapper.Launch;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
@@ -85,6 +78,8 @@ public class ElecCore implements IModuleController, IElecCoreMod, IDependencyHan
 	public static final boolean developmentEnvironment;
 	public static boolean debug = false;
 	public static boolean removeJSONErrors = true;
+
+	public static boolean suppressSpongeIssues = false;
 
 	@EventHandler
 	public void construction(FMLConstructionEvent event){
@@ -141,6 +136,7 @@ public class ElecCore implements IModuleController, IElecCoreMod, IDependencyHan
 		MinecraftForge.EVENT_BUS.register(tickHandler);
 		debug = config.getBoolean("debug", Configuration.CATEGORY_GENERAL, false, "Set to true to print debug info to the log.");
 		removeJSONErrors = config.getBoolean("removeJsonExceptions", Configuration.CATEGORY_CLIENT, true, "Set to true to remove all the Json model errors from the log.") && !developmentEnvironment;
+		suppressSpongeIssues = config.getBoolean("supressSpongeIssues", Configuration.CATEGORY_GENERAL, false, "Set to true to prevent multiblock crashes when Sponge is installed. WARNING: Unsupported, this may cause unexpected behaviour, use with caution!");
 		ServerHelper.instance.load();
 
 		MinecraftForge.EVENT_BUS.register(new GridEventHandler());
