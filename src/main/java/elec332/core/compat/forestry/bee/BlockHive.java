@@ -126,9 +126,9 @@ public abstract class BlockHive<T extends Enum<T> & IHiveEnum> extends AbstractB
     }
 
     @Override
-    protected void getSubBlocks(@Nonnull Item item, List<ItemStack> list, CreativeTabs creativeTab) {
+    protected void getSubBlocks(@Nonnull Item item, List<ItemStack> subBlocks, CreativeTabs creativeTab) {
         for (T t : metaToObject.values()){
-            list.add(new ItemStack(this, 1, t.getMeta()));
+            subBlocks.add(new ItemStack(this, 1, t.getMeta()));
         }
     }
 

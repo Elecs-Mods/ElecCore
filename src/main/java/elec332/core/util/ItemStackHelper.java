@@ -20,7 +20,7 @@ public class ItemStackHelper {
 
     @Nonnull
     public static ItemStack copyItemStack(@Nullable ItemStack stack){
-        return stack == null ? NULL_STACK : stack.copy();
+        return stack == null || stack == NULL_STACK ? NULL_STACK : stack.copy();
     }
 
     public static ItemStack loadItemStackFromNBT(NBTTagCompound tag){
@@ -28,11 +28,11 @@ public class ItemStackHelper {
     }
 
     public static ItemStack getAndSplit(List<ItemStack> stacks, int index, int amount) {
-        return net.minecraft.inventory.ItemStackHelper.getAndSplit(stacks.toArray(new ItemStack[stacks.size()]), index, amount);
+        return net.minecraft.inventory.ItemStackHelper.getAndSplit(stacks.toArray(new ItemStack[0]), index, amount);
     }
 
     public static ItemStack getAndRemove(List<ItemStack> stacks, int index) {
-        return net.minecraft.inventory.ItemStackHelper.getAndRemove(stacks.toArray(new ItemStack[stacks.size()]), index);
+        return net.minecraft.inventory.ItemStackHelper.getAndRemove(stacks.toArray(new ItemStack[0]), index);
     }
 
     public static final ItemStack NULL_STACK;

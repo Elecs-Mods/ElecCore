@@ -38,26 +38,47 @@ public class ToolTip{
         this.tooltip = s;
     }
 
+    public ToolTip setWidth(int width){
+        this.width = width;
+        return this;
+    }
 
+    private int width = -1;
     private final List<String> tooltip;
 
     @SideOnly(Side.CLIENT)
     public void renderTooltip(int mouseX, int mouseY, int guiLeft, int guiTop){
+        GlStateManager.pushMatrix();
         FontRenderer fontRenderer = Minecraft.getMinecraft().fontRendererObj;
+        List<String> tooltip = this.tooltip;
         if (!tooltip.isEmpty()) {
             GlStateManager.disableRescaleNormal();
             RenderHelper.disableStandardItemLighting();
             GlStateManager.disableLighting();
             GlStateManager.disableDepth();
+            GlStateManager.translate(mouseX, mouseY, 0);
             int k = 0;
-            for (String colouredString : tooltip){
-                int l = fontRenderer.getStringWidth(colouredString);
-                if (l > k) {
-                    k = l;
+            if (width == -1) {
+                for (String colouredString : tooltip) {
+                    int l = fontRenderer.getStringWidth(colouredString);
+                    if (l > k) {
+                        k = l;
+                    }
+                }
+            } else {
+                tooltip = Lists.newArrayList();
+                for (String s : this.tooltip){
+                    for (String s1 : fontRenderer.listFormattedStringToWidth(s, width)) {
+                        tooltip.add(s1);
+                        int l = fontRenderer.getStringWidth(s1);
+                        if (l > k) {
+                            k = l;
+                        }
+                    }
                 }
             }
-            int j2 = mouseX + 12 - guiLeft;
-            int k2 = mouseY - 12 - guiTop;
+            int j2 = mouseX + 12;// - guiLeft;
+            int k2 = mouseY - 12;// - guiTop;
             int i1 = 8;
             if (tooltip.size() > 1) {
                 i1 += 2 + (tooltip.size() - 1) * 10;
@@ -93,6 +114,7 @@ public class ToolTip{
                 k2 += 10;
             }
         }
+        GlStateManager.popMatrix();
     }
 
     public static class ColouredString {

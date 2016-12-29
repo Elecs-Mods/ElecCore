@@ -40,23 +40,25 @@ public abstract class AbstractItem extends Item {
     }
 
     @Nonnull
+    @SuppressWarnings("all")
     protected ActionResult<ItemStack> onItemRightClick(EntityPlayer player, @Nonnull EnumHand hand, World world) {
         return super.onItemRightClick(player.getHeldItem(hand), world, player, hand);
     }
 
     @Override
     @Nonnull
-    public EnumActionResult onItemUseFirst(@Nonnull ItemStack stack, EntityPlayer player, World world, BlockPos pos, EnumFacing side, float hitX, float hitY, float hitZ, EnumHand hand) {
+    public EnumActionResult onItemUseFirst(ItemStack stack, EntityPlayer player, World world, BlockPos pos, EnumFacing side, float hitX, float hitY, float hitZ, EnumHand hand) {
         return onItemUseFirst(player, hand, world, pos, side, hitX, hitY, hitZ);
     }
 
+    @Nonnull
     protected EnumActionResult onItemUseFirst(EntityPlayer player, EnumHand hand, World world, BlockPos pos, EnumFacing side, float hitX, float hitY, float hitZ) {
         return super.onItemUseFirst(player.getHeldItem(hand), player, world, pos, side, hitX, hitY, hitZ, hand);
     }
 
     @Override
     @Nonnull
-    public final EnumActionResult onItemUse(@Nonnull ItemStack stack, EntityPlayer player, World world, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
+    public final EnumActionResult onItemUse(ItemStack stack, EntityPlayer player, World world, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
         return onItemUse(player, hand, world, pos, facing, hitX, hitY, hitZ);
     }
 

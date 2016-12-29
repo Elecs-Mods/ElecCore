@@ -70,7 +70,6 @@ public class BlockTileBase extends AbstractBlock implements IWrenchable, ITileEn
     }
 
     @Override
-    @Nonnull
     public IBlockState getBlockStateForPlacement(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer, EnumHand hand) {
         return getBlockState().getBaseState().withProperty(BlockStateHelper.FACING_NORMAL.getProperty(), DirectionHelper.getFacingOnPlacement(placer));
     }
@@ -132,11 +131,11 @@ public class BlockTileBase extends AbstractBlock implements IWrenchable, ITileEn
     }
 
     @Override //TODO: New param == changed pos??
-    protected void neighborChanged(World world, BlockPos pos, IBlockState state, Block neighbor) {
+    protected void neighborChanged(World world, BlockPos pos, IBlockState state, Block neighbor, BlockPos p_189540_5_) {
         TileEntity tile = WorldHelper.getTileAt(world, pos);
         if (tile instanceof TileBase)
             ((TileBase) tile).onNeighborBlockChange(neighbor);
-        super.neighborChanged(world, pos, state, neighbor);
+        super.neighborChanged(world, pos, state, neighbor, p_189540_5_);
     }
 
     @Override

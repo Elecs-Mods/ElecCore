@@ -19,6 +19,7 @@ import net.minecraft.client.renderer.culling.ICamera;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -50,6 +51,8 @@ public class RenderHelper {
     private static final Map<EnumFacing, ITransformation[]> rotateAroundMap;
     private static IBakedModel nullModel;
 
+    @Nonnull
+    @SuppressWarnings("all")
     public static ITessellator forWorldRenderer(VertexBuffer renderer){
         ITessellator ret = worldRenderTessellators.get(renderer);
         if (ret == null){
@@ -59,18 +62,31 @@ public class RenderHelper {
         return ret;
     }
 
+    @Nonnull
     public static RenderBlocks getBlockRenderer(){
         return renderBlocks;
     }
 
+    @Nonnull
+    public static FontRenderer getFontRenderer(ItemStack stack){
+        FontRenderer ret = stack.getItem().getFontRenderer(stack);
+        if (ret == null){
+            ret = getMCFontrenderer();
+        }
+        return ret;
+    }
+
+    @Nonnull
     public static FontRenderer getMCFontrenderer(){
         return mc.fontRendererObj;
     }
 
+    @Nonnull
     public static ITessellator getTessellator(){
         return tessellator;
     }
 
+    @Nonnull
     public static IBakedModel getMissingModel(){
         return Minecraft.getMinecraft().modelManager.getMissingModel();
     }
@@ -87,10 +103,12 @@ public class RenderHelper {
         RenderGlobal.func_189697_a(aabb, 0.0F, 0.0F, 0.0F, 0.4F);
     }
 
+    @Nonnull
     public static AxisAlignedBB expandAABB(@Nonnull AxisAlignedBB aabb){
         return aabb.expandXyz(BB_EXPAND_NUMBER);
     }
 
+    @Nonnull
     public static ITransformation getTransformation(int x, int y, int z){
         if ((z = MathHelper.normalizeAngle(z, 360)) == 0){
             return ModelRotation.getModelRotation(x, y);
@@ -102,6 +120,7 @@ public class RenderHelper {
         return rotateAroundMap.get(axis);
     }
 
+    @Nonnull
     public static ModelRotation combine(ModelRotation rotation1, ModelRotation rotation2){
         if (rotation1 == null && rotation2 == null){
             return ModelRotation.X0_Y0;
@@ -115,6 +134,7 @@ public class RenderHelper {
         return ModelRotation.getModelRotation(((rotation1.quartersX + rotation2.quartersX)) * 90, ((rotation1.quartersY + rotation2.quartersY)) * 90);
     }
 
+    @Nonnull
     public static ModelRotation defaultFor(EnumFacing facing){
         switch (facing){
             case EAST:
@@ -132,6 +152,7 @@ public class RenderHelper {
         }
     }
 
+    @Nonnull
     public static Vec3d getPlayerVec(float partialTicks){
         EntityPlayer player = ElecCore.proxy.getClientPlayer();
         double dX = player.lastTickPosX + (player.posX - player.lastTickPosX) * partialTicks;
@@ -145,11 +166,13 @@ public class RenderHelper {
         GlStateManager.translate(-vec.xCoord, -vec.yCoord, -vec.zCoord);
     }
 
+    @Nonnull
     public static Vec3d getPlayerVec(){
         EntityPlayer player = ElecCore.proxy.getClientPlayer();
         return new Vec3d(player.posX, player.posY, player.posZ);
     }
 
+    @Nonnull
     public static ICamera getPlayerCamera(float partialTicks){
         ICamera camera = new Frustum();
         Vec3d vec = getPlayerVec(partialTicks);
@@ -168,6 +191,7 @@ public class RenderHelper {
         tessellator.addVertexWithUV(v4.xCoord, v4.yCoord, v4.zCoord, 0, 1);
     }
 
+    @Nonnull
     public static Vec3d multiply(Vec3d original, double m){
         return new Vec3d(original.xCoord * m, original.yCoord * m, original.zCoord * m);
     }
@@ -180,18 +204,21 @@ public class RenderHelper {
         mc.renderEngine.bindTexture(rl);
     }
 
+    @Nonnull
     public static TextureAtlasSprite checkIcon(TextureAtlasSprite icon) {
         if (icon == null)
             return getMissingTextureIcon();
         return icon;
     }
 
+    @Nonnull
     public static TextureAtlasSprite getFluidTexture(Fluid fluid, boolean flowing) {
         if (fluid == null)
             return getMissingTextureIcon();
         return checkIcon(flowing ? getIconFrom(fluid.getFlowing()) : getIconFrom(fluid.getStill()));
     }
 
+    @Nonnull
     public static TextureAtlasSprite getMissingTextureIcon(){
         return mc.getTextureMapBlocks().getMissingSprite();//((TextureMap) Minecraft.getMinecraft().getTextureManager().getTexture(getBlocksResourceLocation())).getAtlasSprite("missingno");
     }
@@ -200,6 +227,7 @@ public class RenderHelper {
         return mc.getTextureMapBlocks().getAtlasSprite(rl.toString());
     }
 
+    @Nonnull
     public static ResourceLocation getBlocksResourceLocation(){
         return TextureMap.LOCATION_BLOCKS_TEXTURE;
     }

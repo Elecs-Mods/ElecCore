@@ -44,7 +44,7 @@ public class PlayerHelper {
     }
 
     public static void sendMessageToPlayer(@Nonnull EntityPlayer player, ITextComponent s){
-        player.addChatMessage(s);
+        player.addChatComponentMessage(s);
     }
 
     public static void addPersonalMessageToClient(String s){

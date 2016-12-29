@@ -3,17 +3,17 @@ package elec332.core.inventory.window;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import elec332.core.client.RenderHelper;
 import elec332.core.client.util.GuiDraw;
 import elec332.core.inventory.IWidgetContainer;
 import elec332.core.inventory.widget.IWidget;
 import elec332.core.inventory.widget.IWidgetListener;
 import elec332.core.inventory.widget.slot.WidgetSlot;
 import elec332.core.inventory.widget.slot.WidgetSlotOutput;
+import elec332.core.main.ElecCore;
 import elec332.core.proxies.CommonProxy;
 import elec332.core.util.ItemStackHelper;
-import elec332.core.util.MinecraftList;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.ClickType;
 import net.minecraft.inventory.Container;
@@ -27,6 +27,7 @@ import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.wrapper.PlayerMainInvWrapper;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.*;
 
@@ -39,22 +40,50 @@ public class Window implements IWidgetContainer {
         this(-1, -1);
     }
 
-    public Window(int xSize, int ySize){
+    public Window(int xSize, int ySize, IWindowModifier... modifiers){
+        hasInit = false;
         this.widgets = Lists.newArrayList();
         this.widgets_ = Collections.unmodifiableList(widgets);
         this.playerList = Sets.newHashSet();
-        this.xSize = xSize == -1 ? 176 : xSize;
-        this.ySize = ySize == -1 ? 166 : ySize;
+        this.xSize = xSize == -1 ? defaultX : xSize;
+        this.ySize = ySize == -1 ? defaultY : ySize;
         this.map = Maps.newHashMap();
+        this.modifiers = modifiers == null ? Lists.newArrayList() : Lists.newArrayList(modifiers);
+        this.normalSize = this.xSize == defaultX && this.ySize == defaultY;
+        this.tooBig = this.xSize < defaultX || this.xSize > (defaultX - 6) * 2 || this.ySize < defaultY || this.ySize > (defaultY - 6) * 2;
     }
 
-    void setContainer(IWindowContainer windowContainer){
+    final void setContainer(IWindowContainer windowContainer){
         this.windowContainer = windowContainer;
+    }
+
+    final void initWindow_(){
+        if (modifiers != null){
+            for (IWindowModifier modifier : modifiers){
+                modifier.modifyWindow(this);
+            }
+        }
+        initWindow();
+        hasInit = true;
     }
 
     protected void initWindow(){
 
     }
+
+    public Window addModifier(IWindowModifier modifier){
+        if (!hasInit) {
+            modifiers.add(modifier);
+        } else {
+            modifier.modifyWindow(this);
+        }
+        return this;
+    }
+
+    private static final int defaultX = 176, defaultY = 166;
+    private final List<IWindowModifier> modifiers;
+    private boolean hasInit;
+    private final boolean normalSize, tooBig;
 
     private final List<IWidget> widgets, widgets_;
     private final Map<IWidget, Integer> map;
@@ -77,10 +106,10 @@ public class Window implements IWidgetContainer {
     protected int height;
     /** Starting X position for the Gui. Inconsistent use for Gui backgrounds. */
     @SideOnly(Side.CLIENT)
-    protected int guiLeft;
+    public int guiLeft;
     /** Starting Y position for the Gui. Inconsistent use for Gui backgrounds. */
     @SideOnly(Side.CLIENT)
-    protected int guiTop;
+    public int guiTop;
 
     @Override
     public final List<IWidget> getWidgets() {
@@ -266,7 +295,7 @@ public class Window implements IWidgetContainer {
         }
     }
 
-    public void onContainerClosed(EntityPlayer playerIn){
+    public void onWindowClosed(EntityPlayer playerIn){
         for (IWidget widget : widgets_){
             widget.onWindowClosed(playerIn);
         }
@@ -296,7 +325,7 @@ public class Window implements IWidgetContainer {
     }
 
     @SideOnly(Side.CLIENT)
-    protected void handleMouseClick(WidgetSlot slotIn, int slotId, int mouseButton, @Nonnull ClickType type) {
+    protected void handleMouseClick(@Nullable WidgetSlot slotIn, int slotId, int mouseButton, @Nonnull ClickType type) {
         windowContainer.handleMouseClickDefault(slotIn, slotId, mouseButton, type);
     }
 
@@ -311,6 +340,19 @@ public class Window implements IWidgetContainer {
     }
 
     @SideOnly(Side.CLIENT)
+    protected void keyTyped(char typedChar, int keyCode){
+        for (IWidget widget : getWidgets()){
+            if (!widget.isHidden()){
+                widget.keyTyped(typedChar, keyCode);
+            }
+        }
+    }
+
+    @SideOnly(Side.CLIENT)
+    public void handleMouseInput() throws IOException {
+    }
+
+    @SideOnly(Side.CLIENT)
     protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY){
     }
 
@@ -319,9 +361,9 @@ public class Window implements IWidgetContainer {
         GlStateManager.disableLighting();
         GlStateManager.disableDepth();
         GlStateManager.pushMatrix();
-        GlStateManager.translate((float) guiLeft, (float) guiTop, 0.0F);
+        //GlStateManager.translate((float) guiLeft, (float) guiTop, 0.0F);
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-        RenderHelper.disableStandardItemLighting();
+        net.minecraft.client.renderer.RenderHelper.disableStandardItemLighting();
         for (IWidget widget : getWidgets()){
             if (widget.isHidden()) {
                 continue;
@@ -336,17 +378,49 @@ public class Window implements IWidgetContainer {
 
     @SideOnly(Side.CLIENT)
     protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
-        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-        GuiDraw.mc.getTextureManager().bindTexture(getBackgroundImageLocation());
+        GlStateManager.pushMatrix();
         int k = (width - xSize) / 2;
         int l = (height - ySize) / 2;
-        GuiDraw.drawTexturedModalRect(k, l, 0, 0, xSize, ySize);
+        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+        ResourceLocation background = getBackgroundImageLocation();
+        if (background != null) {
+            RenderHelper.bindTexture(background);
+            GuiDraw.drawTexturedModalRect(k, l, 0, 0, xSize, ySize);
+        } else {
+            RenderHelper.bindTexture(DEFAULT_BACKGROUND);
+            if (normalSize){
+                GuiDraw.drawTexturedModalRect(k, l, 0, 0, defaultX, defaultY);
+            } else {
+                if (!tooBig){
+                    int xS = defaultX - 6;
+                    int xY = defaultY - 6;
+                    GuiDraw.drawTexturedModalRect(k, l, 0, 0, xS, xY);
+                    GuiDraw.drawTexturedModalRect(k + xSize - xS, l, 6, 0, xS, xY);
+                    GuiDraw.drawTexturedModalRect(k + xSize - xS, l + ySize - xY, 6, 6, xS, xY);
+                    GuiDraw.drawTexturedModalRect(k, l + ySize - xY, 0, 6, xS, xY);
+                } else {
+                    throw new UnsupportedOperationException();
+                }
+            }
+        }
+        drawWidgets(k, l, mouseX, mouseY);
+        GlStateManager.popMatrix();
+    }
+
+    protected void drawWidgets(int k, int l, int mouseX, int mouseY){
+        GlStateManager.pushMatrix();
+        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
         for (IWidget widget : getWidgets()){
             if (!widget.isHidden()) {
                 widget.draw(this, k, l, translatedMouseX(mouseX), translatedMouseY(mouseY));
             }
         }
-        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+        GlStateManager.popMatrix();
+    }
+
+    @SideOnly(Side.CLIENT)
+    public boolean doesWindowPauseGame(){
+        return false;
     }
 
     //Direct link-through
@@ -405,7 +479,7 @@ public class Window implements IWidgetContainer {
         private IWidget widget;
 
         @Override
-        public void updateCraftingInventory(MinecraftList<ItemStack> itemsList) {
+        public void updateCraftingInventory(List<ItemStack> itemsList) {
             listener.updateCraftingInventory(itemsList);
         }
 
@@ -424,6 +498,12 @@ public class Window implements IWidgetContainer {
             return listener;
         }
 
+    }
+
+    public static final ResourceLocation DEFAULT_BACKGROUND;
+
+    static {
+        DEFAULT_BACKGROUND = new ResourceLocation(ElecCore.MODID, "default.png");
     }
 
 }

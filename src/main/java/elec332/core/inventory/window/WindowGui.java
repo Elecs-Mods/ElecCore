@@ -4,6 +4,7 @@ import elec332.core.main.ElecCore;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.ClickType;
 import net.minecraft.inventory.Slot;
@@ -40,7 +41,7 @@ public final class WindowGui extends GuiContainer {
         window.guiLeft = (width - this.xSize) / 2;
         window.guiTop = (height - this.ySize) / 2;
         super.setWorldAndResolution(mc, width, height);
-        window.initWindow();
+        window.initWindow_();
     }
 
     @Override
@@ -53,6 +54,11 @@ public final class WindowGui extends GuiContainer {
     }
 
     @Override
+    public boolean doesGuiPauseGame() {
+        return window.doesWindowPauseGame();
+    }
+
+    @Override
     protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
         if (!window.mouseClicked(mouseX, mouseY, mouseButton)) {
             super.mouseClicked(mouseX, mouseY, mouseButton);
@@ -60,8 +66,20 @@ public final class WindowGui extends GuiContainer {
     }
 
     @Override
+    protected void keyTyped(char typedChar, int keyCode) throws IOException {
+        super.keyTyped(typedChar, keyCode);
+        window.keyTyped(typedChar, keyCode);
+    }
+
+    @Override
+    public void handleMouseInput() throws IOException {
+        super.handleMouseInput();
+        window.handleMouseInput();
+    }
+
+    @Override
     protected void handleMouseClick(Slot slotIn, int slotId, int mouseButton, @Nonnull ClickType type) {
-        window.handleMouseClick(((WindowContainer.WidgetLinkedSlot)slotIn).widget, slotId, mouseButton, type);
+        window.handleMouseClick(slotIn == null ? null : ((WindowContainer.WidgetLinkedSlot)slotIn).widget, slotId, mouseButton, type);
     }
 
     void handleMouseClickDefault(Slot slotIn, int slotId, int mouseButton, @Nonnull ClickType type){
@@ -71,12 +89,16 @@ public final class WindowGui extends GuiContainer {
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         super.drawScreen(mouseX, mouseY, partialTicks);
+        GlStateManager.pushMatrix();
         window.drawScreen(mouseX, mouseY, partialTicks);
+        GlStateManager.popMatrix();
     }
 
     @Override
     protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
+        GlStateManager.pushMatrix();
         window.drawGuiContainerForegroundLayer(mouseX, mouseY);
+        GlStateManager.popMatrix();
     }
 
     @Override
@@ -100,7 +122,9 @@ public final class WindowGui extends GuiContainer {
 
     @Override
     protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
+        GlStateManager.pushMatrix();
         window.drawGuiContainerBackgroundLayer(partialTicks, mouseX, mouseY);
+        GlStateManager.popMatrix();
     }
 
 }

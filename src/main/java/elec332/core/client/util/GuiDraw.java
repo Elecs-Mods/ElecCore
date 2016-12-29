@@ -1,11 +1,17 @@
 package elec332.core.client.util;
 
+import elec332.core.client.RenderHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.List;
 
 /**
  * Created by Elec332 on 12-12-2015.
@@ -52,8 +58,16 @@ public class GuiDraw {
         gui.drawString(fontRenderer, text, x, y, color);
     }
 
+    public static void drawHoveringText(List<String> textLines, int x, int y){
+        gui.drawHoveringText(textLines, x, y, RenderHelper.getMCFontrenderer());
+    }
 
-    public static Gui getGui() {
+    public static void drawHoveringText(List<String> textLines, int x, int y, @Nullable FontRenderer fontrenderer){
+        gui.drawHoveringText(textLines, x, y, fontrenderer == null ? RenderHelper.getMCFontrenderer() : fontrenderer);
+    }
+
+
+    public static GuiScreen getGui() {
         return gui;
     }
 
@@ -62,15 +76,20 @@ public class GuiDraw {
         mc = Minecraft.getMinecraft();
     }
 
-    private static class GuiDrawGui extends Gui {
+    private static class GuiDrawGui extends GuiScreen {
 
         private GuiDrawGui(){
-            zLevel = 300.0F;
+            zLevel = 0.0F;
         }
 
         @Override
         public void drawGradientRect(int left, int top, int right, int bottom, int startColor, int endColor) {
             super.drawGradientRect(left, top, right, bottom, startColor, endColor);
+        }
+
+        @Override
+        public void drawHoveringText(List<String> textLines, int x, int y, @Nonnull FontRenderer font) {
+            super.drawHoveringText(textLines, x, y, font);
         }
 
     }

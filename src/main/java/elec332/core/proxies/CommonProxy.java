@@ -46,6 +46,10 @@ public class CommonProxy implements IGuiHandler {
 		throw new RuntimeException();
 	}
 
-	public static ThreadLocal<EntityPlayer> currentOpeningPlayer;
+	public static final ThreadLocal<EntityPlayer> currentOpeningPlayer;
+
+	static {
+		currentOpeningPlayer = new ThreadLocal<EntityPlayer>();
+	}
 
 }

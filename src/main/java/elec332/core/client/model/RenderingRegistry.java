@@ -29,6 +29,7 @@ import net.minecraftforge.client.model.ModelLoaderRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -67,13 +68,15 @@ public final class RenderingRegistry implements IElecRenderingRegistry {
     }
 
     @Override
-    public void registerFakeItem(Item item){
+    public Item registerFakeItem(Item item){
         extraItems.add(item);
+        return item;
     }
 
     @Override
-    public void registerFakeBlock(Block block){
+    public Block registerFakeBlock(Block block){
         extraBlocks.add(block);
+        return block;
     }
 
     @Override
@@ -91,6 +94,7 @@ public final class RenderingRegistry implements IElecRenderingRegistry {
         registerLoader((Object) loader);
     }
 
+    @Nonnull
     @Override
     public Iterable<Block> getAllValidBlocks(){
         List<Block> list = Lists.newArrayList(RegistryHelper.getBlockRegistry());
@@ -98,6 +102,7 @@ public final class RenderingRegistry implements IElecRenderingRegistry {
         return list;
     }
 
+    @Nonnull
     @Override
     public Iterable<Item> getAllValidItems(){
         List<Item> list = Lists.newArrayList(RegistryHelper.getItemRegistry());

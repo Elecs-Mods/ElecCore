@@ -1,12 +1,18 @@
 package elec332.core.main;
 
+import elec332.core.abstraction.*;
 import elec332.core.api.IElecCoreMod;
+import elec332.core.api.client.IIconRegistrar;
+import elec332.core.api.client.model.IElecModelBakery;
+import elec332.core.api.client.model.IElecQuadBakery;
+import elec332.core.api.client.model.IElecTemplateBakery;
 import elec332.core.api.data.IExternalSaveHandler;
 import elec332.core.api.module.IModuleController;
 import elec332.core.api.network.ModNetworkHandler;
 import elec332.core.api.registry.ISingleRegister;
 import elec332.core.api.util.IDependencyHandler;
 import elec332.core.api.util.IRightClickCancel;
+import elec332.core.client.model.loading.INoJsonItem;
 import elec332.core.compat.ModNames;
 import elec332.core.effects.AbilityHandler;
 import elec332.core.grid.internal.GridEventHandler;
@@ -22,9 +28,15 @@ import elec332.core.proxies.CommonProxy;
 import elec332.core.server.SaveHandler;
 import elec332.core.server.ServerHelper;
 import elec332.core.util.*;
+import net.minecraft.client.renderer.block.model.IBakedModel;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.launchwrapper.Launch;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
+import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
@@ -33,6 +45,7 @@ import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.event.*;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.network.NetworkRegistry;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -40,13 +53,13 @@ import org.apache.logging.log4j.Logger;
  * Created by Elec332.
  */
 @Mod(modid = ElecCore.MODID, name = ElecCore.MODNAME, dependencies = "after:"+ ModNames.FORESTRY,
-acceptedMinecraftVersions = "[1.11,)", version = ElecCore.ElecCoreVersion, useMetadata = true)
+acceptedMinecraftVersions = "[1.9.4,)", version = ElecCore.ElecCoreVersion, useMetadata = true)
 public class ElecCore implements IModuleController, IElecCoreMod, IDependencyHandler {
 
 	public static final String ElecCoreVersion = "#ELECCORE_VER#";
 	public static final String MODID = "eleccore";
 	public static final String MODNAME = "ElecCore";
-	public static final String FORGE_VERSION = "13.19.0.2160";
+	public static final String FORGE_VERSION = "12.16.1.1887";
 
 	@SidedProxy(clientSide = "elec332.core.proxies.ClientProxy", serverSide = "elec332.core.proxies.CommonProxy")
 	public static CommonProxy proxy;
@@ -66,6 +79,8 @@ public class ElecCore implements IModuleController, IElecCoreMod, IDependencyHan
 	public static boolean debug = false;
 	public static boolean removeJSONErrors = true;
 
+	public static boolean suppressSpongeIssues = false;
+
 	@EventHandler
 	public void construction(FMLConstructionEvent event){
 		logger = LogManager.getLogger("ElecCore");
@@ -82,6 +97,28 @@ public class ElecCore implements IModuleController, IElecCoreMod, IDependencyHan
 		asmDataProcessor.identify(event.getASMHarvestedData());
 		ElecModHandler.identifyMods();
 		asmDataProcessor.process(LoaderState.CONSTRUCTING);
+		/*try {
+			Class<? extends Object> clazz = ASMHelper.makeImplementInterfaces(Object.class, de.DEI.class, null);
+			System.out.println(clazz);
+			System.out.println(Lists.newArrayList(clazz.getInterfaces()));
+			System.out.println(((de) clazz.getConstructor(Object.class).newInstance(new de.DEI(new Object()))).jo(2, 3));
+		} catch (Exception e){
+			logger.info("", e);
+		}
+		//AbstractionHandler.registerAbstractionObject(new testItem(), new ResourceLocation("nemez", "itemTestert"), ItemType.ITEM);
+		AbstractionHandler.registerAbstractionObject(new IItemBlock() {
+
+			@Override
+			public Block getBlock() {
+				return Blocks.BRICK_BLOCK;
+			}
+
+			@Override
+			public IItemBlock getFallback() {
+				return DefaultInstances.createDefault(this);
+			}
+
+		}, new ResourceLocation("bee:p"), ItemType.ITEMBLOCK);*/
 	}
 
 	@EventHandler
@@ -99,6 +136,7 @@ public class ElecCore implements IModuleController, IElecCoreMod, IDependencyHan
 		MinecraftForge.EVENT_BUS.register(tickHandler);
 		debug = config.getBoolean("debug", Configuration.CATEGORY_GENERAL, false, "Set to true to print debug info to the log.");
 		removeJSONErrors = config.getBoolean("removeJsonExceptions", Configuration.CATEGORY_CLIENT, true, "Set to true to remove all the Json model errors from the log.") && !developmentEnvironment;
+		suppressSpongeIssues = config.getBoolean("supressSpongeIssues", Configuration.CATEGORY_GENERAL, false, "Set to true to prevent multiblock crashes when Sponge is installed. WARNING: Unsupported, this may cause unexpected behaviour, use with caution!");
 		ServerHelper.instance.load();
 
 		MinecraftForge.EVENT_BUS.register(new GridEventHandler());
@@ -126,6 +164,7 @@ public class ElecCore implements IModuleController, IElecCoreMod, IDependencyHan
 		SaveHandler.INSTANCE.dummyLoad();
 		AbilityHandler.instance.init();
 		ElecModHandler.init();
+		NetworkRegistry.INSTANCE.registerGuiHandler(this, proxy);
 		asmDataProcessor.process(LoaderState.INITIALIZATION);
 		OredictHelper.initLists();
 		modEventHandler.postEvent(event);
@@ -223,6 +262,31 @@ public class ElecCore implements IModuleController, IElecCoreMod, IDependencyHan
 			throw new IllegalStateException();
 		}
 		this.modEventHandler = handler;
+	}
+
+	private static class testItem implements IItem, INoJsonItem {
+
+		@Override
+		public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand hand) {
+			System.out.println("rightClick");
+			return new ActionResult<ItemStack>(EnumActionResult.PASS, player.getHeldItem(hand));
+		}
+
+		@Override
+		public void registerTextures(IIconRegistrar iconRegistrar) {
+			System.out.println("regTextures");
+		}
+
+		@Override
+		public IBakedModel getItemModel(ItemStack stack, World world, EntityLivingBase entity) {
+			return null;
+		}
+
+		@Override
+		public void registerModels(IElecQuadBakery quadBakery, IElecModelBakery modelBakery, IElecTemplateBakery templateBakery) {
+			System.out.println("regModels");
+		}
+
 	}
 
 	static {

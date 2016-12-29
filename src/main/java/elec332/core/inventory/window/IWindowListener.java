@@ -1,7 +1,8 @@
 package elec332.core.inventory.window;
 
-import elec332.core.util.MinecraftList;
 import net.minecraft.item.ItemStack;
+
+import java.util.List;
 
 /**
  * Created by Elec332 on 17-12-2016.
@@ -11,7 +12,7 @@ public interface IWindowListener {
     /**
      * update the crafting window inventory with the items in the list
      */
-    public void updateCraftingInventory(MinecraftList<ItemStack> itemsList);
+    public void updateCraftingInventory(List<ItemStack> itemsList);
 
     /**
      * Sends the contents of an inventory slot to the client-side Container. This doesn't have to match the actual

@@ -28,7 +28,7 @@ public final class MinecraftList<E> extends AbstractList<E> {
 
     private final List<E> underlyingList;
 
-    List<E> getUnderlyingList(){
+    public List<E> getUnderlyingList(){
         return underlyingList;
     }
 

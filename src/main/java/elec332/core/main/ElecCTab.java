@@ -17,11 +17,12 @@ public class ElecCTab {
 
 	public static CreativeTabs ElecTab = new AbstractCreativeTab("Elecs_Mods") {
 
-		@Nonnull
 		@Override
-		protected ItemStack getDisplayStack() {
-			return new ItemStack(Item.getItemFromBlock(Blocks.ANVIL));
-		}
+	    @SideOnly(Side.CLIENT)
+		@Nonnull
+	    public ItemStack getDisplayStack() {
+	        return new ItemStack(Item.getItemFromBlock(Blocks.ANVIL));
+	    }
 
 	};
 

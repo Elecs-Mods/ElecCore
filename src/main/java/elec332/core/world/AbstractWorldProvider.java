@@ -1,5 +1,6 @@
 package elec332.core.world;
 
+import net.minecraft.world.World;
 import net.minecraft.world.WorldProvider;
 
 /**
@@ -7,13 +8,17 @@ import net.minecraft.world.WorldProvider;
  */
 public abstract class AbstractWorldProvider extends WorldProvider {
 
-    public void setup(){
+    protected void setup(){
         super.createBiomeProvider();
     }
 
     @Override
-    protected void createBiomeProvider() {
+    protected final void createBiomeProvider() {
         setup();
+    }
+
+    public World getWorld(){
+        return this.worldObj;
     }
 
 }

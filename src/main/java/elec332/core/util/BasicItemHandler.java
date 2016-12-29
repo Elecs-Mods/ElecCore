@@ -39,7 +39,7 @@ public class BasicItemHandler implements IItemHandler, IItemHandlerModifiable, I
     public void setStackInSlot(int slot, @Nonnull ItemStack stack) {
         validateSlotIndex(slot);
         ItemStack stackInSlot = this.stacks.get(slot);
-        if (!ItemStackHelper.isStackValid(stackInSlot) || ItemStack.areItemStacksEqual(stackInSlot, stack) || !isStackValidForSlot(slot, stack)) {
+        if (ItemStack.areItemStacksEqual(stackInSlot, stack) || !isStackValidForSlot(slot, stack)) {
             return;
         }
         this.stacks.set(slot, stack);
@@ -74,7 +74,7 @@ public class BasicItemHandler implements IItemHandler, IItemHandlerModifiable, I
 
         int limit = getStackLimit(slot, stack);
 
-        if (ItemStackHelper.isStackValid(stack)){
+        if (ItemStackHelper.isStackValid(existing)){
             if (!ItemHandlerHelper.canItemStacksStack(stack, existing)) {
                 return stack;
             }
@@ -89,10 +89,10 @@ public class BasicItemHandler implements IItemHandler, IItemHandlerModifiable, I
         boolean reachedLimit = stack.stackSize > limit;
 
         if (!simulate) {
-            if (!ItemStackHelper.isStackValid(stack)) {
+            if (!ItemStackHelper.isStackValid(existing)) {
                 this.stacks.set(slot, reachedLimit ? ItemHandlerHelper.copyStackWithSize(stack, limit) : stack);
             } else {
-                existing.stackSize = reachedLimit ? limit : stack.stackSize;
+                existing.stackSize = (reachedLimit ? limit : stack.stackSize);
             }
             onContentsChanged(slot);
         }
@@ -163,6 +163,7 @@ public class BasicItemHandler implements IItemHandler, IItemHandlerModifiable, I
         return getSlotLimit(slot);
     }
 
+    //@Override
     public int getSlotLimit(int slot) {
         return 64;
     }

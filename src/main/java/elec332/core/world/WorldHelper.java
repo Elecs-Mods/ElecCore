@@ -8,18 +8,21 @@ import elec332.core.util.PlayerHelper;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.effect.EntityLightningBolt;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
+import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.ForgeChunkManager;
@@ -32,6 +35,14 @@ import javax.annotation.Nullable;
  */
 @SuppressWarnings("unused")
 public class WorldHelper {
+
+    public static Biome getBiome(World world, BlockPos pos){
+        return world.getBiomeGenForCoords(pos);
+    }
+
+    public static IBlockState getBlockStateForPlacement(Block block, World world, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer, @Nullable EnumHand hand) {
+        return block.onBlockPlaced(world, pos, facing, hitX, hitY, hitZ, meta, placer);
+    }
 
     public static boolean spawnEntityInWorld(World world, Entity entity){
         return world.spawnEntityInWorld(entity);

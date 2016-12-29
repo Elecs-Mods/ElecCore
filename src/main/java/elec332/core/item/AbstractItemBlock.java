@@ -39,7 +39,7 @@ public class AbstractItemBlock extends ItemBlock {
 
     @Override
     @Nonnull
-    public final ActionResult<ItemStack> onItemRightClick(@Nonnull ItemStack stack, World world, EntityPlayer player, @Nonnull EnumHand hand) {
+    public final ActionResult<ItemStack> onItemRightClick(ItemStack stack, World world, EntityPlayer player, @Nonnull EnumHand hand) {
         return onItemRightClick(player, hand, world);
     }
 
@@ -49,7 +49,7 @@ public class AbstractItemBlock extends ItemBlock {
     }
 
     @Override
-    public EnumActionResult onItemUseFirst(@Nonnull ItemStack stack, EntityPlayer player, World world, BlockPos pos, EnumFacing side, float hitX, float hitY, float hitZ, EnumHand hand) {
+    public EnumActionResult onItemUseFirst(ItemStack stack, EntityPlayer player, World world, BlockPos pos, EnumFacing side, float hitX, float hitY, float hitZ, EnumHand hand) {
         return onItemUseFirst(player, hand, world, pos, side, hitX, hitY, hitZ);
     }
 
@@ -59,7 +59,7 @@ public class AbstractItemBlock extends ItemBlock {
 
     @Override
     @Nonnull
-    public final EnumActionResult onItemUse(@Nonnull ItemStack stack, EntityPlayer player, World world, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
+    public final EnumActionResult onItemUse(ItemStack stack, EntityPlayer player, World world, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
         return onItemUse(player, hand, world, pos, facing, hitX, hitY, hitZ);
     }
 

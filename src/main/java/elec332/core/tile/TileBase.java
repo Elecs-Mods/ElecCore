@@ -11,9 +11,11 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -23,6 +25,10 @@ import java.util.List;
  */
 @SuppressWarnings("unused")
 public class TileBase extends TileEntityBase implements IElecCoreNetworkTile {
+
+    public static void setWorld(TileEntity tile, World world){
+        tile.setWorldObj(world);
+    }
 
     @Override
     public void validate() {

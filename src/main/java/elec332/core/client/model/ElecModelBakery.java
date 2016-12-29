@@ -177,7 +177,6 @@ public class ElecModelBakery implements IElecModelBakery {
         }
 
         @Override
-        @Nonnull
         public TextureAtlasSprite getParticleTexture() {
             return this.texture;
         }

@@ -10,10 +10,6 @@ import elec332.core.main.ElecCore;
 import elec332.core.main.ElecCoreRegistrar;
 import elec332.core.util.RayTraceHelper;
 import elec332.core.world.WorldHelper;
-import mcp.mobius.waila.api.IWailaConfigHandler;
-import mcp.mobius.waila.api.IWailaDataAccessor;
-import mcp.mobius.waila.api.IWailaDataProvider;
-import mcp.mobius.waila.api.IWailaRegistrar;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
@@ -40,7 +36,8 @@ import java.util.Map;
  */
 @SuppressWarnings("deprecation")
 @ElecModule(owner = ElecCore.MODID, name = "WailaCompat", modDependencies = ModNames.WAILA)
-public class WailaCompatHandler implements IWailaDataProvider {
+public class WailaCompatHandler{}
+/* implements IWailaDataProvider {
 
     @ElecModule.Instance
     private static WailaCompatHandler instance;
@@ -320,3 +317,5 @@ public class WailaCompatHandler implements IWailaDataProvider {
     }
 
 }
+
+*/

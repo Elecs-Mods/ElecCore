@@ -1,7 +1,5 @@
 package elec332.core.tile;
 
-import elec332.core.util.BlockStateHelper;
-import elec332.core.util.DirectionHelper;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
@@ -13,12 +11,15 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.List;
 
 /**
@@ -35,7 +36,7 @@ public abstract class AbstractBlock extends Block {
     }
 
     @Override
-    public final boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, ItemStack stack, EnumFacing facing, float hitX, float hitY, float hitZ) {
+    public final boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, @Nullable ItemStack heldItem, EnumFacing facing, float hitX, float hitY, float hitZ) {
         return onBlockActivated(world, pos, player, hand, state, facing, hitX, hitY, hitZ);
     }
 
@@ -44,25 +45,34 @@ public abstract class AbstractBlock extends Block {
     }
 
     @Override
-    @Nonnull
-    public final IBlockState onBlockPlaced(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer) {
-        return getBlockStateForPlacement(worldIn, pos, facing, hitX, hitY, hitZ, meta, placer, placer.getActiveHand());
+    @SuppressWarnings("deprecation")
+    public final void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn) {
+        neighborChanged(worldIn, pos, state, blockIn, null);
     }
 
-    @Nonnull
-    public IBlockState getBlockStateForPlacement(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer, EnumHand hand) {
-        return super.onBlockPlaced(worldIn, pos, facing, hitX, hitY, hitZ, meta, placer);
+    @SuppressWarnings("deprecation")
+    protected void neighborChanged(World world, BlockPos pos, IBlockState state, Block neighbor, BlockPos p_189540_5_) {
+        super.neighborChanged(state, world, pos, neighbor);
     }
 
     @Override
-    @SuppressWarnings("deprecation")
-    public final void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn) {
-        neighborChanged(worldIn, pos, state, blockIn);
+    public final IBlockState onBlockPlaced(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer) {
+        return this.getBlockStateForPlacement(worldIn, pos, facing, hitX, hitY, hitZ, meta, placer, null);
     }
 
-    @SuppressWarnings("deprecation")
-    protected void neighborChanged(World world, BlockPos pos, IBlockState state, Block neighbor) {
-        super.neighborChanged(state, world, pos, neighbor);
+    public IBlockState getBlockStateForPlacement(World world, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer, @Nullable EnumHand hand) {
+        return super.onBlockPlaced(world, pos, facing, hitX, hitY, hitZ, meta, placer);
+    }
+
+    @Nullable
+    @Override
+    public final AxisAlignedBB getCollisionBoundingBox(IBlockState blockState, @Nonnull World worldIn, @Nonnull BlockPos pos) {
+        return getCollisionBoundingBox(worldIn, pos, blockState);
+    }
+
+    @Nullable
+    public AxisAlignedBB getCollisionBoundingBox(@Nonnull IBlockAccess world, @Nonnull BlockPos pos, IBlockState state) {
+        return super.getCollisionBoundingBox(state, (World) world, pos);
     }
 
     @Override
