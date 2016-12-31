@@ -6,6 +6,7 @@ import elec332.core.inventory.widget.slot.WidgetSlot;
 import elec332.core.main.ElecCore;
 import elec332.core.network.packets.PacketWindowData;
 import elec332.core.util.BasicInventory;
+import elec332.core.util.MinecraftList;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.*;
@@ -136,8 +137,14 @@ public final class WindowContainer extends Container {
         private final IContainerListener listener;
 
         @Override
-        public void updateCraftingInventory(NonNullList<ItemStack> itemsList) {
-            listener.updateCraftingInventory(WindowContainer.this, itemsList);
+        public void updateCraftingInventory(List<ItemStack> itemsList) {
+            if (itemsList instanceof MinecraftList){
+                itemsList = ((MinecraftList<ItemStack>) itemsList).getUnderlyingList();
+            }
+            if (!(itemsList instanceof NonNullList)){
+                throw new IllegalArgumentException();
+            }
+            listener.updateCraftingInventory(WindowContainer.this, (NonNullList<ItemStack>) itemsList);
         }
 
         @Override

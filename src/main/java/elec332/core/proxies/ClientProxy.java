@@ -85,7 +85,7 @@ public class ClientProxy extends CommonProxy {
 
 	@Override
 	public void addPersonalMessageToPlayer(String s) {
-		minecraft.player.sendMessage(new TextComponentString(s));
+		getClientPlayer().sendMessage(new TextComponentString(s));
 	}
 
 	@Override

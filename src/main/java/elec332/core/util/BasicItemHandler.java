@@ -61,7 +61,7 @@ public class BasicItemHandler implements IItemHandler, IItemHandlerModifiable, I
     @Override
     @Nonnull
     public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate) {
-        if (stack.isEmpty()) {
+        if (!ItemStackHelper.isStackValid(stack)) {
             return ItemStackHelper.NULL_STACK;
         }
         if (!canInsert(slot, stack) || !isStackValidForSlot(slot, stack)){
@@ -74,30 +74,30 @@ public class BasicItemHandler implements IItemHandler, IItemHandlerModifiable, I
 
         int limit = getStackLimit(slot, stack);
 
-        if (!existing.isEmpty()){
+        if (ItemStackHelper.isStackValid(existing)){
             if (!ItemHandlerHelper.canItemStacksStack(stack, existing)) {
                 return stack;
             }
 
-            limit -= existing.getCount();
+            limit -= existing.stackSize;
         }
 
         if (limit <= 0) {
             return stack;
         }
 
-        boolean reachedLimit = stack.getCount() > limit;
+        boolean reachedLimit = stack.stackSize > limit;
 
         if (!simulate) {
-            if (existing.isEmpty()) {
+            if (!ItemStackHelper.isStackValid(existing)) {
                 this.stacks.set(slot, reachedLimit ? ItemHandlerHelper.copyStackWithSize(stack, limit) : stack);
             } else {
-                existing.setCount(reachedLimit ? limit : stack.getCount());
+                existing.stackSize = (reachedLimit ? limit : stack.stackSize);
             }
             onContentsChanged(slot);
         }
 
-        return reachedLimit ? ItemHandlerHelper.copyStackWithSize(stack, stack.getCount() - limit) : ItemStackHelper.NULL_STACK;
+        return reachedLimit ? ItemHandlerHelper.copyStackWithSize(stack, stack.stackSize - limit) : ItemStackHelper.NULL_STACK;
     }
 
     @Nonnull
@@ -110,13 +110,13 @@ public class BasicItemHandler implements IItemHandler, IItemHandlerModifiable, I
 
         ItemStack existing = this.stacks.get(slot);
 
-        if (existing.isEmpty()) {
+        if (!ItemStackHelper.isStackValid(existing)) {
             return ItemStackHelper.NULL_STACK;
         }
 
         int toExtract = Math.min(amount, existing.getMaxStackSize());
 
-        if (existing.getCount() <= toExtract) {
+        if (existing.stackSize <= toExtract) {
             if (!simulate) {
                 this.stacks.set(slot, ItemStackHelper.NULL_STACK);
                 onContentsChanged(slot);
@@ -124,7 +124,7 @@ public class BasicItemHandler implements IItemHandler, IItemHandlerModifiable, I
             return existing;
         } else {
             if (!simulate) {
-                this.stacks.set(slot, ItemHandlerHelper.copyStackWithSize(existing, existing.getCount() - toExtract));
+                this.stacks.set(slot, ItemHandlerHelper.copyStackWithSize(existing, existing.stackSize - toExtract));
                 onContentsChanged(slot);
             }
 

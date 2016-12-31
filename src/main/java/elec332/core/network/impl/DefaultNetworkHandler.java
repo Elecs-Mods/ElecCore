@@ -286,7 +286,7 @@ class DefaultNetworkHandler implements IElecNetworkHandler, DefaultByteBufFactor
 
     @Override
     public IPacketDispatcher getPacketDispatcher() {
-        return simpleNetworkPacketManager.getPacketDispatcher();
+        return this;
     }
 
 }

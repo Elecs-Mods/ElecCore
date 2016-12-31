@@ -8,18 +8,21 @@ import elec332.core.util.PlayerHelper;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.effect.EntityLightningBolt;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
+import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.ForgeChunkManager;
@@ -32,6 +35,14 @@ import javax.annotation.Nullable;
  */
 @SuppressWarnings("unused")
 public class WorldHelper {
+
+    public static Biome getBiome(World world, BlockPos pos){
+        return world.getBiome(pos);
+    }
+
+    public static IBlockState getBlockStateForPlacement(Block block, World world, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer, @Nullable EnumHand hand) {
+        return block.getStateForPlacement(world, pos, facing, hitX, hitY, hitZ, meta, placer, hand);
+    }
 
     public static boolean spawnEntityInWorld(World world, Entity entity){
         return world.spawnEntity(entity);
@@ -130,7 +141,7 @@ public class WorldHelper {
             double d2 = (double)(world.rand.nextFloat() * f) + (double)(1.0F - f) * 0.5D;
             EntityItem entityitem = new EntityItem(world, (double)x + d0, (double)y + d1, (double)z + d2, itemStack);
             entityitem.setDefaultPickupDelay();
-            world.spawnEntity(entityitem);
+            WorldHelper.spawnEntityInWorld(world, entityitem);
         }
     }
 
@@ -185,6 +196,6 @@ public class WorldHelper {
     public static void spawnLightningAt(World world, double x, double y, double z){
         //world.pl(x, y, z,"ambient.weather.thunder", 10000.0F, 0.8F);
         //world.playSoundEffect(x, y, z,"random.explode", 10000.0F, 0.8F);
-        world.spawnEntity(new EntityLightningBolt(world, x, y, z, false));
+        WorldHelper.spawnEntityInWorld(world, new EntityLightningBolt(world, x, y, z, false));
     }
 }

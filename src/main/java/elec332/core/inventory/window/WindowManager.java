@@ -35,6 +35,7 @@ public enum WindowManager implements ISimplePacket, ISimplePacketHandler {
     INSTANCE;
 
     private WindowManager(){
+        ElecCore.networkHandler.registerPacket(this, this);
         MinecraftForge.EVENT_BUS.register(new Object(){
 
             @SubscribeEvent
@@ -45,7 +46,6 @@ public enum WindowManager implements ISimplePacket, ISimplePacketHandler {
             }
 
         });
-        ElecCore.networkHandler.registerPacket(this, this);
         this.names = Maps.newHashMap();
         this.map = Maps.newHashMap();
         this.lookup = Maps.newHashMap();

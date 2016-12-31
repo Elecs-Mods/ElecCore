@@ -4,11 +4,11 @@ import elec332.core.client.RenderHelper;
 import elec332.core.client.util.GuiDraw;
 import elec332.core.inventory.tooltip.ToolTip;
 import elec332.core.inventory.window.Window;
+import elec332.core.util.MathHelper;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.IFluidTank;
 import org.lwjgl.opengl.GL11;
@@ -106,7 +106,7 @@ public class FluidTankWidget extends Widget {
 
         bindTexture(RenderHelper.getBlocksResourceLocation());
         int wrT = width % 16, hrT = height % 16;
-        int widthTimes = MathHelper.floor(width / 16f), heightTimes = MathHelper.floor(height / 16f);
+        int widthTimes = MathHelper.floor_float(width / 16f), heightTimes = MathHelper.floor_float(height / 16f);
         for (int col = 0; col < widthTimes; col++) {
             for (int row = 0; row <= heightTimes; row++) {
                 GuiDraw.drawTexturedModalRect(guiX + x + col * 16, guiY + y + row * 16 - 1, fluidIcon, 16, 16);

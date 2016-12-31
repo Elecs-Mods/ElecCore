@@ -33,12 +33,12 @@ public class TileEntityBase extends TileEntity implements IElecCoreNetworkTile {
 
     @Deprecated
     public boolean openGui(EntityPlayer player, Object mod, int guiID){
-        player.openGui(mod, guiID, world, getPos().getX(), getPos().getY(), getPos().getZ());
+        player.openGui(mod, guiID, getWorld(), getPos().getX(), getPos().getY(), getPos().getZ());
         return true;
     }
 
     public boolean openWindow(EntityPlayer player, IWindowHandler windowHandler, int id){
-        WindowManager.openWindow(player, windowHandler, world, pos, (byte) id);
+        WindowManager.openWindow(player, windowHandler, getWorld(), pos, (byte) id);
         return true;
     }
 
@@ -47,13 +47,13 @@ public class TileEntityBase extends TileEntity implements IElecCoreNetworkTile {
     }
 
     public void notifyNeighborsOfChange(){
-        WorldHelper.notifyNeighborsOfStateChange(world, pos, blockType);
+        WorldHelper.notifyNeighborsOfStateChange(getWorld(), pos, blockType);
     }
 
     //NETWORK///////////////////////
 
     public void syncData(){
-        WorldHelper.markBlockForUpdate(world, pos);
+        WorldHelper.markBlockForUpdate(getWorld(), pos);
     }
 
     @SideOnly(Side.CLIENT)
@@ -65,7 +65,7 @@ public class TileEntityBase extends TileEntity implements IElecCoreNetworkTile {
     }
 
     public void sendPacket(int ID, NBTTagCompound data){
-        for (EntityPlayerMP player : ServerHelper.instance.getAllPlayersWatchingBlock(world, getPos())) {
+        for (EntityPlayerMP player : ServerHelper.instance.getAllPlayersWatchingBlock(getWorld(), getPos())) {
             sendPacketTo(player, ID, data);
         }
     }

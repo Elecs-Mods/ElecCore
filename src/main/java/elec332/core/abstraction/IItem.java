@@ -34,8 +34,9 @@ import java.util.Set;
  */
 public interface IItem {
 
+
     @SideOnly(Side.CLIENT)
-    @Nonnull
+    @Nonnull //1.11+ only
     default public ItemStack getDefaultInstance(Item item) {
         return getFallback().getDefaultInstance(item);
     }
@@ -414,6 +415,8 @@ public interface IItem {
      * Override this method to change the NBT data being sent to the client.
      * You should ONLY override this when you have no other choice, as this might change behavior client side!
      *
+     * 1.11+ only
+     *
      * @param stack The stack to send the NBT tag for
      * @return The NBT tag
      */
@@ -714,6 +717,8 @@ public interface IItem {
      * Returns the packed int RGB value used to render the durability bar in the GUI.
      * Defaults to a value based on the hue scaled as the damage decreases, but can be overriden.
      *
+     *  1.11+ only
+     *
      * @param stack Stack to get durability from
      * @return A packed RGB value for the durability colour (0x00RRGGBB)
      */
@@ -818,6 +823,9 @@ public interface IItem {
      * Enchantments may additionally (or exclusively) be doing their own checks in {@link net.minecraft.enchantment.Enchantment#canApplyAtEnchantingTable(ItemStack)}; check the individual implementation for reference.
      * By default this will check if the enchantment type is valid for this item type.
      * @param stack the item stack to be enchanted
+     *
+     * 1.11+ only
+     *
      * @param enchantment the enchantment to be applied
      * @return true if the enchantment can be applied to this item
      */

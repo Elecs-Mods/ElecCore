@@ -1,5 +1,6 @@
 package elec332.core.main;
 
+import elec332.core.util.AbstractCreativeTab;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
@@ -14,14 +15,14 @@ import javax.annotation.Nonnull;
  */
 public class ElecCTab {
 
-	public static CreativeTabs ElecTab = new CreativeTabs("Elecs_Mods") {
+	public static CreativeTabs ElecTab = new AbstractCreativeTab("Elecs_Mods") {
 
 		@Override
-	    @SideOnly(Side.CLIENT)
+		@SideOnly(Side.CLIENT)
 		@Nonnull
-	    public ItemStack getTabIconItem() {
-	        return new ItemStack(Item.getItemFromBlock(Blocks.ANVIL));
-	    }
+		public ItemStack getDisplayStack() {
+			return new ItemStack(Item.getItemFromBlock(Blocks.ANVIL));
+		}
 
 	};
 

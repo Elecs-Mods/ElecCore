@@ -11,9 +11,11 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -24,13 +26,17 @@ import java.util.List;
 @SuppressWarnings("unused")
 public class TileBase extends TileEntityBase implements IElecCoreNetworkTile {
 
+    public static void setWorld(TileEntity tile, World world){
+        tile.setWorld(world);
+    }
+
     @Override
     public void validate() {
         super.validate();
         ElecCore.tickHandler.registerCall(new Runnable() {
             @Override
             public void run() {
-                if (WorldHelper.chunkLoaded(world, getPos())) {
+                if (WorldHelper.chunkLoaded(getWorld(), getPos())) {
                     onTileLoaded();
                 }
             }
@@ -96,7 +102,7 @@ public class TileBase extends TileEntityBase implements IElecCoreNetworkTile {
     @Deprecated
     public void notifyNeighboursOfDataChange(){
         this.markDirty();
-        WorldHelper.notifyNeighborsOfStateChange(world, getPos(), blockType);
+        WorldHelper.notifyNeighborsOfStateChange(getWorld(), getPos(), blockType);
     }
 
     @SuppressWarnings("deprecation")
@@ -105,7 +111,7 @@ public class TileBase extends TileEntityBase implements IElecCoreNetworkTile {
     }
 
     public boolean timeCheck() {
-        return this.world.getTotalWorldTime() % 32L == 0L;
+        return this.getWorld().getTotalWorldTime() % 32L == 0L;
     }
 
     public int getLightOpacity() {
@@ -171,7 +177,7 @@ public class TileBase extends TileEntityBase implements IElecCoreNetworkTile {
     }
 
     public void setFacing(EnumFacing facing){
-        WorldHelper.setBlockState(world, pos, getBlockType().getBlockState().getBaseState().withProperty(BlockStateHelper.FACING_NORMAL.getProperty(), facing), 2);
+        WorldHelper.setBlockState(getWorld(), pos, getBlockType().getBlockState().getBaseState().withProperty(BlockStateHelper.FACING_NORMAL.getProperty(), facing), 2);
         notifyNeighborsOfChange();
     }
 
