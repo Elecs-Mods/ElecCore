@@ -56,10 +56,10 @@ import org.apache.logging.log4j.Logger;
 acceptedMinecraftVersions = "[1.11,)", version = ElecCore.ElecCoreVersion, useMetadata = true)
 public class ElecCore implements IModuleController, IElecCoreMod, IDependencyHandler {
 
-	public static final String ElecCoreVersion = "1.6.9999.custom";//"#ELECCORE_VER#";
+	public static final String ElecCoreVersion = "#ELECCORE_VER#";
 	public static final String MODID = "eleccore";
 	public static final String MODNAME = "ElecCore";
-	public static final String FORGE_VERSION = null;//"13.19.0.2160";
+	public static final String FORGE_VERSION = "13.19.1.2195";
 
 	@SidedProxy(clientSide = "elec332.core.proxies.ClientProxy", serverSide = "elec332.core.proxies.CommonProxy")
 	public static CommonProxy proxy;
