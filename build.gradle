@@ -39,6 +39,9 @@ repositories {
         name = "forestry"
         url = "http://maven.ic2.player.to/"
     }
+	maven {
+		url "http://tehnut.info/maven"
+	}
 }
 
 apply plugin: 'net.minecraftforge.gradle.forge'
@@ -76,8 +79,9 @@ minecraft {
 dependencies {
 
 	//WAILA
-	compile "mcp.mobius.waila:Waila:${config.WAILA_version}"
+	//compile "mcp.mobius.waila:Waila:${config.WAILA_version}"
 	//compile "mcp.mobius.waila:Waila:${config.WAILA_version}"//_${config.minecraft_version}"
+	deobfCompile "mcp.mobius.waila:Hwyla:${config.WAILA_version}"
 	
 	//JEI
 	deobfCompile "mezz.jei:jei_${config.minecraft_version}:${config.jei_version}"

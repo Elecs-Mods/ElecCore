@@ -41,8 +41,12 @@ public class ForestryAlleles {
         return (IAlleleArea) getAllele(EnumBeeChromosome.TERRITORY, areaIAlleleValue);
     }
 
-    private static IAlleleInteger getAlleleI(IAlleleValue<Integer> integerIAlleleValue){
+    private static IAlleleInteger getAlleleFlower(IAlleleValue<Integer> integerIAlleleValue){
         return (IAlleleInteger) getAllele(EnumBeeChromosome.FLOWERING, integerIAlleleValue);
+    }
+
+    private static IAlleleInteger getAlleleFertility(IAlleleValue<Integer> integerIAlleleValue){
+        return (IAlleleInteger) getAllele(EnumBeeChromosome.FERTILITY, integerIAlleleValue);
     }
 
     private static IAlleleTolerance getAlleleT(IAlleleValue<EnumTolerance> toleranceIAlleleValue){
@@ -50,7 +54,7 @@ public class ForestryAlleles {
     }
 
     private static IAllele getAllele(EnumBeeChromosome chromosome, IAlleleValue value){
-        AlleleHelper.instance.set(cache, chromosome, value);
+        AlleleHelper.getInstance().set(cache, chromosome, value);
         return cache[chromosome.ordinal()];
     }
 
@@ -95,22 +99,22 @@ public class ForestryAlleles {
         TOLERANCE_BOTH_3 = getAlleleT(EnumAllele.Tolerance.BOTH_3);
         TOLERANCE_BOTH_4 = getAlleleT(EnumAllele.Tolerance.BOTH_4);
         TOLERANCE_BOTH_5 = getAlleleT(EnumAllele.Tolerance.BOTH_5);
-        FLOWERING_SLOWEST = getAlleleI(EnumAllele.Flowering.SLOWEST);
-        FLOWERING_SLOWER = getAlleleI(EnumAllele.Flowering.SLOWER);
-        FLOWERING_SLOW = getAlleleI(EnumAllele.Flowering.SLOW);
-        FLOWERING_AVERAGE = getAlleleI(EnumAllele.Flowering.AVERAGE);
-        FLOWERING_FAST = getAlleleI(EnumAllele.Flowering.FAST);
-        FLOWERING_FASTER = getAlleleI(EnumAllele.Flowering.FASTER);
-        FLOWERING_FASTEST = getAlleleI(EnumAllele.Flowering.FASTEST);
-        FLOWERING_MAXIMUM = getAlleleI(EnumAllele.Flowering.MAXIMUM);
+        FLOWERING_SLOWEST = getAlleleFlower(EnumAllele.Flowering.SLOWEST);
+        FLOWERING_SLOWER = getAlleleFlower(EnumAllele.Flowering.SLOWER);
+        FLOWERING_SLOW = getAlleleFlower(EnumAllele.Flowering.SLOW);
+        FLOWERING_AVERAGE = getAlleleFlower(EnumAllele.Flowering.AVERAGE);
+        FLOWERING_FAST = getAlleleFlower(EnumAllele.Flowering.FAST);
+        FLOWERING_FASTER = getAlleleFlower(EnumAllele.Flowering.FASTER);
+        FLOWERING_FASTEST = getAlleleFlower(EnumAllele.Flowering.FASTEST);
+        FLOWERING_MAXIMUM = getAlleleFlower(EnumAllele.Flowering.MAXIMUM);
         TERRITORY_AVERAGE = getAlleleA(EnumAllele.Territory.AVERAGE);
         TERRITORY_LARGE = getAlleleA(EnumAllele.Territory.LARGE);
         TERRITORY_LARGER = getAlleleA(EnumAllele.Territory.LARGER);
         TERRITORY_LARGEST = getAlleleA(EnumAllele.Territory.LARGEST);
-        FERTILITY_LOW = getAlleleI(EnumAllele.Fertility.LOW);
-        FERTILITY_NORMAL = getAlleleI(EnumAllele.Fertility.NORMAL);
-        FERTILITY_HIGH = getAlleleI(EnumAllele.Fertility.HIGH);
-        FERTILITY_MAXIMUM = getAlleleI(EnumAllele.Fertility.MAXIMUM);
+        FERTILITY_LOW = getAlleleFertility(EnumAllele.Fertility.LOW);
+        FERTILITY_NORMAL = getAlleleFertility(EnumAllele.Fertility.NORMAL);
+        FERTILITY_HIGH = getAlleleFertility(EnumAllele.Fertility.HIGH);
+        FERTILITY_MAXIMUM = getAlleleFertility(EnumAllele.Fertility.MAXIMUM);
         FLOWERS_VANILLA = getAlleleFl(EnumAllele.Flowers.VANILLA);
         FLOWERS_NETHER = getAlleleFl(EnumAllele.Flowers.NETHER);
         FLOWERS_CACTI = getAlleleFl(EnumAllele.Flowers.CACTI);

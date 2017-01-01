@@ -2,11 +2,13 @@ package elec332.core.compat.forestry.bee;
 
 import com.google.common.collect.Lists;
 import elec332.core.compat.forestry.IIndividualDefinition;
+import elec332.core.util.InventoryHelper;
 import forestry.api.apiculture.BeeManager;
 import forestry.api.apiculture.IBee;
 import forestry.api.apiculture.IBeeGenome;
 import forestry.api.apiculture.IHiveDrop;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 
@@ -44,8 +46,8 @@ public class HiveDrop implements IHiveDrop {
     }
 
     @Override
-    public Collection<ItemStack> getExtraItems(IBlockAccess iBlockAccess, BlockPos blockPos, int i) {
-        List<ItemStack> ret = Lists.newArrayList();
+    public NonNullList<ItemStack> getExtraItems(IBlockAccess iBlockAccess, BlockPos blockPos, int i) {
+        NonNullList<ItemStack> ret = NonNullList.create();
         for (ItemStack stack : extraDrops){
             ret.add(stack.copy());
         }

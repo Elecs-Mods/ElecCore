@@ -200,25 +200,7 @@ class DefaultSimpleNetworkHandler implements ISimpleNetworkPacketManager, IMessa
 
     @Override
     public IMessage onMessage(PacketSimplePacket message, MessageContext ctx) {
-        //System.out.println(message.i);
-        ISimplePacketHandler sph = idToHandler.get(message.i);
-        if (sph == null){
-            handlerToId.forEachEntry(new TObjectIntProcedure<ISimplePacketHandler>(){
-                @Override
-                public boolean execute(ISimplePacketHandler a, int b) {
-                    if (b == message.i){
-                        a.onPacket(new ElecByteBufImpl(message.data), NetworkManager.INSTANCE.wrapMessageContext(ctx), DefaultSimpleNetworkHandler.this);
-                        System.out.println("received proper packet with ID: "+b);
-                        return true;
-                    }
-                    return false;
-                }
-            });
-            System.out.println("Processed packet request");
-        } else {
-            System.out.println("proaswell");
-            Preconditions.checkNotNull(sph).onPacket(new ElecByteBufImpl(message.data), NetworkManager.INSTANCE.wrapMessageContext(ctx), this);
-        }
+        Preconditions.checkNotNull(idToHandler.get(message.i)).onPacket(new ElecByteBufImpl(message.data), NetworkManager.INSTANCE.wrapMessageContext(ctx), this);
         return null;
     }
 
