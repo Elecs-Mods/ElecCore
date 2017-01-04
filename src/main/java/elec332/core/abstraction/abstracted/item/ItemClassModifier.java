@@ -2,9 +2,10 @@ package elec332.core.abstraction.abstracted.item;
 
 import elec332.core.abstraction.IItem;
 import elec332.core.abstraction.abstracted.AbstractClassModifier;
-import net.minecraft.item.*;
-import org.objectweb.asm.*;
-import org.objectweb.asm.tree.*;
+import net.minecraft.item.Item;
+import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.Type;
 
 import static org.objectweb.asm.Opcodes.*;
 

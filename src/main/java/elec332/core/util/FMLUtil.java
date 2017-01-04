@@ -6,7 +6,6 @@ import com.google.common.eventbus.EventBus;
 import net.minecraftforge.fml.common.*;
 import net.minecraftforge.fml.common.discovery.ASMDataTable;
 import net.minecraftforge.fml.common.event.FMLEvent;
-import org.objectweb.asm.ClassWriter;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;

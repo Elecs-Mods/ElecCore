@@ -5,7 +5,6 @@ import elec332.core.inventory.widget.Widget;
 import elec332.core.inventory.window.Window;
 import elec332.core.inventory.window.WindowManager;
 import elec332.core.util.NBTHelper;
-import net.minecraft.inventory.Container;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;

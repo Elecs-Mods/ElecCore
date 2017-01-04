@@ -1,6 +1,7 @@
 [
 {
-  "modid": "ElecCore",
-  "version": "${version}"
+    "name": "ElecCore",
+    "modid": "eleccore",
+    "version": "${version}"
 }
 ]

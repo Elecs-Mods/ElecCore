@@ -6,7 +6,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.ITextComponent;
 
 import javax.annotation.Nonnull;
-import java.util.List;
 
 /**
  * Created by Elec332 on 9-7-2015.
@@ -18,8 +17,8 @@ public class DoubleInventory<I1 extends IInventory, I2 extends IInventory> imple
             throw new IllegalArgumentException("Inventory cannot be null!");
         this.inventory1 = inv1;
         this.inventory2 = inv2;
-        this.size1 = InventoryHelper.getMainInventorySize(inv1);
-        this.size2 = InventoryHelper.getMainInventorySize(inv2);
+        this.size1 = inv1.getSizeInventory();
+        this.size2 = inv2.getSizeInventory();
         this.totalSize = size1 + size2;
     }
 
@@ -167,6 +166,7 @@ public class DoubleInventory<I1 extends IInventory, I2 extends IInventory> imple
         return inventory2;
     }
 
+    /*
     public boolean addItemToInventory(ItemStack stack){
         return InventoryHelper.addItemToInventory(inventory1, stack) || InventoryHelper.addItemToInventory(inventory2, stack);
     }
@@ -195,7 +195,7 @@ public class DoubleInventory<I1 extends IInventory, I2 extends IInventory> imple
         for (int i = 0; i < list.size(); i++) {
             setInventorySlotContents(i, ItemStackHelper.copyItemStack(list.get(i)));
         }
-    }
+    }*/
 
     public void copyTo(I1 i1, I2 i2){
         for (int i = 0; i < size1; i++) {

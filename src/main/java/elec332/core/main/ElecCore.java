@@ -1,6 +1,6 @@
 package elec332.core.main;
 
-import elec332.core.abstraction.*;
+import elec332.core.abstraction.IItem;
 import elec332.core.api.IElecCoreMod;
 import elec332.core.api.client.IIconRegistrar;
 import elec332.core.api.client.model.IElecModelBakery;

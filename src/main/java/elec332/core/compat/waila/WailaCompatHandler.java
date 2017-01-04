@@ -1,35 +1,8 @@
 package elec332.core.compat.waila;
 
-import elec332.core.api.info.IInfoDataAccessorBlock;
-import elec332.core.api.info.IInformation;
-import elec332.core.api.info.InfoMod;
 import elec332.core.api.module.ElecModule;
 import elec332.core.compat.ModNames;
-import elec332.core.handler.InformationHandler;
 import elec332.core.main.ElecCore;
-import elec332.core.main.ElecCoreRegistrar;
-import elec332.core.util.RayTraceHelper;
-import elec332.core.world.WorldHelper;
-import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLInterModComms;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Created by Elec332 on 15-8-2015.

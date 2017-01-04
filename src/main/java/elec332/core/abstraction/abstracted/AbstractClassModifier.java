@@ -6,8 +6,6 @@ import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.*;
 
-import java.io.FileInputStream;
-
 /**
  * Created by Elec332 on 23-12-2016.
  */

@@ -1,6 +1,5 @@
 package elec332.core.util;
 
-import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -15,7 +14,7 @@ import java.util.List;
 public class ItemStackHelper {
 
     public static boolean isStackValid(ItemStack stack){
-        return stack != null && stack.getItem() != NULL_ITEM;
+        return stack != null && stack.getItem() != NULL_ITEM && stack.stackSize > 0;
     }
 
     @Nonnull
