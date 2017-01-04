@@ -92,7 +92,7 @@ public class BasicItemHandler implements IItemHandler, IItemHandlerModifiable, I
             if (!ItemStackHelper.isStackValid(existing)) {
                 this.stacks.set(slot, reachedLimit ? ItemHandlerHelper.copyStackWithSize(stack, limit) : stack);
             } else {
-                existing.stackSize = (reachedLimit ? limit : stack.stackSize);
+                existing.stackSize += (reachedLimit ? limit : stack.stackSize);
             }
             onContentsChanged(slot);
         }
@@ -160,7 +160,7 @@ public class BasicItemHandler implements IItemHandler, IItemHandlerModifiable, I
     }
 
     protected int getStackLimit(int slot, @Nonnull ItemStack stack) {
-        return getSlotLimit(slot);
+        return Math.min(getSlotLimit(slot), stack.getMaxStackSize());
     }
 
     @Override

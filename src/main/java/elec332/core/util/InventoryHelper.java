@@ -6,6 +6,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
+import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.oredict.OreDictionary;
 
 import javax.annotation.Nonnull;
@@ -75,7 +76,7 @@ public class InventoryHelper {
     }
 
     public static boolean addItemToInventory(IItemHandler inventory, ItemStack itemstack, int start, int end, boolean simulate) {
-        List<Integer> possSlots = Lists.newArrayList();
+        /*List<Integer> possSlots = Lists.newArrayList();
         ItemStack copiedStack = itemstack.copy();
         boolean emptied = false;
         for (int i = start; i < end; i++) {
@@ -125,7 +126,8 @@ public class InventoryHelper {
                 }
             }
         }
-        return false;
+        return false;*/
+        return !ItemStackHelper.isStackValid(ItemHandlerHelper.insertItemStacked(inventory, itemstack, simulate));
     }
 
     public static boolean areNBTsEqual(ItemStack first, ItemStack second) {
