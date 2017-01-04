@@ -1,5 +1,6 @@
 package elec332.core.client.model.model;
 
+import elec332.core.client.model.ElecModelBakery;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
@@ -25,7 +26,7 @@ public class TESRItemModel extends AbstractItemModel {
 
     @Override
     public boolean isItemTESR() {
-        return false;//true;
+        return true;
     }
 
     @Override
@@ -46,7 +47,7 @@ public class TESRItemModel extends AbstractItemModel {
     @Override
     @SuppressWarnings("deprecation")
     public ItemCameraTransforms getItemCameraTransforms() {
-        return ItemCameraTransforms.DEFAULT;
+        return ElecModelBakery.DEFAULT_BLOCK;
     }
 
     @SuppressWarnings("unchecked")

@@ -1,10 +1,11 @@
 package elec332.core.util;
 
-import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.inventory.IInventory;
+import com.google.common.collect.Lists;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.oredict.OreDictionary;
 
 import javax.annotation.Nonnull;
@@ -64,55 +65,66 @@ public class InventoryHelper {
         return ItemStackHelper.copyItemStack(stack);
     }
 
-    public static boolean addItemToInventory(IInventory inventory, ItemStack itemstack) {
+    public static boolean addItemToInventory(IItemHandler inventory, ItemStack itemstack, boolean simulate) {
         int invSize = getMainInventorySize(inventory);
-        return addItemToInventory(inventory, itemstack, 0, invSize);
+        return addItemToInventory(inventory, itemstack, 0, invSize, simulate);
     }
 
-    public static int getMainInventorySize(IInventory inv) {
-        if (inv instanceof InventoryPlayer) {
-            return 36;
-        }
-        return inv.getSizeInventory();
+    public static int getMainInventorySize(IItemHandler inv) {
+        return inv.getSlots();
     }
 
-    public static boolean addItemToInventory(IInventory inventory, ItemStack itemstack, int start, int end) {
-        List<ItemStack> contents = storeContents(inventory);
-        int maxStack = Math.min(inventory.getInventoryStackLimit(), itemstack.getMaxStackSize());
+    public static boolean addItemToInventory(IItemHandler inventory, ItemStack itemstack, int start, int end, boolean simulate) {
+        List<Integer> possSlots = Lists.newArrayList();
+        ItemStack copiedStack = itemstack.copy();
+        boolean emptied = false;
         for (int i = start; i < end; i++) {
             ItemStack stack = inventory.getStackInSlot(i);
-            if (areEqualNoSize(itemstack, stack)) {
-                if (stack.stackSize >= maxStack) {
-                    continue;
-                }
-                if (stack.stackSize + itemstack.stackSize <= maxStack) {
-                    stack.stackSize += itemstack.stackSize;
-                    inventory.markDirty();
-                    return true;
-                } else {
-                    itemstack.stackSize -= maxStack - stack.stackSize;
-                    stack.stackSize = maxStack;
+            if (areEqualNoSize(stack, itemstack)){
+                possSlots.add(i);
+                copiedStack = inventory.insertItem(i, copiedStack, true);
+                emptied = !ItemStackHelper.isStackValid(copiedStack);
+                if (emptied){
+                    if (simulate){
+                        return true;
+                    } else {
+                        break;
+                    }
                 }
             }
         }
-        while (true) {
-            int slot = getEmptySlot(inventory, start, end);
-            if (slot != -1 && inventory.isItemValidForSlot(slot, itemstack)) {
-                if (itemstack.stackSize <= maxStack) {
-                    inventory.setInventorySlotContents(slot, itemstack.copy());
-                    inventory.markDirty();
-                    return true;
-                } else {
-                    ItemStack is = itemstack.copy();
-                    itemstack.stackSize -= maxStack;
-                    is.stackSize = maxStack;
-                    inventory.setInventorySlotContents(slot, is);
+        if (!emptied) {
+            for (int i = start; i < end; i++) {
+                if (!possSlots.contains(i)) {
+                    copiedStack = inventory.insertItem(i, copiedStack, true);
+                    if (!ItemStackHelper.isStackValid(copiedStack)){
+                        if (simulate){
+                            return true;
+                        } else {
+                            break;
+                        }
+                    }
                 }
-            } else {
-                break;
             }
         }
-        setContents(inventory, contents);
+        if (ItemStackHelper.isStackValid(copiedStack)){
+            return false;
+        }
+        copiedStack = itemstack.copy();
+        for (int i : possSlots){
+            copiedStack = inventory.insertItem(i, copiedStack, false);
+            if (!ItemStackHelper.isStackValid(copiedStack)){
+                return true;
+            }
+        }
+        for (int i = start; i < end; i++) {
+            if (!possSlots.contains(i)) {
+                copiedStack = inventory.insertItem(i, copiedStack, false);
+                if (!ItemStackHelper.isStackValid(copiedStack)){
+                    return true;
+                }
+            }
+        }
         return false;
     }
 
@@ -137,7 +149,7 @@ public class InventoryHelper {
         return areEqualNoSizeNoNBT(first, second) && areNBTsEqual(first, second);
     }
 
-    public static int getEmptySlot(IInventory inventory, int start, int end) {
+    public static int getEmptySlot(IItemHandler inventory, int start, int end) {
         for (int i = start; i < end; i++) {
             if (!ItemStackHelper.isStackValid(inventory.getStackInSlot(i))) {
                 return i;
@@ -146,25 +158,25 @@ public class InventoryHelper {
         return -1;
     }
 
-    public static void setContents(IInventory inventory, List<ItemStack> list) {
-        if (inventory.getSizeInventory() != list.size()) {
+    public static void setContents(IItemHandlerModifiable inventory, List<ItemStack> list) {
+        if (inventory.getSlots() != list.size()) {
             System.out.println("Error copying inventory contents!");
             return;
         }
         for (int i = 0; i < list.size(); i++) {
-            inventory.setInventorySlotContents(i, ItemStackHelper.copyItemStack(list.get(i)));
+            inventory.setStackInSlot(i, ItemStackHelper.copyItemStack(list.get(i)));
         }
     }
 
-    public static List<ItemStack> storeContents(IInventory inventory) {
-        List<ItemStack> copy = new ArrayList<ItemStack>(inventory.getSizeInventory());
-        for (int i = 0; i < inventory.getSizeInventory(); i++) {
+    public static List<ItemStack> storeContents(IItemHandler inventory) {
+        List<ItemStack> copy = new ArrayList<ItemStack>(inventory.getSlots());
+        for (int i = 0; i < inventory.getSlots(); i++) {
             copy.add(i, ItemStackHelper.copyItemStack(inventory.getStackInSlot(i)));
         }
         return copy;
     }
 
-    public static int amountOfOreDictItemsInventoryHas(IInventory inventory, String s, int i){
+    public static int amountOfOreDictItemsInventoryHas(IItemHandler inventory, String s, int i){
         int total = 0;
         if (doesInventoryHaveOreDictItem(inventory, s)){
             for (ItemStack oreStack : OreDictionary.getOres(s)){
@@ -175,7 +187,7 @@ public class InventoryHelper {
         return total;
     }
 
-    public static boolean doesInventoryHaveOreDictItem(IInventory inventory, String s){
+    public static boolean doesInventoryHaveOreDictItem(IItemHandler inventory, String s){
         for (ItemStack stack : OreDictionary.getOres(s)){
             if (getFirstSlotWithItemStackNoNBT(inventory, stack) != -1) {
                 return true;
@@ -184,7 +196,7 @@ public class InventoryHelper {
         return false;
     }
 
-    public static int amountOfItemsInventoryHas(IInventory inventory, ItemStack stack){
+    public static int amountOfItemsInventoryHas(IItemHandler inventory, ItemStack stack){
         int total = 0;
         if (getFirstSlotWithItemStackNoNBT(inventory, stack) != -1){
             for (int q : getSlotsWithItemStackNoNBT(inventory, stack)){
@@ -196,9 +208,9 @@ public class InventoryHelper {
         return total;
     }
 
-    public static Integer[] getSlotsWithItemStackNoNBT(IInventory inventory, ItemStack stack){
+    public static Integer[] getSlotsWithItemStackNoNBT(IItemHandler inventory, ItemStack stack){
         ArrayList<Integer> ret = new ArrayList<Integer>();
-        for(int i = 0; i < inventory.getSizeInventory(); i++) {
+        for(int i = 0; i < inventory.getSlots(); i++) {
             ItemStack stackInSlot = inventory.getStackInSlot(i);
             if(ItemStackHelper.isStackValid(stackInSlot) && stack != null && stackInSlot.getItem() == stack.getItem()) {
                 if (stackInSlot.getItemDamage() == stack.getItemDamage() || stack.getItemDamage() == OreDictionary.WILDCARD_VALUE)
@@ -212,8 +224,8 @@ public class InventoryHelper {
         else return null;
     }
 
-    public static int getFirstSlotWithItemStackNoNBT(IInventory inventory, ItemStack stack){
-        for(int i = 0; i < inventory.getSizeInventory(); ++i) {
+    public static int getFirstSlotWithItemStackNoNBT(IItemHandler inventory, ItemStack stack){
+        for(int i = 0; i < inventory.getSlots(); ++i) {
             ItemStack stackInSlot = inventory.getStackInSlot(i);
             if(ItemStackHelper.isStackValid(stackInSlot) && stack != null && stackInSlot.getItem() == stack.getItem()) {
                 if(stackInSlot.getItemDamage() == stack.getItemDamage() || stack.getItemDamage() == OreDictionary.WILDCARD_VALUE) {
@@ -226,4 +238,5 @@ public class InventoryHelper {
         }
         return -1;
     }
+
 }

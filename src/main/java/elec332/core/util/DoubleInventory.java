@@ -18,8 +18,8 @@ public class DoubleInventory<I1 extends IInventory, I2 extends IInventory> imple
             throw new IllegalArgumentException("Inventory cannot be null!");
         this.inventory1 = inv1;
         this.inventory2 = inv2;
-        this.size1 = InventoryHelper.getMainInventorySize(inv1);
-        this.size2 = InventoryHelper.getMainInventorySize(inv2);
+        this.size1 = inv1.getSizeInventory();
+        this.size2 = inv2.getSizeInventory();
         this.totalSize = size1 + size2;
     }
 
@@ -171,7 +171,7 @@ public class DoubleInventory<I1 extends IInventory, I2 extends IInventory> imple
     public I2 getSecondInventory(){
         return inventory2;
     }
-
+/*
     public boolean addItemToInventory(ItemStack stack){
         return InventoryHelper.addItemToInventory(inventory1, stack) || InventoryHelper.addItemToInventory(inventory2, stack);
     }
@@ -209,7 +209,7 @@ public class DoubleInventory<I1 extends IInventory, I2 extends IInventory> imple
         for (int i = 0; i < size2; i++) {
             i2.setInventorySlotContents(i, ItemStackHelper.copyItemStack(inventory2.getStackInSlot(i)));
         }
-    }
+    }*/
 
     public void copyFrom(DoubleInventory<I1, I2> inventory){
         for (int i = 0; i < getSizeInventory(); i++) {

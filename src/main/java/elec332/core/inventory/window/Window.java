@@ -427,6 +427,14 @@ public class Window implements IWidgetContainer {
 
     //Direct link-through
 
+    public WidgetSlot getSlot(int id) {
+        return windowContainer.getSlot(id);
+    }
+
+    public int getSlotListSize() {
+        return windowContainer.getSlotListSize();
+    }
+
     public final void detectAndSendChanges(){
         windowContainer.detectAndSendChanges();
     }
@@ -437,6 +445,10 @@ public class Window implements IWidgetContainer {
 
     public final List<IWindowListener> getListeners(){
         return windowContainer.getListeners();
+    }
+
+    public boolean mergeItemStackDefault(ItemStack stack, int startIndex, int endIndex, boolean reverseDirection) {
+        return windowContainer.mergeItemStackDefault(stack, startIndex, endIndex, reverseDirection);
     }
 
     @Nonnull

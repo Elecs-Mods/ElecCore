@@ -2,6 +2,7 @@ package elec332.core.client.model.model;
 
 import com.google.common.collect.ImmutableList;
 import elec332.core.api.client.model.model.IModelWithoutQuads;
+import elec332.core.client.model.ElecModelBakery;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
@@ -44,7 +45,7 @@ public abstract class AbstractBlockModel implements IModelWithoutQuads {
 
     @Override
     public ItemCameraTransforms getItemCameraTransforms() {
-        return ItemCameraTransforms.DEFAULT;
+        return ElecModelBakery.DEFAULT_BLOCK;
     }
 
     static {
