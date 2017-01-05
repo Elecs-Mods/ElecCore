@@ -185,13 +185,13 @@ public class ElecCore implements IModuleController, IElecCoreMod, IDependencyHan
 				ItemStack stack;
 				if (event.getHand() == EnumHand.OFF_HAND){
 					stack = event.getEntityPlayer().getHeldItem(EnumHand.MAIN_HAND);
-					if (stack.getItem() instanceof IRightClickCancel && ((IRightClickCancel) stack.getItem()).cancelInteraction(stack)){
+					if (stack != null && stack.getItem() instanceof IRightClickCancel && ((IRightClickCancel) stack.getItem()).cancelInteraction(stack)){
 						event.setCanceled(true);
 						return;
 					}
 				}
 				stack = event.getItemStack();
-				if (stack.getItem() instanceof IRightClickCancel && ((IRightClickCancel) stack.getItem()).cancelInteraction(stack)) {
+				if (stack != null && stack.getItem() instanceof IRightClickCancel && ((IRightClickCancel) stack.getItem()).cancelInteraction(stack)) {
 					event.setCanceled(true);
 					stack.getItem().onItemUse(event.getItemStack(), event.getEntityPlayer(), event.getWorld(), event.getPos(), event.getHand(), event.getFace(), (float) event.getHitVec().xCoord, (float) event.getHitVec().yCoord, (float) event.getHitVec().zCoord);
 				}
