@@ -126,7 +126,7 @@ public class ElecCore implements IModuleController, IElecCoreMod, IDependencyHan
 		ElecModHandler.initAnnotations(event.getAsmData());
 		loadTimer = new LoadTimer(logger, MODNAME);
 		loadTimer.startPhase(event);
-		this.config = new Configuration(FileHelper.getConfigFileElec(event));
+		this.config = new Configuration(event.getSuggestedConfigurationFile());
 		tickHandler = new TickHandler();
 		networkHandler.registerClientPacket(PacketSyncWidget.class);
 		networkHandler.registerServerPacket(PacketTileDataToServer.class);
@@ -134,6 +134,7 @@ public class ElecCore implements IModuleController, IElecCoreMod, IDependencyHan
 		networkHandler.registerClientPacket(PacketReRenderBlock.class);
 
 		MinecraftForge.EVENT_BUS.register(tickHandler);
+		config.load();
 		debug = config.getBoolean("debug", Configuration.CATEGORY_GENERAL, false, "Set to true to print debug info to the log.");
 		removeJSONErrors = config.getBoolean("removeJsonExceptions", Configuration.CATEGORY_CLIENT, true, "Set to true to remove all the Json model errors from the log.") && !developmentEnvironment;
 		suppressSpongeIssues = config.getBoolean("supressSpongeIssues", Configuration.CATEGORY_GENERAL, false, "Set to true to prevent multiblock crashes when Sponge is installed. WARNING: Unsupported, this may cause unexpected behaviour, use with caution!");
@@ -156,7 +157,7 @@ public class ElecCore implements IModuleController, IElecCoreMod, IDependencyHan
 	@SuppressWarnings("unchecked")
     public void init(FMLInitializationEvent event) {
 		loadTimer.startPhase(event);
-		config.load();
+
 		if (config.hasChanged()){
 			config.save();
 		}
