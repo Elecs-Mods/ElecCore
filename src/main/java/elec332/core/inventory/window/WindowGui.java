@@ -79,7 +79,9 @@ public final class WindowGui extends GuiContainer {
 
     @Override
     protected void handleMouseClick(Slot slotIn, int slotId, int mouseButton, @Nonnull ClickType type) {
-        window.handleMouseClick(slotIn == null ? null : ((WindowContainer.WidgetLinkedSlot)slotIn).widget, slotId, mouseButton, type);
+        if (slotIn instanceof WindowContainer.WidgetLinkedSlot) {
+            window.handleMouseClick(slotIn == null ? null : ((WindowContainer.WidgetLinkedSlot)slotIn).widget, slotId, mouseButton, type);
+        }
     }
 
     void handleMouseClickDefault(Slot slotIn, int slotId, int mouseButton, @Nonnull ClickType type){
@@ -104,7 +106,9 @@ public final class WindowGui extends GuiContainer {
     @Override
     protected void renderToolTip(ItemStack stack, int x, int y) {
         List<String> list = stack.getTooltip(ElecCore.proxy.getClientPlayer(), this.mc.gameSettings.advancedItemTooltips);
-        window.modifyTooltip(list, ((WindowContainer.WidgetLinkedSlot) theSlot).widget, stack, x, y);
+        if (theSlot instanceof WindowContainer.WidgetLinkedSlot) {
+            window.modifyTooltip(list, ((WindowContainer.WidgetLinkedSlot) theSlot).widget, stack, x, y);
+        }
         for (int i = 0; i < list.size(); ++i) {
             if (i == 0) {
                 list.set(i, stack.getRarity().rarityColor + list.get(i));
