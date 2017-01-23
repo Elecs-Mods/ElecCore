@@ -215,7 +215,6 @@ public class ElecCore implements IModuleController, IElecCoreMod, IDependencyHan
 	public void onServerAboutToStart(FMLServerAboutToStartEvent event){
 		GridEventInputHandler.INSTANCE.reloadHandlers();
 		modEventHandler.postEvent(event);
-		event.getServer().setOnlineMode(false);
 	}
 
 	@EventHandler
