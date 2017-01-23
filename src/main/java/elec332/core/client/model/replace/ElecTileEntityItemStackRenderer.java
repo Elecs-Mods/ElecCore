@@ -27,9 +27,6 @@ public class ElecTileEntityItemStackRenderer extends TileEntityItemStackRenderer
 
         if (model.isBuiltInRenderer() && model instanceof TESRItemModel){
             GlStateManager.pushMatrix();
-            //GlStateManager.rotate(180.0F, 0.0F, 1.0F, 0.0F);
-            //GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-            //GlStateManager.enableRescaleNormal();
             ((TESRItemModel) model).renderTesr();
             GlStateManager.popMatrix();
             return;

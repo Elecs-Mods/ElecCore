@@ -137,20 +137,19 @@ public class WidgetSlot extends Widget {
     public int getItemStackLimit(ItemStack stack) {
         ItemStack maxAdd = stack.copy();
         int maxInput = stack.getMaxStackSize();
-        maxAdd.setCount(maxInput);
+        maxAdd.stackSize = maxInput;
         IItemHandler handler = this.getInventory();
-        int index = getSlotIndex();
-        ItemStack currentStack = handler.getStackInSlot(index);
+        ItemStack currentStack = handler.getStackInSlot(getSlotIndex());
         if (handler instanceof IItemHandlerModifiable) {
             IItemHandlerModifiable handlerModifiable = (IItemHandlerModifiable) handler;
-            handlerModifiable.setStackInSlot(index, ItemStackHelper.NULL_STACK);
-            ItemStack remainder = handlerModifiable.insertItem(index, maxAdd, true);
-            handlerModifiable.setStackInSlot(index, currentStack);
-            return maxInput - remainder.getCount();
+            handlerModifiable.setStackInSlot(getSlotIndex(), ItemStackHelper.NULL_STACK);
+            ItemStack remainder = handlerModifiable.insertItem(getSlotIndex(), maxAdd, true);
+            handlerModifiable.setStackInSlot(getSlotIndex(), currentStack);
+            return maxInput - (ItemStackHelper.isStackValid(remainder) ? remainder.stackSize : 0);
         } else {
-            ItemStack remainder = handler.insertItem(index, maxAdd, true);
-            int current = currentStack.getCount();
-            int added = maxInput - remainder.getCount();
+            ItemStack remainder = handler.insertItem(getSlotIndex(), maxAdd, true);
+            int current = !ItemStackHelper.isStackValid(currentStack) ? 0 : currentStack.stackSize;
+            int added = maxInput - (ItemStackHelper.isStackValid(remainder) ? remainder.stackSize : 0);
             return current + added;
         }
     }
