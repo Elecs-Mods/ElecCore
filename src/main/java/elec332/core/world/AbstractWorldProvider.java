@@ -1,21 +1,13 @@
 package elec332.core.world;
 
+import elec332.abstraction.impl.MCAbstractedWorldProvider;
+import elec332.abstraction.object.IAbstractedWorldProvider;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldProvider;
 
 /**
  * Created by Elec332 on 16-12-2016.
  */
-public abstract class AbstractWorldProvider extends WorldProvider {
-
-    protected void setup(){
-        super.init();
-    }
-
-    @Override
-    protected final void init() {
-        setup();
-    }
+public abstract class AbstractWorldProvider extends MCAbstractedWorldProvider implements IAbstractedWorldProvider {
 
     public World getWorld(){
         return this.world;

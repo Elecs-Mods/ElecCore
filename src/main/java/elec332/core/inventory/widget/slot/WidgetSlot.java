@@ -44,7 +44,7 @@ public class WidgetSlot extends Widget {
     }
 
     public void onSlotChange(ItemStack newStack, ItemStack oldStack) {
-        int i = oldStack.getCount() - newStack.getCount();
+        int i = oldStack.stackSize - newStack.stackSize;
         if (i > 0) {
             this.onCrafting(oldStack, i);
         }
@@ -76,7 +76,7 @@ public class WidgetSlot extends Widget {
      * Check if the stack is allowed to be placed in this slot, used for armor slots as well as furnace fuel.
      */
     public boolean isItemValid(ItemStack stack) {
-        if (isHidden() || stack.isEmpty()) {
+        if (isHidden() || !ItemStackHelper.isStackValid(stack)) {
             return false;
         }
         IItemHandler handler = this.getInventory();
@@ -93,7 +93,7 @@ public class WidgetSlot extends Widget {
         } else {
             remainder = handler.insertItem(getSlotIndex(), stack, true);
         }
-        return remainder.isEmpty() || remainder.getCount() < stack.getCount();
+        return !ItemStackHelper.isStackValid(remainder) || remainder.stackSize < stack.stackSize;
     }
 
     /**
@@ -108,7 +108,7 @@ public class WidgetSlot extends Widget {
      * Returns if this slot contains a stack.
      */
     public boolean getHasStack() {
-        return !isHidden() && !this.getStack().isEmpty();
+        return !isHidden() && ItemStackHelper.isStackValid(this.getStack());
     }
 
     /**
@@ -180,7 +180,7 @@ public class WidgetSlot extends Widget {
      * Return whether this slot's stack can be taken from this slot.
      */
     public boolean canTakeStack(EntityPlayer playerIn) {
-        return !isHidden() && !this.inventory.extractItem(getSlotIndex(), 1, true).isEmpty();
+        return !isHidden() && ItemStackHelper.isStackValid(this.inventory.extractItem(getSlotIndex(), 1, true));
     }
 
     /**

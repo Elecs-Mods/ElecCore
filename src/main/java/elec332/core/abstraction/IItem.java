@@ -535,7 +535,7 @@ public interface IItem {
 
     /**
      * Gets a list of tabs that items belonging to this class can display on,
-     * combined properly with getSubItems allows for a single item to span
+     * combined properly with getSubItemsC allows for a single item to span
      * many sub-items across many tabs.
      *
      * @return A list of all tabs that this item could possibly be one.

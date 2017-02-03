@@ -282,7 +282,7 @@ public class ElecCoreDiscoverer {
         @Override
         public Type[] getMethodParameterTypes() {
             if (methodParams == null){
-                getAnnotationName();
+                getMethodName();
             }
             if (paramTypes != null){
                 return paramTypes;

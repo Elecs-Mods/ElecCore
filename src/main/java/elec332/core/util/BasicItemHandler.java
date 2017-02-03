@@ -13,7 +13,7 @@ import java.util.List;
 /**
  * Created by Elec332 on 3-12-2016.
  */
-public class BasicItemHandler implements IItemHandler, IItemHandlerModifiable, INBTSerializable<NBTTagCompound> {
+public class BasicItemHandler implements IElecItemHandler, INBTSerializable<NBTTagCompound> {
 
     public BasicItemHandler() {
         this(1);

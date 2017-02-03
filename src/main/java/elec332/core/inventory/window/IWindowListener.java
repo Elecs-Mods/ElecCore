@@ -1,7 +1,6 @@
 package elec332.core.inventory.window;
 
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.NonNullList;
 
 import java.util.List;
 

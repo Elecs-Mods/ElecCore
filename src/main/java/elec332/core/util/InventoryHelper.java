@@ -1,9 +1,19 @@
 package elec332.core.util;
 
-import com.google.common.collect.Lists;
+import elec332.core.api.annotations.AbstractionMarker;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.Container;
+import net.minecraft.inventory.IContainerListener;
+import net.minecraft.inventory.Slot;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.util.EnumActionResult;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.ItemHandlerHelper;
@@ -18,6 +28,28 @@ import java.util.List;
  * Created by Elec332 on 27-3-2015.
  */
 public class InventoryHelper {
+
+    @AbstractionMarker("getInventoryAbstraction")
+    public static int getSlotStackLimit(IItemHandler itemHandler, int slot){
+        throw new UnsupportedOperationException();
+    }
+
+    @AbstractionMarker("getInventoryAbstraction")
+    public static ItemStack onPickupFromSlot(Slot slot, EntityPlayer player, ItemStack stack){
+        throw new UnsupportedOperationException();
+    }
+
+    @AbstractionMarker("getInventoryAbstraction")
+    @SuppressWarnings("all")
+    @Nonnull
+    public static EnumActionResult fireOnItemUse(Item item, EntityPlayer playerIn, World worldIn, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ){
+        return null;
+    }
+
+    @AbstractionMarker("getInventoryAbstraction")
+    public static void updateCraftingInventory(IContainerListener listener, Container container, List<ItemStack> itemsList){
+        //
+    }
 
     public static MinecraftList<ItemStack> newItemStackList(int size){
         return MinecraftList.create(size, ItemStackHelper.NULL_STACK);

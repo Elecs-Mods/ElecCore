@@ -71,17 +71,17 @@ public class BlockTileBase extends AbstractBlock implements IWrenchable, ITileEn
     }
 
     @Override
-    public IBlockState getBlockStateForPlacement(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer, @Nullable EnumHand hand) {
+    public IBlockState getBlockStateForPlacementC(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer, @Nullable EnumHand hand) {
         return getBlockState().getBaseState().withProperty(BlockStateHelper.FACING_NORMAL.getProperty(), DirectionHelper.getFacingOnPlacement(placer));
     }
 
     @Override
-    protected boolean onBlockActivated(World world, BlockPos pos, EntityPlayer player, EnumHand hand, IBlockState state, EnumFacing facing, float hitX, float hitY, float hitZ) {
+    public boolean onBlockActivatedC(World world, BlockPos pos, EntityPlayer player, EnumHand hand, IBlockState state, EnumFacing facing, float hitX, float hitY, float hitZ) {
         TileEntity tile = WorldHelper.getTileAt(world, pos);
         if (tile instanceof TileBase) {
             return ((TileBase) tile).onBlockActivated(state, player, hand, facing, hitX, hitY, hitZ);
         }
-        return super.onBlockActivated(world, pos, player, hand, state, facing, hitX, hitY, hitZ);
+        return super.onBlockActivatedC(world, pos, player, hand, state, facing, hitX, hitY, hitZ);
 
     }
 
@@ -132,11 +132,11 @@ public class BlockTileBase extends AbstractBlock implements IWrenchable, ITileEn
     }
 
     @Override //TODO: New param == changed pos??
-    protected void neighborChanged(World world, BlockPos pos, IBlockState state, Block neighbor, BlockPos p_189540_5_) {
+    public void neighborChangedC(World world, BlockPos pos, IBlockState state, Block neighbor, BlockPos p_189540_5_) {
         TileEntity tile = WorldHelper.getTileAt(world, pos);
         if (tile instanceof TileBase)
             ((TileBase) tile).onNeighborBlockChange(neighbor);
-        super.neighborChanged(world, pos, state, neighbor, p_189540_5_);
+        super.neighborChangedC(world, pos, state, neighbor, p_189540_5_);
     }
 
     @Override

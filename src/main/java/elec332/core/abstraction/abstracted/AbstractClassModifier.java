@@ -1,12 +1,11 @@
 package elec332.core.abstraction.abstracted;
 
+import elec332.core.api.annotations.CopyMarker;
 import elec332.core.util.ASMHelper;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.*;
-
-import java.io.FileInputStream;
 
 /**
  * Created by Elec332 on 23-12-2016.
@@ -89,7 +88,7 @@ public abstract class AbstractClassModifier implements ASMHelper.IClassModifier 
 
     }
 
-    public class MethodFixer implements IMethodModifier {
+    public static class MethodFixer implements IMethodModifier {
 
         public MethodFixer(Class<?> original){
             this.original = original;

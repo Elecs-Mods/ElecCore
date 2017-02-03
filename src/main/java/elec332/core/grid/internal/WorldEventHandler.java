@@ -1,12 +1,12 @@
 package elec332.core.grid.internal;
 
+import elec332.core.world.IElecWorldEventListener;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IWorldEventListener;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
@@ -15,16 +15,9 @@ import javax.annotation.Nullable;
  * Created by Elec332 on 23-7-2016.
  */
 @SuppressWarnings("all")
-public enum WorldEventHandler implements IWorldEventListener {
+public enum WorldEventHandler implements IElecWorldEventListener {
 
-    INSTANCE {
-
-        @Override
-        public void spawnParticle(int p_190570_1_, boolean p_190570_2_, boolean p_190570_3_, double p_190570_4_, double p_190570_6_, double p_190570_8_, double p_190570_10_, double p_190570_12_, double p_190570_14_, int... p_190570_16_) {
-
-        }
-
-    };
+    INSTANCE;
 
     @Override
     public void notifyBlockUpdate(World worldIn, BlockPos pos, IBlockState oldState, IBlockState newState, int flags) {
@@ -48,7 +41,8 @@ public enum WorldEventHandler implements IWorldEventListener {
     }
 
     @Override
-    public void spawnParticle(int particleID, boolean ignoreRange, double xCoord, double yCoord, double zCoord, double xSpeed, double ySpeed, double zSpeed, int... parameters) {
+    public void spawnParticle(int particleID, boolean ignoreRange, boolean minParticles, double xCoord, double yCoord, double zCoord, double xSpeed, double ySpeed, double zSpeed, int... parameters) {
+
     }
 
     @Override

@@ -1,6 +1,6 @@
 package elec332.core.util;
 
-import net.minecraft.util.NonNullList;
+import elec332.core.api.annotations.AbstractionMarker;
 
 import java.util.AbstractList;
 import java.util.List;
@@ -11,19 +11,29 @@ import java.util.List;
 public final class MinecraftList<E> extends AbstractList<E> {
 
     public static <E> MinecraftList<E> create(){
-        return new MinecraftList<E>(NonNullList.create());
+        return new MinecraftList<E>(createList());
     }
 
     @SuppressWarnings("unchecked")
     public static <E> MinecraftList<E> create(int size, E defaultObj){
-        return new MinecraftList<E>(NonNullList.withSize(size, defaultObj));
+        return new MinecraftList<E>(createList(size, defaultObj));
     }
 
-    protected MinecraftList(NonNullList<E> underlyingList){
+    @AbstractionMarker("getInventoryAbstraction")
+    private static <E> List<E> createList(){
+        throw new UnsupportedOperationException();
+    }
+
+    @AbstractionMarker("getInventoryAbstraction")
+    private static <E> List<E> createList(int size, E defaultObj){
+        throw new UnsupportedOperationException();
+    }
+
+    private MinecraftList(List<E> underlyingList){
         this.underlyingList = underlyingList;
     }
 
-    private final NonNullList<E> underlyingList;
+    private final List<E> underlyingList;
 
     public List<E> getUnderlyingList(){
         return underlyingList;

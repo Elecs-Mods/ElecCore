@@ -59,7 +59,7 @@ public class ItemEnumBased<E extends Enum<E> & IEnumItem> extends AbstractItem i
     }
 
     @Override
-    protected void getSubItems(@Nonnull Item item, List<ItemStack> subItems, CreativeTabs creativeTab) {
+    public void getSubItemsC(@Nonnull Item item, List<ItemStack> subItems, CreativeTabs creativeTab) {
         for (E e : values){
             if (e.shouldShow()){
                 subItems.add(getStackFromType(e));

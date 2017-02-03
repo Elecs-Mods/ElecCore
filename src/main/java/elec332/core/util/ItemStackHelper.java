@@ -1,6 +1,6 @@
 package elec332.core.util;
 
-import net.minecraft.init.Blocks;
+import elec332.core.api.annotations.AbstractionMarker;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -14,33 +14,43 @@ import java.util.List;
  */
 public class ItemStackHelper {
 
+    @AbstractionMarker("getInventoryAbstraction")
     public static boolean isStackValid(ItemStack stack){
-        return stack != null && stack != NULL_STACK && !stack.isEmpty && !stack.isEmpty();
+        throw new UnsupportedOperationException();
     }
 
     @Nonnull
+    @AbstractionMarker("getInventoryAbstraction")
     public static ItemStack copyItemStack(@Nullable ItemStack stack){
-        return stack == null || stack == NULL_STACK ? NULL_STACK : stack.copy();
+        throw new UnsupportedOperationException();
     }
 
+    @AbstractionMarker("getInventoryAbstraction")
     public static ItemStack loadItemStackFromNBT(NBTTagCompound tag){
-        return new ItemStack(tag);
+        throw new UnsupportedOperationException();
     }
 
+    @AbstractionMarker("getInventoryAbstraction")
     public static ItemStack getAndSplit(List<ItemStack> stacks, int index, int amount) {
-        return net.minecraft.inventory.ItemStackHelper.getAndSplit(stacks, index, amount);
+        throw new UnsupportedOperationException();
     }
 
+    @AbstractionMarker("getInventoryAbstraction")
     public static ItemStack getAndRemove(List<ItemStack> stacks, int index) {
-        return net.minecraft.inventory.ItemStackHelper.getAndRemove(stacks, index);
+        throw new UnsupportedOperationException();
+    }
+
+    @AbstractionMarker("getInventoryAbstraction")
+    private static ItemStack getNullStack(){
+        throw new UnsupportedOperationException();
     }
 
     public static final ItemStack NULL_STACK;
     private static final Item NULL_ITEM;
 
     static {
-        NULL_ITEM = Item.getItemFromBlock(Blocks.AIR);
-        NULL_STACK = ItemStack.EMPTY;
+        NULL_STACK = getNullStack();
+        NULL_ITEM = NULL_STACK == null ? null : NULL_STACK.getItem();
     }
 
 }

@@ -1,7 +1,7 @@
 package elec332.core.abstraction.abstracted.item;
 
 import elec332.core.abstraction.IItemArmor;
-import elec332.core.abstraction.abstracted.CopyMarker;
+import elec332.core.api.annotations.CopyMarker;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;

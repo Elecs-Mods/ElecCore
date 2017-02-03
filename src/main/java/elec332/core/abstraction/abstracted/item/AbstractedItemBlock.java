@@ -2,7 +2,7 @@ package elec332.core.abstraction.abstracted.item;
 
 import elec332.core.abstraction.DefaultInstances;
 import elec332.core.abstraction.IItemBlock;
-import elec332.core.abstraction.abstracted.CopyMarker;
+import elec332.core.api.annotations.CopyMarker;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;

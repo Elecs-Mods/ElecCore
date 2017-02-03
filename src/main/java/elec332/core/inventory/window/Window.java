@@ -13,7 +13,6 @@ import elec332.core.inventory.widget.slot.WidgetSlotOutput;
 import elec332.core.main.ElecCore;
 import elec332.core.proxies.CommonProxy;
 import elec332.core.util.ItemStackHelper;
-import elec332.core.util.MinecraftList;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.ClickType;
@@ -21,7 +20,6 @@ import net.minecraft.inventory.Container;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -494,13 +492,7 @@ public class Window implements IWidgetContainer {
 
         @Override
         public void updateCraftingInventory(List<ItemStack> itemsList) {
-            if (itemsList instanceof MinecraftList){
-                itemsList = ((MinecraftList<ItemStack>) itemsList).getUnderlyingList();
-            }
-            if (!(itemsList instanceof NonNullList)){
-                throw new IllegalArgumentException();
-            }
-            listener.updateCraftingInventory((NonNullList<ItemStack>) itemsList);
+            listener.updateCraftingInventory(itemsList);
         }
 
         @Override

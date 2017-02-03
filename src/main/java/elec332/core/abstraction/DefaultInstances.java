@@ -2,13 +2,14 @@ package elec332.core.abstraction;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Multimap;
+import elec332.abstraction.impl.MCAbstractedDefaultIItemInstance;
+import elec332.core.util.InventoryHelper;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
@@ -18,7 +19,10 @@ import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.*;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.*;
+import net.minecraft.util.EnumActionResult;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.IBlockAccess;
@@ -172,18 +176,10 @@ public class DefaultInstances {
 
     }
 
-    private static class DefaultItem<T extends IItem> implements IItem {
+    private static class DefaultItem<T extends IItem> extends MCAbstractedDefaultIItemInstance {
 
         private DefaultItem(Item item){
-            this.item = item;
-        }
-
-        final Item item;
-
-        @Override
-        @Nonnull
-        public ItemStack getDefaultInstance(Item item) {
-            return this.item.getDefaultInstance();
+            super(item);
         }
 
         @Override
@@ -209,17 +205,12 @@ public class DefaultInstances {
 
         @Override
         public EnumActionResult onItemUse(EntityPlayer player, World world, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
-            return item.onItemUse(player, world, pos, hand, facing, hitX, hitY, hitZ);
+            return InventoryHelper.fireOnItemUse(item, player, world, pos, hand, facing, hitX, hitY, hitZ);
         }
 
         @Override
         public float getStrengthVsBlock(ItemStack stack, IBlockState state) {
             return item.getStrVsBlock(stack, state);
-        }
-
-        @Override
-        public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand hand) {
-            return item.onItemRightClick(world, player, hand);
         }
 
         @Override
@@ -395,11 +386,6 @@ public class DefaultInstances {
         }
 
         @Override
-        public void getSubItems(Item item, CreativeTabs tab, List<ItemStack> subItems) {
-            this.item.getSubItems(item, tab, (NonNullList<ItemStack>) subItems);
-        }
-
-        @Override
         public IItem setCreativeTab(CreativeTabs tab) {
             item.setCreativeTab(tab);
             return this;
@@ -434,11 +420,6 @@ public class DefaultInstances {
         @Override
         public String getHighlightTip(ItemStack stack, String displayName) {
             return item.getHighlightTip(stack, displayName);
-        }
-
-        @Override
-        public EnumActionResult onItemUseFirst(EntityPlayer player, World world, BlockPos pos, EnumFacing side, float hitX, float hitY, float hitZ, EnumHand hand) {
-            return item.onItemUseFirst(player, world, pos, side, hitX, hitY, hitZ, hand);
         }
 
         @Override
@@ -583,11 +564,6 @@ public class DefaultInstances {
         }
 
         @Override
-        public int getRGBDurabilityForDisplay(ItemStack stack) {
-            return item.getRGBDurabilityForDisplay(stack);
-        }
-
-        @Override
         public int getMaxDamage(ItemStack stack) {
             return item.getMaxDamage(stack);
         }
@@ -630,11 +606,6 @@ public class DefaultInstances {
         @Override
         public int getItemEnchantability(ItemStack stack) {
             return item.getItemEnchantability(stack);
-        }
-
-        @Override
-        public boolean canApplyAtEnchantingTable(ItemStack stack, Enchantment enchantment) {
-            return item.canApplyAtEnchantingTable(stack, enchantment);
         }
 
         @Override

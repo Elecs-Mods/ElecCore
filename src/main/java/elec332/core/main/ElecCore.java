@@ -1,6 +1,7 @@
 package elec332.core.main;
 
-import elec332.core.abstraction.*;
+import elec332.core.abstraction.IItem;
+import elec332.core.abstraction.abstracted.item.ItemType;
 import elec332.core.api.IElecCoreMod;
 import elec332.core.api.client.IIconRegistrar;
 import elec332.core.api.client.model.IElecModelBakery;
@@ -12,6 +13,7 @@ import elec332.core.api.network.ModNetworkHandler;
 import elec332.core.api.registry.ISingleRegister;
 import elec332.core.api.util.IDependencyHandler;
 import elec332.core.api.util.IRightClickCancel;
+import elec332.core.asm.ASMLoader;
 import elec332.core.client.model.loading.INoJsonItem;
 import elec332.core.compat.ModNames;
 import elec332.core.effects.AbilityHandler;
@@ -97,28 +99,7 @@ public class ElecCore implements IModuleController, IElecCoreMod, IDependencyHan
 		asmDataProcessor.identify(event.getASMHarvestedData());
 		ElecModHandler.identifyMods();
 		asmDataProcessor.process(LoaderState.CONSTRUCTING);
-		/*try {
-			Class<? extends Object> clazz = ASMHelper.makeImplementInterfaces(Object.class, de.DEI.class, null);
-			System.out.println(clazz);
-			System.out.println(Lists.newArrayList(clazz.getInterfaces()));
-			System.out.println(((de) clazz.getConstructor(Object.class).newInstance(new de.DEI(new Object()))).jo(2, 3));
-		} catch (Exception e){
-			logger.info("", e);
-		}
-		//AbstractionHandler.registerAbstractionObject(new testItem(), new ResourceLocation("nemez", "itemTestert"), ItemType.ITEM);
-		AbstractionHandler.registerAbstractionObject(new IItemBlock() {
-
-			@Override
-			public Block getBlock() {
-				return Blocks.BRICK_BLOCK;
-			}
-
-			@Override
-			public IItemBlock getFallback() {
-				return DefaultInstances.createDefault(this);
-			}
-
-		}, new ResourceLocation("bee:p"), ItemType.ITEMBLOCK);*/
+		Launch.classLoader.registerTransformer(ASMLoader.class.getCanonicalName());
 	}
 
 	@EventHandler
@@ -194,7 +175,7 @@ public class ElecCore implements IModuleController, IElecCoreMod, IDependencyHan
 				stack = event.getItemStack();
 				if (stack.getItem() instanceof IRightClickCancel && ((IRightClickCancel) stack.getItem()).cancelInteraction(stack)) {
 					event.setCanceled(true);
-					stack.getItem().onItemUse(event.getEntityPlayer(), event.getWorld(), event.getPos(), event.getHand(), event.getFace(), (float) event.getHitVec().xCoord, (float) event.getHitVec().yCoord, (float) event.getHitVec().zCoord);
+					InventoryHelper.fireOnItemUse(stack.getItem(), event.getEntityPlayer(), event.getWorld(), event.getPos(), event.getHand(), event.getFace(), (float) event.getHitVec().xCoord, (float) event.getHitVec().yCoord, (float) event.getHitVec().zCoord);
 				}
 			}
 

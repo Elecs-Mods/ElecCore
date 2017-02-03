@@ -1,3 +1,10 @@
+import sun.misc.IOUtils
+
+import java.util.zip.ZipEntry
+import java.util.zip.ZipException
+import java.util.zip.ZipFile
+import java.util.zip.ZipOutputStream
+
 buildscript {
     repositories {
         mavenCentral()
@@ -52,9 +59,13 @@ configFile.withReader {
     def prop = new Properties()
     prop.load(it)
     project.ext.config = new ConfigSlurper().parse prop
+    project.ext.mcVersion = config.minecraft_version
+    String build = System.getenv("BUILD_NUMBER");
+    project.ext.localBuild = build == null || build == ""
+    project.ext.modVersion = "${config.mod_version}." + (ext.localBuild ? "localBuild" : build)
 }
 
-version = "${config.minecraft_version}-${config.mod_version}." + (System.env.DRONE_BUILD_NUMBER ?: "localBuild")
+version = modVersion
 group= "elec332.core" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "ElecCore"
 
@@ -122,11 +133,78 @@ jar {
 	}
 }
 
-
 tasks.build.dependsOn('deobfJar')
+//tasks.build.dependsOn('buildAbstraction')
+//tasks.buildAbstraction.dependsOn('deobfjar')
 
 task deobfJar(type: Jar) { // Generate deobfuscated
-	version = "Newest"
+	//version = "Newest"
     from sourceSets.main.output
     classifier = 'deobf'
+}
+
+task buildAbstraction(type: MergeAbstraction) {
+    dependsOn 'build'
+    versions "1.11"
+    location project.localBuild ? "%p/libs/AbstractionLayer-%v.jar" : "%p/abstraction/AbstractionLayer-%v.jar"
+}
+
+
+
+class MergeAbstraction extends DefaultTask {
+
+    String versions, location
+
+    @TaskAction
+    public void process() {
+        if(versions == null || versions == ""){
+            return
+        }
+        String[] q = versions.split(",");
+        String projDir = project.buildFile.path.replace("build.gradle", "")
+        String loc = location.replace("%p", projDir);
+        String neen = projDir.substring(0, projDir.length() - 1);
+        String[] slt = neen.split(new String(File.separatorChar, File.separatorChar))
+        for(int i = 0; i < 5; i++){
+            String fle = slt[0]+File.separator
+            if (slt.length - i < 1){
+                break
+            }
+            for (int j = 1; j < slt.length - i; j++) {
+                fle += slt[j]+File.separator
+            }
+            loc.replace("%u"+i, fle)
+        }
+        for (String s in q) {
+            println "Generating ElecCore for MC version: " + s
+            String fL = loc.replace("%v", s);
+            merge(new File(projDir, "build/libs/ElecCore-" + project.modVersion + "-deobf.jar"), new File(fL.replace(".jar", "-deobf.jar")), new File(projDir, "build/libs/ElecCore-" + project.mcVersion + "-" + project.modVersion + "-deobf.jar"))
+            merge(new File(projDir, "build/libs/ElecCore-" + project.modVersion + ".jar"), new File(fL), new File(projDir, "build/libs/ElecCore-" + project.mcVersion + "-" + project.modVersion + ".jar"))
+        }
+    }
+
+    private static void merge(File f1, File f2, File out){
+        ZipFile abstracted = new ZipFile(f2)
+        ZipFile deobf = new ZipFile(f1);
+        if(out.exists()){
+            out.delete()
+        }
+        ZipOutputStream abs = new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(out)))
+        for (ZipEntry ze in deobf.entries()){
+            abs.putNextEntry ze
+            abs.write(IOUtils.readFully(deobf.getInputStream(ze), -1, true))
+        }
+        for (ZipEntry ze in abstracted.entries()){
+            try {
+                abs.putNextEntry ze
+                abs.write IOUtils.readFully(abstracted.getInputStream(ze), -1, true)
+            } catch (ZipException e){
+                if (!(ze.name.contains("META-INF") || ze.isDirectory())){
+                    throw new RuntimeException(e);
+                }
+            }
+        }
+        abs.close()
+    }
+
 }

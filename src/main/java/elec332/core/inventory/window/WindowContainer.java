@@ -2,19 +2,18 @@ package elec332.core.inventory.window;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import elec332.core.inventory.AbstractSlot;
 import elec332.core.inventory.widget.slot.WidgetSlot;
 import elec332.core.main.ElecCore;
 import elec332.core.network.packets.PacketWindowData;
-import elec332.core.util.BasicInventory;
-import elec332.core.util.MinecraftList;
+import elec332.core.util.InventoryHelper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.*;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -138,13 +137,7 @@ public final class WindowContainer extends Container {
 
         @Override
         public void updateCraftingInventory(List<ItemStack> itemsList) {
-            if (itemsList instanceof MinecraftList){
-                itemsList = ((MinecraftList<ItemStack>) itemsList).getUnderlyingList();
-            }
-            if (!(itemsList instanceof NonNullList)){
-                throw new IllegalArgumentException();
-            }
-            listener.updateCraftingInventory(WindowContainer.this, (NonNullList<ItemStack>) itemsList);
+            InventoryHelper.updateCraftingInventory(listener, WindowContainer.this, itemsList);
         }
 
         @Override
@@ -174,7 +167,7 @@ public final class WindowContainer extends Container {
 
     }
 
-    class WidgetLinkedSlot extends Slot {
+    class WidgetLinkedSlot extends AbstractSlot {
 
         private WidgetLinkedSlot(WidgetSlot widget) {
             super(NULL_INVENTORY, widget.getSlotIndex(), widget.x, widget.y);
@@ -194,7 +187,7 @@ public final class WindowContainer extends Container {
         }
 
         @Override
-        protected void onSwapCraft(int p_190900_1_) {
+        public void onSwapCraftC(int p_190900_1_) {
             widget.onSwapCraft(p_190900_1_);
         }
 
@@ -205,7 +198,7 @@ public final class WindowContainer extends Container {
 
         @Nonnull
         @Override
-        public ItemStack onTake(EntityPlayer p_190901_1_, @Nonnull ItemStack p_190901_2_) {
+        public ItemStack onTakenFromSlotC(EntityPlayer p_190901_1_, @Nonnull ItemStack p_190901_2_) {
             return widget.onTake(p_190901_1_, p_190901_2_);
         }
 
@@ -394,7 +387,7 @@ public final class WindowContainer extends Container {
     }
 
     static {
-        NULL_INVENTORY = new BasicInventory("NULL", 0);
+        NULL_INVENTORY = new InventoryBasic(new TextComponentString("NULL"), 0);
     }
 
 }

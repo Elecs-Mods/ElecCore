@@ -128,7 +128,7 @@ public class BeeGenomeTemplate implements IGenomeTemplate<IAlleleBeeSpecies> {
             defaultTemplate[EnumBeeChromosome.FLOWER_PROVIDER.ordinal()] = ForestryAlleles.FLOWERS_VANILLA;
             defaultTemplate[EnumBeeChromosome.FLOWERING.ordinal()] = ForestryAlleles.FLOWERING_SLOWEST;
             defaultTemplate[EnumBeeChromosome.TERRITORY.ordinal()] = ForestryAlleles.TERRITORY_AVERAGE;
-            defaultTemplate[EnumBeeChromosome.EFFECT.ordinal()] = forestry.apiculture.genetics.alleles.AlleleEffects.effectNone;
+            defaultTemplate[EnumBeeChromosome.EFFECT.ordinal()] = ForestryAlleles.EFFECT_NONE;
         }
         return Arrays.copyOf(defaultTemplate, defaultTemplate.length);
     }

@@ -3,6 +3,7 @@ package elec332.core.inventory;
 import com.google.common.collect.Lists;
 import elec332.core.inventory.slot.SlotOutput;
 import elec332.core.inventory.widget.IWidget;
+import elec332.core.util.InventoryHelper;
 import elec332.core.util.ItemStackHelper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
@@ -137,7 +138,7 @@ public class BaseContainer extends Container implements IWidgetContainer{
                 return ItemStackHelper.NULL_STACK;
             }
 
-            slot.onTake(player, itemstack1);
+            InventoryHelper.onPickupFromSlot(slot, player, itemstack1);
         }
 
         return itemstack;

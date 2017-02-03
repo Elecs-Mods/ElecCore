@@ -8,7 +8,7 @@ import javax.annotation.Nonnull;
 /**
  * Created by Elec332 on 15-5-2016.
  */
-public class SafeWrappedIItemHandler implements IItemHandlerModifiable {
+public class SafeWrappedIItemHandler implements IElecItemHandler {
 
     public static SafeWrappedIItemHandler of(IItemHandlerModifiable i){
         return new SafeWrappedIItemHandler(i);
@@ -57,7 +57,7 @@ public class SafeWrappedIItemHandler implements IItemHandlerModifiable {
 
     @Override
     public int getSlotLimit(int slot) {
-        return itemHandler == null ? 0 : itemHandler.getSlotLimit(slot);
+        return itemHandler == null ? 0 : InventoryHelper.getSlotStackLimit(this, slot);
     }
 
 }

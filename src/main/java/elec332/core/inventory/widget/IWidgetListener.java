@@ -2,7 +2,6 @@ package elec332.core.inventory.widget;
 
 import elec332.core.inventory.window.IWindowListener;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.NonNullList;
 
 import java.util.List;
 

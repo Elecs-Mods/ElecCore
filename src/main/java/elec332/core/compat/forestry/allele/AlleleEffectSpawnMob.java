@@ -1,6 +1,8 @@
 package elec332.core.compat.forestry.allele;
 
 import elec332.core.compat.forestry.EffectData;
+import elec332.core.util.EntityHelper;
+import elec332.core.util.RegistryHelper;
 import elec332.core.world.WorldHelper;
 import forestry.api.apiculture.BeeManager;
 import forestry.api.apiculture.IBeeGenome;
@@ -13,6 +15,8 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.registry.EntityRegistry;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 
 import javax.annotation.Nullable;
 import java.util.Collections;
@@ -103,10 +107,10 @@ public class AlleleEffectSpawnMob extends AlleleEffectThrottled {
     protected boolean spawn(EntityPlayer player, boolean angry, IBeeGenome genome, IBeeHousing housing){
         Entity entity = null;
         if (mobTypePlayerNear != null && player != null){
-             entity = EntityList.createEntityByIDFromName(mobTypePlayerNear, housing.getWorldObj());
+            entity = EntityHelper.createEntity(mobTypePlayerNear, housing.getWorldObj());
         }
         if (entity == null){
-            entity = EntityList.createEntityByIDFromName(mobType, housing.getWorldObj());
+            entity = EntityHelper.createEntity(mobType, housing.getWorldObj());
         }
         if (entity == null){
             return false;

@@ -1,5 +1,6 @@
 package elec332.core.world;
 
+import elec332.core.api.annotations.AbstractionMarker;
 import elec332.core.main.ElecCore;
 import elec332.core.network.packets.PacketReRenderBlock;
 import elec332.core.server.ServerHelper;
@@ -28,6 +29,7 @@ import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.ForgeChunkManager;
 import net.minecraftforge.items.IItemHandler;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
@@ -35,25 +37,36 @@ import javax.annotation.Nullable;
  */
 @SuppressWarnings("unused")
 public class WorldHelper {
+    
+    @AbstractionMarker("getWorldAbstraction")
+    public static void unRegisterWorldEventListener(IElecWorldEventListener listener){
+    }
+
+    @AbstractionMarker("getWorldAbstraction")
+    public static void registerWorldEventListener(IElecWorldEventListener listener){
+    }
 
     public static Biome getBiome(World world, BlockPos pos){
         return world.getBiome(pos);
     }
 
+    @AbstractionMarker("getWorldAbstraction")
+    @Nonnull
     public static IBlockState getBlockStateForPlacement(Block block, World world, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer, @Nullable EnumHand hand) {
-        return block.getStateForPlacement(world, pos, facing, hitX, hitY, hitZ, meta, placer, hand);
+        return null;
     }
 
     public static boolean spawnEntityInWorld(World world, Entity entity){
         return world.spawnEntity(entity);
     }
 
+    @AbstractionMarker("getWorldAbstraction")
     public static boolean canBlockBePlaced(World world, Block block, BlockPos pos, boolean b, EnumFacing facing, @Nullable Entity entity){
-        return world.mayPlace(block, pos, b, facing, entity);
+        return b;//prevent "constant value" warning in IDE
     }
 
+    @AbstractionMarker("getWorldAbstraction")
     public static void notifyNeighborsOfStateChange(World world, BlockPos pos, Block block){
-        world.notifyNeighborsOfStateChange(pos, block, false);
     }
 
     public static ChunkPos chunkCoordFromBlockPos(BlockPos pos){

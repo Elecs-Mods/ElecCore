@@ -1,42 +1,44 @@
 package elec332.core.util;
 
+import elec332.core.api.annotations.AbstractionMarker;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nonnull;
+import java.util.function.Supplier;
 
 /**
  * Created by Elec332 on 26-11-2016.
  */
 public abstract class AbstractCreativeTab extends CreativeTabs {
 
-    public AbstractCreativeTab(String label) {
-        super(label);
-        initStack();
+    public static AbstractCreativeTab create(String label, ItemStack icon){
+        return create(getNextID(), label, icon);
+    }
+
+    public static AbstractCreativeTab create(String label, Supplier<ItemStack> icon){
+        return create(getNextID(), label, icon);
+    }
+
+    @Nonnull
+    public static AbstractCreativeTab create(int index, String label, ItemStack icon){
+        return create(index, label, () -> icon);
+    }
+
+    @AbstractionMarker("getGeneralAbstraction")
+    @Nonnull
+    public static AbstractCreativeTab create(int index, String label, Supplier<ItemStack> icon){
+        return null;
     }
 
     public AbstractCreativeTab(int index, String label) {
         super(index, label);
-        initStack();
     }
 
-    private void initStack(){
-        if (FMLCommonHandler.instance().getSide().isClient()){
-            clientStack = getDisplayStack();
-        }
-    }
-
-    @SideOnly(Side.CLIENT)
-    private ItemStack clientStack;
-
-    @SideOnly(Side.CLIENT)
-    @Override
-    @Nonnull
-    public final ItemStack getTabIconItem() {
-        return clientStack;
+    public AbstractCreativeTab(String label) {
+        super(label);
     }
 
     @Nonnull

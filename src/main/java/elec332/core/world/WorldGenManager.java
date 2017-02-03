@@ -1,5 +1,6 @@
 package elec332.core.world;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.*;
 import elec332.core.api.registry.ISingleObjectRegistry;
 import elec332.core.api.world.*;
@@ -130,7 +131,9 @@ enum WorldGenManager implements ISingleObjectRegistry<IWorldGenHook>, IWorldGenM
         @Override
         public void chunkSavedToDisk(Chunk chunk, NBTTagCompound data, IWorldGenManager worldGenManager) {
             NBTTagCompound tag = data.getCompoundTag(owner);
-            tag.setString(chunkPopulator.getName(), this.lastKey);
+            if (!Strings.isNullOrEmpty(this.lastKey)) {
+                tag.setString(chunkPopulator.getName(), this.lastKey);
+            }
             data.setTag(owner, tag);
         }
 

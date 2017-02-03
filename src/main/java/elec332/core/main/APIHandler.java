@@ -1,7 +1,9 @@
 package elec332.core.main;
 
 import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Maps;
 import com.google.common.collect.SetMultimap;
 import elec332.core.api.APIHandlerInject;
 import elec332.core.api.IAPIHandler;
@@ -9,12 +11,15 @@ import elec332.core.api.discovery.ASMDataProcessor;
 import elec332.core.api.discovery.IASMDataHelper;
 import elec332.core.api.discovery.IASMDataProcessor;
 import elec332.core.api.discovery.IAdvancedASMData;
+import elec332.core.api.registration.NamedFieldGetter;
 import elec332.core.api.world.IWorldGenManager;
 import elec332.core.java.ReflectionHelper;
 import net.minecraftforge.common.util.EnumHelper;
 import net.minecraftforge.fml.common.LoaderState;
 
 import java.lang.annotation.*;
+import java.lang.reflect.Field;
+import java.util.Map;
 import java.util.function.Consumer;
 
 /**
@@ -43,6 +48,8 @@ public enum APIHandler implements IASMDataProcessor, IAPIHandler {
             data.loadClass();
         }
 
+        injectFields(asmData);
+
     }
 
     private void collect(IASMDataHelper asmData, Class<? extends Annotation> annotationClass){
@@ -62,7 +69,7 @@ public enum APIHandler implements IASMDataProcessor, IAPIHandler {
                     @Override
                     public void accept(Object o) {
                         if (!ReflectionHelper.isStatic(data.getMethod())){
-                            ElecCore.logger.error("Field "+data.getClassName() + " "+ data.getMethodName()+" is not static! it will be skipped...");
+                            ElecCore.logger.error("Method "+data.getClassName() + " "+ data.getMethodName()+" is not static! it will be skipped...");
                             return;
                         }
                         try {
@@ -118,5 +125,51 @@ public enum APIHandler implements IASMDataProcessor, IAPIHandler {
 
     @APIHandlerInject
     static IWorldGenManager worldGenManager;
+
+    private static void injectFields(IASMDataHelper asmData){
+        Map<Class, NamedFieldGetter.Definition> definitionMap = Maps.newHashMap();
+        Map<NamedFieldGetter, Field> namedFieldGetters = Maps.newHashMap();
+        for (IAdvancedASMData ad : asmData.getAdvancedAnnotationList(NamedFieldGetter.Definition.class)){
+            Class c = ad.loadClass();
+            definitionMap.put(c, (NamedFieldGetter.Definition) c.getAnnotation(NamedFieldGetter.Definition.class));
+        }
+        for (IAdvancedASMData ad : asmData.getAdvancedAnnotationList(NamedFieldGetter.class)){
+            Field c = ad.getField();
+            namedFieldGetters.put((NamedFieldGetter) c.getAnnotation(NamedFieldGetter.class), c);
+        }
+        for (Map.Entry<NamedFieldGetter, Field> entry : namedFieldGetters.entrySet()){
+            Field f = entry.getValue();
+            NamedFieldGetter nfg = entry.getKey();
+            NamedFieldGetter.Definition definition = definitionMap.get(entry.getValue().getDeclaringClass());
+            String field = nfg.field();
+            if (Strings.isNullOrEmpty(field)){
+                field = definition == null ? null : definition.field();
+                if (Strings.isNullOrEmpty(field)){
+                    throw new RuntimeException("Class: "+entry.getValue().getDeclaringClass()+" field: "+ entry.getValue());
+                }
+            }
+            Class dec = nfg.declaringClass();
+            if (dec == Object.class){
+                dec = definition == null ? Object.class : definition.declaringClass();
+                if (dec == Object.class){
+                    throw new RuntimeException("Class: "+entry.getValue().getDeclaringClass()+" field: "+ entry.getValue());
+                }
+            }
+            try {
+                Field nameField = f.getType().getDeclaredField(field);
+                for (Field fDec : dec.getDeclaredFields()) {
+                    if (fDec.getType() == f.getType()) {
+                        Object o = fDec.get(null);
+                        String name = (String) nameField.get(o);
+                        if (name.equals(nfg.name())) {
+                            f.set(null, o);
+                        }
+                    }
+                }
+            } catch (Exception e){
+                throw new RuntimeException(e);
+            }
+        }
+    }
 
 }

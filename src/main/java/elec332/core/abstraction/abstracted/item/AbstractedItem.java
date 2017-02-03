@@ -2,14 +2,14 @@ package elec332.core.abstraction.abstracted.item;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Multimap;
-import elec332.core.abstraction.IItem;
-import elec332.core.abstraction.abstracted.CopyMarker;
+import elec332.core.api.annotations.AbstractionMarker;
+import elec332.core.api.annotations.CopyMarker;
+import elec332.core.item.AbstractItem;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
@@ -34,14 +34,9 @@ import java.util.Set;
 /**
  * Created by Elec332 on 22-12-2016.
  */
-abstract class AbstractedItem extends Item implements IAbstractedItem {
-
-    @SideOnly(Side.CLIENT)
-    @Nonnull
-    @Override @CopyMarker
-    public ItemStack getDefaultInstance() {
-        return getLinkedItem_INTERNAL_ELEC().getDefaultInstance(this);
-    }
+@CopyMarker
+@AbstractionMarker("getAbstractedItemAbstraction")
+abstract class AbstractedItem extends AbstractItem implements IAbstractedItem {
 
     /**
      * Creates a new override param for item models. See usage in clock, compass, elytra, etc.
@@ -75,8 +70,9 @@ abstract class AbstractedItem extends Item implements IAbstractedItem {
     /**
      * Called when a Block is right-clicked with this Item
      */
+    @Nonnull
     @Override @CopyMarker
-    public EnumActionResult onItemUse(EntityPlayer player, World world, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
+    public EnumActionResult onItemUseC(EntityPlayer player, EnumHand hand, World world, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ) {
         return getLinkedItem_INTERNAL_ELEC().onItemUse(player, world, pos, hand, facing, hitX, hitY, hitZ);
     }
 
@@ -85,8 +81,9 @@ abstract class AbstractedItem extends Item implements IAbstractedItem {
         return getLinkedItem_INTERNAL_ELEC().getStrengthVsBlock(stack, state);
     }
 
+    @Nonnull
     @Override @CopyMarker
-    public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand hand) {
+    public ActionResult<ItemStack> onItemRightClickC(EntityPlayer player, @Nonnull EnumHand hand, World world) {
         return getLinkedItem_INTERNAL_ELEC().onItemRightClick(world, player, hand);
     }
 
@@ -352,8 +349,8 @@ abstract class AbstractedItem extends Item implements IAbstractedItem {
      */
     @SideOnly(Side.CLIENT)
     @Override @CopyMarker
-    public void getSubItems(Item item, CreativeTabs tab, NonNullList<ItemStack> subItems) {
-        getLinkedItem_INTERNAL_ELEC().getSubItems(item, tab, subItems);
+    public void getSubItemsC(@Nonnull Item item, List<ItemStack> subItems, CreativeTabs creativeTab) {
+        getLinkedItem_INTERNAL_ELEC().getSubItems(item, creativeTab, subItems);
     }
 
     /**
@@ -433,8 +430,9 @@ abstract class AbstractedItem extends Item implements IAbstractedItem {
      * @param hand Which hand the item is being held in.
      * @return Return PASS to allow vanilla handling, any other to skip normal code.
      */
+    @Nonnull
     @Override @CopyMarker
-    public EnumActionResult onItemUseFirst(EntityPlayer player, World world, BlockPos pos, EnumFacing side, float hitX, float hitY, float hitZ, EnumHand hand) {
+    public EnumActionResult onItemUseFirstC(EntityPlayer player, EnumHand hand, World world, BlockPos pos, EnumFacing side, float hitX, float hitY, float hitZ) {
         return getLinkedItem_INTERNAL_ELEC().onItemUseFirst(player, world, pos, side, hitX, hitY, hitZ, hand);
     }
 
@@ -589,7 +587,7 @@ abstract class AbstractedItem extends Item implements IAbstractedItem {
 
     /**
      * Gets a list of tabs that items belonging to this class can display on,
-     * combined properly with getSubItems allows for a single item to span
+     * combined properly with getSubItemsC allows for a single item to span
      * many sub-items across many tabs.
      *
      * @return A list of all tabs that this item could possibly be one.
@@ -783,17 +781,6 @@ abstract class AbstractedItem extends Item implements IAbstractedItem {
     }
 
     /**
-     * Returns the packed int RGB value used to render the durability bar in the GUI.
-     * Defaults to a value based on the hue scaled as the damage decreases, but can be overriden.
-     *
-     * @param stack Stack to get durability from
-     * @return A packed RGB value for the durability colour (0x00RRGGBB)
-     */
-    @Override @CopyMarker
-    public int getRGBDurabilityForDisplay(ItemStack stack) {
-        return getLinkedItem_INTERNAL_ELEC().getRGBDurabilityForDisplay(stack);
-    }
-    /**
      * Return the maxDamage for this ItemStack. Defaults to the maxDamage field in this item,
      * but can be overridden here for other sources such as NBT.
      *
@@ -893,19 +880,6 @@ abstract class AbstractedItem extends Item implements IAbstractedItem {
     @Override @CopyMarker
     public int getItemEnchantability(ItemStack stack) {
         return getLinkedItem_INTERNAL_ELEC().getItemEnchantability(stack);
-    }
-
-    /**
-     * Checks whether an item can be enchanted with a certain enchantment. This applies specifically to enchanting an item in the enchanting table and is called when retrieving the list of possible enchantments for an item.
-     * Enchantments may additionally (or exclusively) be doing their own checks in {@link net.minecraft.enchantment.Enchantment#canApplyAtEnchantingTable(ItemStack)}; check the individual implementation for reference.
-     * By default this will check if the enchantment type is valid for this item type.
-     * @param stack the item stack to be enchanted
-     * @param enchantment the enchantment to be applied
-     * @return true if the enchantment can be applied to this item
-     */
-    @Override @CopyMarker
-    public boolean canApplyAtEnchantingTable(ItemStack stack, Enchantment enchantment) {
-        return getLinkedItem_INTERNAL_ELEC().canApplyAtEnchantingTable(stack, enchantment);
     }
 
     /**

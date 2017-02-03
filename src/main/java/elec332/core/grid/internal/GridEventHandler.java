@@ -1,5 +1,6 @@
 package elec332.core.grid.internal;
 
+import elec332.core.world.WorldHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.event.world.ChunkEvent;
@@ -13,14 +14,15 @@ import net.minecraftforge.fml.common.gameevent.TickEvent;
 @SuppressWarnings("unused")
 public class GridEventHandler {
 
-    @SubscribeEvent
+   /* @SubscribeEvent
     public void loadWorld(WorldEvent.Load event){
         World world = event.getWorld();
         if (!world.isRemote){
-            world.removeEventListener(WorldEventHandler.INSTANCE);
-            world.addEventListener(WorldEventHandler.INSTANCE);
+            IWorldEventListener listener = IElecWorldEventListener.wrap(WorldEventHandler.INSTANCE);
+            world.removeEventListener(listener);
+            world.addEventListener(listener);
         }
-    }
+    }*/
 
     @SubscribeEvent
     public void chunkLoad(ChunkEvent.Load event){
@@ -56,6 +58,10 @@ public class GridEventHandler {
         if (!world.isRemote){
             GridEventInputHandler.INSTANCE.worldUnload(world);
         }
+    }
+
+    static {
+        WorldHelper.registerWorldEventListener(WorldEventHandler.INSTANCE);
     }
 
 }

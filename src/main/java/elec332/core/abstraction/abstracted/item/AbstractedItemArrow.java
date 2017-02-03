@@ -1,7 +1,7 @@
 package elec332.core.abstraction.abstracted.item;
 
 import elec332.core.abstraction.IItemArrow;
-import elec332.core.abstraction.abstracted.CopyMarker;
+import elec332.core.api.annotations.CopyMarker;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntityArrow;

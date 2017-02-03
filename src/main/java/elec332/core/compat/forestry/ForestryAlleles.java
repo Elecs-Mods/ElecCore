@@ -1,6 +1,7 @@
 package elec332.core.compat.forestry;
 
 import forestry.api.apiculture.EnumBeeChromosome;
+import forestry.api.apiculture.IAlleleBeeEffect;
 import forestry.api.genetics.*;
 import forestry.apiculture.flowers.FlowerProvider;
 import forestry.core.genetics.alleles.AlleleHelper;
@@ -8,11 +9,14 @@ import forestry.core.genetics.alleles.EnumAllele;
 import forestry.core.genetics.alleles.IAlleleValue;
 import net.minecraft.util.math.Vec3i;
 
+import java.lang.reflect.Field;
+
 /**
  * Created by Elec332 on 15-8-2016.
  */
 public class ForestryAlleles {
 
+    public static final IAlleleBeeEffect EFFECT_NONE;
     public static final IAlleleBoolean TRUE_RECESSIVE, FALSE_RECESSIVE;
     public static final IAlleleInteger LIFESPAN_SHORTEST, LIFESPAN_SHORTER, LIFESPAN_SHORT, LIFESPAN_SHORTENED,
             LIFESPAN_NORMAL, LIFESPAN_ELONGATED, LIFESPAN_LONG, LIFESPAN_LONGER, LIFESPAN_LONGEST;
@@ -28,6 +32,7 @@ public class ForestryAlleles {
     public static final IAlleleFlowers FLOWERS_VANILLA, FLOWERS_NETHER, FLOWERS_CACTI, FLOWERS_MUSHROOMS,
             FLOWERS_END, FLOWERS_JUNGLE, FLOWERS_SNOW, FLOWERS_WHEAT, FLOWERS_GOURD;
 
+    private static final AlleleHelper alleleHelper;
 
     private static IAllele getForestryAllele(String name) {
         return AlleleManager.alleleRegistry.getAllele("forestry." + name);
@@ -54,7 +59,7 @@ public class ForestryAlleles {
     }
 
     private static IAllele getAllele(EnumBeeChromosome chromosome, IAlleleValue value){
-        AlleleHelper.getInstance().set(cache, chromosome, value);
+        alleleHelper.set(cache, chromosome, value);
         return cache[chromosome.ordinal()];
     }
 
@@ -64,7 +69,15 @@ public class ForestryAlleles {
     private static IAllele[] cache;
 
     static {
+        try {
+            Field f = AlleleHelper.class.getDeclaredField("instance");
+            f.setAccessible(true);
+            alleleHelper = (AlleleHelper) f.get(null);
+        } catch (Exception e){
+            throw new RuntimeException(e);
+        }
         cache = new IAllele[EnumBeeChromosome.values().length];
+        EFFECT_NONE = (IAlleleBeeEffect) getForestryAllele("none");
         TRUE_RECESSIVE = (IAlleleBoolean) getForestryAllele("boolTrue");
         FALSE_RECESSIVE = (IAlleleBoolean) getForestryAllele("boolFalse");
         LIFESPAN_SHORTEST = (IAlleleInteger) getForestryAllele("lifespanShortest");
