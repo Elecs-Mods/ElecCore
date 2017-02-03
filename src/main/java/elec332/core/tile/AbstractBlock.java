@@ -9,7 +9,6 @@ import net.minecraft.block.material.Material;
 /**
  * Created by Elec332 on 26-11-2016.
  */
-@AbstractionMarker("getBockAbstraction")
 public abstract class AbstractBlock extends MCAbstractedBlock implements IAbstractedBlock {
 
     public AbstractBlock(Material blockMaterialIn, MapColor blockMapColorIn) {
