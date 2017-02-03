@@ -61,7 +61,7 @@ public class CompatASMHandler implements IASMClassTransformer {
         }
         if (ann != null){
             String mS = (String) ann.values.get(1); //value of first key (key = 0)
-            IAbstractedClassProvider cp = AbstractionManager.getAbstractionLayer().getClassProvider();
+            IAbstractedClassProvider cp = AbstractionContainer.abstractionLayer.getClassProvider();
             Class impl = null;
             ClassReader linkedCLR = null;
             ClassNode cn = new ClassNode();
@@ -103,15 +103,15 @@ public class CompatASMHandler implements IASMClassTransformer {
             String m = null;
             for (AnnotationNode an : mn.visibleAnnotations){
                 if (an.desc.equals(annType)){
-                    System.out.println(classNode.name+"   "+an.values);
+                    //System.out.println(classNode.name+"   "+an.values);
                     m = (String) an.values.get(1); //value of first key (key = 0)
                     break;
                 }
             }
             if (!Strings.isNullOrEmpty(m)){
                 try {
-                    Method me = AbstractionManager.getAbstractionLayer().getClass().getDeclaredMethod(m);
-                    Class<?> clz = (Class<?>) me.invoke(AbstractionManager.getAbstractionLayer());
+                    Method me = AbstractionContainer.abstractionLayer.getClass().getDeclaredMethod(m);
+                    Class<?> clz = (Class<?>) me.invoke(AbstractionContainer.abstractionLayer);
                     ClassReader cr = ASMHelper.getClassReaderFrom(clz);
                     ClassNode cn = new ClassNode();
                     cr.accept(cn, 0);
