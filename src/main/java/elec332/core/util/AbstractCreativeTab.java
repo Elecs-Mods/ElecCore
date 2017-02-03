@@ -27,9 +27,14 @@ public abstract class AbstractCreativeTab extends CreativeTabs {
         return create(index, label, () -> icon);
     }
 
-    @AbstractionMarker("getGeneralAbstraction")
     @Nonnull
     public static AbstractCreativeTab create(int index, String label, Supplier<ItemStack> icon){
+        return (AbstractCreativeTab) createTab(index, label, icon);
+    }
+
+    @AbstractionMarker("getGeneralAbstraction")
+    @Nonnull
+    private static CreativeTabs createTab(int index, String label, Supplier<ItemStack> icon){
         return null;
     }
 

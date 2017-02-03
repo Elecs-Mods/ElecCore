@@ -103,6 +103,7 @@ public class CompatASMHandler implements IASMClassTransformer {
             String m = null;
             for (AnnotationNode an : mn.visibleAnnotations){
                 if (an.desc.equals(annType)){
+                    System.out.println(classNode.name+"   "+an.values);
                     m = (String) an.values.get(1); //value of first key (key = 0)
                     break;
                 }
