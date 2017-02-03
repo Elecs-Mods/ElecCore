@@ -63,6 +63,7 @@ configFile.withReader {
     String build = System.getenv("BUILD_NUMBER");
     project.ext.localBuild = build == null || build == ""
     project.ext.modVersion = "${config.mod_version}." + (ext.localBuild ? "localBuild" : build)
+    project.ext.compatVer = config.compat_versions
 }
 
 version = modVersion
@@ -145,7 +146,7 @@ task deobfJar(type: Jar) { // Generate deobfuscated
 
 task buildAbstraction(type: MergeAbstraction) {
     dependsOn 'build'
-    versions "1.11"
+    versions project.compatVer
     location project.localBuild ? "%p/libs/AbstractionLayer-%v.jar" : "%p/abstraction/AbstractionLayer-%v.jar"
 }
 
