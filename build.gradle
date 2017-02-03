@@ -179,8 +179,8 @@ class MergeAbstraction extends DefaultTask {
         for (String s in q) {
             println "Generating ElecCore for MC version: " + s
             String fL = loc.replace("%v", s);
-            merge(new File(projDir, "build/libs/ElecCore-" + project.modVersion + "-deobf.jar"), new File(fL.replace(".jar", "-deobf.jar")), new File(projDir, "build/libs/ElecCore-" + project.mcVersion + "-" + project.modVersion + "-deobf.jar"))
-            merge(new File(projDir, "build/libs/ElecCore-" + project.modVersion + ".jar"), new File(fL), new File(projDir, "build/libs/ElecCore-" + project.mcVersion + "-" + project.modVersion + ".jar"))
+            merge(new File(projDir, "build/libs/ElecCore-" + project.modVersion + "-deobf.jar"), new File(fL.replace(".jar", "-deobf.jar")), new File(projDir, "build/libs/ElecCore-" + s + "-" + project.modVersion + "-deobf.jar"))
+            merge(new File(projDir, "build/libs/ElecCore-" + project.modVersion + ".jar"), new File(fL), new File(projDir, "build/libs/ElecCore-" + s + "-" + project.modVersion + ".jar"))
         }
     }
 
