@@ -26,6 +26,7 @@ public final class ASMLoader implements IClassTransformer {
                 }
             }
         }
+        System.out.println("ASM Loaded");
     }
 
     private static final List<IASMClassTransformer> classTransformers;

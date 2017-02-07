@@ -1,6 +1,5 @@
 package elec332.core.tile;
 
-import elec332.core.api.annotations.AbstractionMarker;
 import elec332.abstraction.impl.MCAbstractedBlock;
 import elec332.abstraction.object.IAbstractedBlock;
 import net.minecraft.block.material.MapColor;

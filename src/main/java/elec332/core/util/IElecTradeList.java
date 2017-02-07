@@ -19,6 +19,13 @@ public interface IElecTradeList {
     @SuppressWarnings("all")
     @Nonnull
     public static EntityVillager.ITradeList wrap(final IElecTradeList tradeList){
+        return wrap((Object) tradeList);
+    }
+
+    @AbstractionMarker("getEntityAbstraction")
+    @SuppressWarnings("all")
+    @Nonnull
+    static EntityVillager.ITradeList wrap(final Object tradeList){
         return null;
     }
 

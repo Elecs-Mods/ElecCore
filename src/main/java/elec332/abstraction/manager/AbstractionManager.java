@@ -6,6 +6,8 @@ import elec332.core.main.APIHandler;
 import elec332.core.util.MCVersion;
 import net.minecraftforge.common.ForgeVersion;
 
+import javax.annotation.Nonnull;
+
 /**
  * Created by Elec332 on 26-1-2017.
  */
@@ -27,7 +29,7 @@ public class AbstractionManager {
             throw new IllegalArgumentException("Unsupported MC version: "+ForgeVersion.mcVersion);
         }
         try {
-            AbstractionContainer.abstractionLayer = abs = new MCAbstractionHandler();//(IAbstractionLayer) FMLUtil.loadClass("elec332.abstraction.impl.mc"+packageN+".AbstractionLayer").newInstance();
+            abs = new MCAbstractionHandler();//(IAbstractionLayer) FMLUtil.loadClass("elec332.abstraction.impl.mc"+packageN+".AbstractionLayer").newInstance();
         } catch (Exception e){
             throw new RuntimeException(e);
         }
@@ -35,6 +37,11 @@ public class AbstractionManager {
 
     private static boolean init;
     private static IAbstractionLayer abs;
+
+    @Nonnull
+    static IAbstractionLayer getAbstractionLayer(){
+        return abs;
+    }
 
     static {
         init();

@@ -1,7 +1,6 @@
 package elec332.core.main;
 
 import elec332.core.abstraction.IItem;
-import elec332.core.abstraction.abstracted.item.ItemType;
 import elec332.core.api.IElecCoreMod;
 import elec332.core.api.client.IIconRegistrar;
 import elec332.core.api.client.model.IElecModelBakery;
@@ -98,8 +97,8 @@ public class ElecCore implements IModuleController, IElecCoreMod, IDependencyHan
 		asmDataProcessor = new ElecCoreDiscoverer();
 		asmDataProcessor.identify(event.getASMHarvestedData());
 		ElecModHandler.identifyMods();
-		asmDataProcessor.process(LoaderState.CONSTRUCTING);
 		Launch.classLoader.registerTransformer(ASMLoader.class.getCanonicalName());
+		asmDataProcessor.process(LoaderState.CONSTRUCTING);
 	}
 
 	@EventHandler

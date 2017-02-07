@@ -50,4 +50,8 @@ public abstract class AbstractCreativeTab extends CreativeTabs {
     @SideOnly(Side.CLIENT)
     protected abstract ItemStack getDisplayStack();
 
+    static {
+        System.out.println("loaded ctab");
+    }
+
 }

@@ -23,6 +23,12 @@ buildscript {
     }
 }
 
+apply plugin: 'net.minecraftforge.gradle.forge'
+
+//plugins {
+	//id 'net.minecraftforge.gradle.forge'
+//}
+
 repositories {
 	maven {
         name "Mobius Repo"
@@ -51,7 +57,7 @@ repositories {
 	}
 }
 
-apply plugin: 'net.minecraftforge.gradle.forge'
+//apply plugin: 'net.minecraftforge.gradle.forge'
 
 ext.configFile = file "build.properties"
 

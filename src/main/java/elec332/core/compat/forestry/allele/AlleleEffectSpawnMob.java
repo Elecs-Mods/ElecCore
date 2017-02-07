@@ -2,21 +2,17 @@ package elec332.core.compat.forestry.allele;
 
 import elec332.core.compat.forestry.EffectData;
 import elec332.core.util.EntityHelper;
-import elec332.core.util.RegistryHelper;
 import elec332.core.world.WorldHelper;
 import forestry.api.apiculture.BeeManager;
 import forestry.api.apiculture.IBeeGenome;
 import forestry.api.apiculture.IBeeHousing;
 import forestry.api.genetics.IEffectData;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.registry.EntityRegistry;
-import net.minecraftforge.fml.common.registry.GameRegistry;
 
 import javax.annotation.Nullable;
 import java.util.Collections;

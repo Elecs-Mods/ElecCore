@@ -1,6 +1,5 @@
 package elec332.abstraction.handlers;
 
-import elec332.core.util.IElecTradeList;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.util.ResourceLocation;
@@ -13,6 +12,6 @@ public interface IEntityAbstraction {
 
     public Entity createEntity(ResourceLocation name, World world);
 
-    public EntityVillager.ITradeList wrap(final IElecTradeList tradeList);
+    public EntityVillager.ITradeList wrap(final Object elecTradeList);
 
 }
