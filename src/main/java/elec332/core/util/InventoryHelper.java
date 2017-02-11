@@ -43,12 +43,12 @@ public class InventoryHelper {
     @SuppressWarnings("all")
     @Nonnull
     public static EnumActionResult fireOnItemUse(Item item, EntityPlayer playerIn, World worldIn, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ){
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     @AbstractionMarker("getInventoryAbstraction")
     public static void updateCraftingInventory(IContainerListener listener, Container container, List<ItemStack> itemsList){
-        //
+        throw new UnsupportedOperationException();
     }
 
     public static MinecraftList<ItemStack> newItemStackList(int size){

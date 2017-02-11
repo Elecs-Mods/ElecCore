@@ -28,11 +28,24 @@ import java.util.Random;
 public interface IHiveEnum extends IStringSerializable {
 
     @Nonnull
+    default public List<IHiveDescription> getHiveDescriptions(){
+        return Lists.newArrayList(getHiveDescription());
+    }
+
+    @Nonnull
     public IHiveDescription getHiveDescription();
 
     public int getMeta();
 
     public String getUid();
+
+    default public boolean showInTab(){
+        return true;
+    }
+
+    default public int getLight(){
+        return 0;
+    }
 
     @Override
     @Nonnull

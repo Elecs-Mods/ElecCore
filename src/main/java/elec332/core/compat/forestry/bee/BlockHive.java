@@ -4,6 +4,7 @@ import com.google.common.collect.Maps;
 import elec332.core.compat.forestry.ForestryCompatHandler;
 import elec332.core.tile.AbstractBlock;
 import forestry.api.apiculture.hives.HiveManager;
+import forestry.api.apiculture.hives.IHiveDescription;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyEnum;
@@ -16,6 +17,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
+import net.minecraftforge.common.BiomeDictionary;
+import net.minecraftforge.common.BiomeManager;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
 import javax.annotation.Nonnull;
@@ -38,7 +41,9 @@ public abstract class BlockHive<T extends Enum<T> & IHiveEnum> extends AbstractB
         metaToObject = Maps.newHashMap();
         for (T t : getHiveTypes().getEnumConstants()){
             metaToObject.put(t.getMeta(), t);
-            HiveManager.hiveRegistry.registerHive(t.getUid(), t.getHiveDescription());
+            for (IHiveDescription desc : t.getHiveDescriptions()) {
+                HiveManager.hiveRegistry.registerHive(t.getUid(), desc);
+            }
         }
         if (defaultT == null){
             defaultT = getHiveTypes().getEnumConstants()[0];
@@ -79,6 +84,7 @@ public abstract class BlockHive<T extends Enum<T> & IHiveEnum> extends AbstractB
     @Nonnull
     public abstract Class<T> getHiveTypes();
 
+    @Nonnull
     public PropertyEnum<T> getProperty(){
         if (PROPERTY == null){
             PROPERTY = PropertyEnum.create("hivetype", getHiveTypes());
@@ -114,21 +120,29 @@ public abstract class BlockHive<T extends Enum<T> & IHiveEnum> extends AbstractB
         return getStateFromHive(t);
     }
 
+    @Nonnull
     public IBlockState getStateFromHive(@Nonnull T t){
         return getDefaultState().withProperty(PROPERTY, t);
     }
 
     @Override
     @Nonnull
-    public List<ItemStack> getDrops(IBlockAccess world, BlockPos pos, IBlockState state, int fortune) {
+    public List<ItemStack> getDrops(IBlockAccess world, BlockPos pos, @Nonnull IBlockState state, int fortune) {
         return state.getValue(PROPERTY).getDrops(world, pos, state, fortune);
     }
 
     @Override
     public void getSubBlocksC(@Nonnull Item item, List<ItemStack> subBlocks, CreativeTabs creativeTab) {
         for (T t : metaToObject.values()){
-            subBlocks.add(new ItemStack(this, 1, t.getMeta()));
+            if (t.showInTab()) {
+                subBlocks.add(new ItemStack(this, 1, t.getMeta()));
+            }
         }
+    }
+
+    @Override
+    public int getLightValue(@Nonnull IBlockState state, IBlockAccess world, @Nonnull BlockPos pos) {
+        return state.getValue(PROPERTY).getLight();
     }
 
     private static class HiveMaterial extends Material {
