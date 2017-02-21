@@ -77,7 +77,7 @@ public class ForestryAlleles {
             throw new RuntimeException(e);
         }
         cache = new IAllele[EnumBeeChromosome.values().length];
-        EFFECT_NONE = (IAlleleBeeEffect) getForestryAllele("none");
+        EFFECT_NONE = (IAlleleBeeEffect) getForestryAllele("effectNone");
         TRUE_RECESSIVE = (IAlleleBoolean) getForestryAllele("boolTrue");
         FALSE_RECESSIVE = (IAlleleBoolean) getForestryAllele("boolFalse");
         LIFESPAN_SHORTEST = (IAlleleInteger) getForestryAllele("lifespanShortest");

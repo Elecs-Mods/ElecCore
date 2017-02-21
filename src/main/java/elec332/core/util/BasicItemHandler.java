@@ -26,7 +26,7 @@ public class BasicItemHandler implements IElecItemHandler, INBTSerializable<NBTT
         this.stacks = stacks;
     }
 
-    private List<ItemStack> stacks;
+    protected List<ItemStack> stacks;
 
     public void setSize(int size)
     {
