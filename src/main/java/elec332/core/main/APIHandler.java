@@ -156,7 +156,19 @@ public enum APIHandler implements IASMDataProcessor, IAPIHandler {
                 }
             }
             try {
-                Field nameField = f.getType().getDeclaredField(field);
+                String[] poss = field.split(",");
+                Field nameField = null;
+                for (String s : poss){
+                    try {
+                        nameField = f.getType().getDeclaredField(s);
+                        break;
+                    } catch (Exception e){
+                        //
+                    }
+                }
+                if (nameField == null){
+                    throw new RuntimeException("Unable to find: "+field);
+                }
                 for (Field fDec : dec.getDeclaredFields()) {
                     if (fDec.getType() == f.getType()) {
                         Object o = fDec.get(null);

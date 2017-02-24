@@ -9,10 +9,10 @@ import net.minecraft.util.DamageSource;
 @NamedFieldGetter.Definition(declaringClass = DamageSource.class, field = "damageType")
 public class DamageSourceHelper {
 
-    @NamedFieldGetter(name = "inFire")
+    @NamedFieldGetter(name = "inFire,field_76372_a")
     public static DamageSource IN_FIRE;
 
-    @NamedFieldGetter(name = "onFire")
+    @NamedFieldGetter(name = "onFire,field_76370_b")
     public static DamageSource ON_FIRE;
 
 }
