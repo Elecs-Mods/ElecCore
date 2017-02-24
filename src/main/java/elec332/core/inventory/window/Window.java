@@ -340,12 +340,13 @@ public class Window implements IWidgetContainer {
     }
 
     @SideOnly(Side.CLIENT)
-    protected void keyTyped(char typedChar, int keyCode){
+    protected boolean keyTyped(char typedChar, int keyCode){
         for (IWidget widget : getWidgets()){
-            if (!widget.isHidden()){
-                widget.keyTyped(typedChar, keyCode);
+            if (!widget.isHidden() && widget.keyTyped(typedChar, keyCode)){
+                return true;
             }
         }
+        return false;
     }
 
     @SideOnly(Side.CLIENT)

@@ -103,7 +103,8 @@ public class Widget implements IWidget {
     }
 
     @Override
-    public void keyTyped(char typedChar, int keyCode) {
+    public boolean keyTyped(char typedChar, int keyCode) {
+        return false;
     }
 
     @Override

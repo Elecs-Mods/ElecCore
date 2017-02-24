@@ -29,7 +29,7 @@ public interface IWidget {
 
     public boolean mouseClicked(int mouseX, int mouseY, int button);
 
-    public void keyTyped(char typedChar, int keyCode);
+    public boolean keyTyped(char typedChar, int keyCode);
 
     @SideOnly(Side.CLIENT)
     public void draw(Window window, int guiX, int guiY, int mouseX, int mouseY);

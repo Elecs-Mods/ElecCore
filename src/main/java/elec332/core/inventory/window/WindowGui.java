@@ -67,8 +67,9 @@ public final class WindowGui extends GuiContainer {
 
     @Override
     protected void keyTyped(char typedChar, int keyCode) throws IOException {
-        super.keyTyped(typedChar, keyCode);
-        window.keyTyped(typedChar, keyCode);
+        if (!window.keyTyped(typedChar, keyCode)){
+            super.keyTyped(typedChar, keyCode);
+        }
     }
 
     @Override
