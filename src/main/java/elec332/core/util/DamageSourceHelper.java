@@ -6,13 +6,13 @@ import net.minecraft.util.DamageSource;
 /**
  * Created by Elec332 on 30-1-2017.
  */
-@NamedFieldGetter.Definition(declaringClass = DamageSource.class, field = "damageType")
+@NamedFieldGetter.Definition(declaringClass = DamageSource.class, field = "damageType,field_76373_n")
 public class DamageSourceHelper {
 
-    @NamedFieldGetter(name = "inFire,field_76372_a")
+    @NamedFieldGetter(name = "inFire")
     public static DamageSource IN_FIRE;
 
-    @NamedFieldGetter(name = "onFire,field_76370_b")
+    @NamedFieldGetter(name = "onFire")
     public static DamageSource ON_FIRE;
 
 }
