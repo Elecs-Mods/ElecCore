@@ -13,7 +13,11 @@ import forestry.api.apiculture.IBeeModelProvider;
 import forestry.api.apiculture.IBeeRoot;
 import forestry.api.core.Tabs;
 import forestry.api.genetics.*;
+import forestry.apiculture.PluginApiculture;
 import forestry.apiculture.genetics.alleles.AlleleBeeSpecies;
+import forestry.core.PluginCore;
+import forestry.plugins.IForestryPlugin;
+import forestry.plugins.PluginManager;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
@@ -75,8 +79,13 @@ public class ForestryCompatHandler  {
             });
         }
         tabBees = Tabs.tabApiculture;
-        ForestryAlleles.dummyLoad();
-        ForestryBeeEffects.init();
+        for (IForestryPlugin plugin : PluginManager.getLoadedPlugins()) {
+            if (plugin instanceof PluginApiculture) {
+                ForestryAlleles.dummyLoad();
+                ForestryBeeEffects.init();
+                break; //Just to make sure
+            }
+        }
     }
 
     @ElecModule.EventHandler
