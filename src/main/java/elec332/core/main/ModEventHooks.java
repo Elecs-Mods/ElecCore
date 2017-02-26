@@ -20,6 +20,7 @@ import org.apache.logging.log4j.LogManager;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Set;
 
@@ -41,6 +42,7 @@ class ModEventHooks {
     @Nullable
     private final IDependencyHandler dependencyHandler;
     private static final ArtifactVersion actualForge, actualElecCore;
+    private static MissingModsException ex;
 
     private static final List<ModContainer> mc = Lists.newArrayList();
 
@@ -83,8 +85,8 @@ class ModEventHooks {
             if (!missing.isEmpty()){
                 onVersionsNotFound(missing);
             }
-        }
-        if (!mc.isEmpty()){/*
+        }/*
+        if (!mc.isEmpty()){
             try {
                 Field f = LoadController.class.getDeclaredField("activeModList");
                 f.setAccessible(true);
@@ -96,8 +98,8 @@ class ModEventHooks {
                 f.set(FMLUtil.getLoadController(), l);
             } catch (Exception e1){
                 throw new RuntimeException(e1);
-            }*/
-        }
+            }
+        }*/
     }
 
     private void onVersionsNotFound(Set<ArtifactVersion> missing){
@@ -121,13 +123,24 @@ class ModEventHooks {
         }
         mc.add(modContainer);*/
         LogManager.getLogger(modContainer.getName()).info("Missing Mods Exception: ", e);
-        throw e;
+        ex = e;//throw e;
     }
 
 
     static {
         actualForge = new DefaultArtifactVersion(ModNames.FORGE, ForgeVersion.getVersion());
         actualElecCore = new DefaultArtifactVersion(ElecCore.MODID, ElecCore.ElecCoreVersion);
+        FMLUtil.registerToMainModBus(new Object(){
+
+            @Subscribe
+            @SuppressWarnings("all")
+            public void onConstuct(FMLConstructionEvent event){
+                if (ex != null){
+                    throw ex;
+                }
+            }
+
+        });
     }
 
 }

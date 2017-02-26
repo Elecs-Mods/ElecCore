@@ -88,6 +88,14 @@ public class FMLUtil {
         }
     }
 
+    public static void registerToMainModBus(Object o){
+        try {
+            ((EventBus) mainModBus.get(getLoadController())).register(o);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     @Nonnull
     public static LoadController getLoadController(){
         if (lc == null){
@@ -114,7 +122,7 @@ public class FMLUtil {
 
     private static ASMDataTable dataTable;
     private static LoadController lc;
-    private static final Field eventMethods, eventBus;
+    private static final Field eventMethods, eventBus, mainModBus;
 
     static {
         try {
@@ -122,6 +130,8 @@ public class FMLUtil {
             eventMethods.setAccessible(true);
             eventBus = FMLModContainer.class.getDeclaredField("eventBus");
             eventBus.setAccessible(true);
+            mainModBus = LoadController.class.getDeclaredField("masterChannel");
+            mainModBus.setAccessible(true);
         } catch (Exception e){
             throw new RuntimeException(e);
         }
