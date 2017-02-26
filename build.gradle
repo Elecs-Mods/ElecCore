@@ -84,7 +84,7 @@ minecraft {
     runDir = "run"
 	
 	replaceIn "main/ElecCore.java"
-    replace "#ELECCORE_VER#", (config.mod_version+"."+(System.env.DRONE_BUILD_NUMBER ?: "9999.custom"))
+    replace "#ELECCORE_VER#", (config.mod_version+"."+(System.env.BUILD_NUMBER ?: "9999.custom"))
 	
 	replaceIn "effects/api/ElecCoreAbilitiesAPIVersion.java"
     replace "#API_VER#", (config.abilityAPI_version)

@@ -10,7 +10,6 @@ import elec332.core.api.util.IDependencyHandler;
 import elec332.core.compat.ModNames;
 import elec332.core.util.FMLUtil;
 import net.minecraftforge.common.ForgeVersion;
-import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.common.*;
 import net.minecraftforge.fml.common.event.FMLConstructionEvent;
 import net.minecraftforge.fml.common.versioning.ArtifactVersion;
@@ -21,7 +20,6 @@ import org.apache.logging.log4j.LogManager;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Set;
 
@@ -86,7 +84,7 @@ class ModEventHooks {
                 onVersionsNotFound(missing);
             }
         }
-        if (!mc.isEmpty()){
+        if (!mc.isEmpty()){/*
             try {
                 Field f = LoadController.class.getDeclaredField("activeModList");
                 f.setAccessible(true);
@@ -98,14 +96,14 @@ class ModEventHooks {
                 f.set(FMLUtil.getLoadController(), l);
             } catch (Exception e1){
                 throw new RuntimeException(e1);
-            }
+            }*/
         }
     }
 
     private void onVersionsNotFound(Set<ArtifactVersion> missing){
         ElecCore.logger.error("The mod %s (%s) requires mod versions %s to be available", modContainer.getModId(), modContainer.getName(), missing);
         MissingModsException e = new MissingModsException(missing, modContainer.getModId(), modContainer.getName());
-        if (FMLCommonHandler.instance().getSide().isClient()) {
+        /*if (FMLCommonHandler.instance().getSide().isClient()) {
             try {
                 Field f = FMLClientHandler.class.getDeclaredField("modsMissing");
                 f.setAccessible(true);
@@ -121,8 +119,9 @@ class ModEventHooks {
         } catch (Exception e1){
             throw new RuntimeException(e1);
         }
-        mc.add(modContainer);
+        mc.add(modContainer);*/
         LogManager.getLogger(modContainer.getName()).info("Missing Mods Exception: ", e);
+        throw e;
     }
 
 
