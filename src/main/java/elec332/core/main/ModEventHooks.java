@@ -12,6 +12,7 @@ import elec332.core.util.FMLUtil;
 import net.minecraftforge.common.ForgeVersion;
 import net.minecraftforge.fml.common.*;
 import net.minecraftforge.fml.common.event.FMLConstructionEvent;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.versioning.ArtifactVersion;
 import net.minecraftforge.fml.common.versioning.DefaultArtifactVersion;
 import net.minecraftforge.fml.common.versioning.VersionParser;
@@ -136,7 +137,7 @@ class ModEventHooks {
 
             @Subscribe
             @SuppressWarnings("all")
-            public void onConstuct(FMLConstructionEvent event){
+            public void onConstuct(FMLPreInitializationEvent event){
                 if (ex != null){
                     throw ex;
                 }
