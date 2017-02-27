@@ -1,11 +1,6 @@
 package elec332.core.main;
 
-import elec332.core.abstraction.IItem;
 import elec332.core.api.IElecCoreMod;
-import elec332.core.api.client.IIconRegistrar;
-import elec332.core.api.client.model.IElecModelBakery;
-import elec332.core.api.client.model.IElecQuadBakery;
-import elec332.core.api.client.model.IElecTemplateBakery;
 import elec332.core.api.data.IExternalSaveHandler;
 import elec332.core.api.module.IModuleController;
 import elec332.core.api.network.ModNetworkHandler;
@@ -13,7 +8,6 @@ import elec332.core.api.registry.ISingleRegister;
 import elec332.core.api.util.IDependencyHandler;
 import elec332.core.api.util.IRightClickCancel;
 import elec332.core.asm.ASMLoader;
-import elec332.core.client.model.loading.INoJsonItem;
 import elec332.core.compat.ModNames;
 import elec332.core.effects.AbilityHandler;
 import elec332.core.grid.internal.GridEventHandler;
@@ -29,15 +23,9 @@ import elec332.core.proxies.CommonProxy;
 import elec332.core.server.SaveHandler;
 import elec332.core.server.ServerHelper;
 import elec332.core.util.*;
-import net.minecraft.client.renderer.block.model.IBakedModel;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.launchwrapper.Launch;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
-import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
@@ -60,7 +48,8 @@ public class ElecCore implements IModuleController, IElecCoreMod, IDependencyHan
 	public static final String ElecCoreVersion = "#ELECCORE_VER#";
 	public static final String MODID = "eleccore";
 	public static final String MODNAME = "ElecCore";
-	public static final String FORGE_VERSION = "13.19.1.2195";
+	public static final String FORGE_VERSION = "13.20.0.2252";
+	public static final String FORGE_VERSION_110 = "12.18.3.2239";
 
 	@SidedProxy(clientSide = "elec332.core.proxies.ClientProxy", serverSide = "elec332.core.proxies.CommonProxy")
 	public static CommonProxy proxy;
@@ -235,7 +224,7 @@ public class ElecCore implements IModuleController, IElecCoreMod, IDependencyHan
 
 	@Override
 	public String getRequiredForgeVersion(String mcVersion) {
-		return FORGE_VERSION;
+		return mcVersion.contains("1.10") ? FORGE_VERSION_110 : FORGE_VERSION;
 	}
 
 	public void setModEventHandler(ModEventHandler handler){
@@ -243,31 +232,6 @@ public class ElecCore implements IModuleController, IElecCoreMod, IDependencyHan
 			throw new IllegalStateException();
 		}
 		this.modEventHandler = handler;
-	}
-
-	private static class testItem implements IItem, INoJsonItem {
-
-		@Override
-		public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand hand) {
-			System.out.println("rightClick");
-			return new ActionResult<ItemStack>(EnumActionResult.PASS, player.getHeldItem(hand));
-		}
-
-		@Override
-		public void registerTextures(IIconRegistrar iconRegistrar) {
-			System.out.println("regTextures");
-		}
-
-		@Override
-		public IBakedModel getItemModel(ItemStack stack, World world, EntityLivingBase entity) {
-			return null;
-		}
-
-		@Override
-		public void registerModels(IElecQuadBakery quadBakery, IElecModelBakery modelBakery, IElecTemplateBakery templateBakery) {
-			System.out.println("regModels");
-		}
-
 	}
 
 	static {

@@ -15,7 +15,6 @@ import forestry.api.core.Tabs;
 import forestry.api.genetics.*;
 import forestry.apiculture.PluginApiculture;
 import forestry.apiculture.genetics.alleles.AlleleBeeSpecies;
-import forestry.core.PluginCore;
 import forestry.plugins.IForestryPlugin;
 import forestry.plugins.PluginManager;
 import net.minecraft.creativetab.CreativeTabs;

@@ -2,6 +2,7 @@ package elec332.core.main;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 import com.google.common.eventbus.Subscribe;
 import elec332.core.api.IElecCoreMod;
@@ -10,6 +11,7 @@ import elec332.core.api.util.IDependencyHandler;
 import elec332.core.compat.ModNames;
 import elec332.core.util.FMLUtil;
 import net.minecraftforge.common.ForgeVersion;
+import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.common.*;
 import net.minecraftforge.fml.common.event.FMLConstructionEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
@@ -46,6 +48,7 @@ class ModEventHooks {
     private static MissingModsException ex;
 
     private static final List<ModContainer> mc = Lists.newArrayList();
+    private static final Field f;
 
     @Subscribe
     @SuppressWarnings("all")
@@ -86,28 +89,14 @@ class ModEventHooks {
             if (!missing.isEmpty()){
                 onVersionsNotFound(missing);
             }
-        }/*
-        if (!mc.isEmpty()){
-            try {
-                Field f = LoadController.class.getDeclaredField("activeModList");
-                f.setAccessible(true);
-                List<ModContainer> l = Lists.newArrayList(((List<ModContainer>) f.get(FMLUtil.getLoadController())));
-                ModContainer m = l.get(l.size()-1);
-                if (modContainer == m){
-                    l.removeAll(mc);
-                }
-                f.set(FMLUtil.getLoadController(), l);
-            } catch (Exception e1){
-                throw new RuntimeException(e1);
-            }
-        }*/
+        }
     }
 
+    @SuppressWarnings("unchecked")
     private void onVersionsNotFound(Set<ArtifactVersion> missing){
-        //FMLUtil.getLoadController().transition();
         ElecCore.logger.error("The mod %s (%s) requires mod versions %s to be available", modContainer.getModId(), modContainer.getName(), missing);
         MissingModsException e = new MissingModsException(missing, modContainer.getModId(), modContainer.getName());
-        /*if (FMLCommonHandler.instance().getSide().isClient()) {
+        if (FMLCommonHandler.instance().getSide().isClient()) {
             try {
                 Field f = FMLClientHandler.class.getDeclaredField("modsMissing");
                 f.setAccessible(true);
@@ -115,21 +104,23 @@ class ModEventHooks {
             } catch (Exception exeption) {
                 //NBC
             }
+        } else {
+            throw e;
         }
-        try {
-            Field f = LoadController.class.getDeclaredField("activeModList");
-            f.setAccessible(true);
-            ///((List<ModContainer>) f.get(FMLUtil.getLoadController())).remove(modContainer);
-        } catch (Exception e1){
-            throw new RuntimeException(e1);
-        }
-        mc.add(modContainer);*/
+
+        mc.add(modContainer);
         LogManager.getLogger(modContainer.getName()).info("Missing Mods Exception: ", e);
-        ex = e;//throw e;
+        ex = e;
     }
 
 
     static {
+        try {
+            f = LoadController.class.getDeclaredField("modStates");
+            f.setAccessible(true);
+        } catch (Exception e){
+            throw new RuntimeException(e);
+        }
         actualForge = new DefaultArtifactVersion(ModNames.FORGE, ForgeVersion.getVersion());
         actualElecCore = new DefaultArtifactVersion(ElecCore.MODID, ElecCore.ElecCoreVersion);
         FMLUtil.getMainModBus().unregister(FMLUtil.getLoadController());
@@ -137,9 +128,22 @@ class ModEventHooks {
 
             @Subscribe
             @SuppressWarnings("all")
-            public void onConstuct(FMLPreInitializationEvent event){
+            public void onPreInit(FMLPreInitializationEvent event){
                 if (ex != null){
-                    throw ex;
+                    try {
+                        for (ModContainer mod : mc) {
+                            try {
+                                Field f = LoadController.class.getDeclaredField("activeModList");
+                                f.setAccessible(true);
+                                ((List<ModContainer>) f.get(FMLUtil.getLoadController())).remove(mod);
+                                ((Multimap) ModEventHooks.f.get(FMLUtil.getLoadController())).put(mod.getModId(), LoaderState.ModState.ERRORED);
+                            } catch (Exception ex) {
+                                throw new RuntimeException(ex);
+                            }
+                        }
+                    } catch (Exception e){
+                        //
+                    }
                 }
             }
 
