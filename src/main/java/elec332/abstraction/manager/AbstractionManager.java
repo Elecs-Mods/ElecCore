@@ -3,8 +3,8 @@ package elec332.abstraction.manager;
 import elec332.abstraction.handlers.IAbstractionLayer;
 import elec332.abstraction.impl.MCAbstractionHandler;
 import elec332.core.main.APIHandler;
+import elec332.core.util.FMLUtil;
 import elec332.core.util.MCVersion;
-import net.minecraftforge.common.ForgeVersion;
 
 import javax.annotation.Nonnull;
 
@@ -26,7 +26,7 @@ public class AbstractionManager {
         } else if (mc == MCVersion.MC_1_11){
             packageN = "1_11";
         } else {
-            throw new IllegalArgumentException("Unsupported MC version: "+ForgeVersion.mcVersion);
+            throw new IllegalArgumentException("Unsupported MC version: "+ FMLUtil.getMcVersion());
         }
         try {
             abs = new MCAbstractionHandler();//(IAbstractionLayer) FMLUtil.loadClass("elec332.abstraction.impl.mc"+packageN+".AbstractionLayer").newInstance();

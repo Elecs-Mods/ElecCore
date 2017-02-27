@@ -1,7 +1,5 @@
 package elec332.core.util;
 
-import net.minecraftforge.common.ForgeVersion;
-
 import javax.annotation.Nonnull;
 
 /**
@@ -25,7 +23,7 @@ public enum MCVersion {
     public static MCVersion getCurrentVersion(){
         if (currentVer == null){
             for (MCVersion m : MCVersion.values()){
-                if (m.name.equals(ForgeVersion.mcVersion)){
+                if (m.name.equals(FMLUtil.getMcVersion())){
                     currentVer = m;
                     break;
                 }

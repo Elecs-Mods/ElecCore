@@ -54,7 +54,7 @@ class ModEventHooks {
     @SuppressWarnings("all")
     public void onConstuct(FMLConstructionEvent event){
         if (dependencyHandler != null) {
-            String mcVersion = ForgeVersion.mcVersion;
+            String mcVersion = FMLUtil.getMcVersion();
             String forge = dependencyHandler.getRequiredForgeVersion(mcVersion);
             Set<ArtifactVersion> missing = Sets.newHashSet();
             if (!Strings.isNullOrEmpty(forge)) {

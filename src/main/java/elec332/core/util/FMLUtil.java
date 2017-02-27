@@ -6,6 +6,7 @@ import com.google.common.eventbus.EventBus;
 import net.minecraftforge.fml.common.*;
 import net.minecraftforge.fml.common.discovery.ASMDataTable;
 import net.minecraftforge.fml.common.event.FMLEvent;
+import net.minecraftforge.fml.relauncher.FMLInjectionData;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -24,6 +25,10 @@ public class FMLUtil {
     public static String getOwnerName(Class<?> clazz){
         ModContainer mod = getOwner(clazz);
         return mod == null ? "<unknown>" : mod.getModId();
+    }
+
+    public static String getMcVersion(){
+        return (String) FMLInjectionData.data()[4];
     }
 
     @Nullable
