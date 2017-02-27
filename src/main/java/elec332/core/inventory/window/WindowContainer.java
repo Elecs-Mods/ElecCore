@@ -317,7 +317,11 @@ public final class WindowContainer extends Container {
 
         @Override
         public WidgetSlot getSlot(int id) {
-            return id >= 0 && id < inventorySlots.size() ? ((WidgetLinkedSlot)WindowContainer.this.getSlot(id)).widget : null;
+            if (WindowContainer.this.getSlot(id) instanceof WidgetLinkedSlot) {
+                return id >= 0 && id < inventorySlots.size() ? ((WidgetLinkedSlot)WindowContainer.this.getSlot(id)).widget : null;
+            } else {
+                return null;
+            } 
         }
 
         @Override
