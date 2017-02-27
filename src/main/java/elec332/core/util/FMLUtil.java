@@ -88,9 +88,9 @@ public class FMLUtil {
         }
     }
 
-    public static void registerToMainModBus(Object o){
+    public static EventBus getMainModBus(){
         try {
-            ((EventBus) mainModBus.get(getLoadController())).register(o);
+            return (EventBus) mainModBus.get(getLoadController());
         } catch (IllegalAccessException e) {
             throw new RuntimeException(e);
         }

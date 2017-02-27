@@ -103,6 +103,7 @@ class ModEventHooks {
     }
 
     private void onVersionsNotFound(Set<ArtifactVersion> missing){
+        //FMLUtil.getLoadController().transition();
         ElecCore.logger.error("The mod %s (%s) requires mod versions %s to be available", modContainer.getModId(), modContainer.getName(), missing);
         MissingModsException e = new MissingModsException(missing, modContainer.getModId(), modContainer.getName());
         /*if (FMLCommonHandler.instance().getSide().isClient()) {
@@ -130,7 +131,8 @@ class ModEventHooks {
     static {
         actualForge = new DefaultArtifactVersion(ModNames.FORGE, ForgeVersion.getVersion());
         actualElecCore = new DefaultArtifactVersion(ElecCore.MODID, ElecCore.ElecCoreVersion);
-        FMLUtil.registerToMainModBus(new Object(){
+        FMLUtil.getMainModBus().unregister(FMLUtil.getLoadController());
+        FMLUtil.getMainModBus().register(new Object(){
 
             @Subscribe
             @SuppressWarnings("all")
@@ -141,6 +143,7 @@ class ModEventHooks {
             }
 
         });
+        FMLUtil.getMainModBus().register(FMLUtil.getLoadController());
     }
 
 }
