@@ -25,10 +25,6 @@ buildscript {
 
 apply plugin: 'net.minecraftforge.gradle.forge'
 
-//plugins {
-	//id 'net.minecraftforge.gradle.forge'
-//}
-
 repositories {
 	maven {
         name "Mobius Repo"
@@ -56,8 +52,6 @@ repositories {
 		url "http://tehnut.info/maven"
 	}
 }
-
-//apply plugin: 'net.minecraftforge.gradle.forge'
 
 ext.configFile = file "build.properties"
 
@@ -112,8 +106,7 @@ dependencies {
 	deobfCompile "net.sengir.forestry:forestry_${config.forestry_version}"
 }
 
-processResources
-{
+processResources {
     // this will ensure that this task is redone when the versions change.
     inputs.property "version", config.mod_version
     inputs.property "mcversion", config.minecraft_version
@@ -134,15 +127,13 @@ processResources
 
 jar {
     manifest {
-         //'FMLCorePlugin': 'elec332.core.loader.ElecCoreLoader',
-                   //'FMLCorePluginContainsFMLMod': 'true',
-		attributes		   'FMLAT': 'eleccore_at.cfg'
+			//'FMLCorePlugin': 'elec332.core.loader.ElecCoreLoader',
+			//'FMLCorePluginContainsFMLMod': 'true',
+		attributes	'FMLAT': 'eleccore_at.cfg'
 	}
 }
 
 tasks.build.dependsOn('deobfJar')
-//tasks.build.dependsOn('buildAbstraction')
-//tasks.buildAbstraction.dependsOn('deobfjar')
 
 task deobfJar(type: Jar) { // Generate deobfuscated
 	//version = "Newest"

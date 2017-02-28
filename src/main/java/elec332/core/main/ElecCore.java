@@ -48,7 +48,7 @@ public class ElecCore implements IModuleController, IElecCoreMod, IDependencyHan
 	public static final String ElecCoreVersion = "#ELECCORE_VER#";
 	public static final String MODID = "eleccore";
 	public static final String MODNAME = "ElecCore";
-	public static final String FORGE_VERSION = "13.20.0.2252";
+	public static final String FORGE_VERSION = "13.19.1.2195";
 	public static final String FORGE_VERSION_110 = "12.18.3.2239";
 
 	@SidedProxy(clientSide = "elec332.core.proxies.ClientProxy", serverSide = "elec332.core.proxies.CommonProxy")
@@ -151,17 +151,18 @@ public class ElecCore implements IModuleController, IElecCoreMod, IDependencyHan
 		MinecraftForge.EVENT_BUS.register(new Object(){
 
 			@SubscribeEvent(priority = EventPriority.LOWEST)
+			@SuppressWarnings("all")
 			public void onItemRightClick(PlayerInteractEvent.RightClickBlock event){
 				ItemStack stack;
 				if (event.getHand() == EnumHand.OFF_HAND){
 					stack = event.getEntityPlayer().getHeldItem(EnumHand.MAIN_HAND);
-					if (stack.getItem() instanceof IRightClickCancel && ((IRightClickCancel) stack.getItem()).cancelInteraction(stack)){
+					if (stack != null && stack.getItem() instanceof IRightClickCancel && ((IRightClickCancel) stack.getItem()).cancelInteraction(stack)){
 						event.setCanceled(true);
 						return;
 					}
 				}
 				stack = event.getItemStack();
-				if (stack.getItem() instanceof IRightClickCancel && ((IRightClickCancel) stack.getItem()).cancelInteraction(stack)) {
+				if (stack != null && stack.getItem() instanceof IRightClickCancel && ((IRightClickCancel) stack.getItem()).cancelInteraction(stack)) {
 					event.setCanceled(true);
 					InventoryHelper.fireOnItemUse(stack.getItem(), event.getEntityPlayer(), event.getWorld(), event.getPos(), event.getHand(), event.getFace(), (float) event.getHitVec().xCoord, (float) event.getHitVec().yCoord, (float) event.getHitVec().zCoord);
 				}
