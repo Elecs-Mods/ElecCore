@@ -1,6 +1,7 @@
 package elec332.core.util;
 
 import elec332.core.api.annotations.AbstractionMarker;
+import elec332.core.inventory.widget.slot.WidgetSlot;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.IContainerListener;
@@ -28,6 +29,11 @@ import java.util.List;
  * Created by Elec332 on 27-3-2015.
  */
 public class InventoryHelper {
+
+    @AbstractionMarker("getInventoryAbstraction")
+    public static WidgetSlot wrapSlot(Slot slot){
+        throw new UnsupportedOperationException();
+    }
 
     @AbstractionMarker("getInventoryAbstraction")
     public static int getSlotStackLimit(IItemHandler itemHandler, int slot){

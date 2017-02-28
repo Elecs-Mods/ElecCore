@@ -1,5 +1,6 @@
 package elec332.abstraction.handlers;
 
+import elec332.core.inventory.widget.slot.WidgetSlot;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.IContainerListener;
@@ -22,6 +23,8 @@ import java.util.List;
  * Created by Elec332 on 28-1-2017.
  */
 public interface IInventoryAbstraction {
+
+    public WidgetSlot wrapSlot(Slot slot);
 
     public <E> List<E> createList();
 

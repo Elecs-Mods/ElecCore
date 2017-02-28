@@ -1,5 +1,6 @@
 package elec332.core.inventory.window;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import elec332.core.inventory.AbstractSlot;
@@ -32,6 +33,7 @@ public final class WindowContainer extends Container {
         this.thePlayer = player;
         this.window = window;
         this.slotStuff = Maps.newHashMap();
+        this.externalSlots = Maps.newHashMap();
         window.setContainer(windowContainerHandler = new WindowContainerHandler());
         if (!player.getEntityWorld().isRemote) {
             window.initWindow_();
@@ -42,6 +44,7 @@ public final class WindowContainer extends Container {
     private final EntityPlayer thePlayer;
     private final List<IWindowListener> listeners;
     private final Map<WidgetSlot, Slot> slotStuff;
+    private final Map<Slot, WidgetSlot> externalSlots;
     final WindowContainerHandler windowContainerHandler;
 
     private static final IInventory NULL_INVENTORY;
@@ -125,6 +128,14 @@ public final class WindowContainer extends Container {
     @Override
     public boolean canInteractWith(@Nonnull EntityPlayer player) {
         return window.canInteractWith(player);
+    }
+
+    @Override
+    protected Slot addSlotToContainer(Slot slotIn) {
+        if (!(slotIn instanceof WidgetLinkedSlot)){
+            externalSlots.put(slotIn, InventoryHelper.wrapSlot(slotIn));
+        }
+        return super.addSlotToContainer(slotIn);
     }
 
     private class WindowListener implements IWindowListener {
@@ -287,6 +298,7 @@ public final class WindowContainer extends Container {
 
         @SideOnly(Side.CLIENT)
         @Override
+        @Nonnull
         public net.minecraft.client.renderer.texture.TextureAtlasSprite getBackgroundSprite() {
             return widget.getBackgroundSprite();
         }
@@ -317,7 +329,12 @@ public final class WindowContainer extends Container {
 
         @Override
         public WidgetSlot getSlot(int id) {
-            return id >= 0 && id < inventorySlots.size() ? ((WidgetLinkedSlot)WindowContainer.this.getSlot(id)).widget : null;
+            Slot unknown = id >= 0 && id < inventorySlots.size() ? WindowContainer.this.getSlot(id) : null;
+            if (unknown instanceof WidgetLinkedSlot) {
+                return ((WidgetLinkedSlot) unknown).widget;
+            } else {
+                return Preconditions.checkNotNull(externalSlots.get(unknown));
+            }
         }
 
         @Override
