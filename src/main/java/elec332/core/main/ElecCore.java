@@ -1,5 +1,6 @@
 package elec332.core.main;
 
+import com.google.common.eventbus.Subscribe;
 import elec332.core.api.IElecCoreMod;
 import elec332.core.api.data.IExternalSaveHandler;
 import elec332.core.api.module.IModuleController;
@@ -38,6 +39,9 @@ import net.minecraftforge.fml.common.network.NetworkRegistry;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.lang.reflect.Field;
+import java.util.List;
+
 /**
  * Created by Elec332.
  */
@@ -74,15 +78,35 @@ public class ElecCore implements IModuleController, IElecCoreMod, IDependencyHan
 	@EventHandler
 	public void construction(FMLConstructionEvent event){
 		logger = LogManager.getLogger("ElecCore");
-        for (ModContainer mc : FMLUtil.getLoader().getActiveModList()){
+		boolean reg = false;
+		List<ModContainer> mcl = FMLUtil.getLoader().getModList();
+		for (int i = mcl.size() - 1; i >= 0 ; i--) { //reverse order, we want to hook into the last one
+			ModContainer mc = mcl.get(i);
 			if (mc instanceof FMLModContainer){
-                ModEventHooks hook = new ModEventHooks((FMLModContainer) mc);
+				ModEventHooks hook = new ModEventHooks((FMLModContainer) mc);
 				FMLUtil.registerToModBus((FMLModContainer) mc, hook);
-                if (mc.getMod() == this){
-                    hook.onConstuct(event);
-                }
+				if (mc.getMod() == this){
+					hook.onConstuct(event);
+				}
+				if (reg){
+					continue;
+				}
+				try {
+					Field f = FMLModContainer.class.getDeclaredField("enabled");
+					f.setAccessible(true);
+					if (f.getBoolean(mc)){
+						FMLUtil.registerToModBus((FMLModContainer) mc, this);
+					}
+					reg = true;
+				} catch (Exception e){
+					throw new RuntimeException(e);
+				}
 			}
 		}
+	}
+
+	@Subscribe
+	public void onConstructionLast(FMLConstructionEvent event){
 		asmDataProcessor = new ElecCoreDiscoverer();
 		asmDataProcessor.identify(event.getASMHarvestedData());
 		ElecModHandler.identifyMods();

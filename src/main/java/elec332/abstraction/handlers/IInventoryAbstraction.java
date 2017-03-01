@@ -14,6 +14,7 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.oredict.ShapelessOreRecipe;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -23,6 +24,8 @@ import java.util.List;
  * Created by Elec332 on 28-1-2017.
  */
 public interface IInventoryAbstraction {
+
+    public List<Object> getRecipeOutput(ShapelessOreRecipe recipe);
 
     public WidgetSlot wrapSlot(Slot slot);
 

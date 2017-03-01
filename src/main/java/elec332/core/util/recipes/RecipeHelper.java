@@ -1,5 +1,6 @@
 package elec332.core.util.recipes;
 
+import elec332.core.api.annotations.AbstractionMarker;
 import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.util.ResourceLocation;
@@ -21,8 +22,9 @@ public class RecipeHelper {
         return ElecCoreFurnaceManager.getInstance();
     }
 
+    @AbstractionMarker("getInventoryAbstraction")
     public static List<Object> getRecipeOutput(ShapelessOreRecipe recipe){
-        return recipe.getInput();
+        throw new UnsupportedOperationException();
     }
 
     public static void registerRecipeSorter(ResourceLocation name, Class<? extends IRecipe> recipeClass){
