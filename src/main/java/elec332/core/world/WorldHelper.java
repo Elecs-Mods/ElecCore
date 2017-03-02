@@ -40,10 +40,12 @@ public class WorldHelper {
     
     @AbstractionMarker("getWorldAbstraction")
     public static void unRegisterWorldEventListener(IElecWorldEventListener listener){
+        throw new UnsupportedOperationException();
     }
 
     @AbstractionMarker("getWorldAbstraction")
     public static void registerWorldEventListener(IElecWorldEventListener listener){
+        throw new UnsupportedOperationException();
     }
 
     public static Biome getBiome(World world, BlockPos pos){
@@ -53,7 +55,7 @@ public class WorldHelper {
     @AbstractionMarker("getWorldAbstraction")
     @Nonnull
     public static IBlockState getBlockStateForPlacement(Block block, World world, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer, @Nullable EnumHand hand) {
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     public static boolean spawnEntityInWorld(World world, Entity entity){
@@ -62,11 +64,12 @@ public class WorldHelper {
 
     @AbstractionMarker("getWorldAbstraction")
     public static boolean canBlockBePlaced(World world, Block block, BlockPos pos, boolean b, EnumFacing facing, @Nullable Entity entity){
-        return b;//prevent "constant value" warning in IDE
+        throw new UnsupportedOperationException();
     }
 
     @AbstractionMarker("getWorldAbstraction")
     public static void notifyNeighborsOfStateChange(World world, BlockPos pos, Block block){
+        throw new UnsupportedOperationException();
     }
 
     public static ChunkPos chunkCoordFromBlockPos(BlockPos pos){

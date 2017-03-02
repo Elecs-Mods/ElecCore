@@ -87,6 +87,10 @@ public class ElecCore implements IModuleController, IElecCoreMod, IDependencyHan
 				FMLUtil.registerToModBus((FMLModContainer) mc, hook);
 				if (mc.getMod() == this){
 					hook.onConstuct(event);
+					if (i == mcl.size() - 1){
+						onConstructionLast(event);
+						reg = true;
+					}
 				}
 				if (reg){
 					continue;
