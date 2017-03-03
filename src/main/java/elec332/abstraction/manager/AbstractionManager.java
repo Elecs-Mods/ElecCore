@@ -23,7 +23,7 @@ public class AbstractionManager {
         String packageN;
         if (mc == MCVersion.MC_1_10 || mc == MCVersion.MC_1_10_2){
             packageN = "1_10";
-        } else if (mc == MCVersion.MC_1_11){
+        } else if (mc == MCVersion.MC_1_11 || mc == MCVersion.MC_1_11_2){
             packageN = "1_11";
         } else {
             throw new IllegalArgumentException("Unsupported MC version: "+ FMLUtil.getMcVersion());

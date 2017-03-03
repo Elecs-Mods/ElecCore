@@ -35,7 +35,7 @@ public abstract class AbstractCreativeTab extends CreativeTabs {
     @AbstractionMarker("getGeneralAbstraction")
     @Nonnull
     private static CreativeTabs createTab(int index, String label, Supplier<ItemStack> icon){
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     public AbstractCreativeTab(int index, String label) {

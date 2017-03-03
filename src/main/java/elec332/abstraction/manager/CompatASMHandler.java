@@ -23,7 +23,6 @@ import java.util.Map;
 /**
  * Created by Elec332 on 26-1-2017.
  */
-@ASMTransformer
 public class CompatASMHandler implements IASMClassTransformer {
 
     @Override

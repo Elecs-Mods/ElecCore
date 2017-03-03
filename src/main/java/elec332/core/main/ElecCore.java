@@ -1,6 +1,7 @@
 package elec332.core.main;
 
 import com.google.common.eventbus.Subscribe;
+import elec332.abstraction.manager.CompatASMHandler;
 import elec332.core.api.IElecCoreMod;
 import elec332.core.api.data.IExternalSaveHandler;
 import elec332.core.api.module.IModuleController;
@@ -78,6 +79,8 @@ public class ElecCore implements IModuleController, IElecCoreMod, IDependencyHan
 	@EventHandler
 	public void construction(FMLConstructionEvent event){
 		logger = LogManager.getLogger("ElecCore");
+		Launch.classLoader.registerTransformer(ASMLoader.class.getCanonicalName());
+		ASMLoader.injectEarly(new CompatASMHandler());
 		boolean reg = false;
 		List<ModContainer> mcl = FMLUtil.getLoader().getModList();
 		for (int i = mcl.size() - 1; i >= 0 ; i--) { //reverse order, we want to hook into the last one
@@ -95,16 +98,10 @@ public class ElecCore implements IModuleController, IElecCoreMod, IDependencyHan
 				if (reg){
 					continue;
 				}
-				try {
-					Field f = FMLModContainer.class.getDeclaredField("enabled");
-					f.setAccessible(true);
-					if (f.getBoolean(mc)){
-						FMLUtil.registerToModBus((FMLModContainer) mc, this);
-					}
-					reg = true;
-				} catch (Exception e){
-					throw new RuntimeException(e);
+				if (FMLUtil.isModEnabled((FMLModContainer) mc)){
+					FMLUtil.registerToModBus((FMLModContainer) mc, this);
 				}
+				reg = true;
 			}
 		}
 	}

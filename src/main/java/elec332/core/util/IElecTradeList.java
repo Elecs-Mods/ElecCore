@@ -15,7 +15,6 @@ public interface IElecTradeList {
 
     public void modifyMerchantRecipeList(IMerchant merchant, @Nonnull MerchantRecipeList tradeList, @Nonnull Random random);
 
-    @AbstractionMarker("getEntityAbstraction")
     @SuppressWarnings("all")
     @Nonnull
     public static EntityVillager.ITradeList wrap(final IElecTradeList tradeList){

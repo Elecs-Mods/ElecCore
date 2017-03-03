@@ -16,6 +16,7 @@ import net.minecraft.world.chunk.Chunk;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentSkipListSet;
 
 /**
  * Created by Elec332 on 23-7-2016.
@@ -25,15 +26,15 @@ public enum GridEventInputHandler {
     INSTANCE;
 
     GridEventInputHandler(){
-        this.bud = Sets.newHashSet();
+        this.bud = new ConcurrentSkipListSet<>();
         this.chunkAdd = Maps.newHashMap();
         this.chunkRemove = Maps.newHashMap();
-        this.notify = Sets.newHashSet();
+        this.notify = new ConcurrentSkipListSet<>();
         this.cachedHandlers = Lists.newArrayList();
     }
 
     private List<IStructureWorldEventHandler> cachedHandlers;
-    private final Set<DimensionCoordinate> bud, notify;
+    private final ConcurrentSkipListSet<DimensionCoordinate> bud, notify;
     private final Map<IStructureWorldEventHandler, Set<DimensionCoordinate>> chunkAdd, chunkRemove;
 
 
@@ -88,10 +89,17 @@ public enum GridEventInputHandler {
     }
 
     public void tickEnd(){
-        Set<DimensionCoordinate> bud = ImmutableSet.copyOf(this.bud);
-        Set<DimensionCoordinate> notify = ImmutableSet.copyOf(this.notify);
-        this.bud.clear();
-        this.notify.clear();
+        List<DimensionCoordinate> l = Lists.newArrayList();
+        DimensionCoordinate c;
+        while ((c = this.bud.pollFirst()) != null){
+            l.add(c);
+        }
+        Set<DimensionCoordinate> bud = ImmutableSet.copyOf(l);
+        l.clear();
+        while ((c = this.notify.pollFirst()) != null){
+            l.add(c);
+        }
+        Set<DimensionCoordinate> notify = ImmutableSet.copyOf(l);
         for (IStructureWorldEventHandler gridHandler : cachedHandlers) {
             gridHandler.checkNotifyStuff(notify);
             gridHandler.checkBlockUpdates(bud);

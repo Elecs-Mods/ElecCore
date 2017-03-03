@@ -93,6 +93,14 @@ public class FMLUtil {
         }
     }
 
+    public static boolean isModEnabled(FMLModContainer mc){
+        try {
+            return mcEnabled.getBoolean(mc);
+        } catch (Exception e){
+            throw new RuntimeException();
+        }
+    }
+
     public static EventBus getMainModBus(){
         try {
             return (EventBus) mainModBus.get(getLoadController());
@@ -127,7 +135,7 @@ public class FMLUtil {
 
     private static ASMDataTable dataTable;
     private static LoadController lc;
-    private static final Field eventMethods, eventBus, mainModBus;
+    private static final Field eventMethods, eventBus, mainModBus, mcEnabled;
 
     static {
         try {
@@ -137,6 +145,8 @@ public class FMLUtil {
             eventBus.setAccessible(true);
             mainModBus = LoadController.class.getDeclaredField("masterChannel");
             mainModBus.setAccessible(true);
+            mcEnabled = FMLModContainer.class.getDeclaredField("enabled");
+            mcEnabled.setAccessible(true);
         } catch (Exception e){
             throw new RuntimeException(e);
         }

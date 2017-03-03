@@ -26,10 +26,11 @@ public final class ASMLoader implements IClassTransformer {
                 }
             }
         }
-        //System.out.println("ASM Loaded");
+        collected = true;
     }
 
     private static final List<IASMClassTransformer> classTransformers;
+    private static boolean collected;
 
     @Override
     public byte[] transform(String obf, String deobf, byte[] bytes) {
@@ -39,6 +40,13 @@ public final class ASMLoader implements IClassTransformer {
             }
         }
         return bytes;
+    }
+
+    public static void injectEarly(IASMClassTransformer transformer){
+        if (collected){
+            throw new UnsupportedOperationException();
+        }
+        classTransformers.add(transformer);
     }
 
     static {
