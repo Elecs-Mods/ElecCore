@@ -24,7 +24,7 @@ public abstract class AbstractTexturedItem extends AbstractItem implements INoJs
     }
 
     @SideOnly(Side.CLIENT)
-    private TextureAtlasSprite[] textures;
+    protected TextureAtlasSprite[] textures;
     @SideOnly(Side.CLIENT)
     private IBakedModel model;
 

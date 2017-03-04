@@ -37,13 +37,6 @@ public enum MoonPhase {
         return StatCollector.translateToLocal("moon." + this.phaseName);
     }
 
-    public String getLocalizedNameAlt() {
-        if (StatCollector.canTranslate("moon.alt." + this.phaseName)) {
-            return StatCollector.translateToLocal("moon.alt." + this.phaseName);
-        }
-        return getLocalizedName();
-    }
-
     public static MoonPhase getMoonPhase(World w) {
         return getMoonPhaseFromTime(w.getWorldTime());
     }

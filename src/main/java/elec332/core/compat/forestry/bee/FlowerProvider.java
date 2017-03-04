@@ -1,12 +1,12 @@
 package elec332.core.compat.forestry.bee;
 
 import com.google.common.base.Predicate;
+import com.google.common.base.Predicates;
 import forestry.api.genetics.ICheckPollinatable;
 import net.minecraft.world.World;
 import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 /**
  * Created by Elec332 on 24-8-2016.
@@ -40,14 +40,7 @@ public class FlowerProvider extends forestry.apiculture.flowers.FlowerProvider {
     }
 
     static {
-        DEFAULT_PREDICATE = new Predicate<Pair<World, ICheckPollinatable>>() {
-
-            @Override
-            public boolean apply(@Nullable Pair<World, ICheckPollinatable> input) {
-                return true;
-            }
-
-        };
+        DEFAULT_PREDICATE = Predicates.alwaysTrue();
     }
 
 }
