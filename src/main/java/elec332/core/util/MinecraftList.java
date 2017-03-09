@@ -11,12 +11,12 @@ import java.util.List;
 public final class MinecraftList<E> extends AbstractList<E> {
 
     public static <E> MinecraftList<E> create(){
-        return new MinecraftList<E>(createList());
+        return new MinecraftList<E>(createList(), null);
     }
 
     @SuppressWarnings("unchecked")
     public static <E> MinecraftList<E> create(int size, E defaultObj){
-        return new MinecraftList<E>(createList(size, defaultObj));
+        return new MinecraftList<E>(createList(size, defaultObj), defaultObj);
     }
 
     @AbstractionMarker("getInventoryAbstraction")
@@ -29,11 +29,15 @@ public final class MinecraftList<E> extends AbstractList<E> {
         throw new UnsupportedOperationException();
     }
 
-    private MinecraftList(List<E> underlyingList){
+    private MinecraftList(List<E> underlyingList, E defaultObj){
         this.underlyingList = underlyingList;
+        //this.strict = defaultObj != null;
+        this.defaultObj = defaultObj;
     }
 
     private final List<E> underlyingList;
+    //private final boolean strict;
+    private final E defaultObj;
 
     public List<E> getUnderlyingList(){
         return underlyingList;
@@ -66,7 +70,13 @@ public final class MinecraftList<E> extends AbstractList<E> {
 
     @Override
     public void clear() {
-        underlyingList.clear();
+        //if (strict){
+            for (int i = 0; i < size(); i++) {
+                set(i, defaultObj);
+            }
+        //} else {
+            underlyingList.clear();
+        //}
     }
 
 }

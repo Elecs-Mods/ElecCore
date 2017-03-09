@@ -21,7 +21,7 @@ public abstract class AbstractASMClassTransformer implements IASMClassTransforme
         ClassReader classReader = new ClassReader(bytes);
         classReader.accept(node, 0);
         transformClass(node);
-        ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS);
+        ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES);
         node.accept(writer);
         return writer.toByteArray();
     }
