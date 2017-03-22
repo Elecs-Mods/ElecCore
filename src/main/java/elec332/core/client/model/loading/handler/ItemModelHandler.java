@@ -69,6 +69,7 @@ public class ItemModelHandler implements IModelHandler {
     }
 
     @Override
+    @Nonnull
     public Map<ModelResourceLocation, IBakedModel> registerBakedModels(Function<ModelResourceLocation, IBakedModel> modelGetter) {
         Map<ModelResourceLocation, IBakedModel> ret = Maps.newHashMap();
         for (Map.Entry<Item, ModelResourceLocation> entry : itemResourceLocations.entrySet()){

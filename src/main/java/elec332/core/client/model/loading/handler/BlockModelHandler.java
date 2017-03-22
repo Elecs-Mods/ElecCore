@@ -68,6 +68,7 @@ public class BlockModelHandler implements IModelHandler {
     }
 
     @Override
+    @Nonnull
     public Map<ModelResourceLocation, IBakedModel> registerBakedModels(Function<ModelResourceLocation, IBakedModel> modelGetter) {
         Map<ModelResourceLocation, IBakedModel> ret = Maps.newHashMap();
         for (Map.Entry<IBlockState, ModelResourceLocation> entry : blockResourceLocations.entrySet()){

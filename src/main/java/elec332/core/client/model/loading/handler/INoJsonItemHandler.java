@@ -4,8 +4,11 @@ import com.google.common.collect.ImmutableList;
 import elec332.core.api.client.model.loading.IItemModelHandler;
 import elec332.core.api.client.model.loading.ModelHandler;
 import elec332.core.client.RenderHelper;
+import elec332.core.client.model.loading.IBlockModelItemLink;
 import elec332.core.client.model.loading.INoJsonItem;
+import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.*;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.entity.EntityLivingBase;
@@ -31,13 +34,14 @@ public class INoJsonItemHandler implements IItemModelHandler {
     public INoJsonItemHandler(){
         modelItemLink = new LinkedItemModel();
         modelItemBlockLink = new LinkedItemBlockModel();
+        modelLinkedItemBlock = new LinkedItemBlockModel2();
     }
 
-    private final IBakedModel modelItemLink, modelItemBlockLink;
+    private final IBakedModel modelItemLink, modelItemBlockLink, modelLinkedItemBlock;
 
     @Override
     public boolean handleItem(Item item) {
-        return item instanceof INoJsonItem || (item instanceof ItemBlock && ((ItemBlock) item).getBlock() instanceof INoJsonItem);
+        return item instanceof INoJsonItem || (item instanceof ItemBlock && (((ItemBlock) item).getBlock() instanceof INoJsonItem || ((ItemBlock) item).getBlock() instanceof IBlockModelItemLink) && ((IBlockModelItemLink) ((ItemBlock) item).getBlock()).itemInheritsModel());
     }
 
     @Override
@@ -47,7 +51,25 @@ public class INoJsonItemHandler implements IItemModelHandler {
 
     @Override
     public IBakedModel getModelFor(Item item, String identifier, ModelResourceLocation fullResourceLocation) {
-        return item instanceof INoJsonItem ? modelItemLink : modelItemBlockLink;
+        return item instanceof INoJsonItem ? modelItemLink : ((ItemBlock) item).getBlock() instanceof INoJsonItem ? modelItemBlockLink : modelLinkedItemBlock;
+    }
+
+    private class LinkedItemBlockModel2 extends NullModel {
+
+        private LinkedItemBlockModel2(){
+            super(new NoJsonItemOverrideList(null){
+
+                @Nonnull
+                @Override
+                @SuppressWarnings("deprecation")
+                public IBakedModel handleItemState(@Nonnull IBakedModel originalModel, ItemStack stack, @Nullable World world, @Nullable EntityLivingBase entity) {
+                    Block b = ((ItemBlock) stack.getItem()).getBlock();
+                    return Minecraft.getMinecraft().getBlockRendererDispatcher().getModelForState(b.getStateFromMeta(stack.getMetadata()));
+                }
+
+            });
+        }
+
     }
 
     private class LinkedItemModel extends NullModel {

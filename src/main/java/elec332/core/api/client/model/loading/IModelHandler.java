@@ -3,6 +3,7 @@ package elec332.core.api.client.model.loading;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 
+import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -20,6 +21,7 @@ public interface IModelHandler {
 
     public void registerModels();
 
+    @Nonnull
     public Map<ModelResourceLocation, IBakedModel> registerBakedModels(Function<ModelResourceLocation, IBakedModel> bakedModelGetter);
 
 }
