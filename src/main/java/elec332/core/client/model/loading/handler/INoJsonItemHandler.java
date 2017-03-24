@@ -41,7 +41,7 @@ public class INoJsonItemHandler implements IItemModelHandler {
 
     @Override
     public boolean handleItem(Item item) {
-        return item instanceof INoJsonItem || (item instanceof ItemBlock && (((ItemBlock) item).getBlock() instanceof INoJsonItem || ((ItemBlock) item).getBlock() instanceof IBlockModelItemLink) && ((IBlockModelItemLink) ((ItemBlock) item).getBlock()).itemInheritsModel());
+        return item instanceof INoJsonItem || (item instanceof ItemBlock && (((ItemBlock) item).getBlock() instanceof INoJsonItem || (((ItemBlock) item).getBlock() instanceof IBlockModelItemLink) && ((IBlockModelItemLink) ((ItemBlock) item).getBlock()).itemInheritsModel()));
     }
 
     @Override
