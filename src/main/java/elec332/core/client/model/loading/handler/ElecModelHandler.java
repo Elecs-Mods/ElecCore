@@ -14,6 +14,7 @@ import elec332.core.main.ElecCore;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.block.model.ModelBakery;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.registry.IRegistry;
 import net.minecraftforge.fml.common.LoaderState;
 import net.minecraftforge.fml.common.discovery.ASMDataTable;
@@ -87,6 +88,12 @@ public final class ElecModelHandler implements IASMDataProcessor {
         }
 
         return ret;
+    }
+
+    public static void cleanModelLoadingExceptions(Map<ResourceLocation, Exception> locationExceptions){
+        for (IModelHandler modelHandler : modelHandlers){
+            modelHandler.cleanExceptions(locationExceptions);
+        }
     }
 
     static {

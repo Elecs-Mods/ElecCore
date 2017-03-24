@@ -138,7 +138,7 @@ public final class RenderingRegistry implements IElecRenderingRegistry {
         ElecCore.logger.info("Cleaning up internal Json stuff...");
         try {
             Set<ModelResourceLocation> set = (Set<ModelResourceLocation>) ReflectionHelper.makeFinalFieldModifiable(ModelLoader.class.getDeclaredField("missingVariants")).get(modelLoader);
-            Map<ModelResourceLocation, Exception> exceptionMap = (Map<ModelResourceLocation, Exception>) ReflectionHelper.makeFinalFieldModifiable(ModelLoader.class.getDeclaredField("loadingExceptions")).get(modelLoader);
+            Map<ResourceLocation, Exception> exceptionMap = (Map<ResourceLocation, Exception>) ReflectionHelper.makeFinalFieldModifiable(ModelLoader.class.getDeclaredField("loadingExceptions")).get(modelLoader);
             if (ElecCore.removeJSONErrors){
                 exceptionMap.clear();
             }
@@ -146,6 +146,7 @@ public final class RenderingRegistry implements IElecRenderingRegistry {
                 set.remove(rl);
                 exceptionMap.remove(rl);
             }
+            ElecModelHandler.cleanModelLoadingExceptions(exceptionMap);
         } catch (Exception e1){
             e1.printStackTrace();
         }

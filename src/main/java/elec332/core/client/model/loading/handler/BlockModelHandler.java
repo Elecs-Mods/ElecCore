@@ -2,6 +2,7 @@ package elec332.core.client.model.loading.handler;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import elec332.core.api.client.model.loading.IBlockModelHandler;
 import elec332.core.api.client.model.loading.IModelHandler;
 import elec332.core.api.client.model.loading.ModelHandler;
@@ -14,10 +15,12 @@ import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.block.model.ModelManager;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.renderer.block.statemap.StateMapperBase;
+import net.minecraft.util.ResourceLocation;
 
 import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 
 /**
@@ -29,10 +32,12 @@ public class BlockModelHandler implements IModelHandler {
     public BlockModelHandler(){
         blockModelHandlers = Lists.newArrayList();
         blockResourceLocations = Maps.newHashMap();
+        handledBlocks = Sets.newHashSet();
     }
 
     private List<IBlockModelHandler> blockModelHandlers;
     private Map<IBlockState, ModelResourceLocation> blockResourceLocations;
+    private Set<ResourceLocation> handledBlocks;
 
     @Override
     public void getModelHandlers(List<?> list) {
@@ -50,6 +55,7 @@ public class BlockModelHandler implements IModelHandler {
         for (Block block : RenderingRegistry.instance().getAllValidBlocks()){
             for (final IBlockModelHandler handler : blockModelHandlers) {
                 if (handler.handleBlock(block)) {
+                    handledBlocks.add(block.getRegistryName());
                     modelManager.getBlockModelShapes().getBlockStateMapper().registerBlockStateMapper(block, new StateMapperBase() {
 
                         @Override
@@ -81,6 +87,11 @@ public class BlockModelHandler implements IModelHandler {
             }
         }
         return ret;
+    }
+
+    @Override
+    public void cleanExceptions(Map<ResourceLocation, Exception> loaderExceptions) {
+        handledBlocks.forEach(loaderExceptions::remove);
     }
 
 }

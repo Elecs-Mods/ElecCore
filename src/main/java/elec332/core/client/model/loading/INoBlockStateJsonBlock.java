@@ -31,4 +31,13 @@ public interface INoBlockStateJsonBlock extends IBlockModelItemLink {
 
     }
 
+    public interface DefaultImpl extends INoBlockStateJsonBlock {
+
+        @Override
+        default VariantList getVariantsFor(IBlockState state){
+            return new VariantList(Lists.newArrayList(new Variant(state.getBlock().getRegistryName(), ModelRotation.X0_Y0, false, 0)));
+        }
+
+    }
+
 }
