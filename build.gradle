@@ -62,11 +62,12 @@ configFile.withReader {
     project.ext.mcVersion = config.minecraft_version
     String build = System.getenv("BUILD_NUMBER");
     project.ext.localBuild = build == null || build == ""
-    project.ext.modVersion = "${config.mod_version}." + (ext.localBuild ? "localBuild" : build)
+    project.ext.modFileVersion = "${config.mod_version}." + (ext.localBuild ? "localBuild" : build)
+	project.ext.modVersion = "${config.mod_version}." + (ext.localBuild ? "9999.custom" : build)
     project.ext.compatVer = config.compat_versions
 }
 
-version = modVersion
+version = modFileVersion
 group= "elec332.core" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "ElecCore"
 
@@ -78,7 +79,7 @@ minecraft {
     runDir = "run"
 	
 	replaceIn "main/ElecCore.java"
-    replace "#ELECCORE_VER#", (config.mod_version+"."+(System.env.BUILD_NUMBER ?: "9999.custom"))
+    replace "#ELECCORE_VER#", modVersion
 	
 	replaceIn "effects/api/ElecCoreAbilitiesAPIVersion.java"
     replace "#API_VER#", (config.abilityAPI_version)
@@ -116,7 +117,7 @@ processResources {
         include 'mcmod.info'
                 
         // replace version and mcversion
-        expand 'version':(config.mod_version+"."+(System.env.DRONE_BUILD_NUMBER ?: "9999.custom")), 'mcversion':config.minecraft_version
+        expand 'version':modVersion, 'mcversion':config.minecraft_version
     }
         
     // copy everything else, thats not the mcmod.info
@@ -176,8 +177,8 @@ class MergeAbstraction extends DefaultTask {
         for (String s in q) {
             println "Generating ElecCore for MC version: " + s
             String fL = loc.replace("%v", s);
-            merge(new File(projDir, "build/libs/ElecCore-" + project.modVersion + "-deobf.jar"), new File(fL.replace(".jar", "-deobf.jar")), new File(projDir, "build/libs/ElecCore-" + s + "-" + project.modVersion + "-deobf.jar"))
-            merge(new File(projDir, "build/libs/ElecCore-" + project.modVersion + ".jar"), new File(fL), new File(projDir, "build/libs/ElecCore-" + s + "-" + project.modVersion + ".jar"))
+            merge(new File(projDir, "build/libs/ElecCore-" + project.modFileVersion + "-deobf.jar"), new File(fL.replace(".jar", "-deobf.jar")), new File(projDir, "build/libs/ElecCore-" + s + "-" + project.modFileVersion + "-deobf.jar"))
+            merge(new File(projDir, "build/libs/ElecCore-" + project.modFileVersion + ".jar"), new File(fL), new File(projDir, "build/libs/ElecCore-" + s + "-" + project.modFileVersion + ".jar"))
         }
     }
 
