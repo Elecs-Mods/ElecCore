@@ -212,7 +212,7 @@ public class BlockVariantModelHandler implements IModelHandler {
                 @SuppressWarnings("all")
                 public IBakedModel bake(IModelState state, VertexFormat format, Function<ResourceLocation, TextureAtlasSprite> bakedTextureGetter) {
                     if(!Attributes.moreSpecific(format, Attributes.DEFAULT_BAKED_FORMAT)) {
-                        throw new IllegalArgumentException("can't bake vanilla weighted models to the format that doesn't fit into the default one: " + format);
+                        throw new IllegalArgumentException("Can't bake vanilla weighted models to the format that doesn't fit into the default one: " + format);
                     }
                     if(variants.size() == 1) {
                         IModel model = models.get(0);
@@ -233,10 +233,6 @@ public class BlockVariantModelHandler implements IModelHandler {
                 }
 
             };
-            //Class<?> clazz = FMLUtil.loadClass(net.minecraftforge.client.model.ModelLoader.class.getCanonicalName()+"$WeightedRandomModel");
-            //Constructor cTor = clazz.getConstructor(ResourceLocation.class, VariantList.class);
-            //cTor.setAccessible(true);
-            //return (IModel) cTor.newInstance(new ResourceLocation(fixed.getResourceDomain(), fixed.getResourcePath()), ((INoBlockStateJsonBlock) state.getBlock()).getVariantsFor(state));
         }
 
         @Override
