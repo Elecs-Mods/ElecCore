@@ -1,5 +1,6 @@
 package elec332.core.hud;
 
+import com.google.common.base.Strings;
 import elec332.core.hud.position.Alignment;
 import elec332.core.hud.position.HorizontalStartingPoint;
 import elec332.core.hud.position.IStartingPoint;
@@ -29,26 +30,48 @@ public abstract class AbstractHud {
         this.alignment = alignment;
         this.horiz = horizontal;
         this.ver = vertical;
+        this.category = Configuration.CATEGORY_CLIENT;
     }
+
+    public AbstractHud setConfigCategory(String s){
+        if (Strings.isNullOrEmpty(s)){
+            throw new IllegalArgumentException();
+        }
+        if (cL){
+            throw new IllegalStateException();
+        }
+        this.category = s;
+        return this;
+    }
+
+    private String category;
+    private boolean cL;
 
     private Alignment alignment = Alignment.LEFT;
     private IStartingPoint horiz = HorizontalStartingPoint.LEFT, ver = VerticalStartingPoint.MIDDLE;
 
     public final void configureHud(Configuration config){
         if (config != null) {
+            if (!cL) {
+                cL = true;
+            }
             config.load();
-            this.alignment = Alignment.valueOf(config.getString("alignment", Configuration.CATEGORY_CLIENT, alignment.toString(), "The alignment for this hud.", a));
+            this.alignment = Alignment.valueOf(config.getString("alignment", category, alignment.toString(), "The alignment for this hud.", a));
             if (!(horiz instanceof HorizontalStartingPoint && ver instanceof VerticalStartingPoint)){
                 configureCustom(config, horiz, ver);
             } else {
-                horiz = HorizontalStartingPoint.valueOf(config.getString("horizontalPosition", Configuration.CATEGORY_CLIENT, horiz.toString(), "The horizontal position of this hud.", h));
-                ver = VerticalStartingPoint.valueOf(config.getString("verticalPosition", Configuration.CATEGORY_CLIENT, ver.toString(), "The vertical position of this hud.", v));
+                horiz = HorizontalStartingPoint.valueOf(config.getString("horizontalPosition", category, horiz.toString(), "The horizontal position of this hud.", h));
+                ver = VerticalStartingPoint.valueOf(config.getString("verticalPosition", category, ver.toString(), "The vertical position of this hud.", v));
             }
             configure(config);
             if (config.hasChanged()){
                 config.save();
             }
         }
+    }
+
+    public final String getConfigCategory() {
+        return this.category;
     }
 
     /**

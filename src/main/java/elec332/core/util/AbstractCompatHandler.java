@@ -14,6 +14,7 @@ import java.util.List;
  * Created by Elec332 on 5-8-2015.
  */
 @Deprecated
+@SuppressWarnings("deprecation")
 public abstract class AbstractCompatHandler {
 
     public AbstractCompatHandler(Configuration config, Logger logger){
