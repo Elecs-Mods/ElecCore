@@ -46,7 +46,7 @@ public abstract class AbstractHud {
 
     private String category;
     private boolean cL;
-
+    private static final String[] a, h, v;
     private Alignment alignment = Alignment.LEFT;
     private IStartingPoint horiz = HorizontalStartingPoint.LEFT, ver = VerticalStartingPoint.MIDDLE;
 
@@ -92,8 +92,6 @@ public abstract class AbstractHud {
      * @param config The config
      */
     protected abstract void configure(@Nonnull Configuration config);
-
-    private static final String[] a, h, v;
 
     @Nonnull
     protected Alignment getAlignment(){
@@ -143,11 +141,11 @@ public abstract class AbstractHud {
         }
         h = new String[HorizontalStartingPoint.values().length];
         for (int i = 0; i < h.length; i++) {
-            a[i] = HorizontalStartingPoint.values()[i].toString();
+            h[i] = HorizontalStartingPoint.values()[i].toString();
         }
         v = new String[VerticalStartingPoint.values().length];
         for (int i = 0; i < v.length; i++) {
-            a[i] = VerticalStartingPoint.values()[i].toString();
+            v[i] = VerticalStartingPoint.values()[i].toString();
         }
     }
 
