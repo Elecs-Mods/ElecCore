@@ -14,6 +14,7 @@ import net.minecraftforge.common.ForgeVersion;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.common.*;
 import net.minecraftforge.fml.common.event.FMLConstructionEvent;
+import net.minecraftforge.fml.common.event.FMLEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.versioning.ArtifactVersion;
 import net.minecraftforge.fml.common.versioning.DefaultArtifactVersion;
@@ -34,16 +35,12 @@ class ModEventHooks {
 
     ModEventHooks(FMLModContainer modContainer){
         this.modContainer = Validate.notNull(modContainer);
-        this.elecCoreMod = modContainer.getMod() instanceof IElecCoreMod ? (IElecCoreMod) modContainer.getMod() : null;
-        this.dependencyHandler = elecCoreMod != null ? elecCoreMod.getDependencyHandler() : null;
     }
 
     @Nonnull
     private final FMLModContainer modContainer;
     @Nullable
-    private final IElecCoreMod elecCoreMod;
-    @Nullable
-    private final IDependencyHandler dependencyHandler;
+    private IElecCoreMod elecCoreMod;
     private static final ArtifactVersion actualForge, actualElecCore;
     private static MissingModsException ex;
 
@@ -51,8 +48,16 @@ class ModEventHooks {
     private static final Field f;
 
     @Subscribe
+    public void onEvent(FMLEvent event){
+        if (event instanceof FMLConstructionEvent){
+            onConstuct((FMLConstructionEvent) event);
+        }
+    }
+
     @SuppressWarnings("all")
-    public void onConstuct(FMLConstructionEvent event){
+    void onConstuct(FMLConstructionEvent event){ //If we'd subscribe to this method, it'd get called before the mod has constructed
+        this.elecCoreMod = modContainer.getMod() instanceof IElecCoreMod ? (IElecCoreMod) modContainer.getMod() : null;
+        IDependencyHandler dependencyHandler = elecCoreMod != null ? elecCoreMod.getDependencyHandler() : null;
         if (dependencyHandler != null) {
             String mcVersion = FMLUtil.getMcVersion();
             String forge = dependencyHandler.getRequiredForgeVersion(mcVersion);
