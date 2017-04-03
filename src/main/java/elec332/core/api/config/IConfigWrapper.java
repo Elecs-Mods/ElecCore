@@ -21,7 +21,11 @@ public interface IConfigWrapper {
 
     public boolean hasBeenLoaded();
 
-    public void refresh();
+    default public void refresh() {
+        refresh(true);
+    }
+
+    public void refresh(boolean load);
 
     @Nonnull
     public List<String> getRegisteredCategories();

@@ -55,7 +55,6 @@ public abstract class AbstractHud {
             if (!cL) {
                 cL = true;
             }
-            config.load();
             this.alignment = Alignment.valueOf(config.getString("alignment", category, alignment.toString(), "The alignment for this hud.", a));
             if (!(horiz instanceof HorizontalStartingPoint && ver instanceof VerticalStartingPoint)){
                 configureCustom(config, horiz, ver);
@@ -64,9 +63,6 @@ public abstract class AbstractHud {
                 ver = VerticalStartingPoint.valueOf(config.getString("verticalPosition", category, ver.toString(), "The vertical position of this hud.", v));
             }
             configure(config);
-            if (config.hasChanged()){
-                config.save();
-            }
         }
     }
 
@@ -112,7 +108,7 @@ public abstract class AbstractHud {
     @SubscribeEvent
     public final void onRenderTick(TickEvent.RenderTickEvent event) {
         EntityPlayer player = ElecCore.proxy.getClientPlayer();
-        if (player != null && shouldRenderHud(player, event.renderTickTime, event.phase)) {
+        if (player != null && Minecraft.getMinecraft().inGameHasFocus && shouldRenderHud(player, event.renderTickTime, event.phase)) {
             Minecraft mc = Minecraft.getMinecraft();
             ScaledResolution res = new ScaledResolution(mc);
 

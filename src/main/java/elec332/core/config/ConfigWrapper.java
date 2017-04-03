@@ -95,8 +95,10 @@ public class ConfigWrapper implements IConfigWrapper {
     }
 
     @Override
-    public void refresh(){
-        configuration.load();
+    public void refresh(boolean load) {
+        if (load) {
+            configuration.load();
+        }
         if (!this.hasInit) {
             this.hasInit = true;
         }
