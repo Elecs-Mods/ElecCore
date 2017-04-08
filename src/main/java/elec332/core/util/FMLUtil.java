@@ -73,18 +73,6 @@ public class FMLUtil {
         return dataTable;
     }
 
-    @SuppressWarnings("unchecked")
-    public static void hookEvent(FMLModContainer modContainer, Method method){
-        try {
-            ListMultimap<Class<? extends FMLEvent>, Method> map = (ListMultimap<Class<? extends FMLEvent>, Method>) eventMethods.get(modContainer);
-            if (method.getParameterCount() == 1 && FMLEvent.class.isAssignableFrom(method.getParameterTypes()[0])){
-                map.get((Class<? extends FMLEvent>) method.getParameterTypes()[0]).add(method);
-            }
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     public static void registerToModBus(FMLModContainer modContainer, Object o){
         try {
             ((EventBus)eventBus.get(modContainer)).register(o);

@@ -4,6 +4,7 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.google.common.eventbus.Subscribe;
 import elec332.core.api.discovery.ASMDataProcessor;
 import elec332.core.api.discovery.IASMDataHelper;
 import elec332.core.api.discovery.IASMDataProcessor;
@@ -15,6 +16,7 @@ import elec332.core.util.FMLUtil;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.*;
 import net.minecraftforge.fml.common.discovery.ASMDataTable;
+import net.minecraftforge.fml.common.event.FMLEvent;
 import net.minecraftforge.fml.common.event.FMLInterModComms;
 import net.minecraftforge.fml.common.versioning.ArtifactVersion;
 
@@ -171,7 +173,20 @@ public enum ModuleManager implements IASMDataProcessor, IModuleManager {
                     if (!(mc instanceof FMLModContainer)){
                         throw new UnsupportedOperationException();
                     }
-                    FMLUtil.hookEvent((FMLModContainer) mc, method);
+                    FMLUtil.registerToModBus((FMLModContainer) mc, new Object(){
+
+                        @Subscribe
+                        public void onImc(FMLEvent event){
+                            if (event instanceof FMLInterModComms.IMCEvent){
+                                try {
+                                    method.invoke(module.getModule(), event);
+                                } catch (Exception e){
+                                    throw new RuntimeException("Error invoking IMC event on: "+module.getModule());
+                                }
+                            }
+                        }
+
+                    });
                 }
             }
         }

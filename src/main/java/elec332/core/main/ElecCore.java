@@ -107,12 +107,14 @@ public class ElecCore implements IModuleController, IElecCoreMod, IDependencyHan
 	}
 
 	@Subscribe
-	public void onConstructionLast(FMLConstructionEvent event){
-		asmDataProcessor = new ElecCoreDiscoverer();
-		asmDataProcessor.identify(event.getASMHarvestedData());
-		ElecModHandler.identifyMods();
-		Launch.classLoader.registerTransformer(ASMLoader.class.getCanonicalName());
-		asmDataProcessor.process(LoaderState.CONSTRUCTING);
+	public void onConstructionLast(FMLEvent e){
+		if (e instanceof FMLConstructionEvent){
+			asmDataProcessor = new ElecCoreDiscoverer();
+			asmDataProcessor.identify(((FMLConstructionEvent) e).getASMHarvestedData());
+			ElecModHandler.identifyMods();
+			Launch.classLoader.registerTransformer(ASMLoader.class.getCanonicalName());
+			asmDataProcessor.process(LoaderState.CONSTRUCTING);
+		}
 	}
 
 	@EventHandler
