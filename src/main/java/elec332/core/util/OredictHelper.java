@@ -2,6 +2,7 @@ package elec332.core.util;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import elec332.core.api.annotations.AbstractionMarker;
 import elec332.core.main.ElecCore;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.oredict.OreDictionary;
@@ -79,8 +80,9 @@ public class OredictHelper {
         return getOres(name, false);
     }
 
+    @AbstractionMarker("getInventoryAbstraction")
     public static List<ItemStack> getOres(String name, boolean alwaysCreateEntry){
-        return OreDictionary.getOres(name, alwaysCreateEntry);
+        throw new UnsupportedOperationException();
     }
 
     static {

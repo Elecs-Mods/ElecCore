@@ -54,4 +54,6 @@ public interface IInventoryAbstraction {
     @Nonnull
     public ItemStack copyItemStack(@Nullable ItemStack stack);
 
+    public List<ItemStack> getOres(String name, boolean alwaysCreateEntry);
+
 }
