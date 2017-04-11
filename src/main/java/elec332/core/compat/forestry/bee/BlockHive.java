@@ -40,7 +40,7 @@ public abstract class BlockHive<T extends Enum<T> & IHiveEnum> extends AbstractB
         for (T t : getHiveTypes().getEnumConstants()){
             metaToObject.put(t.getMeta(), t);
             for (IHiveDescription desc : t.getHiveDescriptions()) {
-                HiveManager.hiveRegistry.registerHive(t.getUid(), desc);
+                HiveManager.hiveRegistry.registerHive(t.getUid(desc), desc);
             }
         }
         if (defaultT == null){

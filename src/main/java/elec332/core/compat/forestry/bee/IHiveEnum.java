@@ -16,6 +16,7 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
@@ -37,7 +38,7 @@ public interface IHiveEnum extends IStringSerializable {
 
     public int getMeta();
 
-    public String getUid();
+    public String getUid(IHiveDescription description);
 
     default public boolean showInTab(){
         return true;
@@ -54,7 +55,7 @@ public interface IHiveEnum extends IStringSerializable {
     }
 
     default public void addDrop(IHiveDrop... drops){
-        HiveManager.hiveRegistry.addDrops(getUid(), drops);
+        HiveManager.hiveRegistry.addDrops(getUid(getHiveDescription()), drops);
     }
 
     @Nonnull
@@ -62,7 +63,7 @@ public interface IHiveEnum extends IStringSerializable {
         List<ItemStack> ret = Lists.newArrayList();
         Random random = world instanceof World ? ((World) world).rand : new Random(pos.toLong());
 
-        List<IHiveDrop> hiveDrops = ((HiveRegistry)HiveManager.hiveRegistry).getDrops(getUid());
+        List<IHiveDrop> hiveDrops = ((HiveRegistry)HiveManager.hiveRegistry).getDrops(getUid(getHiveDescription()));
         Collections.shuffle(hiveDrops);
 
         int tries = 0;
