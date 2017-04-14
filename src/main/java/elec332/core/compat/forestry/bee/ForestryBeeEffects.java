@@ -2,6 +2,7 @@ package elec332.core.compat.forestry.bee;
 
 import forestry.api.apiculture.IAlleleBeeEffect;
 import forestry.api.genetics.AlleleManager;
+import org.apache.commons.lang3.text.WordUtils;
 
 /**
  * Created by Elec332 on 25-8-2016.
@@ -51,7 +52,7 @@ public class ForestryBeeEffects {
     }
 
     private static IAlleleBeeEffect getEffect(String name){
-        return (IAlleleBeeEffect) AlleleManager.alleleRegistry.getAllele("forestry."+name);
+        return (IAlleleBeeEffect) AlleleManager.alleleRegistry.getAllele("forestry.effect"+WordUtils.capitalize(name));
     }
 
 }
