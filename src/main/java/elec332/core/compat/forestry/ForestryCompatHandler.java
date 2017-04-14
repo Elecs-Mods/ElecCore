@@ -22,6 +22,7 @@ import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 
+import javax.annotation.Nonnull;
 import java.lang.reflect.Field;
 
 /**
@@ -44,7 +45,7 @@ public class ForestryCompatHandler  {
             AlleleManager.alleleRegistry.registerAlleleHandler(new IAlleleHandler() {
 
                 @Override
-                public void onRegisterAllele(IAllele allele) {
+                public void onRegisterAllele(@Nonnull IAllele allele) {
                     if (allele instanceof IModelLoader){
                         RenderingRegistry.instance().registerLoader((IModelLoader) allele);
                     }
@@ -68,16 +69,20 @@ public class ForestryCompatHandler  {
                 }
 
                 @Override
-                public void onRegisterClassification(IClassification classification) {
+                public void onRegisterClassification(@Nonnull IClassification classification) {
                 }
 
                 @Override
-                public void onRegisterFruitFamily(IFruitFamily family) {
+                public void onRegisterFruitFamily(@Nonnull IFruitFamily family) {
                 }
 
             });
         }
         tabBees = Tabs.tabApiculture;
+    }
+
+    @ElecModule.EventHandler
+    public void init(FMLInitializationEvent event){
         for (IForestryPlugin plugin : PluginManager.getLoadedPlugins()) {
             if (plugin instanceof PluginApiculture) {
                 ForestryAlleles.dummyLoad();
