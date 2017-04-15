@@ -71,11 +71,10 @@ public class ItemEnumBased<E extends Enum<E> & IEnumItem> extends AbstractItem i
     @Nonnull
     public String getUnlocalizedName(ItemStack stack) {
         E e = get(stack.getItemDamage());
-        String s = super.getUnlocalizedName(stack);
         if (e == null){
-            return s;
+            return super.getUnlocalizedName(stack);
         }
-        return s + "." + e.name().toLowerCase();
+        return e.getUnlocalizedName(stack);
     }
 
     @Override

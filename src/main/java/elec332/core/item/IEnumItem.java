@@ -35,4 +35,8 @@ public interface IEnumItem extends IColoredItem {
 
     public ResourceLocation getTextureLocation();
 
+    default public String getUnlocalizedName(ItemStack stack){
+        return stack.getUnlocalizedName()+"."+((Enum) this).name().toLowerCase();
+    }
+
 }
