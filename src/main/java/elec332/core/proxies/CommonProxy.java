@@ -24,7 +24,6 @@ public class CommonProxy implements IGuiHandler {
 	public void addPersonalMessageToPlayer(String s){
 	}
 
-
 	public World getClientWorld(){
 		return null;
 	}
@@ -49,7 +48,7 @@ public class CommonProxy implements IGuiHandler {
 	public static final ThreadLocal<EntityPlayer> currentOpeningPlayer;
 
 	static {
-		currentOpeningPlayer = new ThreadLocal<EntityPlayer>();
+		currentOpeningPlayer = new ThreadLocal<>();
 	}
 
 }

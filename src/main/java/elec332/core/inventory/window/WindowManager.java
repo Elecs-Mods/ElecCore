@@ -1,5 +1,7 @@
 package elec332.core.inventory.window;
 
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Maps;
 import elec332.core.api.network.ElecByteBuf;
 import elec332.core.api.network.IExtendedMessageContext;
@@ -15,6 +17,7 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.Container;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
@@ -34,7 +37,7 @@ public enum WindowManager implements ISimplePacket, ISimplePacketHandler {
 
     INSTANCE;
 
-    private WindowManager(){
+    WindowManager(){
         ElecCore.networkHandler.registerPacket(this, this);
         MinecraftForge.EVENT_BUS.register(new Object(){
 
@@ -46,35 +49,37 @@ public enum WindowManager implements ISimplePacket, ISimplePacketHandler {
             }
 
         });
-        this.names = Maps.newHashMap();
+        this.names = HashBiMap.create();
         this.map = Maps.newHashMap();
         this.lookup = Maps.newHashMap();
         this.index = 0;
     }
 
-    private final Map<Integer, String> names;
+    private final BiMap<Integer, String> names;
     private final Map<IWindowHandler, Entry> map;
     private final Map<String, IWindowHandler> lookup;
     private int index;
 
     public void register(IWindowHandler windowHandler){
-        index++;
-        Entry entry = new Entry(windowHandler, index);
-        register(entry);
+        register(windowHandler, new ResourceLocation(FMLUtil.getLoader().activeModContainer().getModId(), windowHandler.getClass().getCanonicalName()));
     }
 
-    private void register(Entry entry){
+    public void register(IWindowHandler windowHandler, ResourceLocation name){
+        index++;
+        Entry entry = new Entry(windowHandler, name);
+        register(entry, index);
+    }
+
+    private void register(Entry entry, int i){
         if (!FMLUtil.isInModInitialisation()){
-            return;
+            throw new IllegalStateException("Cannot register window handlers after mod loading.");
         }
         if (names.containsValue(entry.toString())){
-            entry.name = entry.name + "-";
-            register(entry);
-            return;
+            throw new IllegalArgumentException("There is already a registered WindowHandler for name: "+entry.name);
         }
         map.put(entry.windowHandler, entry);
         lookup.put(entry.name, entry.windowHandler);
-        names.put(entry.id, entry.name);
+        names.put(i, entry.name);
     }
 
     public int getID(IWindowHandler windowHandler){
@@ -82,7 +87,7 @@ public enum WindowManager implements ISimplePacket, ISimplePacketHandler {
         if (ret == null){
             throw new RuntimeException("WindowHandler "+windowHandler+" has not been registered!");
         }
-        return ret.id;
+        return ret.getId();
     }
 
     public IWindowHandler get(int id){
@@ -92,6 +97,9 @@ public enum WindowManager implements ISimplePacket, ISimplePacketHandler {
     @Override
     public void onPacket(ElecByteBuf data, IExtendedMessageContext messageContext, ISimpleNetworkPacketManager networkHandler) {
         NBTTagCompound tag1 = data.readNBTTagCompoundFromBuffer();
+        if (tag1 == null){
+            throw new IllegalArgumentException();
+        }
         NBTTagList list = tag1.getTagList("list", NBTTypes.COMPOUND.getID());
         names.clear();
         for (int i = 0; i < list.tagCount(); i++) {
@@ -113,6 +121,12 @@ public enum WindowManager implements ISimplePacket, ISimplePacketHandler {
         NBTTagCompound tag1 = new NBTTagCompound();
         tag1.setTag("list", list);
         byteBuf.writeNBTTagCompoundToBuffer(tag1);
+    }
+
+    @Nullable
+    @Override
+    public ISimplePacketHandler getPacketHandler() {
+        return this;
     }
 
     @SideOnly(Side.CLIENT)
@@ -171,15 +185,17 @@ public enum WindowManager implements ISimplePacket, ISimplePacketHandler {
 
     private class Entry {
 
-        private Entry(IWindowHandler windowHandler, int id){
+        private Entry(IWindowHandler windowHandler, ResourceLocation name){
             this.windowHandler = windowHandler;
-            this.name = windowHandler.getClass().getCanonicalName();
-            this.id = id;
+            this.name = name.toString();
         }
 
         private final IWindowHandler windowHandler;
-        private String name;
-        private final int id;
+        private final String name;
+
+        private int getId(){
+            return names.inverse().get(name);
+        }
 
         @Override
         public String toString() {

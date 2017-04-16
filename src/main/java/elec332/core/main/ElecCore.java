@@ -16,6 +16,7 @@ import elec332.core.grid.internal.GridEventHandler;
 import elec332.core.grid.internal.GridEventInputHandler;
 import elec332.core.handler.ModEventHandler;
 import elec332.core.handler.TickHandler;
+import elec332.core.inventory.window.WindowManager;
 import elec332.core.network.IElecNetworkHandler;
 import elec332.core.network.packets.PacketReRenderBlock;
 import elec332.core.network.packets.PacketSyncWidget;
@@ -40,7 +41,6 @@ import net.minecraftforge.fml.common.network.NetworkRegistry;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.lang.reflect.Field;
 import java.util.List;
 
 /**
@@ -157,6 +157,7 @@ public class ElecCore implements IModuleController, IElecCoreMod, IDependencyHan
 		if (config.hasChanged()){
 			config.save();
 		}
+		networkHandler.registerPacket(WindowManager.INSTANCE);
 		ElecCoreRegistrar.dummyLoad();
 		SaveHandler.INSTANCE.dummyLoad();
 		AbilityHandler.instance.init();
