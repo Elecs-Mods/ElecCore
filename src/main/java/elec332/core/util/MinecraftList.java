@@ -75,7 +75,7 @@ public final class MinecraftList<E> extends AbstractList<E> {
                 set(i, defaultObj);
             }
         //} else {
-            underlyingList.clear();
+            //underlyingList.clear();
         //}
     }
 
