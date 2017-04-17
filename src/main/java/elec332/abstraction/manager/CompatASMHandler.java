@@ -12,6 +12,7 @@ import elec332.core.main.ElecCore;
 import elec332.core.util.ASMHelper;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.*;
 
@@ -108,13 +109,22 @@ public class CompatASMHandler implements IASMClassTransformer {
             }
             if (!Strings.isNullOrEmpty(m)){
                 try {
+                    String[] fiS = m.split(":");
+                    if (fiS.length < 1 || fiS.length > 2){
+                        throw new IllegalArgumentException();
+                    }
+                    String methodN = fiS.length == 2 ? fiS[1] : mn.name;
+                    m = fiS[0];
                     Method me = AbstractionManager.getAbstractionLayer().getClass().getDeclaredMethod(m);
                     Class<?> clz = (Class<?>) me.invoke(AbstractionManager.getAbstractionLayer());
                     ClassReader cr = ASMHelper.getClassReaderFrom(clz);
                     ClassNode cn = new ClassNode();
                     cr.accept(cn, 0);
                     for (MethodNode mnI : cn.methods){
-                        if (mnI.name.equals(mn.name) && mnI.desc.equals(mn.desc)){
+                        if (mnI.name.equals(methodN) && mnI.desc.equals(mn.desc)){
+                            MethodNode nn = new MethodNode(Opcodes.ASM5, mnI.access, mn.name, mnI.desc, mnI.signature, mnI.exceptions.toArray(new String[0]));
+                            mnI.accept(nn);
+                            mnI = nn;
                             //mnI.access += Opcodes.ACC_STATIC; //Make method static
                             mnI.access = mn.access; //Same access as old method
                             mnI.localVariables.remove(0);

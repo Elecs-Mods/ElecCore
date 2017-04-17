@@ -22,8 +22,8 @@ public class RecipeHelper {
         return ElecCoreFurnaceManager.getInstance();
     }
 
-    @AbstractionMarker("getInventoryAbstraction")
-    public static List<Object> getRecipeOutput(ShapelessOreRecipe recipe){
+    @AbstractionMarker("getInventoryAbstraction:getRecipeOutput")
+    public static List<Object> getRecipeInput(ShapelessOreRecipe recipe){
         throw new UnsupportedOperationException();
     }
 
