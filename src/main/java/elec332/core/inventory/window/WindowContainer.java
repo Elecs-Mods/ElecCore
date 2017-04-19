@@ -404,7 +404,7 @@ public final class WindowContainer extends Container {
     }
 
     static {
-        NULL_INVENTORY = new InventoryBasic(new TextComponentString("NULL"), 0);
+        NULL_INVENTORY = new InventoryBasic("NULL", false, 0);
     }
 
 }
