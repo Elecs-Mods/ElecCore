@@ -166,7 +166,7 @@ public enum ModuleManager implements IASMDataProcessor, IModuleManager {
                     if (method.getParameterTypes().length != 1) {
                         continue;
                     }
-                    if (!(method.getParameterTypes()[0] == FMLInterModComms.IMCEvent.class)) {
+                    if (!FMLEvent.class.isAssignableFrom(method.getParameterTypes()[0])) {
                         continue;
                     }
                     ModContainer mc = module.getOwnerMod();
@@ -176,13 +176,11 @@ public enum ModuleManager implements IASMDataProcessor, IModuleManager {
                     FMLUtil.registerToModBus((FMLModContainer) mc, new Object(){
 
                         @Subscribe
-                        public void onImc(FMLEvent event){
-                            if (event instanceof FMLInterModComms.IMCEvent){
-                                try {
-                                    method.invoke(module.getModule(), event);
-                                } catch (Exception e){
-                                    throw new RuntimeException("Error invoking IMC event on: "+module.getModule());
-                                }
+                        public void onEvent(FMLEvent event){
+                            try {
+                                method.invoke(module.getModule(), event);
+                            } catch (Exception e){
+                                throw new RuntimeException("Error invoking IMC event on: "+module.getModule());
                             }
                         }
 
@@ -327,7 +325,7 @@ public enum ModuleManager implements IASMDataProcessor, IModuleManager {
             }
 
         };
-        ModEventHandler.registerCallback(ModuleManager.INSTANCE::invokeEvent);
+        //ModEventHandler.registerCallback(ModuleManager.INSTANCE::invokeEvent);
         try {
             mcForce = LoadController.class.getDeclaredMethod("forceActiveContainer", ModContainer.class);
             mcForce.setAccessible(true);

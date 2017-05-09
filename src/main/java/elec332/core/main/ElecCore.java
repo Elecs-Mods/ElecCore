@@ -17,6 +17,7 @@ import elec332.core.grid.internal.GridEventInputHandler;
 import elec332.core.handler.ModEventHandler;
 import elec332.core.handler.TickHandler;
 import elec332.core.inventory.window.WindowManager;
+import elec332.core.module.ModuleManager;
 import elec332.core.network.IElecNetworkHandler;
 import elec332.core.network.packets.PacketReRenderBlock;
 import elec332.core.network.packets.PacketSyncWidget;
@@ -102,6 +103,8 @@ public class ElecCore implements IModuleController, IElecCoreMod, IDependencyHan
 					FMLUtil.registerToModBus((FMLModContainer) mc, this);
 				}
 				reg = true;
+			} else {
+				System.out.println("Last mod isn't instanceof FMLModContainer?!?");
 			}
 		}
 	}
@@ -112,8 +115,8 @@ public class ElecCore implements IModuleController, IElecCoreMod, IDependencyHan
 			asmDataProcessor = new ElecCoreDiscoverer();
 			asmDataProcessor.identify(((FMLConstructionEvent) e).getASMHarvestedData());
 			ElecModHandler.identifyMods();
-			Launch.classLoader.registerTransformer(ASMLoader.class.getCanonicalName());
 			asmDataProcessor.process(LoaderState.CONSTRUCTING);
+			ModuleManager.INSTANCE.invokeEvent(e);
 		}
 	}
 

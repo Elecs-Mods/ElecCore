@@ -4,6 +4,7 @@ import elec332.core.api.annotations.AbstractionMarker;
 import elec332.core.main.ElecCore;
 import elec332.core.network.packets.PacketReRenderBlock;
 import elec332.core.server.ServerHelper;
+import elec332.core.util.ItemStackHelper;
 import elec332.core.util.NBTHelper;
 import elec332.core.util.PlayerHelper;
 import net.minecraft.block.Block;
@@ -140,7 +141,10 @@ public class WorldHelper {
 
     public static void dropInventoryItems(World worldIn, BlockPos pos, IItemHandler inventory){
         for (int i = 0; i < inventory.getSlots(); i++) {
-            dropStack(worldIn, pos, inventory.getStackInSlot(i));
+            ItemStack stack = inventory.getStackInSlot(i);
+            if (ItemStackHelper.isStackValid(stack)) {
+                WorldHelper.dropStack(worldIn, pos, stack);
+            }
         }
     }
 
