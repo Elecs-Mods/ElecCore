@@ -17,7 +17,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.*;
 import net.minecraftforge.fml.common.discovery.ASMDataTable;
 import net.minecraftforge.fml.common.event.FMLEvent;
-import net.minecraftforge.fml.common.event.FMLInterModComms;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.versioning.ArtifactVersion;
 
 import javax.annotation.Nonnull;
@@ -325,7 +325,27 @@ public enum ModuleManager implements IASMDataProcessor, IModuleManager {
             }
 
         };
-        //ModEventHandler.registerCallback(ModuleManager.INSTANCE::invokeEvent);
+        ModEventHandler.registerCallback(event -> {
+
+            if (event instanceof FMLPreInitializationEvent){
+                ModContainer mc = FMLUtil.findMod(ElecCore.MODID);
+                for (ModContainer mc_ : FMLUtil.getLoader().getActiveModList()) {
+                    for (IModuleContainer module : ModuleManager.INSTANCE.activeModules) {
+                        if (module.getOwnerMod() == mc_) {
+                            try {
+                                module.invokeEvent(event);
+                            } catch (Exception e) {
+                                throw new RuntimeException("Error invoking event of type: " + event.getClass().getCanonicalName() + " for module: " + module.getCombinedName(), e);
+                            }
+                        }
+                    }
+                    if (mc == mc_){
+                        break;
+                    }
+                }
+            }
+
+        });
         try {
             mcForce = LoadController.class.getDeclaredMethod("forceActiveContainer", ModContainer.class);
             mcForce.setAccessible(true);

@@ -17,7 +17,6 @@ import elec332.core.grid.internal.GridEventInputHandler;
 import elec332.core.handler.ModEventHandler;
 import elec332.core.handler.TickHandler;
 import elec332.core.inventory.window.WindowManager;
-import elec332.core.module.ModuleManager;
 import elec332.core.network.IElecNetworkHandler;
 import elec332.core.network.packets.PacketReRenderBlock;
 import elec332.core.network.packets.PacketSyncWidget;
@@ -104,7 +103,7 @@ public class ElecCore implements IModuleController, IElecCoreMod, IDependencyHan
 				}
 				reg = true;
 			} else {
-				System.out.println("Last mod isn't instanceof FMLModContainer?!?");
+				System.out.println("Last mod isn't instanceof FMLModContainer, but is of "+mc.getClass());
 			}
 		}
 	}
@@ -116,7 +115,6 @@ public class ElecCore implements IModuleController, IElecCoreMod, IDependencyHan
 			asmDataProcessor.identify(((FMLConstructionEvent) e).getASMHarvestedData());
 			ElecModHandler.identifyMods();
 			asmDataProcessor.process(LoaderState.CONSTRUCTING);
-			ModuleManager.INSTANCE.invokeEvent(e);
 		}
 	}
 
@@ -143,10 +141,10 @@ public class ElecCore implements IModuleController, IElecCoreMod, IDependencyHan
 
 		proxy.preInitRendering();
 		asmDataProcessor.process(LoaderState.PREINITIALIZATION);
+		loadTimer.endPhase(event);
 
 		modEventHandler.postEvent(event);
 
-		loadTimer.endPhase(event);
 		MCModInfo.createMCModInfoElec(event, "Provides core functionality for Elec's Mods",
 				"-", "assets/elec332/logo.png", new String[]{"Elec332"});
 	}
