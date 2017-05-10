@@ -185,13 +185,17 @@ public enum ModuleManager implements IASMDataProcessor, IModuleManager {
                 }
 
             });
+        }
+        forEachModule(module -> {
+
             try {
-                event.applyModContainer(mc);
+                event.applyModContainer(module.getOwnerMod());
                 module.invokeEvent(event);
             } catch (Exception e){
                 throw new RuntimeException("Error invoking FMLPreInitializationEvent to module "+module.getName()+", owner by: "+module.getOwnerMod());
             }
-        }
+
+        });
         processModuleField(ElecModule.Instance.class, new Function<IModuleContainer, Object>() {
 
             @Override
