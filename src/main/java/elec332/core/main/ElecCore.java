@@ -104,6 +104,9 @@ public class ElecCore implements IModuleController, IElecCoreMod, IDependencyHan
 				}
 				reg = true;
 			} else {
+				if (mc instanceof InjectedModContainer){
+					mc = FMLUtil.getWrappedContainer((InjectedModContainer) mc);
+				}
 				System.out.println("Last mod doesn't have a FMLModContainer, but it's ModContainer of "+mc.getClass());
 			}
 		}

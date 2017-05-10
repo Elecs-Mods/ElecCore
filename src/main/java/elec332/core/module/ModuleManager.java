@@ -171,7 +171,7 @@ public enum ModuleManager implements IASMDataProcessor, IModuleManager {
                     try {
                         module.invokeEvent(event);
                     } catch (Exception e){
-                        throw new RuntimeException("Error invoking event on: "+module.getModule());
+                        throw new RuntimeException("Error invoking event on: "+module.getModule(), e);
                     }
                 }
 
