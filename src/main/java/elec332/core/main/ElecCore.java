@@ -103,7 +103,7 @@ public class ElecCore implements IModuleController, IElecCoreMod, IDependencyHan
 					FMLUtil.registerToModBus(fmlMc, this);
 				}
 				reg = true;
-			} else {
+			} else if (!reg) {
 				if (mc instanceof InjectedModContainer){
 					mc = FMLUtil.getWrappedContainer((InjectedModContainer) mc);
 				}
