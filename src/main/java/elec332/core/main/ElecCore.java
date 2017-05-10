@@ -85,9 +85,10 @@ public class ElecCore implements IModuleController, IElecCoreMod, IDependencyHan
 		List<ModContainer> mcl = FMLUtil.getLoader().getModList();
 		for (int i = mcl.size() - 1; i >= 0 ; i--) { //reverse order, we want to hook into the last one
 			ModContainer mc = mcl.get(i);
-			if (mc instanceof FMLModContainer){
-				ModEventHooks hook = new ModEventHooks((FMLModContainer) mc);
-				FMLUtil.registerToModBus((FMLModContainer) mc, hook);
+			if (FMLUtil.hasFMLModContainer(mc)){
+				FMLModContainer fmlMc = FMLUtil.getFMLModContainer(mc);
+				ModEventHooks hook = new ModEventHooks(fmlMc);
+				FMLUtil.registerToModBus(fmlMc, hook);
 				if (mc.getMod() == this){
 					hook.onConstuct(event);
 					if (i == mcl.size() - 1){
@@ -98,12 +99,12 @@ public class ElecCore implements IModuleController, IElecCoreMod, IDependencyHan
 				if (reg){
 					continue;
 				}
-				if (FMLUtil.isModEnabled((FMLModContainer) mc)){
-					FMLUtil.registerToModBus((FMLModContainer) mc, this);
+				if (FMLUtil.isModEnabled(fmlMc)){
+					FMLUtil.registerToModBus(fmlMc, this);
 				}
 				reg = true;
 			} else {
-				System.out.println("Last mod isn't instanceof FMLModContainer, but is of "+mc.getClass());
+				System.out.println("Last mod doesn't have a FMLModContainer, but it's ModContainer of "+mc.getClass());
 			}
 		}
 	}

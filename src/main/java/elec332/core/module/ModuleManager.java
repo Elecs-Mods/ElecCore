@@ -160,33 +160,22 @@ public enum ModuleManager implements IASMDataProcessor, IModuleManager {
             }
         }
         for (IModuleContainer module : activeModules){
-            Class objClass = module.getModule().getClass();
-            for (Method method : objClass.getDeclaredMethods()) {
-                if (method.isAnnotationPresent(ElecModule.EventHandler.class) || method.isAnnotationPresent(Mod.EventHandler.class)) {
-                    if (method.getParameterTypes().length != 1) {
-                        continue;
-                    }
-                    if (!FMLEvent.class.isAssignableFrom(method.getParameterTypes()[0])) {
-                        continue;
-                    }
-                    ModContainer mc = module.getOwnerMod();
-                    if (!(mc instanceof FMLModContainer)){
-                        throw new UnsupportedOperationException();
-                    }
-                    FMLUtil.registerToModBus((FMLModContainer) mc, new Object(){
-
-                        @Subscribe
-                        public void onEvent(FMLEvent event){
-                            try {
-                                method.invoke(module.getModule(), event);
-                            } catch (Exception e){
-                                throw new RuntimeException("Error invoking IMC event on: "+module.getModule());
-                            }
-                        }
-
-                    });
-                }
+            ModContainer mc = module.getOwnerMod();
+            if (!FMLUtil.hasFMLModContainer(mc)){
+                throw new UnsupportedOperationException();
             }
+            FMLUtil.registerToModBus(FMLUtil.getFMLModContainer(mc), new Object(){
+
+                @Subscribe
+                public void onEvent(FMLEvent event){
+                    try {
+                        module.invokeEvent(event);
+                    } catch (Exception e){
+                        throw new RuntimeException("Error invoking event on: "+module.getModule());
+                    }
+                }
+
+            });
         }
         processModuleField(ElecModule.Instance.class, new Function<IModuleContainer, Object>() {
 

@@ -70,6 +70,28 @@ public class FMLUtil {
         return dataTable;
     }
 
+    public static boolean hasFMLModContainer(ModContainer mc) {
+        return mc instanceof FMLModContainer || mc instanceof InjectedModContainer && hasFMLModContainer(getWrappedContainer((InjectedModContainer) mc));
+    }
+
+    public static FMLModContainer getFMLModContainer(ModContainer mc){
+        if (mc instanceof FMLModContainer){
+            return (FMLModContainer) mc;
+        }
+        if (mc instanceof InjectedModContainer){
+            return getFMLModContainer(getWrappedContainer((InjectedModContainer) mc));
+        }
+        throw new IllegalArgumentException();
+    }
+
+    public static ModContainer getWrappedContainer(InjectedModContainer mc){
+        try {
+            return (ModContainer) wrappedContainer.get(mc);
+        } catch (Exception e){
+            throw new RuntimeException(e);
+        }
+    }
+
     public static void registerToModBus(FMLModContainer modContainer, Object o){
         try {
             ((EventBus)eventBus.get(modContainer)).register(o);
@@ -120,7 +142,7 @@ public class FMLUtil {
 
     private static ASMDataTable dataTable;
     private static LoadController lc;
-    private static final Field eventMethods, eventBus, mainModBus, mcEnabled;
+    private static final Field eventMethods, eventBus, mainModBus, mcEnabled, wrappedContainer;
 
     static {
         try {
@@ -132,6 +154,8 @@ public class FMLUtil {
             mainModBus.setAccessible(true);
             mcEnabled = FMLModContainer.class.getDeclaredField("enabled");
             mcEnabled.setAccessible(true);
+            wrappedContainer = InjectedModContainer.class.getDeclaredField("wrappedContainer");
+            wrappedContainer.setAccessible(true);
         } catch (Exception e){
             throw new RuntimeException(e);
         }
