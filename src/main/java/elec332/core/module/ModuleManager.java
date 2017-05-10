@@ -58,9 +58,18 @@ public enum ModuleManager implements IASMDataProcessor, IModuleManager {
     private Map<String, IModuleController> moduleControllers;
     private Set<String> erroredMods;
     private boolean locked, loaded;
+    private IASMDataHelper asmData;
 
     @Override
     public void processASMData(IASMDataHelper asmData, LoaderState state) {
+        this.asmData = asmData;
+    }
+
+    @Subscribe
+    public void preInitLast(FMLEvent event){
+        if (event.getClass() != FMLPreInitializationEvent.class || loaded){
+            return;
+        }
         for (ModContainer mod : Loader.instance().getActiveModList()){
             Object modO = mod.getMod();
             if (modO instanceof IModuleController){
@@ -176,6 +185,12 @@ public enum ModuleManager implements IASMDataProcessor, IModuleManager {
                 }
 
             });
+            try {
+                event.applyModContainer(mc);
+                module.invokeEvent(event);
+            } catch (Exception e){
+                throw new RuntimeException("Error invoking FMLPreInitializationEvent to module "+module.getName()+", owner by: "+module.getOwnerMod());
+            }
         }
         processModuleField(ElecModule.Instance.class, new Function<IModuleContainer, Object>() {
 
@@ -314,27 +329,6 @@ public enum ModuleManager implements IASMDataProcessor, IModuleManager {
             }
 
         };
-        ModEventHandler.registerCallback(event -> {
-
-            if (event instanceof FMLPreInitializationEvent){
-                ModContainer mc = FMLUtil.findMod(ElecCore.MODID);
-                for (ModContainer mc_ : FMLUtil.getLoader().getActiveModList()) {
-                    for (IModuleContainer module : ModuleManager.INSTANCE.activeModules) {
-                        if (module.getOwnerMod() == mc_) {
-                            try {
-                                module.invokeEvent(event);
-                            } catch (Exception e) {
-                                throw new RuntimeException("Error invoking event of type: " + event.getClass().getCanonicalName() + " for module: " + module.getCombinedName(), e);
-                            }
-                        }
-                    }
-                    if (mc == mc_){
-                        break;
-                    }
-                }
-            }
-
-        });
         try {
             mcForce = LoadController.class.getDeclaredMethod("forceActiveContainer", ModContainer.class);
             mcForce.setAccessible(true);

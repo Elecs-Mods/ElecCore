@@ -17,6 +17,7 @@ import elec332.core.grid.internal.GridEventInputHandler;
 import elec332.core.handler.ModEventHandler;
 import elec332.core.handler.TickHandler;
 import elec332.core.inventory.window.WindowManager;
+import elec332.core.module.ModuleManager;
 import elec332.core.network.IElecNetworkHandler;
 import elec332.core.network.packets.PacketReRenderBlock;
 import elec332.core.network.packets.PacketSyncWidget;
@@ -110,6 +111,7 @@ public class ElecCore implements IModuleController, IElecCoreMod, IDependencyHan
 				System.out.println("Last mod doesn't have a FMLModContainer, but it's ModContainer of "+mc.getClass());
 			}
 		}
+		FMLUtil.getMainModBus().register(ModuleManager.INSTANCE);
 	}
 
 	@Subscribe
