@@ -9,7 +9,6 @@ import elec332.core.api.discovery.ASMDataProcessor;
 import elec332.core.api.discovery.IASMDataHelper;
 import elec332.core.api.discovery.IASMDataProcessor;
 import elec332.core.api.module.*;
-import elec332.core.handler.ModEventHandler;
 import elec332.core.main.APIHandler;
 import elec332.core.main.ElecCore;
 import elec332.core.util.FMLUtil;
@@ -66,7 +65,7 @@ public enum ModuleManager implements IASMDataProcessor, IModuleManager {
     }
 
     @Subscribe
-    public void preInitLast(FMLEvent event){
+    public void preInitLast(Object event){
         if (event.getClass() != FMLPreInitializationEvent.class || loaded){
             return;
         }
@@ -189,21 +188,14 @@ public enum ModuleManager implements IASMDataProcessor, IModuleManager {
         forEachModule(module -> {
 
             try {
-                event.applyModContainer(module.getOwnerMod());
+                ((FMLEvent) event).applyModContainer(module.getOwnerMod());
                 module.invokeEvent(event);
             } catch (Exception e){
                 throw new RuntimeException("Error invoking FMLPreInitializationEvent to module "+module.getName()+", owner by: "+module.getOwnerMod());
             }
 
         });
-        processModuleField(ElecModule.Instance.class, new Function<IModuleContainer, Object>() {
-
-            @Override
-            public Object apply(IModuleContainer iModuleContainer) {
-                return iModuleContainer.getModule();
-            }
-
-        });
+        processModuleField(ElecModule.Instance.class, IModuleContainer::getModule);
         processModuleField(ElecModule.Network.class, new Function<IModuleContainer, Object>() {
 
             @Override
@@ -277,6 +269,7 @@ public enum ModuleManager implements IASMDataProcessor, IModuleManager {
             throw new IllegalStateException();
         }
         forEachModule(new Consumer<IModuleContainer>() {
+
             @Override
             public void accept(IModuleContainer module) {
                 try {
@@ -285,6 +278,7 @@ public enum ModuleManager implements IASMDataProcessor, IModuleManager {
                     throw new RuntimeException("Error invoking event of type: " + event.getClass().getCanonicalName()+" for module: "+module.getCombinedName(), e);
                 }
             }
+
         });
     }
 
