@@ -9,14 +9,19 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraft.world.biome.Biome;
+import net.minecraftforge.common.BiomeDictionary;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Set;
 
 /**
  * Created by Elec332 on 26-1-2017.
  */
 public interface IWorldAbstraction {
+
+    public Set<BiomeDictionary.Type> getTypes(Biome biome);
 
     public void unRegisterWorldEventListener(IElecWorldEventListener listener);
 

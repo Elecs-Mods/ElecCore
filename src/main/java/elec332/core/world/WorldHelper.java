@@ -26,19 +26,26 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
+import net.minecraftforge.common.BiomeDictionary;
 import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.ForgeChunkManager;
 import net.minecraftforge.items.IItemHandler;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Set;
 
 /**
  * Created by Elec332 on 20-3-2015.
  */
 @SuppressWarnings("unused")
 public class WorldHelper {
-    
+
+    @AbstractionMarker("getWorldAbstraction")
+    public static Set<BiomeDictionary.Type> getTypes(Biome biome){
+        throw new UnsupportedOperationException();
+    }
+
     @AbstractionMarker("getWorldAbstraction")
     public static void unRegisterWorldEventListener(IElecWorldEventListener listener){
         throw new UnsupportedOperationException();
