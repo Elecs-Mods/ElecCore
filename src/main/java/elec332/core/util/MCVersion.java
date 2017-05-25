@@ -35,6 +35,14 @@ public enum MCVersion {
         return currentVer;
     }
 
+    public boolean isHigherThan(MCVersion version){
+        return ordinal() > version.ordinal();
+    }
+
+    public boolean isLowerThan(MCVersion version){
+        return version.ordinal() > ordinal();
+    }
+
     private static MCVersion currentVer;
 
 }

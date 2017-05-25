@@ -46,8 +46,8 @@ public class IndividualDefinitionRegistry {
         template.setSpeciesProperties(speciesBuilder);
         @SuppressWarnings("unchecked")
         S species = (S) speciesBuilder.build();
-        genomeTemplate.setSpecies(species);
         template.modifyGenomeTemplate(genomeTemplate);
+        genomeTemplate.setSpecies(species);
         IAllele[] alleles = genomeTemplate.getAlleles();
         speciesRoot.registerTemplate(alleles);
         template.setIndividualDefinition(new DefaultIndividualDefinition<>(alleles, speciesRoot));
