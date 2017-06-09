@@ -8,6 +8,7 @@ import elec332.core.compat.ModNames;
 import elec332.core.compat.forestry.bee.ForestryBeeEffects;
 import elec332.core.java.ReflectionHelper;
 import elec332.core.main.ElecCore;
+import elec332.core.util.MCVersion;
 import forestry.api.apiculture.BeeManager;
 import forestry.api.apiculture.IBeeModelProvider;
 import forestry.api.apiculture.IBeeRoot;
@@ -18,6 +19,9 @@ import forestry.apiculture.genetics.alleles.AlleleBeeSpecies;
 import forestry.plugins.IForestryPlugin;
 import forestry.plugins.PluginManager;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IBlockAccess;
+import net.minecraftforge.common.property.IUnlistedProperty;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
@@ -33,6 +37,9 @@ public class ForestryCompatHandler  {
 
     public static IBeeRoot beeRoot;
     private static CreativeTabs tabBees;
+
+    public static IUnlistedProperty<BlockPos> UNLISTEDPOS_FORESTRY;
+    public static IUnlistedProperty<IBlockAccess> UNLISTEDIBA_FORESTRY;
 
     public static CreativeTabs getForestryBeeTab() {
         return tabBees;
@@ -79,6 +86,7 @@ public class ForestryCompatHandler  {
             });
         }
         tabBees = Tabs.tabApiculture;
+        fetchUnlistedProperties();
     }
 
     @ElecModule.EventHandler
@@ -112,6 +120,24 @@ public class ForestryCompatHandler  {
         }
         IndividualDefinitionRegistry.registeredClasses.clear();
         IndividualDefinitionRegistry.registeredTemplates.clear();
+    }
+
+    @SuppressWarnings("unchecked")
+    private void fetchUnlistedProperties(){
+        String prop;
+        if (MCVersion.getCurrentVersion().isLowerThan(MCVersion.MC_1_11)){
+            prop = "propertys"; //???
+        } else {
+            prop = "properties";
+
+        }
+        try {
+            String packageN = "forestry.core.blocks." + prop + ".";
+            UNLISTEDPOS_FORESTRY = (IUnlistedProperty<BlockPos>) Class.forName(packageN+"UnlistedBlockPos").getDeclaredField("POS").get(null);
+            UNLISTEDIBA_FORESTRY = (IUnlistedProperty<IBlockAccess>) Class.forName(packageN+"UnlistedBlockAccess").getDeclaredField("BLOCKACCESS").get(null);
+        } catch (Exception e){
+            throw new RuntimeException(e);
+        }
     }
 
 }

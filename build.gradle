@@ -92,8 +92,6 @@ minecraft {
 dependencies {
 
 	//WAILA
-	//compile "mcp.mobius.waila:Waila:${config.WAILA_version}"
-	//compile "mcp.mobius.waila:Waila:${config.WAILA_version}"//_${config.minecraft_version}"
 	deobfCompile "mcp.mobius.waila:Hwyla:${config.WAILA_version}"
 	
 	//JEI
