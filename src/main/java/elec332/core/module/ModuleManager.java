@@ -175,11 +175,11 @@ public enum ModuleManager implements IASMDataProcessor, IModuleManager {
             FMLUtil.registerToModBus(FMLUtil.getFMLModContainer(mc), new Object(){
 
                 @Subscribe
-                public void onEvent(FMLEvent event){
+                public void onEvent(Object event){
                     try {
                         module.invokeEvent(event);
                     } catch (Exception e){
-                        throw new RuntimeException("Error invoking event on: "+module.getModule(), e);
+                        throw new RuntimeException("Error invoking event on module "+module.getModule()+", owned by: "+module.getOwnerMod(), e.getCause());
                     }
                 }
 
@@ -191,7 +191,7 @@ public enum ModuleManager implements IASMDataProcessor, IModuleManager {
                 ((FMLEvent) event).applyModContainer(module.getOwnerMod());
                 module.invokeEvent(event);
             } catch (Exception e){
-                throw new RuntimeException("Error invoking FMLPreInitializationEvent to module "+module.getName()+", owner by: "+module.getOwnerMod());
+                throw new RuntimeException("Error invoking FMLPreInitializationEvent on module "+module.getName()+", owned by: "+module.getOwnerMod(), e.getCause());
             }
 
         });
