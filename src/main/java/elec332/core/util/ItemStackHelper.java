@@ -1,12 +1,10 @@
 package elec332.core.util;
 
-import elec332.core.api.annotations.AbstractionMarker;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.List;
 
 /**
@@ -14,35 +12,29 @@ import java.util.List;
  */
 public class ItemStackHelper {
 
-    @AbstractionMarker("getInventoryAbstraction")
     public static boolean isStackValid(ItemStack stack){
-        throw new UnsupportedOperationException();
+        return stack != null && stack != NULL_STACK && !stack.isEmpty && !stack.isEmpty();
     }
 
     @Nonnull
-    @AbstractionMarker("getInventoryAbstraction")
-    public static ItemStack copyItemStack(@Nullable ItemStack stack){
-        throw new UnsupportedOperationException();
+    public static ItemStack copyItemStack(ItemStack stack){
+        return stack == null || stack == NULL_STACK ? NULL_STACK : stack.copy();
     }
 
-    @AbstractionMarker("getInventoryAbstraction")
     public static ItemStack loadItemStackFromNBT(NBTTagCompound tag){
-        throw new UnsupportedOperationException();
+        return new ItemStack(tag);
     }
 
-    @AbstractionMarker("getInventoryAbstraction")
     public static ItemStack getAndSplit(List<ItemStack> stacks, int index, int amount) {
-        throw new UnsupportedOperationException();
+        return net.minecraft.inventory.ItemStackHelper.getAndSplit(stacks, index, amount);
     }
 
-    @AbstractionMarker("getInventoryAbstraction")
     public static ItemStack getAndRemove(List<ItemStack> stacks, int index) {
-        throw new UnsupportedOperationException();
+        return net.minecraft.inventory.ItemStackHelper.getAndRemove(stacks, index);
     }
 
-    @AbstractionMarker("getInventoryAbstraction")
     private static ItemStack getNullStack(){
-        throw new UnsupportedOperationException();
+        return ItemStack.EMPTY;
     }
 
     public static final ItemStack NULL_STACK;

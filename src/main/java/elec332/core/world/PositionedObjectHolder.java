@@ -143,6 +143,7 @@ public class PositionedObjectHolder<T> {
     }
 
     public static <T> PositionedObjectHolder<T> immutableCopy(PositionedObjectHolder<T> original){
+
         return new PositionedObjectHolder<T>(original.positionedMap){
 
             @Override
@@ -156,6 +157,7 @@ public class PositionedObjectHolder<T> {
             }
 
         };
+
     }
 
 }

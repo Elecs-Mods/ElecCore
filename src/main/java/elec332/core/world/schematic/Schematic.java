@@ -11,7 +11,7 @@ import java.util.Map;
 
 /*
  * These three classes were made by Lumaceon.
- * You can find them hhere: https://github.com/Lumaceon/ClockworkPhase2/blob/master/src/main/java/lumaceon/mods/clockworkphase2/util/SchematicUtility.java
+ * You can find them here: https://github.com/Lumaceon/ClockworkPhase2/blob/master/src/main/java/lumaceon/mods/clockworkphase2/util/SchematicUtility.java
  */
 
 public class Schematic implements ISchematic {

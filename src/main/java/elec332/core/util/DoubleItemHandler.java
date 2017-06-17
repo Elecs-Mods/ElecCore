@@ -8,7 +8,7 @@ import javax.annotation.Nonnull;
 /**
  * Created by Elec332 on 2-1-2017.
  */
-public class DoubleItemHandler<I1 extends IItemHandlerModifiable, I2 extends IItemHandlerModifiable> implements IElecItemHandler {
+public class DoubleItemHandler<I1 extends IItemHandlerModifiable, I2 extends IItemHandlerModifiable> implements IItemHandlerModifiable {
 
     public DoubleItemHandler(I1 i1, I2 i2){
         this.i1 = i1;
@@ -68,9 +68,9 @@ public class DoubleItemHandler<I1 extends IItemHandlerModifiable, I2 extends IIt
     @Override
     public int getSlotLimit(int slot) {
         if (slot < i1Size){
-            return InventoryHelper.getSlotStackLimit(i1, slot);
+            return i1.getSlotLimit(slot);
         } else {
-            return InventoryHelper.getSlotStackLimit(i2, slot - i1Size);
+            return i2.getSlotLimit(slot - i1Size);
         }
     }
 

@@ -11,7 +11,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
-import net.minecraft.world.chunk.IChunkGenerator;
+import net.minecraft.world.gen.IChunkGenerator;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.terraingen.PopulateChunkEvent;
 import net.minecraftforge.event.world.ChunkDataEvent;
@@ -21,7 +21,6 @@ import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 import javax.annotation.Nonnull;
 import java.util.*;
-import java.util.concurrent.Callable;
 
 /**
  * Created by Elec332 on 17-10-2016.
@@ -35,14 +34,7 @@ enum WorldGenManager implements ISingleObjectRegistry<IWorldGenHook>, IWorldGenM
     WorldGenManager(){
         this.set = Sets.newHashSet();
         this.set_ = Collections.unmodifiableSet(set);
-        this.retroGenChunks = MapWithDefaultValue.newMap(Maps.newHashMap(), new Callable<SetMultimap<ChunkPos, IFeatureGenerator>>() {
-
-            @Override
-            public SetMultimap<ChunkPos, IFeatureGenerator> call() throws Exception {
-                return HashMultimap.create();
-            }
-
-        });
+        this.retroGenChunks = MapWithDefaultValue.newMap(Maps.newHashMap(), HashMultimap::create);
     }
 
     private final Set<IWorldGenHook> set, set_;

@@ -1,12 +1,10 @@
-package elec332.abstraction.manager;
+package elec332.core.mcabstractionlayer.manager;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
-import elec332.abstraction.handlers.IAbstractedClassProvider;
 import elec332.core.abstraction.abstracted.AbstractClassModifier;
 import elec332.core.api.annotations.AbstractionMarker;
 import elec332.core.api.annotations.CopyMarker;
-import elec332.core.asm.ASMTransformer;
 import elec332.core.asm.IASMClassTransformer;
 import elec332.core.main.ElecCore;
 import elec332.core.util.ASMHelper;
@@ -61,7 +59,7 @@ public class CompatASMHandler implements IASMClassTransformer {
         }
         if (ann != null){
             String mS = (String) ann.values.get(1); //value of first key (key = 0)
-            IAbstractedClassProvider cp = AbstractionManager.getAbstractionLayer().getClassProvider();
+            Object cp = AbstractionManager.getAbstractionLayer();
             Class impl = null;
             ClassReader linkedCLR = null;
             ClassNode cn = new ClassNode();

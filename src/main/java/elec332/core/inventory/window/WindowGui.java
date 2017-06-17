@@ -1,6 +1,7 @@
 package elec332.core.inventory.window;
 
 import elec332.core.main.ElecCore;
+import elec332.core.util.InventoryHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.inventory.GuiContainer;
@@ -104,7 +105,7 @@ public final class WindowGui extends GuiContainer {
 
     @Override
     protected void renderToolTip(ItemStack stack, int x, int y) {
-        List<String> list = stack.getTooltip(ElecCore.proxy.getClientPlayer(), this.mc.gameSettings.advancedItemTooltips);
+        List<String> list = InventoryHelper.getTooltip(stack, ElecCore.proxy.getClientPlayer(), this.mc.gameSettings.advancedItemTooltips);
         window.modifyTooltip(list, ((WindowContainer.WidgetLinkedSlot) theSlot).widget, stack, x, y);
         for (int i = 0; i < list.size(); ++i) {
             if (i == 0) {

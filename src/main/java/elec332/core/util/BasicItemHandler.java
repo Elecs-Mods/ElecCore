@@ -2,35 +2,36 @@ package elec332.core.util;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.NonNullList;
 import net.minecraftforge.common.util.INBTSerializable;
+import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.ItemHandlerHelper;
 
 import javax.annotation.Nonnull;
-import java.util.List;
 
 /**
  * Created by Elec332 on 3-12-2016.
  */
-public class BasicItemHandler implements IElecItemHandler, INBTSerializable<NBTTagCompound> {
+public class BasicItemHandler implements IItemHandlerModifiable, INBTSerializable<NBTTagCompound> {
 
     public BasicItemHandler() {
         this(1);
     }
 
     public BasicItemHandler(int size) {
-        stacks = InventoryHelper.newItemStackList(size);
+        stacks = NonNullList.withSize(size, ItemStackHelper.NULL_STACK);
     }
 
-    public BasicItemHandler(List<ItemStack> stacks)
+    public BasicItemHandler(NonNullList<ItemStack> stacks)
     {
         this.stacks = stacks;
     }
 
-    protected List<ItemStack> stacks;
+    protected NonNullList<ItemStack> stacks;
 
     public void setSize(int size)
     {
-        stacks = InventoryHelper.newItemStackList(size);
+        stacks = NonNullList.withSize(size, ItemStackHelper.NULL_STACK);
     }
 
     @Override

@@ -1,7 +1,8 @@
 package elec332.core.util;
 
-import com.google.common.base.Predicate;
 import net.minecraftforge.common.property.IUnlistedProperty;
+
+import java.util.function.Predicate;
 
 /**
  * Created by Elec332 on 4-3-2016.
@@ -29,7 +30,7 @@ public class UniversalUnlistedProperty<T> implements IUnlistedProperty<T> {
 
     @Override
     public boolean isValid(T value) {
-        return predicate == null || predicate.apply(value);
+        return predicate == null || predicate.test(value);
     }
 
     @Override

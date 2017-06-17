@@ -9,7 +9,7 @@ import javax.annotation.Nonnull;
 /**
  * Created by Elec332 on 15-2-2017.
  */
-public abstract class WrappedItemHandler implements IElecItemHandler {
+public abstract class WrappedItemHandler implements IItemHandlerModifiable {
 
     public static IItemHandlerModifiable wrap(@Nonnull final IItemHandler itemHandler, final boolean in, final boolean out){
         return new WrappedItemHandler() {
@@ -75,7 +75,7 @@ public abstract class WrappedItemHandler implements IElecItemHandler {
 
     @Override
     public int getSlotLimit(int slot) {
-        return InventoryHelper.getSlotStackLimit(getItemHandler(), slot);
+        return getItemHandler().getSlotLimit(slot);
     }
 
     @Override

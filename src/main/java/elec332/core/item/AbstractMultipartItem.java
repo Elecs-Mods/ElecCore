@@ -1,7 +1,7 @@
 package elec332.core.item;
 
-import elec332.abstraction.impl.MCAbstractedMultipartItem;
-import elec332.abstraction.object.IAbstractedItem;
+import elec332.core.mcabstractionlayer.impl.MCAbstractedMultipartItem;
+import elec332.core.mcabstractionlayer.object.IAbstractedItem;
 import mcmultipart.api.multipart.IMultipart;
 import net.minecraft.block.Block;
 

@@ -1,4 +1,4 @@
-package elec332.abstraction.object;
+package elec332.core.mcabstractionlayer.object;
 
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
@@ -20,6 +20,8 @@ import java.util.List;
  * Created by Elec332 on 29-1-2017.
  */
 public interface IAbstractedItem {
+
+    public void addInformationC(@Nonnull ItemStack stack, World world, List<String> tooltip, boolean advanced);
 
     @Nonnull
     public ActionResult<ItemStack> onItemRightClickC(EntityPlayer player, @Nonnull EnumHand hand, World world);

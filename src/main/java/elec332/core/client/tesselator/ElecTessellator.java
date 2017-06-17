@@ -1,8 +1,8 @@
 package elec332.core.client.tesselator;
 
 import elec332.core.api.client.ITessellator;
+import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -22,12 +22,12 @@ public class ElecTessellator implements ITessellator {
         this.tessellator = tessellator;
     }
 
-    public ElecTessellator(VertexBuffer worldRenderer){
+    public ElecTessellator(BufferBuilder worldRenderer){
         this.worldRenderer = worldRenderer;
     }
 
     private Tessellator tessellator;
-    private final VertexBuffer worldRenderer;
+    private final BufferBuilder worldRenderer;
     private int brightness1, brightness2;
     private int color1, color2, color3, color4;
 

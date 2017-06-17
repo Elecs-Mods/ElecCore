@@ -69,6 +69,7 @@ public class CommandHelper {
         };
 
         ModEventHandler.registerCallback(new ModEventHandler.Callback() {
+
             @Override
             public void onEvent(FMLStateEvent event) {
                 if (event instanceof FMLServerStartingEvent){
@@ -77,6 +78,7 @@ public class CommandHelper {
                     }
                 }
             }
+
         });
     }
 

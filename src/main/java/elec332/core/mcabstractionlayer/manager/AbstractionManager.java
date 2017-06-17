@@ -1,7 +1,5 @@
-package elec332.abstraction.manager;
+package elec332.core.mcabstractionlayer.manager;
 
-import elec332.abstraction.handlers.IAbstractionLayer;
-import elec332.abstraction.impl.MCAbstractionHandler;
 import elec332.core.main.APIHandler;
 import elec332.core.util.FMLUtil;
 import elec332.core.util.MCVersion;
@@ -29,17 +27,17 @@ public class AbstractionManager {
             throw new IllegalArgumentException("Unsupported MC version: "+ FMLUtil.getMcVersion());
         }
         try {
-            abs = new MCAbstractionHandler();//(IAbstractionLayer) FMLUtil.loadClass("elec332.abstraction.impl.mc"+packageN+".AbstractionLayer").newInstance();
+            throw new UnsupportedOperationException();//abs = new MCAbstractionHandler();//(IAbstractionLayer) FMLUtil.loadClass("elec332.abstraction.impl.mc"+packageN+".AbstractionLayer").newInstance();
         } catch (Exception e){
             throw new RuntimeException(e);
         }
     }
 
     private static boolean init;
-    private static IAbstractionLayer abs;
+    private static Object abs;
 
     @Nonnull
-    static IAbstractionLayer getAbstractionLayer(){
+    static Object getAbstractionLayer(){
         return abs;
     }
 

@@ -75,7 +75,7 @@ public final class ElecTemplateBakery implements IElecTemplateBakery {
     @Nonnull
     @Override
     public IQuadTemplate makeImmutable(@Nonnull IQuadTemplate template) {
-        return null;//todo
+        return MutableQuadTemplate.copyOf(template);//todo
     }
 
     @Nonnull

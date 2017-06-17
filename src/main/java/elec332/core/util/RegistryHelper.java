@@ -1,12 +1,11 @@
 package elec332.core.util;
 
 import com.google.common.collect.BiMap;
+import elec332.core.api.registry.ICraftingManager;
 import elec332.core.util.recipes.RecipeHelper;
 import net.minecraft.block.Block;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.item.Item;
-import net.minecraft.item.crafting.CraftingManager;
-import net.minecraft.item.crafting.FurnaceRecipes;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionType;
 import net.minecraft.util.ResourceLocation;
@@ -66,14 +65,8 @@ public class RegistryHelper {
         return GameData.getBlockItemMap();
     }
 
-    @Deprecated
-    public static CraftingManager getCraftingManager() {
+    public static ICraftingManager getCraftingManager() {
         return RecipeHelper.getCraftingManager();
-    }
-
-    @Deprecated
-    public static FurnaceRecipes getFurnaceRecipes() {
-        return RecipeHelper.getFurnaceManager();
     }
 
     //Callback helpers

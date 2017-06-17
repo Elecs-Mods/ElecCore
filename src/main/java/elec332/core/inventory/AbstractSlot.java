@@ -1,7 +1,7 @@
 package elec332.core.inventory;
 
-import elec332.abstraction.impl.MCAbstractedSlot;
-import elec332.abstraction.object.IAbstractedSlot;
+import elec332.core.mcabstractionlayer.impl.MCAbstractedSlot;
+import elec332.core.mcabstractionlayer.object.IAbstractedSlot;
 import net.minecraft.inventory.IInventory;
 
 /**

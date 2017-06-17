@@ -1,7 +1,7 @@
 package elec332.core.util;
 
-import elec332.core.api.annotations.AbstractionMarker;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 
@@ -10,9 +10,8 @@ import net.minecraft.world.World;
  */
 public class EntityHelper {
 
-    @AbstractionMarker("getEntityAbstraction()")
     public static Entity createEntity(ResourceLocation name, World world) {
-        throw new UnsupportedOperationException();
+        return EntityList.createEntityByIDFromName(new ResourceLocation(name.toString().toLowerCase()), world);
     }
 
 }

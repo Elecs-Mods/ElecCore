@@ -1,4 +1,4 @@
-package elec332.abstraction.object;
+package elec332.core.mcabstractionlayer.object;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
@@ -24,6 +24,8 @@ import java.util.List;
  * Created by Elec332 on 28-1-2017.
  */
 public interface IAbstractedBlock {
+
+    public void addInformationC(@Nonnull ItemStack stack, World world, List<String> tooltip, boolean advanced);
 
     public boolean onBlockActivatedC(World world, BlockPos pos, EntityPlayer player, EnumHand hand, IBlockState state, EnumFacing facing, float hitX, float hitY, float hitZ);
 

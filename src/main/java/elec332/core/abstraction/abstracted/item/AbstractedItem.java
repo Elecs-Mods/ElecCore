@@ -300,8 +300,8 @@ abstract class AbstractedItem extends AbstractItem implements IAbstractedItem {
      */
     @SideOnly(Side.CLIENT)
     @Override @CopyMarker
-    public void addInformation(ItemStack stack, EntityPlayer player, List<String> tooltip, boolean advanced) {
-        getLinkedItem_INTERNAL_ELEC().addInformation(stack, player, tooltip, advanced);
+    public void addInformationC(@Nonnull ItemStack stack, World world, List<String> tooltip, boolean advanced) {
+        getLinkedItem_INTERNAL_ELEC().addInformation(stack, world, tooltip, advanced);
     }
 
     @Override @CopyMarker

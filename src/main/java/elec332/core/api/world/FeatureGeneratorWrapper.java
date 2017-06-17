@@ -2,7 +2,7 @@ package elec332.core.api.world;
 
 import elec332.core.api.config.IConfigurableElement;
 import net.minecraft.world.World;
-import net.minecraft.world.chunk.IChunkGenerator;
+import net.minecraft.world.gen.IChunkGenerator;
 import net.minecraftforge.common.config.Configuration;
 
 import java.util.Random;

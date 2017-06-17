@@ -1,6 +1,6 @@
 package elec332.core.client.model.loading.handler;
 
-import com.google.common.base.Objects;
+import com.google.common.base.MoreObjects;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -83,7 +83,7 @@ public final class ElecModelHandler implements IASMDataProcessor {
         }
 
         for (Map.Entry<ModelResourceLocation, IBakedModel> entry : models.entrySet()){
-            registry.putObject(entry.getKey(), Objects.firstNonNull(entry.getValue(), missingModel));
+            registry.putObject(entry.getKey(), MoreObjects.firstNonNull(entry.getValue(), missingModel));
             ret.add(entry.getKey());
         }
 

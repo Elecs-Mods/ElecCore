@@ -1,4 +1,4 @@
-package elec332.abstraction.object;
+package elec332.core.mcabstractionlayer.object;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;

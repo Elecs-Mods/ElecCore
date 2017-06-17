@@ -1,6 +1,7 @@
 package elec332.core.client;
 
 import com.google.common.collect.Maps;
+import elec332.core.api.annotations.AbstractionMarker;
 import elec332.core.api.client.ITessellator;
 import elec332.core.client.tesselator.ElecTessellator;
 import elec332.core.client.tesselator.RenderBlocks;
@@ -8,18 +9,20 @@ import elec332.core.main.ElecCore;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.particle.Particle;
+import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderGlobal;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.block.model.ModelRotation;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.culling.ICamera;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
+import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -47,13 +50,13 @@ public class RenderHelper {
     private static final ITessellator tessellator;
     private static final Minecraft mc;
     private static final RenderBlocks renderBlocks;
-    private static final Map<VertexBuffer, ITessellator> worldRenderTessellators;
+    private static final Map<BufferBuilder, ITessellator> worldRenderTessellators;
     private static final Map<EnumFacing, ITransformation[]> rotateAroundMap;
     private static IBakedModel nullModel;
 
     @Nonnull
     @SuppressWarnings("all")
-    public static ITessellator forWorldRenderer(VertexBuffer renderer){
+    public static ITessellator forWorldRenderer(BufferBuilder renderer){
         ITessellator ret = worldRenderTessellators.get(renderer);
         if (ret == null){
             ret = new ElecTessellator(renderer);
@@ -90,9 +93,32 @@ public class RenderHelper {
     public static IBakedModel getMissingModel(){
         return Minecraft.getMinecraft().modelManager.getMissingModel();
     }
+/*
+    public static boolean isBufferDrawing(BufferBuilder buffer){
+        return fbuffer.isDrawing;
+    }
+*/
 
-    public static boolean isBufferDrawing(VertexBuffer buffer){
-        return buffer.isDrawing;
+    @SideOnly(Side.CLIENT)
+    public static <T extends TileEntity> void renderTileEntityAt(TileEntitySpecialRenderer<T> tesr, T tile, double x, double y, double z, float partialTicks, int destroyStage){
+        renderTileEntityAt(tesr, tile, x, y, z, partialTicks, destroyStage, 1.0f);
+    }
+
+    @SideOnly(Side.CLIENT)
+    @AbstractionMarker("getGeneralAbstraction")
+    public static <T extends TileEntity> void renderTileEntityAt(TileEntitySpecialRenderer<T> tesr, T tile, double x, double y, double z, float partialTicks, int destroyStage, float alpha){
+        throw new UnsupportedOperationException();
+    }
+
+    @SideOnly(Side.CLIENT)
+    public static void renderTileEntityAt(TileEntity tile, double x, double y, double z, float partialTicks, int destroyStage){
+        renderTileEntityAt(tile, x, y, z, partialTicks, destroyStage, 1.0f);
+    }
+
+    @SideOnly(Side.CLIENT)
+    @AbstractionMarker("getGeneralAbstraction")
+    public static void renderTileEntityAt(TileEntity tile, double x, double y, double z, float partialTicks, int destroyStage, float alpha){
+        throw new UnsupportedOperationException();
     }
 
     public static void drawExpandedSelectionBoundingBox(@Nonnull AxisAlignedBB aabb){

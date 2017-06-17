@@ -1,7 +1,7 @@
 package elec332.core.item;
 
-import elec332.abstraction.impl.MCAbstractedItem;
-import elec332.abstraction.object.IAbstractedItem;
+import elec332.core.mcabstractionlayer.impl.MCAbstractedItem;
+import elec332.core.mcabstractionlayer.object.IAbstractedItem;
 import net.minecraft.util.ResourceLocation;
 
 /**
@@ -18,6 +18,11 @@ public abstract class AbstractItem extends MCAbstractedItem implements IAbstract
             setRegistryName(rl);
             setUnlocalizedNameFromName();
         }
+    }
+
+    @Override
+    public int getItemEnchantability() {
+        return super.getItemEnchantability();
     }
 
     public void setUnlocalizedNameFromName(){

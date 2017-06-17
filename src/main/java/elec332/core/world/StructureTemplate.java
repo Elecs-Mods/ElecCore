@@ -19,10 +19,6 @@ import java.util.Set;
 
 public class StructureTemplate {
 
-    protected Schematic schematic;
-    protected Set<Integer> dimensions;
-    protected GenerationType generationType;
-
     public StructureTemplate(Schematic schematic, GenerationType generationType, Integer... dimensions) {
         this.schematic = schematic;
         this.generationType = generationType;
@@ -32,6 +28,10 @@ public class StructureTemplate {
     public StructureTemplate(Schematic schematic, Integer... dimensions) {
         this(schematic, GenerationType.NONE, dimensions);
     }
+
+    protected Schematic schematic;
+    protected Set<Integer> dimensions;
+    protected GenerationType generationType;
 
     public void generateStructure(BlockPos location, World world, IChunkProvider chunkProvider) {
         if (!world.isRemote) { /* You never know what someone else might be trying to do */

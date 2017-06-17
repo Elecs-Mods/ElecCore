@@ -119,11 +119,15 @@ public enum  SchematicHelper {
             Block block = schematic.blocks[i];
             if (block != Blocks.AIR) {
                 if (!map.containsKey(block)) {
+                    ResourceLocation rl = RegistryHelper.getBlockRegistry().getNameForObject(block);
+                    if (rl == null){
+                        blocks[i] = -1;
+                        continue;
+                    }
                     NBTTagCompound tag = new NBTTagCompound();
                     int ID = id++;
                     tag.setInteger("p", ID);
                     map.put(block, ID);
-                    ResourceLocation rl = RegistryHelper.getBlockRegistry().getNameForObject(block);
                     tag.setString("m", rl.getResourceDomain());
                     tag.setString("b", rl.getResourcePath());
                     blockData.appendTag(tag);

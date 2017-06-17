@@ -1,20 +1,17 @@
 package elec332.core.util;
 
-import elec332.core.api.annotations.AbstractionMarker;
 import elec332.core.inventory.widget.slot.WidgetSlot;
+import elec332.core.mcabstractionlayer.impl.WrappedWidgetSlot;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.Container;
-import net.minecraft.inventory.IContainerListener;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
-import net.minecraft.util.EnumActionResult;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.ItemHandlerHelper;
@@ -30,35 +27,17 @@ import java.util.List;
  */
 public class InventoryHelper {
 
-    @AbstractionMarker("getInventoryAbstraction")
+    @SideOnly(Side.CLIENT)
+    public static List<String> getTooltip(ItemStack stack, @Nullable EntityPlayer playerIn, boolean advanced){
+        return stack.getTooltip(playerIn, advanced ? ITooltipFlag.TooltipFlags.ADVANCED : ITooltipFlag.TooltipFlags.NORMAL);
+    }
+
+    public static void addInformation(Item item, ItemStack stack, World world, List<String> tooltip, boolean advanced){
+        item.addInformation(stack, world, tooltip, advanced ? ITooltipFlag.TooltipFlags.ADVANCED : ITooltipFlag.TooltipFlags.NORMAL);
+    }
+
     public static WidgetSlot wrapSlot(Slot slot){
-        throw new UnsupportedOperationException();
-    }
-
-    @AbstractionMarker("getInventoryAbstraction")
-    public static int getSlotStackLimit(IItemHandler itemHandler, int slot){
-        throw new UnsupportedOperationException();
-    }
-
-    @AbstractionMarker("getInventoryAbstraction")
-    public static ItemStack onPickupFromSlot(Slot slot, EntityPlayer player, ItemStack stack){
-        throw new UnsupportedOperationException();
-    }
-
-    @AbstractionMarker("getInventoryAbstraction")
-    @SuppressWarnings("all")
-    @Nonnull
-    public static EnumActionResult fireOnItemUse(Item item, EntityPlayer playerIn, World worldIn, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ){
-        throw new UnsupportedOperationException();
-    }
-
-    @AbstractionMarker("getInventoryAbstraction")
-    public static void updateCraftingInventory(IContainerListener listener, Container container, List<ItemStack> itemsList){
-        throw new UnsupportedOperationException();
-    }
-
-    public static MinecraftList<ItemStack> newItemStackList(int size){
-        return MinecraftList.create(size, ItemStackHelper.NULL_STACK);
+        return new WrappedWidgetSlot(slot);
     }
 
     public static void readItemsFromNBT(@Nonnull NBTTagCompound data, @Nonnull List<ItemStack> items){

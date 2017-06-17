@@ -267,8 +267,8 @@ public interface IItem {
      * allows items to add custom lines of information to the mouseover description
      */
     @SideOnly(Side.CLIENT)
-    default public void addInformation(ItemStack stack, EntityPlayer player, List<String> tooltip, boolean advanced) {
-        getFallback().addInformation(stack, player, tooltip, advanced);
+    default public void addInformation(ItemStack stack, World world, List<String> tooltip, boolean advanced) {
+        getFallback().addInformation(stack, world, tooltip, advanced);
     }
 
     default public String getItemStackDisplayName(ItemStack stack) {

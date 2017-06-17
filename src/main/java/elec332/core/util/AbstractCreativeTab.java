@@ -1,6 +1,6 @@
 package elec332.core.util;
 
-import elec332.core.api.annotations.AbstractionMarker;
+import elec332.core.mcabstractionlayer.impl.MCAbstractedCreativeTab;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.relauncher.Side;
@@ -32,10 +32,9 @@ public abstract class AbstractCreativeTab extends CreativeTabs {
         return (AbstractCreativeTab) createTab(index, label, icon);
     }
 
-    @AbstractionMarker("getGeneralAbstraction")
     @Nonnull
     private static CreativeTabs createTab(int index, String label, Supplier<ItemStack> icon){
-        throw new UnsupportedOperationException();
+        return new MCAbstractedCreativeTab(index, label, icon);
     }
 
     public AbstractCreativeTab(int index, String label) {

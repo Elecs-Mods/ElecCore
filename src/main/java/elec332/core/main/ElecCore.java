@@ -1,7 +1,6 @@
 package elec332.core.main;
 
 import com.google.common.eventbus.Subscribe;
-import elec332.abstraction.manager.CompatASMHandler;
 import elec332.core.api.IElecCoreMod;
 import elec332.core.api.data.IExternalSaveHandler;
 import elec332.core.api.module.IModuleController;
@@ -17,6 +16,7 @@ import elec332.core.grid.internal.GridEventInputHandler;
 import elec332.core.handler.ModEventHandler;
 import elec332.core.handler.TickHandler;
 import elec332.core.inventory.window.WindowManager;
+import elec332.core.mcabstractionlayer.manager.CompatASMHandler;
 import elec332.core.module.ModuleManager;
 import elec332.core.network.IElecNetworkHandler;
 import elec332.core.network.packets.PacketReRenderBlock;
@@ -199,7 +199,7 @@ public class ElecCore implements IModuleController, IElecCoreMod, IDependencyHan
 				stack = event.getItemStack();
 				if (stack != null && stack.getItem() instanceof IRightClickCancel && ((IRightClickCancel) stack.getItem()).cancelInteraction(stack)) {
 					event.setCanceled(true);
-					InventoryHelper.fireOnItemUse(stack.getItem(), event.getEntityPlayer(), event.getWorld(), event.getPos(), event.getHand(), event.getFace(), (float) event.getHitVec().xCoord, (float) event.getHitVec().yCoord, (float) event.getHitVec().zCoord);
+					stack.getItem().onItemUse(event.getEntityPlayer(), event.getWorld(), event.getPos(), event.getHand(), event.getFace(), (float) event.getHitVec().xCoord, (float) event.getHitVec().yCoord, (float) event.getHitVec().zCoord);
 				}
 			}
 

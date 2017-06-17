@@ -138,7 +138,7 @@ public class BaseContainer extends Container implements IWidgetContainer{
                 return ItemStackHelper.NULL_STACK;
             }
 
-            InventoryHelper.onPickupFromSlot(slot, player, itemstack1);
+            slot.onTake(player, itemstack1);
         }
 
         return itemstack;

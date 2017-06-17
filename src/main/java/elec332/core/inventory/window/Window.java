@@ -208,13 +208,6 @@ public class Window implements IWidgetContainer {
         return slotClickDefault(slotId, dragType, clickTypeIn, player);
     }
 
-    /**
-     * Retries slotClick() in case of failure
-     */
-    protected void retrySlotClick(int slotId, int clickedButton, boolean mode, @Nonnull EntityPlayer playerIn) {
-        this.slotClick(slotId, clickedButton, ClickType.QUICK_MOVE, playerIn);
-    }
-
     protected boolean mergeItemStack(ItemStack stack, int startIndex, int endIndex, boolean reverseDirection){
         return windowContainer.mergeItemStackDefault(stack, startIndex, endIndex, reverseDirection);
     }

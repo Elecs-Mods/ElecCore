@@ -1,7 +1,7 @@
 package elec332.core.api.world;
 
 import net.minecraft.world.World;
-import net.minecraft.world.chunk.IChunkGenerator;
+import net.minecraft.world.gen.IChunkGenerator;
 
 import java.util.Random;
 

@@ -12,6 +12,7 @@ import elec332.core.effects.defaultabilities.*;
 import elec332.core.effects.network.PacketSyncAbilities;
 import elec332.core.main.ElecCore;
 import elec332.core.server.ServerHelper;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
@@ -118,8 +119,8 @@ public final class AbilityHandler implements IElecCoreAbilitiesAPI {
     public static class EffectsSyncHandler{
 
         @SubscribeEvent
-        public void onEntityConstructing(AttachCapabilitiesEvent.Entity event){
-            if (event.getEntity() instanceof EntityLivingBase) {
+        public void onEntityConstructing(AttachCapabilitiesEvent event){
+            if (event.getGenericType() == Entity.class && event.getObject() instanceof EntityLivingBase) {
                 //event.entity.registerExtendedProperties(ElecCoreAbilitiesAPI.PROPERTIES_NAME, new EntityAbilityProperties());
                 event.addCapability(new ResourceLocation("ElecCore", "AbilitiesAPI"), new AbilityCapabilityDispatcher());
             }

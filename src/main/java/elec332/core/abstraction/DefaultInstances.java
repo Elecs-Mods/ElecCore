@@ -2,7 +2,7 @@ package elec332.core.abstraction;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Multimap;
-import elec332.abstraction.impl.MCAbstractedDefaultIItemInstance;
+import elec332.core.mcabstractionlayer.impl.MCAbstractedDefaultIItemInstance;
 import elec332.core.util.InventoryHelper;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
@@ -29,6 +29,8 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.animation.ITimeValue;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -205,7 +207,7 @@ public class DefaultInstances {
 
         @Override
         public EnumActionResult onItemUse(EntityPlayer player, World world, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
-            return InventoryHelper.fireOnItemUse(item, player, world, pos, hand, facing, hitX, hitY, hitZ);
+            return item.onItemUse(player, world, pos, hand, facing, hitX, hitY, hitZ);
         }
 
         @Override
@@ -356,8 +358,9 @@ public class DefaultInstances {
         }
 
         @Override
-        public void addInformation(ItemStack stack, EntityPlayer player, List<String> tooltip, boolean advanced) {
-            item.addInformation(stack, player, tooltip, advanced);
+        @SideOnly(Side.CLIENT)
+        public void addInformation(ItemStack stack, World world, List<String> tooltip, boolean advanced) {
+            InventoryHelper.addInformation(item, stack, world, tooltip, advanced);
         }
 
         @Override

@@ -1,6 +1,5 @@
 package elec332.core.util;
 
-import elec332.core.api.annotations.AbstractionMarker;
 import net.minecraft.entity.IMerchant;
 import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.village.MerchantRecipeList;
@@ -21,11 +20,10 @@ public interface IElecTradeList {
         return wrap((Object) tradeList);
     }
 
-    @AbstractionMarker("getEntityAbstraction")
     @SuppressWarnings("all")
     @Nonnull
     static EntityVillager.ITradeList wrap(final Object tradeList){
-        return null;
+        return ((IElecTradeList)tradeList)::modifyMerchantRecipeList;
     }
 
 }

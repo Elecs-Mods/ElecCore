@@ -1,7 +1,7 @@
 package elec332.core.world;
 
-import elec332.core.api.annotations.AbstractionMarker;
 import elec332.core.main.ElecCore;
+import elec332.core.mcabstractionlayer.impl.WorldEventListener;
 import elec332.core.network.packets.PacketReRenderBlock;
 import elec332.core.server.ServerHelper;
 import elec332.core.util.ItemStackHelper;
@@ -41,43 +41,37 @@ import java.util.Set;
 @SuppressWarnings("unused")
 public class WorldHelper {
 
-    @AbstractionMarker("getWorldAbstraction")
     public static Set<BiomeDictionary.Type> getTypes(Biome biome){
-        throw new UnsupportedOperationException();
+        return BiomeDictionary.getTypes(biome);
     }
 
-    @AbstractionMarker("getWorldAbstraction")
     public static void unRegisterWorldEventListener(IElecWorldEventListener listener){
-        throw new UnsupportedOperationException();
+        WorldEventListener.unRegisterWorldEventListener(listener);
     }
 
-    @AbstractionMarker("getWorldAbstraction")
     public static void registerWorldEventListener(IElecWorldEventListener listener){
-        throw new UnsupportedOperationException();
+        WorldEventListener.registerWorldEventListener(listener);
     }
 
     public static Biome getBiome(World world, BlockPos pos){
         return world.getBiome(pos);
     }
 
-    @AbstractionMarker("getWorldAbstraction")
     @Nonnull
     public static IBlockState getBlockStateForPlacement(Block block, World world, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer, @Nullable EnumHand hand) {
-        throw new UnsupportedOperationException();
+        return block.getStateForPlacement(world, pos, facing, hitX, hitY, hitZ, meta, placer, hand);
     }
 
     public static boolean spawnEntityInWorld(World world, Entity entity){
         return world.spawnEntity(entity);
     }
 
-    @AbstractionMarker("getWorldAbstraction")
     public static boolean canBlockBePlaced(World world, Block block, BlockPos pos, boolean b, EnumFacing facing, @Nullable Entity entity){
-        throw new UnsupportedOperationException();
+        return world.mayPlace(block, pos, b, facing, entity);
     }
 
-    @AbstractionMarker("getWorldAbstraction")
     public static void notifyNeighborsOfStateChange(World world, BlockPos pos, Block block){
-        throw new UnsupportedOperationException();
+        world.notifyNeighborsOfStateChange(pos, block, true);
     }
 
     public static ChunkPos chunkCoordFromBlockPos(BlockPos pos){
@@ -114,7 +108,6 @@ public class WorldHelper {
         } else {
             world.markBlockRangeForRenderUpdate(pos, pos);
         }
-        //world.markBlockForUpdate(pos);
     }
 
     public static boolean chunkLoaded(World world, BlockPos pos){

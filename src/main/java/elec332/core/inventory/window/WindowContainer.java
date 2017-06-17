@@ -13,7 +13,9 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.*;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -105,8 +107,8 @@ public final class WindowContainer extends Container {
     }
 
     @Override
-    protected void retrySlotClick(int slotId, int clickedButton, boolean mode, @Nonnull EntityPlayer playerIn) {
-        window.retrySlotClick(slotId, clickedButton, mode, playerIn);
+    protected void func_193327_a(EntityPlayer p_193327_1_, @Nonnull World p_193327_2_, IInventory p_193327_3_) {
+        super.func_193327_a(p_193327_1_, p_193327_2_, p_193327_3_);
     }
 
     @Override
@@ -147,7 +149,10 @@ public final class WindowContainer extends Container {
 
         @Override
         public void updateCraftingInventory(List<ItemStack> itemsList) {
-            InventoryHelper.updateCraftingInventory(listener, WindowContainer.this, itemsList);
+            if (!(itemsList instanceof NonNullList)){
+                throw new IllegalArgumentException();
+            }
+            listener.updateCraftingInventory(WindowContainer.this, (NonNullList<ItemStack>) itemsList);
         }
 
         @Override

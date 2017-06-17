@@ -1,5 +1,6 @@
 package elec332.core.client.model.model;
 
+import elec332.core.client.RenderHelper;
 import elec332.core.client.model.ElecModelBakery;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
@@ -52,7 +53,7 @@ public class TESRItemModel extends AbstractItemModel {
 
     @SuppressWarnings("unchecked")
     public void renderTesr(){
-        tesr.renderTileEntityAt(null, 0, 0, 0, -1, 0);
+        RenderHelper.renderTileEntityAt(tesr, null, 0, 0, 0, -1, 0);
     }
 
 }
