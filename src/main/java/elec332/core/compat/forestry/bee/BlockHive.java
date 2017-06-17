@@ -58,7 +58,7 @@ public abstract class BlockHive<T extends Enum<T> & IHiveEnum> extends AbstractB
         setRegistryName(rl);
         GameRegistry.register(new ItemBlock(this){
 
-            private final String unlName = "tile." + rl.toString().replace(":", ".") + ".";
+            private final String unlName = "tile." + rl.toString().toLowerCase().replace(":", ".") + ".";
 
             @Override
             public int getMetadata(int damage) {
