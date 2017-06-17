@@ -14,7 +14,7 @@ public class ForestryCompatFixer extends AbstractASMClassTransformer {
 
     private static final String owner = "forestry/api/apiculture/IHiveDrop";
     private static final String name = "getExtraItems";
-    private static final String newDesc = "(Lnet/minecraft/world/IBlockAccess;Lnet/minecraft/util/math/BlockPos;I)Ljava/util/List;";
+    private static final String newDesc = "(Lnet/minecraft/world/IBlockAccess;Lnet/minecraft/util/math/BlockPos;I)Ljava/util/Collection;";
 
     @Override
     public String getDeObfuscatedClassName() {
