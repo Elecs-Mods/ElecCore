@@ -65,6 +65,7 @@ configFile.withReader {
     project.ext.modFileVersion = "${config.mod_version}." + (ext.localBuild ? "localBuild" : build)
 	project.ext.modVersion = "${config.mod_version}." + (ext.localBuild ? "9999.custom" : build)
     project.ext.compatVer = config.compat_versions
+	project.ext.modFileVersion = "${config.minecraft_version}-${config.mod_version}." + (ext.localBuild ? "localBuild" : build)
 }
 
 version = modFileVersion
