@@ -96,7 +96,7 @@ dependencies {
 	//deobfCompile "mcp.mobius.waila:Hwyla:${config.WAILA_version}"
 	
 	//JEI
-	deobfCompile "mezz.jei:jei_${config.jei_version}"
+	//deobfCompile "mezz.jei:jei_${config.jei_version}"
 	
 	//MCMP
 	//deobfCompile "MCMultiPart:MCMultiPart-experimental:${config.mcmp_version}:universal"
