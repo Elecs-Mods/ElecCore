@@ -1,6 +1,5 @@
 package elec332.core.mcabstractionlayer.manager;
 
-import elec332.core.main.APIHandler;
 import elec332.core.util.FMLUtil;
 import elec332.core.util.MCVersion;
 
@@ -9,10 +8,14 @@ import javax.annotation.Nonnull;
 /**
  * Created by Elec332 on 26-1-2017.
  */
-@APIHandler.StaticLoad
+@SuppressWarnings("all")
+//@APIHandler.StaticLoad
 public class AbstractionManager {
 
     private static void init(){
+        if (true){
+            return;
+        }
         if (init){
             throw new RuntimeException();
         }

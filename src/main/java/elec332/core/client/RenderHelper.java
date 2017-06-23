@@ -1,7 +1,6 @@
 package elec332.core.client;
 
 import com.google.common.collect.Maps;
-import elec332.core.api.annotations.AbstractionMarker;
 import elec332.core.api.client.ITessellator;
 import elec332.core.client.tesselator.ElecTessellator;
 import elec332.core.client.tesselator.RenderBlocks;
@@ -19,6 +18,7 @@ import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.culling.ICamera;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
+import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -93,11 +93,6 @@ public class RenderHelper {
     public static IBakedModel getMissingModel(){
         return Minecraft.getMinecraft().modelManager.getMissingModel();
     }
-/*
-    public static boolean isBufferDrawing(BufferBuilder buffer){
-        return fbuffer.isDrawing;
-    }
-*/
 
     @SideOnly(Side.CLIENT)
     public static <T extends TileEntity> void renderTileEntityAt(TileEntitySpecialRenderer<T> tesr, T tile, double x, double y, double z, float partialTicks, int destroyStage){
@@ -105,9 +100,8 @@ public class RenderHelper {
     }
 
     @SideOnly(Side.CLIENT)
-    @AbstractionMarker("getGeneralAbstraction")
     public static <T extends TileEntity> void renderTileEntityAt(TileEntitySpecialRenderer<T> tesr, T tile, double x, double y, double z, float partialTicks, int destroyStage, float alpha){
-        throw new UnsupportedOperationException();
+        tesr.func_192841_a(tile, x, y, x, partialTicks, destroyStage, alpha);
     }
 
     @SideOnly(Side.CLIENT)
@@ -116,9 +110,8 @@ public class RenderHelper {
     }
 
     @SideOnly(Side.CLIENT)
-    @AbstractionMarker("getGeneralAbstraction")
     public static void renderTileEntityAt(TileEntity tile, double x, double y, double z, float partialTicks, int destroyStage, float alpha){
-        throw new UnsupportedOperationException();
+        TileEntityRendererDispatcher.instance.func_192854_a(tile, x, y, z, partialTicks, destroyStage, alpha);
     }
 
     public static void drawExpandedSelectionBoundingBox(@Nonnull AxisAlignedBB aabb){

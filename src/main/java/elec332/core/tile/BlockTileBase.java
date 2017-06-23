@@ -233,9 +233,9 @@ public class BlockTileBase extends AbstractBlock implements IWrenchable, ITileEn
     //Rotating 'n stuff
 
     @Override
-    public boolean rotateBlock(World world, @Nonnull BlockPos pos, EnumFacing sideHit) {
+    public boolean rotateBlock(World world, @Nonnull BlockPos pos, @Nonnull EnumFacing sideHit) {
         if ((sideHit != EnumFacing.UP && sideHit != EnumFacing.DOWN) || canFaceUpOrDown(world, pos)) {
-            WorldHelper.setBlockState(world, pos, getDefaultState().withProperty(BlockStateHelper.FACING_NORMAL.getProperty(), sideHit), 2);
+            WorldHelper.setBlockState(world, pos, getDefaultState().withProperty(BlockStateHelper.FACING_NORMAL.getProperty(), sideHit), 3);
             return true;
         }
         return false;

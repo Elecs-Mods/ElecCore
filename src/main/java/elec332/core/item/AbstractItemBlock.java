@@ -3,12 +3,7 @@ package elec332.core.item;
 import elec332.core.mcabstractionlayer.impl.MCAbstractedItemBlock;
 import elec332.core.mcabstractionlayer.object.IAbstractedItem;
 import net.minecraft.block.Block;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.World;
-
-import javax.annotation.Nonnull;
-import java.util.List;
 
 /**
  * Created by Elec332 on 26-11-2016.

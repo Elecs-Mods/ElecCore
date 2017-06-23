@@ -64,7 +64,9 @@ public class INoJsonItemHandler implements IItemModelHandler {
                 @SuppressWarnings("deprecation")
                 public IBakedModel handleItemState(@Nonnull IBakedModel originalModel, ItemStack stack, @Nullable World world, @Nullable EntityLivingBase entity) {
                     Block b = ((ItemBlock) stack.getItem()).getBlock();
-                    return Minecraft.getMinecraft().getBlockRendererDispatcher().getModelForState(b.getStateFromMeta(stack.getMetadata()));
+                    IBakedModel ret = Minecraft.getMinecraft().getBlockRendererDispatcher().getModelForState(b.getStateFromMeta(stack.getMetadata()));
+                    ret = ret.getOverrides().handleItemState(ret, stack, world, entity);
+                    return ret;
                 }
 
             });

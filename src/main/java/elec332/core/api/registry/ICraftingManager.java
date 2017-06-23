@@ -4,11 +4,13 @@ import com.google.common.collect.Lists;
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
+import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.Loader;
 
 import java.util.List;
+import java.util.function.Function;
 
 /**
  * Created by Elec332 on 16-6-2017.
@@ -49,6 +51,8 @@ public interface ICraftingManager {
     public default void addRecipe(String name, ItemStack stack, Object... recipeComponents){
         addRecipe(new ResourceLocation(Loader.instance().activeModContainer().getModId(), name), stack, recipeComponents);
     }
+
+    public void registerIngredientParser(Function<Object, Ingredient> parser);
 
     public void addRecipe(ResourceLocation name, ItemStack stack, Object... recipeComponents);
 

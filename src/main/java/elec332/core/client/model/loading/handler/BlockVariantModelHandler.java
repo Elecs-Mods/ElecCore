@@ -10,8 +10,8 @@ import elec332.core.api.client.model.loading.ModelHandler;
 import elec332.core.client.model.RenderingRegistry;
 import elec332.core.client.model.loading.INoBlockStateJsonBlock;
 import elec332.core.client.model.loading.INoJsonBlock;
-import elec332.core.client.model.loading.INoUnlistedBlockStateJsonBlock;
 import net.minecraft.block.Block;
+import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.*;
@@ -126,13 +126,13 @@ public class BlockVariantModelHandler implements IModelHandler {
                 throw new RuntimeException();
             }
             Gson gson = new GsonBuilder().setPrettyPrinting().create();
-            //ModelResourceLocation fixed = new ModelResourceLocation(getFixedLocation(modelLocation), ((ModelResourceLocation) modelLocation).getVariant());
             IBlockState ibs = blockResourceLocations.get(modelLocation);
             if (ibs == null){
                 throw new IllegalStateException();
             }
             Block block = ibs.getBlock();
-            boolean unlProp = block instanceof INoUnlistedBlockStateJsonBlock && ((INoUnlistedBlockStateJsonBlock) block).hasTextureOverrideJson(ibs);
+            Map<String, String> props = addNormalProperties(ibs, Maps.newHashMap());
+            boolean unlProp = ((INoBlockStateJsonBlock) block).hasTextureOverrideJson(ibs);
             List<Variant> variants = ((INoBlockStateJsonBlock) block).getVariantsFor(ibs).getVariantList();
             List<Pair<Variant, TextureOverrideData>> data = variants.stream().map((Variant variant) -> {
 
@@ -140,7 +140,7 @@ public class BlockVariantModelHandler implements IModelHandler {
                 if (!unlProp){
                     return nullRet;
                 }
-                ResourceLocation location = ((INoUnlistedBlockStateJsonBlock) block).getTextureOverridesJson(ibs, variant);
+                ResourceLocation location = ((INoBlockStateJsonBlock) block).getTextureOverridesJson(ibs, variant);
                 if (location == null){
                     return nullRet;
                 }
@@ -151,8 +151,10 @@ public class BlockVariantModelHandler implements IModelHandler {
                     reader.close();
                     return ret;
                 } catch (Exception e){
-                    System.out.println("Exception while loading texture overrides: "+location);
-                    e.printStackTrace();
+                    if (!(e instanceof FileNotFoundException)){
+                        System.out.println("Exception while loading texture overrides: "+location);
+                        e.printStackTrace();
+                    }
                     return nullRet;
                 }
 
@@ -217,12 +219,20 @@ public class BlockVariantModelHandler implements IModelHandler {
                     }
                     if(variants.size() == 1) {
                         IModel model = models.get(0);
-                        return bakeModel(model, MultiModelState.getPartState(state, model, 0), format, bakedTextureGetter, data.get(0).getRight());
+                        TextureOverrideData texOv = data.get(0).getRight();
+                        if (texOv != null && texOv.containsProperty(props.keySet())){
+                            bakedTextureGetter = new TextureOverride(texOv.process(props), bakedTextureGetter);
+                        }
+                        return bakeModel(model, MultiModelState.getPartState(state, model, 0), format, bakedTextureGetter, texOv);
                     }
                     WeightedBakedModel.Builder builder = new WeightedBakedModel.Builder();
                     for(int i = 0; i < variants.size(); i++) {
                         IModel model = models.get(i);
-                        IBakedModel bModel = bakeModel(model, MultiModelState.getPartState(state, model, i), format, bakedTextureGetter, data.get(i).getRight());
+                        TextureOverrideData texOv = data.get(i).getRight();
+                        if (texOv != null && texOv.containsProperty(props.keySet())){
+                            bakedTextureGetter = new TextureOverride(texOv.process(props), bakedTextureGetter);
+                        }
+                        IBakedModel bModel = bakeModel(model, MultiModelState.getPartState(state, model, i), format, bakedTextureGetter, texOv);
                         builder.add(bModel, variants.get(i).getWeight());
                     }
                     return builder.build();
@@ -262,12 +272,12 @@ public class BlockVariantModelHandler implements IModelHandler {
                         return cache.get(blockState).getQuads(blockState, side, rand);
                     }
                     Map<String, String> data = Maps.newHashMap();
-                    ((INoUnlistedBlockStateJsonBlock) blockState.getBlock()).addAdditionalData(blockState, data);
+                    ((INoBlockStateJsonBlock) blockState.getBlock()).addAdditionalData(blockState, data);
                     if (data.isEmpty()){
                         cache.put(blockState, base);
                     }
                     IBakedModel ret;
-                    cache.put(blockState, ret = model.bake(state, format, new TextureOverride(tovd.process(data))));
+                    cache.put(blockState, ret = model.bake(state, format, new TextureOverride(tovd.process(data), bakedTextureGetter)));
                     return ret.getQuads(blockState, side, rand);
                 }
 
@@ -311,19 +321,29 @@ public class BlockVariantModelHandler implements IModelHandler {
 
     }
 
+    @SuppressWarnings("all")
+    private Map<String, String> addNormalProperties(IBlockState state, Map<String, String> data){
+        for (IProperty prop : state.getPropertyKeys()){
+            data.put(prop.getName(), prop.getName(state.getValue(prop)));
+        }
+        return data;
+    }
+
     private class TextureOverride implements Function<ResourceLocation, TextureAtlasSprite> {
 
-        private TextureOverride(Map<ResourceLocation, ResourceLocation> data) {
+        private TextureOverride(Map<ResourceLocation, ResourceLocation> data, Function<ResourceLocation, TextureAtlasSprite> defaultFunc) {
             this.data = data;
+            this.defaultFunc = defaultFunc;
         }
 
         private final Map<ResourceLocation, ResourceLocation> data;
+        private final Function<ResourceLocation, TextureAtlasSprite> defaultFunc;
 
         @Nullable
         @Override
         public TextureAtlasSprite apply(@Nullable ResourceLocation input) {
             ResourceLocation actual = data.getOrDefault(input, input);
-            return net.minecraftforge.client.model.ModelLoader.defaultTextureGetter().apply(actual);
+            return defaultFunc.apply(actual);
         }
         
     }
@@ -387,6 +407,15 @@ public class BlockVariantModelHandler implements IModelHandler {
                 process();
             }
             return allTextures;
+        }
+
+        private boolean containsProperty(Collection<String> props){
+            for (String s : props){
+                if (textureOverrides.containsKey(s)){
+                    return true;
+                }
+            }
+            return false;
         }
 
     }

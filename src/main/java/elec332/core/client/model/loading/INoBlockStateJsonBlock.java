@@ -8,8 +8,11 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.model.ModelRotation;
 import net.minecraft.client.renderer.block.model.Variant;
 import net.minecraft.client.renderer.block.model.VariantList;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+
+import java.util.Map;
 
 /**
  * Created by Elec332 on 20-3-2017.
@@ -18,6 +21,17 @@ public interface INoBlockStateJsonBlock extends IBlockModelItemLink {
 
     @SideOnly(Side.CLIENT)
     public VariantList getVariantsFor(IBlockState state);
+
+    default public boolean hasTextureOverrideJson(IBlockState state){
+        return true;
+    }
+
+    default public ResourceLocation getTextureOverridesJson(IBlockState state, Variant variant){
+        return new ResourceLocation(variant.getModelLocation().toString()+"_overrides");
+    }
+
+    public default void addAdditionalData(IBlockState state, Map<String, String> dataMap){
+    }
 
     public interface RotationImpl extends INoBlockStateJsonBlock {
 

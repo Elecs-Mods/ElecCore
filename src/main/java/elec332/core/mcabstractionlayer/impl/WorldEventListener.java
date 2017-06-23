@@ -1,5 +1,6 @@
 package elec332.core.mcabstractionlayer.impl;
 
+import com.google.common.collect.Sets;
 import elec332.core.world.IElecWorldEventListener;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
@@ -29,9 +30,7 @@ public enum WorldEventListener implements IWorldEventListener {
         listeners.add(listener);
     }
 
-    private static Set<IElecWorldEventListener> listeners;
-
-
+    private static Set<IElecWorldEventListener> listeners = Sets.newHashSet();
 
     @Override
     public void notifyBlockUpdate(World worldIn, BlockPos pos, IBlockState oldState, IBlockState newState, int flags) {

@@ -54,6 +54,10 @@ public class DirectionHelper {
                 return ModelRotation.X0_Y180;
             case EAST:
                 return ModelRotation.X0_Y90;
+            case DOWN:
+                return ModelRotation.X90_Y0;
+            case UP:
+                return ModelRotation.X270_Y0;
             default:
                 return ModelRotation.X0_Y0;
         }

@@ -177,7 +177,7 @@ public class TileBase extends TileEntityBase implements IElecCoreNetworkTile {
     }
 
     public void setFacing(EnumFacing facing){
-        WorldHelper.setBlockState(getWorld(), pos, getBlockType().getBlockState().getBaseState().withProperty(BlockStateHelper.FACING_NORMAL.getProperty(), facing), 2);
+        WorldHelper.setBlockState(getWorld(), pos, getBlockType().getBlockState().getBaseState().withProperty(BlockStateHelper.FACING_NORMAL.getProperty(), facing), 3);
         notifyNeighborsOfChange();
     }
 
