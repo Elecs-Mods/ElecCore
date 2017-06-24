@@ -78,10 +78,10 @@ enum WorldGenManager implements ISingleObjectRegistry<IWorldGenHook>, IWorldGenM
                 Random random = new Random(worldSeed);
                 long xSeed = random.nextLong() >> 2 + 1L;
                 long zSeed = random.nextLong() >> 2 + 1L;
-                long seed = xSeed * pos.chunkXPos + zSeed * pos.chunkZPos ^ worldSeed;
+                long seed = xSeed * pos.x + zSeed * pos.z ^ worldSeed;
                 for (IFeatureGenerator featureGenerator : s) {
                     random.setSeed(seed);
-                    featureGenerator.generateFeature(random, pos.chunkXPos, pos.chunkZPos, event.world);
+                    featureGenerator.generateFeature(random, pos.x, pos.z, event.world);
                 }
             }
         }
@@ -114,7 +114,7 @@ enum WorldGenManager implements ISingleObjectRegistry<IWorldGenHook>, IWorldGenM
             NBTTagCompound tag = data.getCompoundTag(owner);
             boolean b = tag.hasKey(chunkPopulator.getName());
             if ((!b || !chunkPopulator.getGenKey().equals(tag.getString(chunkPopulator.getName()))) && chunkPopulator.shouldRegen(b)){
-                worldGenManager.registerForRetroGen(chunk.getWorld(), chunk.getChunkCoordIntPair(), this);
+                worldGenManager.registerForRetroGen(chunk.getWorld(), chunk.getPos(), this);
             }  else {
                 this.lastKey = chunkPopulator.getGenKey();
             }

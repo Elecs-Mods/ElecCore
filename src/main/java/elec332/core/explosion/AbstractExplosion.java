@@ -24,7 +24,7 @@ public abstract class AbstractExplosion extends Explosion {
     public AbstractExplosion(World world, Entity entity, double x, double y, double z, float size) {
         super(world, entity, x, y, z, size, false, true);
         this.world = world;
-        this.location = new BlockPos((int)explosionX, (int)explosionY, (int)explosionZ);
+        this.location = new BlockPos((int)x, (int)y, (int)z);
     }
 
     private final World world;
@@ -90,7 +90,7 @@ public abstract class AbstractExplosion extends Explosion {
     }
 
     public final float getRadius(){
-        return this.explosionSize;
+        return this.size;
     }
 
 

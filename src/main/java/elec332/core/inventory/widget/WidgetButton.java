@@ -1,6 +1,7 @@
 package elec332.core.inventory.widget;
 
 import com.google.common.collect.Lists;
+import elec332.core.client.RenderHelper;
 import elec332.core.client.util.GuiDraw;
 import elec332.core.inventory.window.Window;
 import elec332.core.util.NBTHelper;
@@ -83,7 +84,7 @@ public class WidgetButton extends Widget {
     public void draw(Window gui, int guiX, int guiY, int mouseX, int mouseY) {
         if (!isHidden()) {
             GlStateManager.pushMatrix();
-            FontRenderer fontrenderer = Minecraft.getMinecraft().fontRendererObj;
+            FontRenderer fontrenderer = RenderHelper.getMCFontrenderer();
             bindTexture(buttonTextures);
             GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
             boolean hovering = isMouseOver(mouseX, mouseY);

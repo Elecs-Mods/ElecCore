@@ -15,7 +15,7 @@ public class Invisibility extends AbstractPotionAbility {
 
     @Override
     public Potion getPotion() {
-        return RegistryHelper.getPotionRegistry().getObject(new ResourceLocation("invisibility"));
+        return RegistryHelper.getPotionRegistry().getValue(new ResourceLocation("invisibility"));
     }
 
 }

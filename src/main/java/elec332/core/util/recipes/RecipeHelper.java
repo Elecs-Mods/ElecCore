@@ -11,6 +11,7 @@ import net.minecraft.item.crafting.*;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.oredict.OreIngredient;
 
 import java.util.List;
@@ -34,10 +35,11 @@ public class RecipeHelper {
     }
 
     private static void registerParsers(){
-        craftingManager.registerIngredientParser(o -> o instanceof Item ? Ingredient.func_193367_a((Item) o) : null);
-        craftingManager.registerIngredientParser(o -> o instanceof Block ? Ingredient.func_193369_a(new ItemStack((Block) o)) : null);
-        craftingManager.registerIngredientParser(o -> o instanceof ItemStack ? Ingredient.func_193369_a((ItemStack) o) : null);
+        craftingManager.registerIngredientParser(o -> o instanceof Item ? Ingredient.fromItem((Item) o) : null);
+        craftingManager.registerIngredientParser(o -> o instanceof Block ? Ingredient.fromStacks(new ItemStack((Block) o)) : null);
+        craftingManager.registerIngredientParser(o -> o instanceof ItemStack ? Ingredient.fromStacks((ItemStack) o) : null);
         craftingManager.registerIngredientParser(o -> o instanceof String ? new OreIngredient((String) o) : null);
+        craftingManager.registerIngredientParser(o -> o instanceof Ingredient ? (Ingredient) o : null);
     }
 
     static {
@@ -47,12 +49,17 @@ public class RecipeHelper {
 
             @Override
             public Iterable<IRecipe> getRecipes() {
-                return CraftingManager.field_193380_a;
+                return CraftingManager.REGISTRY;
+            }
+
+            @Override
+            public void registerRecipe(IRecipe recipe) {
+                ForgeRegistries.RECIPES.register(recipe);
             }
 
             @Override
             public void registerRecipe(IRecipe recipe, ResourceLocation name) {
-                CraftingManager.func_193372_a(name, recipe);
+                registerRecipe(recipe.setRegistryName(name));
             }
 
             @Override
@@ -110,26 +117,11 @@ public class RecipeHelper {
 
                 for (map = Maps.newHashMap(); i < recipeComponents.length; i += 2) {
                     Character character = (Character)recipeComponents[i];
-                    Ingredient ing =
-                            parseIngredient(recipeComponents[i + 1]);
-                            /*Ingredient.field_193370_a;
-
-                    Object component = recipeComponents[i + 1];
-                    if (component instanceof Item) {
-                        ing = Ingredient.func_193367_a((Item)recipeComponents[i + 1]);
-                    } else if (component instanceof Block) {
-                        ing = Ingredient.func_193369_a(new ItemStack((Block)recipeComponents[i + 1], 1, 32767));
-                    } else if (component instanceof ItemStack) {
-                        ing = Ingredient.func_193369_a((ItemStack)recipeComponents[i + 1]);
-                    } else if (component instanceof String){
-                        ing = Ingredient.func_193369_a(OredictHelper.getOres((String) component).toArray(new ItemStack[0]));
-                    }*/
-
-
+                    Ingredient ing = parseIngredient(recipeComponents[i + 1]);
                     map.put(character, ing);
                 }
 
-                NonNullList<Ingredient> ingredients = NonNullList.withSize(j * k, Ingredient.field_193370_a);
+                NonNullList<Ingredient> ingredients = NonNullList.withSize(j * k, Ingredient.EMPTY);
 
                 for (int l = 0; l < j * k; ++l) {
                     char c0 = s.charAt(l);
@@ -143,7 +135,12 @@ public class RecipeHelper {
             }
 
             @Override
-            public ItemStack findMatchingRecipe(InventoryCrafting craftMatrix, World world) {
+            public ItemStack findMatchingResult(InventoryCrafting craftMatrix, World world) {
+                return CraftingManager.findMatchingResult(craftMatrix, world);
+            }
+
+            @Override
+            public IRecipe findMatchingRecipe(InventoryCrafting craftMatrix, World world) {
                 return CraftingManager.findMatchingRecipe(craftMatrix, world);
             }
 

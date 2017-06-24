@@ -199,7 +199,7 @@ public final class ServerHelper implements IExternalSaveHandler {
             PlayerChunkMap playerManager = ((WorldServer) world).getPlayerChunkMap();
             for (EntityPlayerMP player : getOnlinePlayers()) {
                 Chunk chunk = world.getChunkFromChunkCoords(x >> 4, z >> 4);
-                if (playerManager.isPlayerWatchingChunk(player, chunk.xPosition, chunk.zPosition)) {
+                if (playerManager.isPlayerWatchingChunk(player, chunk.x, chunk.z)) {
                     ret.add(player);
                 }
             }

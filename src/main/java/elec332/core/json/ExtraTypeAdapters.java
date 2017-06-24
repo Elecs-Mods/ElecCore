@@ -68,7 +68,7 @@ public class ExtraTypeAdapters {
                         }
                     }
                     in.endObject();
-                    ItemStack ret = new ItemStack(RegistryHelper.getItemRegistry().getObject(new ResourceLocation(name)), count, damage);
+                    ItemStack ret = new ItemStack(RegistryHelper.getItemRegistry().getValue(new ResourceLocation(name)), count, damage);
                     ret.setTagCompound(tag);
                     return ret;
                 }

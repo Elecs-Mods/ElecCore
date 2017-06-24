@@ -107,11 +107,6 @@ public final class WindowContainer extends Container {
     }
 
     @Override
-    protected void func_193327_a(EntityPlayer p_193327_1_, @Nonnull World p_193327_2_, IInventory p_193327_3_) {
-        super.func_193327_a(p_193327_1_, p_193327_2_, p_193327_3_);
-    }
-
-    @Override
     public void onCraftMatrixChanged(IInventory inventoryIn) {
         window.onCraftMatrixChanged(inventoryIn);
     }
@@ -152,7 +147,7 @@ public final class WindowContainer extends Container {
             if (!(itemsList instanceof NonNullList)){
                 throw new IllegalArgumentException();
             }
-            listener.updateCraftingInventory(WindowContainer.this, (NonNullList<ItemStack>) itemsList);
+            listener.sendAllContents(WindowContainer.this, (NonNullList<ItemStack>) itemsList);
         }
 
         @Override
@@ -162,7 +157,7 @@ public final class WindowContainer extends Container {
 
         @Override
         public void sendProgressBarUpdate(int id, int newValue) {
-            listener.sendProgressBarUpdate(WindowContainer.this, id, newValue);
+            listener.sendWindowProperty(WindowContainer.this, id, newValue);
         }
 
         @Override
@@ -278,7 +273,7 @@ public final class WindowContainer extends Container {
 
         @SideOnly(Side.CLIENT)
         @Override
-        public boolean canBeHovered() {
+        public boolean isEnabled() {
             return widget.canBeHovered();
         }
 

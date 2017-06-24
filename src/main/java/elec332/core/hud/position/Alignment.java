@@ -1,6 +1,7 @@
 package elec332.core.hud.position;
 
 import com.google.common.base.Strings;
+import elec332.core.client.RenderHelper;
 import elec332.core.client.util.GuiDraw;
 import elec332.core.hud.drawing.IDrawer;
 import net.minecraft.client.gui.FontRenderer;
@@ -21,7 +22,7 @@ public enum Alignment {
             GlStateManager.pushMatrix();
             int width = drawer.draw(toDraw, GuiDraw.mc, this, x, y, data);
             if (!Strings.isNullOrEmpty(display)) {
-                GuiDraw.mc.fontRendererObj.drawString(display, x + width, y + 5, Color.WHITE.getRGB());
+                RenderHelper.getMCFontrenderer().drawString(display, x + width, y + 5, Color.WHITE.getRGB());
             }
             GlStateManager.popMatrix();
         }
@@ -34,7 +35,7 @@ public enum Alignment {
             GlStateManager.pushMatrix();
             int width = drawer.draw(toDraw, GuiDraw.mc, this, x, y, data);
             if (!Strings.isNullOrEmpty(display)) {
-                FontRenderer fr = GuiDraw.mc.fontRendererObj;
+                FontRenderer fr = RenderHelper.getMCFontrenderer();
                 fr.drawString(display, x - width - fr.getStringWidth(display), y + 5, Color.WHITE.getRGB());
             }
             GlStateManager.popMatrix();

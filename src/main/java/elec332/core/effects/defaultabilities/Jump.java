@@ -15,7 +15,7 @@ public class Jump extends AbstractPotionAbility {
 
     @Override
     public Potion getPotion() {
-        return RegistryHelper.getPotionRegistry().getObject(new ResourceLocation("jump_boost"));
+        return RegistryHelper.getPotionRegistry().getValue(new ResourceLocation("jump_boost"));
     }
 
 }

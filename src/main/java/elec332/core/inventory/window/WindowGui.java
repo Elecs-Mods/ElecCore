@@ -106,7 +106,7 @@ public final class WindowGui extends GuiContainer {
     @Override
     protected void renderToolTip(ItemStack stack, int x, int y) {
         List<String> list = InventoryHelper.getTooltip(stack, ElecCore.proxy.getClientPlayer(), this.mc.gameSettings.advancedItemTooltips);
-        window.modifyTooltip(list, ((WindowContainer.WidgetLinkedSlot) theSlot).widget, stack, x, y);
+        window.modifyTooltip(list, ((WindowContainer.WidgetLinkedSlot) hoveredSlot).widget, stack, x, y);
         for (int i = 0; i < list.size(); ++i) {
             if (i == 0) {
                 list.set(i, stack.getRarity().rarityColor + list.get(i));
@@ -117,7 +117,7 @@ public final class WindowGui extends GuiContainer {
 
         FontRenderer font = stack.getItem().getFontRenderer(stack);
         net.minecraftforge.fml.client.config.GuiUtils.preItemToolTip(stack);
-        this.drawHoveringText(list, x, y, (font == null ? fontRendererObj : font));
+        this.drawHoveringText(list, x, y, (font == null ? fontRenderer : font));
         net.minecraftforge.fml.client.config.GuiUtils.postItemToolTip();
 
     }

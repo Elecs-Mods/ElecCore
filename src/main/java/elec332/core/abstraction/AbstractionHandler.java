@@ -3,9 +3,9 @@ package elec332.core.abstraction;
 import com.google.common.primitives.Primitives;
 import elec332.core.abstraction.abstracted.IAbstractionType;
 import elec332.core.util.ASMHelper;
+import elec332.core.util.RegistryHelper;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.common.registry.GameRegistry;
-import net.minecraftforge.fml.common.registry.IForgeRegistryEntry;
+import net.minecraftforge.registries.IForgeRegistryEntry;
 
 import java.lang.reflect.Constructor;
 
@@ -48,7 +48,7 @@ public class AbstractionHandler {
             throw new RuntimeException(e);
         }
         ret.setRegistryName(name);
-        GameRegistry.register(ret);
+        RegistryHelper.register(ret);
         return ret;
     }
 

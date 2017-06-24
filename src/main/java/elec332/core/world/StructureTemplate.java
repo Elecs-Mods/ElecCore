@@ -93,7 +93,7 @@ public class StructureTemplate {
                 for (int i = chunkX; i < chunkX + (schematicArea.getBlockWidth() >> 4); i++) {
                     for (int j = chunkZ; j < chunkZ + (schematicArea.getBlockLength() >> 4); j++) {
                         Chunk chunk = world.getChunkFromChunkCoords(chunkX, chunkZ);
-                        chunk.setChunkModified();
+                        chunk.setModified(true);
                         chunk.enqueueRelightChecks();
                     }
                 }

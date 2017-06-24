@@ -1,7 +1,7 @@
 package elec332.core.abstraction.abstracted;
 
 import elec332.core.util.ASMHelper;
-import net.minecraftforge.fml.common.registry.IForgeRegistryEntry;
+import net.minecraftforge.registries.IForgeRegistryEntry;
 
 /**
  * Created by Elec332 on 24-12-2016.

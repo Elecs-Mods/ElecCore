@@ -15,7 +15,7 @@ public class PowerStrike extends AbstractPotionAbility {
 
     @Override
     public Potion getPotion() {
-        return RegistryHelper.getPotionRegistry().getObject(new ResourceLocation("strength"));
+        return RegistryHelper.getPotionRegistry().getValue(new ResourceLocation("strength"));
     }
 
 }

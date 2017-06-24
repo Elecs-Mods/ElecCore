@@ -107,7 +107,7 @@ public class WrappedWidgetSlot extends WidgetSlot {
 
     @Override
     public boolean canBeHovered() {
-        return slot.canBeHovered();
+        return slot.isEnabled();
     }
 
     @Nonnull

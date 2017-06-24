@@ -89,7 +89,7 @@ public enum  SchematicHelper {
             idMap.put(-1, Blocks.AIR);
             for (int i = 0; i < blockData.tagCount(); i++) {
                 NBTTagCompound tag = blockData.getCompoundTagAt(i);
-                idMap.put(tag.getInteger("p"), RegistryHelper.getBlockRegistry().getObject(new ResourceLocation(tag.getString("m"), tag.getString("b"))));
+                idMap.put(tag.getInteger("p"), RegistryHelper.getBlockRegistry().getValue(new ResourceLocation(tag.getString("m"), tag.getString("b"))));
             }
             for (int i = 0; i < blockArray.length; i++) {
                 blocks[i] = idMap.get(blockArray[i]);
@@ -119,7 +119,7 @@ public enum  SchematicHelper {
             Block block = schematic.blocks[i];
             if (block != Blocks.AIR) {
                 if (!map.containsKey(block)) {
-                    ResourceLocation rl = RegistryHelper.getBlockRegistry().getNameForObject(block);
+                    ResourceLocation rl = RegistryHelper.getBlockRegistry().getKey(block);
                     if (rl == null){
                         blocks[i] = -1;
                         continue;

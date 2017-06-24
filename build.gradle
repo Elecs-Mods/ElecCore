@@ -51,6 +51,9 @@ repositories {
 	maven {
 		url "http://tehnut.info/maven"
 	}
+	maven {
+        url = "https://minecraft.curseforge.com/api/maven/"
+    }
 }
 
 ext.configFile = file "build.properties"
@@ -104,6 +107,8 @@ dependencies {
 	//Forestry
 	//deobfCompile "net.sengir.forestry:forestry_${config.minecraft_version}:${config.forestry_version}"
 	deobfCompile "net.sengir.forestry:forestry_${config.forestry_version}"
+	//deobfCompile "cofhcore:CoFHCore-1.10.2:release:universal"
+	//deobfCompile "eleccore-rendering-library:ElecCore:1.10.2:1.7.425"
 }
 
 processResources {

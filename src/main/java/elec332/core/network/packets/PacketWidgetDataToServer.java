@@ -27,7 +27,7 @@ public class PacketWidgetDataToServer extends AbstractPacket {
     public IMessage onMessageThreadSafe(AbstractPacket message, MessageContext ctx) {
         NBTTagCompound data = message.networkPackageObject.getCompoundTag("data");
         NBTTagCompound containerData = message.networkPackageObject.getCompoundTag("containerData");
-        Window window = WindowManager.getOpenWindow(ctx.getServerHandler().playerEntity, containerData.getInteger("window"));
+        Window window = WindowManager.getOpenWindow(ctx.getServerHandler().player, containerData.getInteger("window"));
         if (window != null){
             window.getWidgets().get(containerData.getInteger("widget")).readNBTChangesFromPacket(data, Side.SERVER);
         }

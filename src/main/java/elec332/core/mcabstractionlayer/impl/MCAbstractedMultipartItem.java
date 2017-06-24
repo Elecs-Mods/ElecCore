@@ -30,7 +30,7 @@ public class MCAbstractedMultipartItem extends ItemBlockMultipart implements IAb
 
     @Override
     public final void addInformation(ItemStack stack, @Nullable World world, List<String> tooltip, ITooltipFlag advanced) {
-        addInformationC(stack, world, tooltip, advanced.func_194127_a());
+        addInformationC(stack, world, tooltip, advanced.isAdvanced());
     }
 
     @Override

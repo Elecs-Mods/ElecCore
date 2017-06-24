@@ -37,7 +37,7 @@ public class MineTweakerHelper {
     }
 
     public static String getItemRegistryName(ItemStack stack){
-        return RegistryHelper.getItemRegistry().getNameForObject(stack.getItem()).toString();
+        return RegistryHelper.getItemRegistry().getKey(stack.getItem()).toString();
     }
 
     public static void reloadMineTweakerScripts(){

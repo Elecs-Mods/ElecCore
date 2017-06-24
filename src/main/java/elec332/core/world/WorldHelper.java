@@ -83,11 +83,11 @@ public class WorldHelper {
     }
 
     public static long longFromChunk(Chunk chunk){
-        return longFromChunkXZ(chunk.getChunkCoordIntPair());
+        return longFromChunkXZ(chunk.getPos());
     }
 
     public static long longFromChunkXZ(ChunkPos chunkCoordIntPair){
-        return ChunkPos.asLong(chunkCoordIntPair.chunkXPos, chunkCoordIntPair.chunkZPos);
+        return ChunkPos.asLong(chunkCoordIntPair.x, chunkCoordIntPair.z);
     }
 
     public static void reRenderBlock(TileEntity tile){

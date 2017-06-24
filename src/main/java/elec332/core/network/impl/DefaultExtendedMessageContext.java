@@ -28,12 +28,12 @@ class DefaultExtendedMessageContext implements IExtendedMessageContext {
 
     @Override
     public EntityPlayer getSender() {
-        return getSide().isClient() ? ElecCore.proxy.getClientPlayer() : getServerHandler().playerEntity;
+        return getSide().isClient() ? ElecCore.proxy.getClientPlayer() : getServerHandler().player;
     }
 
     @Override
     public World getWorld() {
-        return getSide().isClient() ? ElecCore.proxy.getClientWorld() : getServerHandler().playerEntity.getEntityWorld();
+        return getSide().isClient() ? ElecCore.proxy.getClientWorld() : getServerHandler().player.getEntityWorld();
     }
 
     @Override

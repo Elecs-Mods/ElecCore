@@ -3,8 +3,10 @@ package elec332.core.compat.forestry.bee;
 import com.google.common.collect.Maps;
 import elec332.core.compat.forestry.ForestryCompatHandler;
 import elec332.core.tile.AbstractBlock;
+import elec332.core.util.RegistryHelper;
 import forestry.api.apiculture.hives.HiveManager;
 import forestry.api.apiculture.hives.IHiveDescription;
+import net.minecraft.block.Block;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyEnum;
@@ -17,9 +19,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
-import net.minecraftforge.fml.common.registry.GameRegistry;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Map;
 
@@ -32,7 +34,7 @@ public abstract class BlockHive<T extends Enum<T> & IHiveEnum> extends AbstractB
         this(null);
     }
 
-    public BlockHive(T defaultT) {
+    public BlockHive(@Nullable T defaultT) {
         super(new HiveMaterial());
         setLightLevel(0.4f);
         setHardness(2.5f);
@@ -56,7 +58,7 @@ public abstract class BlockHive<T extends Enum<T> & IHiveEnum> extends AbstractB
 
     public BlockHive<T> register(@Nonnull ResourceLocation rl){
         setRegistryName(rl);
-        GameRegistry.register(new ItemBlock(this){
+        RegistryHelper.register(new ItemBlock(this){
 
             private final String unlName = "tile." + rl.toString().toLowerCase().replace(":", ".") + ".";
 
@@ -76,7 +78,8 @@ public abstract class BlockHive<T extends Enum<T> & IHiveEnum> extends AbstractB
             }
 
         }.setHasSubtypes(true), rl);
-        return GameRegistry.register(this);
+        RegistryHelper.register(this);
+        return this;
     }
 
     @Nonnull

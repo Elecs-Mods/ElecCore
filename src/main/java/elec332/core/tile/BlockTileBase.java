@@ -3,6 +3,7 @@ package elec332.core.tile;
 import elec332.core.api.wrench.IWrenchable;
 import elec332.core.util.BlockStateHelper;
 import elec332.core.util.DirectionHelper;
+import elec332.core.util.RegistryHelper;
 import elec332.core.world.WorldHelper;
 import net.minecraft.block.Block;
 import net.minecraft.block.ITileEntityProvider;
@@ -66,7 +67,7 @@ public class BlockTileBase extends AbstractBlock implements IWrenchable, ITileEn
     }
 
     public BlockTileBase register(){
-        GameRegistry.register(this);
+        RegistryHelper.register(this);
         return this;
     }
 

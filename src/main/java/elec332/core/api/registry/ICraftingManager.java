@@ -19,9 +19,7 @@ public interface ICraftingManager {
 
     public Iterable<IRecipe> getRecipes();
 
-    public default void registerRecipe(IRecipe recipe){
-        registerRecipe(recipe, recipe.toString());
-    }
+    public void registerRecipe(IRecipe recipe);
 
     @SuppressWarnings("all")
     public default void registerRecipe(IRecipe recipe, String name){
@@ -56,7 +54,9 @@ public interface ICraftingManager {
 
     public void addRecipe(ResourceLocation name, ItemStack stack, Object... recipeComponents);
 
-    public ItemStack findMatchingRecipe(InventoryCrafting craftMatrix, World world);
+    public ItemStack findMatchingResult(InventoryCrafting craftMatrix, World world);
+
+    public IRecipe findMatchingRecipe(InventoryCrafting craftMatrix, World world);
 
     public List<ItemStack> getRemainingItems(InventoryCrafting craftMatrix, World world);
 

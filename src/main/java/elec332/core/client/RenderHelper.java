@@ -81,7 +81,7 @@ public class RenderHelper {
 
     @Nonnull
     public static FontRenderer getMCFontrenderer(){
-        return mc.fontRendererObj;
+        return mc.fontRenderer;
     }
 
     @Nonnull
@@ -101,7 +101,7 @@ public class RenderHelper {
 
     @SideOnly(Side.CLIENT)
     public static <T extends TileEntity> void renderTileEntityAt(TileEntitySpecialRenderer<T> tesr, T tile, double x, double y, double z, float partialTicks, int destroyStage, float alpha){
-        tesr.func_192841_a(tile, x, y, x, partialTicks, destroyStage, alpha);
+        tesr.render(tile, x, y, x, partialTicks, destroyStage, alpha);
     }
 
     @SideOnly(Side.CLIENT)
@@ -111,7 +111,7 @@ public class RenderHelper {
 
     @SideOnly(Side.CLIENT)
     public static void renderTileEntityAt(TileEntity tile, double x, double y, double z, float partialTicks, int destroyStage, float alpha){
-        TileEntityRendererDispatcher.instance.func_192854_a(tile, x, y, z, partialTicks, destroyStage, alpha);
+        TileEntityRendererDispatcher.instance.render(tile, x, y, z, partialTicks, destroyStage, alpha);
     }
 
     public static void drawExpandedSelectionBoundingBox(@Nonnull AxisAlignedBB aabb){
@@ -124,7 +124,7 @@ public class RenderHelper {
 
     @Nonnull
     public static AxisAlignedBB expandAABB(@Nonnull AxisAlignedBB aabb){
-        return aabb.expandXyz(BB_EXPAND_NUMBER);
+        return aabb.grow(BB_EXPAND_NUMBER);
     }
 
     @Nonnull
@@ -182,7 +182,7 @@ public class RenderHelper {
 
     public static void translateToWorld(float partialTicks){
         Vec3d vec = getPlayerVec(partialTicks);
-        GlStateManager.translate(-vec.xCoord, -vec.yCoord, -vec.zCoord);
+        GlStateManager.translate(-vec.x, -vec.y, -vec.z);
     }
 
     @Nonnull
@@ -195,7 +195,7 @@ public class RenderHelper {
     public static ICamera getPlayerCamera(float partialTicks){
         ICamera camera = new Frustum();
         Vec3d vec = getPlayerVec(partialTicks);
-        camera.setPosition(vec.xCoord, vec.yCoord, vec.zCoord);
+        camera.setPosition(vec.x, vec.y, vec.z);
         return camera;
     }
 
@@ -204,15 +204,15 @@ public class RenderHelper {
     }
 
     public static void drawQuad(Vec3d v1, Vec3d v2, Vec3d v3, Vec3d v4){
-        tessellator.addVertexWithUV(v1.xCoord, v1.yCoord, v1.zCoord, 0, 0);
-        tessellator.addVertexWithUV(v2.xCoord, v2.yCoord, v2.zCoord, 1, 0);
-        tessellator.addVertexWithUV(v3.xCoord, v3.yCoord, v3.zCoord, 1, 1);
-        tessellator.addVertexWithUV(v4.xCoord, v4.yCoord, v4.zCoord, 0, 1);
+        tessellator.addVertexWithUV(v1.x, v1.y, v1.z, 0, 0);
+        tessellator.addVertexWithUV(v2.x, v2.y, v2.z, 1, 0);
+        tessellator.addVertexWithUV(v3.x, v3.y, v3.z, 1, 1);
+        tessellator.addVertexWithUV(v4.x, v4.y, v4.z, 0, 1);
     }
 
     @Nonnull
     public static Vec3d multiply(Vec3d original, double m){
-        return new Vec3d(original.xCoord * m, original.yCoord * m, original.zCoord * m);
+        return new Vec3d(original.x * m, original.y * m, original.z * m);
     }
 
     public static void bindBlockTextures(){
