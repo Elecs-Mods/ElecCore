@@ -16,20 +16,23 @@ import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.fml.common.registry.VillagerRegistry;
 import net.minecraftforge.registries.*;
 
+import javax.annotation.Nullable;
+
 /**
  * Created by Elec332 on 5-4-2016.
  */
 public class RegistryHelper {
 
-    public static <K extends IForgeRegistryEntry<K>> K register(K object, ResourceLocation name){
+    public static <K extends IForgeRegistryEntry<?>> K register(K object, ResourceLocation name){
         Preconditions.checkNotNull(object);
         Preconditions.checkNotNull(name);
         object.setRegistryName(name);
-        return GameData.register_impl(object);
+        return register(object);
     }
 
-    public static <K extends IForgeRegistryEntry<K>> K register(K object){
-        return GameData.register_impl(object);
+    @SuppressWarnings("all")
+    public static <K extends IForgeRegistryEntry<?>> K register(K object){
+        return (K) GameData.register_impl((IForgeRegistryEntry) object);
     }
 
     public static <T extends IForgeRegistryEntry<T>, C extends IForgeRegistry.AddCallback<T> & IForgeRegistry.ClearCallback<T> & IForgeRegistry.CreateCallback<T>> ForgeRegistry<T> createRegistry(ResourceLocation registryName, Class<T> registryType, C callback){
@@ -106,7 +109,8 @@ public class RegistryHelper {
             }
 
             @Override
-            public void onAdd(IForgeRegistryInternal owner, RegistryManager stage, int id, IForgeRegistryEntry obj) {
+            public void onAdd(IForgeRegistryInternal owner, RegistryManager stage, int id, IForgeRegistryEntry obj, @Nullable IForgeRegistryEntry oldObj) {
+
             }
 
         };

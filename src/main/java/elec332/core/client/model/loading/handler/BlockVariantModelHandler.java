@@ -1,7 +1,6 @@
 package elec332.core.client.model.loading.handler;
 
 import com.google.common.base.Charsets;
-import com.google.common.base.Function;
 import com.google.common.collect.*;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -35,6 +34,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.Serializable;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -59,6 +59,7 @@ public class BlockVariantModelHandler implements IModelHandler {
     }
 
     @Override
+    @SuppressWarnings("all")
     public void registerModels() {
         ModelManager modelManager = Minecraft.getMinecraft().modelManager;
         for (Block block : RenderingRegistry.instance().getAllValidBlocks()){
@@ -116,12 +117,13 @@ public class BlockVariantModelHandler implements IModelHandler {
     private class ModelLoader implements ICustomModelLoader {
 
         @Override
-        public boolean accepts(ResourceLocation modelLocation) {
+        public boolean accepts(@Nonnull ResourceLocation modelLocation) {
             return modelLocation instanceof ModelResourceLocation && blockResourceLocations.keySet().contains(modelLocation);
         }
 
+        @Nonnull
         @Override
-        public IModel loadModel(ResourceLocation modelLocation) throws Exception {
+        public IModel loadModel(@Nonnull ResourceLocation modelLocation) throws Exception {
             if (!(modelLocation instanceof ModelResourceLocation)){
                 throw new RuntimeException();
             }
@@ -201,11 +203,13 @@ public class BlockVariantModelHandler implements IModelHandler {
 
             return new IModel() {
 
+                @Nonnull
                 @Override
                 public Collection<ResourceLocation> getDependencies() {
                     return ImmutableList.copyOf(locations);
                 }
 
+                @Nonnull
                 @Override
                 public Collection<ResourceLocation> getTextures() {
                     return ImmutableSet.copyOf(textures);
@@ -238,6 +242,7 @@ public class BlockVariantModelHandler implements IModelHandler {
                     return builder.build();
                 }
 
+                @Nonnull
                 @Override
                 public IModelState getDefaultState() {
                     return defaultState;

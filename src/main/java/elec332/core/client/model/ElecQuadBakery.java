@@ -1,6 +1,5 @@
 package elec332.core.client.model;
 
-import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 import elec332.core.api.client.model.IElecQuadBakery;
@@ -27,6 +26,7 @@ import org.lwjgl.util.vector.Vector3f;
 import javax.annotation.Nullable;
 import java.util.EnumMap;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Created by Elec332 on 15-11-2015.
