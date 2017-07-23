@@ -10,6 +10,9 @@ import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorldEventListener;
 import net.minecraft.world.World;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.world.WorldEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import javax.annotation.Nullable;
 import java.util.Set;
@@ -112,6 +115,24 @@ public enum WorldEventListener implements IWorldEventListener {
         for (IElecWorldEventListener l : listeners){
             l.sendBlockBreakProgress(breakerId, pos, progress);
         }
+    }
+
+    public static void register(){
+    }
+
+    static {
+        MinecraftForge.EVENT_BUS.register(new Object(){
+
+            @SubscribeEvent
+            public void loadWorld(WorldEvent.Load event){
+                World world = event.getWorld();
+                if (!world.isRemote){
+                    world.removeEventListener(INSTANCE);
+                    world.addEventListener(INSTANCE);
+                }
+            }
+
+        });
     }
 
 }

@@ -16,6 +16,7 @@ import elec332.core.grid.internal.GridEventInputHandler;
 import elec332.core.handler.ModEventHandler;
 import elec332.core.handler.TickHandler;
 import elec332.core.inventory.window.WindowManager;
+import elec332.core.mcabstractionlayer.impl.WorldEventListener;
 import elec332.core.mcabstractionlayer.manager.CompatASMHandler;
 import elec332.core.module.ModuleManager;
 import elec332.core.network.IElecNetworkHandler;
@@ -175,6 +176,7 @@ public class ElecCore implements IModuleController, IElecCoreMod, IDependencyHan
 		NetworkRegistry.INSTANCE.registerGuiHandler(this, proxy);
 		asmDataProcessor.process(LoaderState.INITIALIZATION);
 		OredictHelper.initLists();
+		WorldEventListener.register();
 		modEventHandler.postEvent(event);
 		loadTimer.endPhase(event);
     }

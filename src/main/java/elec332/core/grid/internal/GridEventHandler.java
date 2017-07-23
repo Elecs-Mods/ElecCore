@@ -14,16 +14,6 @@ import net.minecraftforge.fml.common.gameevent.TickEvent;
 @SuppressWarnings("unused")
 public class GridEventHandler {
 
-   /* @SubscribeEvent
-    public void loadWorld(WorldEvent.Load event){
-        World world = event.getWorld();
-        if (!world.isRemote){
-            IWorldEventListener listener = IElecWorldEventListener.wrap(WorldEventHandler.INSTANCE);
-            world.removeEventListener(listener);
-            world.addEventListener(listener);
-        }
-    }*/
-
     @SubscribeEvent
     public void chunkLoad(ChunkEvent.Load event){
         if (!event.getWorld().isRemote) {
