@@ -54,9 +54,16 @@ public enum GridEventInputHandler {
                 return;
             }
             DimensionCoordinate dimCoord = new DimensionCoordinate(world, pos);
+            /*
+
+            Issue #114, bud.contains causes severe performance impact
+            Dont check for contains, but remove all bud entries in notify list later
+
             if (bud.contains(dimCoord)) {
                 return;
             }
+
+            */
             notify.add(dimCoord);
         }
     }
@@ -96,6 +103,7 @@ public enum GridEventInputHandler {
         while ((c = this.notify.poll()) != null){
             l.add(c);
         }
+        l.removeAll(bud); //Issue #114, better way of keeping notify list clean of bud entries
         Set<DimensionCoordinate> notify = ImmutableSet.copyOf(l);
         for (IStructureWorldEventHandler gridHandler : cachedHandlers) {
             gridHandler.checkNotifyStuff(notify);
