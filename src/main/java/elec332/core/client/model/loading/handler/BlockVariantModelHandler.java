@@ -61,14 +61,13 @@ public class BlockVariantModelHandler implements IModelHandler {
     @Override
     @SuppressWarnings("all")
     public void registerModels() {
-        ModelManager modelManager = Minecraft.getMinecraft().modelManager;
         for (Block block : RenderingRegistry.instance().getAllValidBlocks()){
             if (block instanceof INoBlockStateJsonBlock && !(block instanceof INoJsonBlock)){
 
                 ResourceLocation baseName = new ResourceLocation("varianthandled", block.getRegistryName().toString().replace(":", "_"));
                 uniqueNames.add(baseName);
 
-                modelManager.getBlockModelShapes().getBlockStateMapper().registerBlockStateMapper(block, new StateMapperBase() {
+                net.minecraftforge.client.model.ModelLoader.setCustomStateMapper(block, new StateMapperBase() {
 
                     @Override
                     @Nonnull

@@ -107,7 +107,7 @@ public class ClientProxy extends CommonProxy {
 
 		@Override
 		public void onResourceManagerReload(@Nonnull IResourceManager resourceManager) {
-			if (minecraft.renderItem != null) {
+			if (Minecraft.getMinecraft().modelManager != null) {
 				ElecModelHandler.registerModels();
 			}
 		}

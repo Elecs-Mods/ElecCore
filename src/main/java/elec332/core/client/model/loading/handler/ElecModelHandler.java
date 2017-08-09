@@ -59,6 +59,7 @@ public final class ElecModelHandler implements IASMDataProcessor {
     }
 
     public static void registerModels(){
+        ElecCore.logger.info("Registering models");
         for (IModelHandler modelHandler : modelHandlers){
             modelHandler.registerModels();
         }

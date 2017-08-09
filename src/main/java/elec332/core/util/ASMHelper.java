@@ -166,22 +166,17 @@ public class ASMHelper {
 
         public ClassWriter modifyClass(String internalClassName, ClassWriter cw, Object... additionalData);
 
-        public static IClassModifier combine(IClassModifier... modifiers){
+        public static IClassModifier combine(final IClassModifier... modifiers){
             if (modifiers == null || modifiers.length == 0){
                 return null;
             }
-            return new IClassModifier() {
-
-                @Override
-                public ClassWriter modifyClass(String internalClassName, ClassWriter cw, Object... additionalData) {
-                    for (IClassModifier classModifier : modifiers){
-                        if (classModifier != null) {
-                            cw = classModifier.modifyClass(internalClassName, cw, additionalData);
-                        }
+            return (internalClassName, cw, additionalData) -> {
+                for (IClassModifier classModifier : modifiers){
+                    if (classModifier != null) {
+                        cw = classModifier.modifyClass(internalClassName, cw, additionalData);
                     }
-                    return cw;
                 }
-
+                return cw;
             };
         }
 

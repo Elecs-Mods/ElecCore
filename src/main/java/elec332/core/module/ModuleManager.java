@@ -152,9 +152,9 @@ public enum ModuleManager implements IASMDataProcessor, IModuleManager {
                     if (owner == null){
                         throw new IllegalStateException("Error finding owner mod for module: "+module.getCombinedName());
                     }
-                    setActiveContainer(owner);
+                    FMLUtil.setActiveContainer(owner);
                     IModuleContainer module_ = module.getModuleController().wrap(module, defaultImpl);
-                    setActiveContainer(activeContainer);
+                    FMLUtil.setActiveContainer(activeContainer);
                     if (module_ == null){
                         continue;
                     }
@@ -258,10 +258,10 @@ public enum ModuleManager implements IASMDataProcessor, IModuleManager {
     private void forEachModule(Consumer<IModuleContainer> consumer){
         ModContainer mc = FMLUtil.getLoader().activeModContainer();
         for (IModuleContainer module : activeModules){
-            setActiveContainer(module.getOwnerMod());
+            FMLUtil.setActiveContainer(module.getOwnerMod());
             consumer.accept(module);
         }
-        setActiveContainer(mc);
+        FMLUtil.setActiveContainer(mc);
     }
 
     public void invokeEvent(Object event){
@@ -294,17 +294,6 @@ public enum ModuleManager implements IASMDataProcessor, IModuleManager {
         return ret;
     }
 
-    //Sad hack, only used when invoking events on modules
-    private static void setActiveContainer(ModContainer mc){
-        try {
-            mcForce.invoke(FMLUtil.getLoadController(), mc);
-        } catch (Exception e){
-            throw new RuntimeException(e);
-        }
-    }
-
-    private static final Method mcForce;
-
     static {
         DEFAULT_CONTROLLER = new IModuleController() {
 
@@ -327,12 +316,6 @@ public enum ModuleManager implements IASMDataProcessor, IModuleManager {
             }
 
         };
-        try {
-            mcForce = LoadController.class.getDeclaredMethod("forceActiveContainer", ModContainer.class);
-            mcForce.setAccessible(true);
-        } catch (Exception e){
-            throw new RuntimeException();
-        }
         APIHandler.INSTANCE.inject(INSTANCE, IModuleManager.class);
     }
 

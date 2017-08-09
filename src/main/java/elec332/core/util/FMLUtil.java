@@ -9,6 +9,7 @@ import net.minecraftforge.fml.relauncher.FMLInjectionData;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 
 /**
  * Created by Elec332 on 17-10-2016.
@@ -140,9 +141,27 @@ public class FMLUtil {
         return null;
     }
 
+    public static void runAs(ModContainer as, Runnable runnable){
+        ModContainer mc = FMLUtil.getLoadController().activeContainer();
+        FMLUtil.setActiveContainer(as);
+        runnable.run();
+        FMLUtil.setActiveContainer(mc);
+    }
+
+    //Sad hack, only used when invoking events on modules
+    public static void setActiveContainer(ModContainer mc){
+        try {
+            mcForce.invoke(FMLUtil.getLoadController(), mc);
+        } catch (Exception e){
+            throw new RuntimeException(e);
+        }
+    }
+
+
     private static ASMDataTable dataTable;
     private static LoadController lc;
     private static final Field eventMethods, eventBus, mainModBus, mcEnabled, wrappedContainer;
+    private static final Method mcForce;
 
     static {
         try {
@@ -156,6 +175,8 @@ public class FMLUtil {
             mcEnabled.setAccessible(true);
             wrappedContainer = InjectedModContainer.class.getDeclaredField("wrappedContainer");
             wrappedContainer.setAccessible(true);
+            mcForce = LoadController.class.getDeclaredMethod("forceActiveContainer", ModContainer.class);
+            mcForce.setAccessible(true);
         } catch (Exception e){
             throw new RuntimeException(e);
         }

@@ -7,13 +7,12 @@ import elec332.core.api.client.model.loading.IModelHandler;
 import elec332.core.api.client.model.loading.ModelHandler;
 import elec332.core.client.model.RenderingRegistry;
 import elec332.core.main.ElecCore;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ItemMeshDefinition;
-import net.minecraft.client.renderer.RenderItem;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.client.model.ModelLoader;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -46,13 +45,12 @@ public class ItemModelHandler implements IModelHandler {
     @Override
     public void registerModels() {
         ElecCore.logger.info("Prehandling Item Models");
-        RenderItem renderItem = Minecraft.getMinecraft().renderItem;
         for (Item item : RenderingRegistry.instance().getAllValidItems()){
             for (IItemModelHandler handler : itemModelHandlers){
                 if (handler.handleItem(item)){
                     String s = handler.getIdentifier(item);
                     final ModelResourceLocation mr = new ModelResourceLocation(item.getRegistryName().toString(), s);
-                    renderItem.getItemModelMesher().register(item, new ItemMeshDefinition() {
+                    ModelLoader.setCustomMeshDefinition(item, new ItemMeshDefinition() {
 
                         @Override
                         @Nonnull

@@ -9,6 +9,7 @@ import elec332.core.api.registry.ISingleRegister;
 import elec332.core.api.util.IDependencyHandler;
 import elec332.core.api.util.IRightClickCancel;
 import elec332.core.asm.ASMLoader;
+import elec332.core.client.model.loading.handler.ElecModelHandler;
 import elec332.core.compat.ModNames;
 import elec332.core.effects.AbilityHandler;
 import elec332.core.grid.internal.GridEventHandler;
@@ -121,10 +122,15 @@ public class ElecCore implements IModuleController, IElecCoreMod, IDependencyHan
 	@Subscribe
 	public void onConstructionLast(FMLEvent e){
 		if (e instanceof FMLConstructionEvent){
-			asmDataProcessor = new ElecCoreDiscoverer();
-			asmDataProcessor.identify(((FMLConstructionEvent) e).getASMHarvestedData());
-			ElecModHandler.identifyMods();
-			asmDataProcessor.process(LoaderState.CONSTRUCTING);
+			FMLUtil.runAs(FMLUtil.getModContainer(this), () -> {
+                asmDataProcessor = new ElecCoreDiscoverer();
+                asmDataProcessor.identify(((FMLConstructionEvent) e).getASMHarvestedData());
+                ElecModHandler.identifyMods();
+                asmDataProcessor.process(LoaderState.CONSTRUCTING);
+            });
+		}
+		if (e instanceof FMLPreInitializationEvent){
+			FMLUtil.runAs(FMLUtil.getModContainer(this), ElecModelHandler::registerModels);
 		}
 	}
 

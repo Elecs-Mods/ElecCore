@@ -10,12 +10,11 @@ import elec332.core.client.model.RenderingRegistry;
 import elec332.core.main.ElecCore;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.IBakedModel;
-import net.minecraft.client.renderer.block.model.ModelManager;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.renderer.block.statemap.StateMapperBase;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.client.model.ModelLoader;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -51,12 +50,11 @@ public class BlockModelHandler implements IModelHandler {
     @Override
     public void registerModels() {
         ElecCore.logger.info("Prehandling Block Models");
-        ModelManager modelManager = Minecraft.getMinecraft().modelManager;
         for (Block block : RenderingRegistry.instance().getAllValidBlocks()){
             for (final IBlockModelHandler handler : blockModelHandlers) {
                 if (handler.handleBlock(block)) {
                     handledBlocks.add(block.getRegistryName());
-                    modelManager.getBlockModelShapes().getBlockStateMapper().registerBlockStateMapper(block, new StateMapperBase() {
+                    ModelLoader.setCustomStateMapper(block, new StateMapperBase() {
 
                         @Override
                         @Nonnull
