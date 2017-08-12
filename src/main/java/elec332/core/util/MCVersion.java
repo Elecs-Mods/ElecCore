@@ -7,12 +7,25 @@ import javax.annotation.Nonnull;
  */
 public enum MCVersion {
 
-    OTHER(""),
+    OTHER(""){
+
+        @Override
+        public boolean isHigherThan(MCVersion version) {
+            return true;
+        }
+
+        @Override
+        public boolean isLowerThan(MCVersion version) {
+            return false;
+        }
+
+    },
     MC_1_10("1.10"),
     MC_1_10_2("1.10.2"),
     MC_1_11("1.11"),
     MC_1_11_2("1.11.2"),
-    MC_1_12("1.12");
+    MC_1_12("1.12"),
+    MC_1_12_1("1.12.1");
 
     MCVersion(String ver){
         this.name = ver;
