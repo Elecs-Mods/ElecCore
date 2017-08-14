@@ -69,11 +69,12 @@ public class MCAbstractedItem extends Item implements IAbstractedItem {
 
     @Override
     public final void getSubItems(@Nonnull CreativeTabs tab, @Nonnull NonNullList<ItemStack> list) {
-        getSubItemsC(this, list, tab);
+        if (this.isInCreativeTab(tab)) {
+            getSubItemsC(this, list, tab);
+        }
     }
 
     @Override
-    @SideOnly(Side.CLIENT)
     public void getSubItemsC(@Nonnull Item item, List<ItemStack> subItems, CreativeTabs creativeTab){
         super.getSubItems(creativeTab, (NonNullList<ItemStack>) subItems);
     }
