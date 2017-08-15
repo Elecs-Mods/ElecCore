@@ -57,6 +57,7 @@ public class ClientProxy extends CommonProxy {
 			throw new RuntimeException("Class: " + resourceManager.getClass().getCanonicalName() + " is not a valid replacement for the vanilla resource manager.");
 		}
 		MinecraftForge.EVENT_BUS.register(new ModelEventHandler());
+		MinecraftForge.EVENT_BUS.register(new ElecModelHandler());
 	}
 
 	@Override

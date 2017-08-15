@@ -150,7 +150,6 @@ public class ElecCore implements IModuleController, IElecCoreMod, IDependencyHan
 		ServerHelper.instance.load();
 
 		MinecraftForge.EVENT_BUS.register(new GridEventHandler());
-		MinecraftForge.EVENT_BUS.register(new ElecModelHandler());
 
 		proxy.preInitRendering();
 		asmDataProcessor.process(LoaderState.PREINITIALIZATION);
