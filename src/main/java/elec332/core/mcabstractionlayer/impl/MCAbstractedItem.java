@@ -22,11 +22,13 @@ import java.util.List;
 public class MCAbstractedItem extends Item implements IAbstractedItem {
 
     @Override
+    @SideOnly(Side.CLIENT)
     public final void addInformation(ItemStack stack, @Nullable World world, List<String> tooltip, ITooltipFlag advanced) {
         addInformationC(stack, world, tooltip, advanced.isAdvanced());
     }
 
     @Override
+    @SideOnly(Side.CLIENT)
     public void addInformationC(@Nonnull ItemStack stack, World world, List<String> tooltip, boolean advanced) {
         super.addInformation(stack, world, tooltip, advanced ? ITooltipFlag.TooltipFlags.ADVANCED : ITooltipFlag.TooltipFlags.NORMAL);
     }
