@@ -56,8 +56,8 @@ public class ClientProxy extends CommonProxy {
 			ElecCore.logger.error("Source: " + resourceManager.getClass().getCanonicalName());
 			throw new RuntimeException("Class: " + resourceManager.getClass().getCanonicalName() + " is not a valid replacement for the vanilla resource manager.");
 		}
-		((SimpleReloadableResourceManager) resourceManager).registerReloadListener(new ModelReloadListener());
 		MinecraftForge.EVENT_BUS.register(new ModelEventHandler());
+		MinecraftForge.EVENT_BUS.register(new ElecModelHandler());
 	}
 
 	@Override
@@ -101,17 +101,6 @@ public class ClientProxy extends CommonProxy {
 	@Override
 	public synchronized Object getClientGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z) {
 		return new WindowGui(super.getServerGuiElement(ID, player, world, x, y, z));
-	}
-
-	private class ModelReloadListener implements IResourceManagerReloadListener {
-
-		@Override
-		public void onResourceManagerReload(@Nonnull IResourceManager resourceManager) {
-			if (Minecraft.getMinecraft().modelManager != null) {
-				ElecModelHandler.registerModels();
-			}
-		}
-
 	}
 
 	static {

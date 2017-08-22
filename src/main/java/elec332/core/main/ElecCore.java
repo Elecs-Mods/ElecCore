@@ -129,11 +129,7 @@ public class ElecCore implements IModuleController, IElecCoreMod, IDependencyHan
                 asmDataProcessor.process(LoaderState.CONSTRUCTING);
             });
 		}
-		if (e instanceof FMLPreInitializationEvent){
-			FMLUtil.runAs(FMLUtil.getModContainer(this), ElecModelHandler::registerModels);
-		}
 	}
-
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
 		ElecModHandler.initAnnotations(event.getAsmData());

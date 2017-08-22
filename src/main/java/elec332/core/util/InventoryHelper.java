@@ -32,6 +32,7 @@ public class InventoryHelper {
         return stack.getTooltip(playerIn, advanced ? ITooltipFlag.TooltipFlags.ADVANCED : ITooltipFlag.TooltipFlags.NORMAL);
     }
 
+    @SideOnly(Side.CLIENT)
     public static void addInformation(Item item, ItemStack stack, World world, List<String> tooltip, boolean advanced){
         item.addInformation(stack, world, tooltip, advanced ? ITooltipFlag.TooltipFlags.ADVANCED : ITooltipFlag.TooltipFlags.NORMAL);
     }

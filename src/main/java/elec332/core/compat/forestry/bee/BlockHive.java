@@ -56,11 +56,9 @@ public abstract class BlockHive<T extends Enum<T> & IHiveEnum> extends AbstractB
         }
     }
 
-    public BlockHive<T> register(@Nonnull ResourceLocation rl){
-        setRegistryName(rl);
-        RegistryHelper.register(new ItemBlock(this){
-
-            private final String unlName = "tile." + rl.toString().toLowerCase().replace(":", ".") + ".";
+    public ItemBlock createItemBlock() {
+        ItemBlock itemBlock = new ItemBlock(this){
+            private final String unlName = "tile." + BlockHive.this.getRegistryName().toString().toLowerCase().replace(":", ".") + ".";
 
             @Override
             public int getMetadata(int damage) {
@@ -77,9 +75,10 @@ public abstract class BlockHive<T extends Enum<T> & IHiveEnum> extends AbstractB
                 return unlName + metaToObject.get(getMetadata(stack.getItemDamage())).getName();
             }
 
-        }.setHasSubtypes(true), rl);
-        RegistryHelper.register(this);
-        return this;
+        };
+        itemBlock.setRegistryName(getRegistryName());
+        itemBlock.setHasSubtypes(true);
+        return itemBlock;
     }
 
     @Nonnull

@@ -16,8 +16,10 @@ import net.minecraft.client.renderer.block.model.ModelBakery;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.registry.IRegistry;
+import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.fml.common.LoaderState;
 import net.minecraftforge.fml.common.discovery.ASMDataTable;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -58,7 +60,8 @@ public final class ElecModelHandler implements IASMDataProcessor {
         }
     }
 
-    public static void registerModels(){
+    @SubscribeEvent
+    public void registerModels(ModelRegistryEvent event) {
         ElecCore.logger.info("Registering models");
         for (IModelHandler modelHandler : modelHandlers){
             modelHandler.registerModels();
