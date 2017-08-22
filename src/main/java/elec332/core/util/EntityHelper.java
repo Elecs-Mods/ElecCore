@@ -10,7 +10,7 @@ import net.minecraft.world.World;
  */
 public class EntityHelper {
 
-    @AbstractionMarker("getEntityAbstraction()")
+    @AbstractionMarker("getEntityAbstraction")
     public static Entity createEntity(ResourceLocation name, World world) {
         throw new UnsupportedOperationException();
     }
