@@ -212,7 +212,7 @@ public class DefaultInstances {
 
         @Override
         public float getStrengthVsBlock(ItemStack stack, IBlockState state) {
-            return item.getStrVsBlock(stack, state);
+            return item.getDestroySpeed(stack, state);
         }
 
         @Override

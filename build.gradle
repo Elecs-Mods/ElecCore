@@ -63,7 +63,7 @@ configFile.withReader {
     prop.load(it)
     project.ext.config = new ConfigSlurper().parse prop
     project.ext.mcVersion = config.minecraft_version
-    String build = System.getenv("BUILD_NUMBER");
+    String build = System.getenv("BUILD_NUMBER")
     project.ext.localBuild = build == null || build == ""
     project.ext.modFileVersion = "${config.mod_version}." + (ext.localBuild ? "localBuild" : build)
 	project.ext.modVersion = "${config.mod_version}." + (ext.localBuild ? "9999.custom" : build)

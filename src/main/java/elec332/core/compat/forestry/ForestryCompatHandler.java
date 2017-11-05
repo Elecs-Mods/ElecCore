@@ -14,10 +14,11 @@ import forestry.api.apiculture.IBeeModelProvider;
 import forestry.api.apiculture.IBeeRoot;
 import forestry.api.core.Tabs;
 import forestry.api.genetics.*;
-import forestry.apiculture.PluginApiculture;
+import forestry.api.modules.IForestryModule;
+import forestry.api.modules.IModuleManager;
+import forestry.apiculture.ModuleApiculture;
 import forestry.apiculture.genetics.alleles.AlleleBeeSpecies;
-import forestry.plugins.IForestryPlugin;
-import forestry.plugins.PluginManager;
+import forestry.modules.ModuleManager;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
@@ -91,8 +92,8 @@ public class ForestryCompatHandler  {
 
     @ElecModule.EventHandler
     public void init(FMLInitializationEvent event){
-        for (IForestryPlugin plugin : PluginManager.getLoadedPlugins()) {
-            if (plugin instanceof PluginApiculture) {
+        for (IForestryModule plugin : ModuleManager.getLoadedModules()) {
+            if (plugin instanceof ModuleApiculture) {
                 ForestryAlleles.dummyLoad();
                 ForestryBeeEffects.init();
                 break; //Just to make sure
