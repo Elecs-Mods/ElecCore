@@ -124,7 +124,7 @@ public abstract class AbstractGridHandler<T extends ITileEntityLink> implements 
     @Override
     public void checkBlockUpdates(Set<DimensionCoordinate> updates){
         for (DimensionCoordinate dimCoord : updates){
-            TileEntity tile = dimCoord.getTileEntity();
+            TileEntity tile = dimCoord.isLoaded() ? dimCoord.getTileEntity() : null;
             T o = getObject(dimCoord);
             if (o == null && tile == null){
                 continue;
