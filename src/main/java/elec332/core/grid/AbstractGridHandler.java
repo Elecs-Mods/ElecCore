@@ -18,7 +18,7 @@ import java.util.function.Supplier;
 /**
  * Created by Elec332 on 1-8-2016.
  */
-public abstract class AbstractGridHandler<T extends IPositionable> implements IStructureWorldEventHandler {
+public abstract class AbstractGridHandler<T extends ITileEntityLink> implements IStructureWorldEventHandler {
 
     public AbstractGridHandler(){
         this.objectsInternal = getWorldPosObjHolder();
