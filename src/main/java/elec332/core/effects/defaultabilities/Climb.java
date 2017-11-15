@@ -20,7 +20,7 @@ public class Climb extends Ability {
 
     @SubscribeEvent
     public void makeClimb(TickEvent.PlayerTickEvent event){
-        if (AbilityHelper.isEffectActive(event.player, this) && event.player.isCollidedHorizontally){
+        if (AbilityHelper.isEffectActive(event.player, this) && event.player.collidedHorizontally){
             event.player.motionY = 0.1176D;
             event.player.fallDistance = 0.0f;
         }

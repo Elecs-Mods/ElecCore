@@ -77,7 +77,7 @@ abstract class AbstractedItem extends AbstractItem implements IAbstractedItem {
     }
 
     @Override @CopyMarker
-    public float getStrVsBlock(ItemStack stack, IBlockState state) {
+    public float getDestroySpeed(ItemStack stack, IBlockState state) {
         return getLinkedItem_INTERNAL_ELEC().getStrengthVsBlock(stack, state);
     }
 

@@ -54,7 +54,7 @@ public class EntityDrawer implements IDrawer<Entity> {
         RenderManager rendermanager = mc.getRenderManager();
         rendermanager.setPlayerViewY(180);
         rendermanager.setRenderShadow(false);
-        rendermanager.doRenderEntity(drawable, 0.0D, 0.0D, 0.0D, 0.0F, 1.0F, false);
+        rendermanager.renderEntity(drawable, 0.0D, 0.0D, 0.0D, 0.0F, 1.0F, false);
         rendermanager.setRenderShadow(true);
         GlStateManager.popMatrix();
         RenderHelper.disableStandardItemLighting();
