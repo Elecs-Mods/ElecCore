@@ -5,6 +5,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.event.world.ChunkEvent;
 import net.minecraftforge.event.world.WorldEvent;
+import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 
@@ -35,7 +36,7 @@ public class GridEventHandler {
         }
     }
 
-    @SubscribeEvent
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void serverTick(TickEvent.ServerTickEvent event){
         if (event.side.isServer() && event.phase == TickEvent.Phase.END) {
             GridEventInputHandler.INSTANCE.tickEnd();

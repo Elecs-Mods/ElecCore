@@ -33,7 +33,7 @@ import java.lang.reflect.Field;
 /**
  * Created by Elec332 on 14-8-2016.
  */
-@ElecModule(owner = ElecCore.MODID, name = "ForestryCompat", modDependencies = ModNames.FORESTRY+"@[5.2.9.241,)")
+@ElecModule(owner = ElecCore.MODID, name = "ForestryCompat", modDependencies = ModNames.FORESTRY+"@[5.7.0.212,)")
 public class ForestryCompatHandler  {
 
     public static IBeeRoot beeRoot;

@@ -155,12 +155,12 @@ public class TileBase extends TileEntityBase implements IElecCoreNetworkTile {
     }
 
     public boolean onWrenched(EnumFacing forgeDirection) {
-        /*if ((forgeDirection != EnumFacing.UP && forgeDirection != EnumFacing.DOWN) || canFaceUpOrDown()) {
+        if ((forgeDirection != EnumFacing.UP && forgeDirection != EnumFacing.DOWN) || canFaceUpOrDown()) {
             setFacing(forgeDirection);
             markDirty();
             syncData();
             reRenderBlock();
-        }*/
+        }
         return false;
     }
 

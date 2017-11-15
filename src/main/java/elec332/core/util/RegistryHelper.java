@@ -7,21 +7,44 @@ import elec332.core.util.recipes.RecipeHelper;
 import net.minecraft.block.Block;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.item.Item;
+import net.minecraft.nbt.NBTBase;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionType;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.world.biome.Biome;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.fml.common.registry.VillagerRegistry;
 import net.minecraftforge.registries.*;
 
 import javax.annotation.Nullable;
+import java.util.concurrent.Callable;
 
 /**
  * Created by Elec332 on 5-4-2016.
  */
 public class RegistryHelper {
+
+    public static <T> void registerEmptyCapability(Class<T> clazz){
+        CapabilityManager.INSTANCE.register(clazz, new Capability.IStorage<T>() {
+
+            @Override
+            public NBTBase writeNBT(Capability capability, Object instance, EnumFacing side) {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public void readNBT(Capability capability, Object instance, EnumFacing side, NBTBase nbt) {
+                throw new UnsupportedOperationException();
+            }
+
+        }, () -> {
+            throw new UnsupportedOperationException();
+        });
+    }
 
     public static <K extends IForgeRegistryEntry<?>> K register(K object, ResourceLocation name){
         Preconditions.checkNotNull(object);

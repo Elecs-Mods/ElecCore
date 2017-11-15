@@ -53,7 +53,7 @@ import java.util.List;
  * Created by Elec332.
  */
 @Mod(modid = ElecCore.MODID, name = ElecCore.MODNAME, dependencies = "after:"+ ModNames.FORESTRY,
-acceptedMinecraftVersions = "[1.10,)", version = ElecCore.ElecCoreVersion, useMetadata = true)
+acceptedMinecraftVersions = "[1.12.2,)", version = ElecCore.ElecCoreVersion, useMetadata = true)
 public class ElecCore implements IModuleController, IElecCoreMod, IDependencyHandler {
 
 	public static final String ElecCoreVersion = "#ELECCORE_VER#";

@@ -30,12 +30,12 @@ public final class BlockStateWrapper implements IBlockDataEqualiser {
     public final int meta;
 
     public ItemStack toItemStack(){
-        return new ItemStack(block, 1, meta);
+        return new ItemStack(block, 1, meta == OreDictionary.WILDCARD_VALUE ? 0 : meta);
     }
 
     @SuppressWarnings("deprecation")
     public IBlockState getBlockState(){
-        return block.getStateFromMeta(meta);
+        return block.getStateFromMeta(meta == OreDictionary.WILDCARD_VALUE ? 0 : meta);
     }
 
     @Override

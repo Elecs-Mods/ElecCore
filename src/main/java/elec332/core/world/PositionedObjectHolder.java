@@ -57,6 +57,7 @@ public class PositionedObjectHolder<T> {
     }
 
     @Nonnull
+    @SuppressWarnings("all")
     private PositionChunk getChunkForPos(ChunkPos chunkPos){
         long l = WorldHelper.longFromChunkXZ(chunkPos);
         PositionChunk positionChunk = positionedMap.get(l);
@@ -72,7 +73,11 @@ public class PositionedObjectHolder<T> {
     }
 
     public void remove(BlockPos pos){
-        getChunkForPos(pos).remove(pos);
+        PositionChunk chunk = getChunkForPos(pos);
+        chunk.remove(pos);
+        if (chunk.posMap.isEmpty()){
+            positionedMap.remove(WorldHelper.longFromChunkXZ(chunk.pos));
+        }
     }
 
     public Set<ChunkPos> getChunks(){

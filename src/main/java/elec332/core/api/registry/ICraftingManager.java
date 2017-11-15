@@ -10,6 +10,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.common.Loader;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.function.Function;
 
 /**
@@ -30,7 +31,7 @@ public interface ICraftingManager {
 
     @Deprecated
     public default void addShapelessRecipe(ItemStack stack, Object... recipeComponents){
-        addShapelessRecipe(stack.toString() + Lists.newArrayList(recipeComponents), stack, recipeComponents);
+        addShapelessRecipe((stack.toString() + Lists.newArrayList(recipeComponents)).replace(":", "-"), stack, recipeComponents);
     }
 
     @SuppressWarnings("all")
@@ -42,7 +43,7 @@ public interface ICraftingManager {
 
     @Deprecated
     public default void addRecipe(ItemStack stack, Object... recipeComponents){
-        addRecipe(stack.toString() + Lists.newArrayList(recipeComponents), stack, recipeComponents);
+        addRecipe((stack.toString() + Lists.newArrayList(recipeComponents)).replace(":", "-"), stack, recipeComponents);
     }
 
     @SuppressWarnings("all")

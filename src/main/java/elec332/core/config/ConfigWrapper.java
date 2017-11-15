@@ -2,15 +2,20 @@ package elec332.core.config;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
+import elec332.core.api.config.IConfigElementSerializer;
 import elec332.core.api.config.IConfigWrapper;
 import elec332.core.api.config.IConfigurableElement;
 import elec332.core.java.ReflectionHelper;
+import elec332.core.util.FMLUtil;
 import net.minecraftforge.common.config.Configuration;
+import net.minecraftforge.fml.common.LoaderState;
 
 import javax.annotation.Nonnull;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by Elec332 on 12-4-2015.
@@ -22,37 +27,43 @@ public class ConfigWrapper implements IConfigWrapper {
         this.instances = Lists.newArrayList();
         this.hasInit = false;
         this.categoryDataList = Lists.newArrayList();
-        this.categories = Lists.newArrayList();
+        this.categories = Sets.newHashSet();
         this.configurableElements = Lists.newArrayList();
+        this.isReloading = false;
     }
 
     private Configuration configuration;
     private List<Object> instances;
     private boolean hasInit;
     private List<CategoryData> categoryDataList;
-    private List<String> categories;
+    private Set<String> categories;
     private List<IConfigurableElement> configurableElements;
+    private boolean isReloading;
+    private static List<IConfigElementSerializer> serializers;
 
     @Override
     public void registerConfig(Object o){
-        if (!hasInit)
+        if (!hasInit) {
             this.instances.add(o);
-        else throw new RuntimeException("You cannot register configs after init");
+        } else {
+            throw new RuntimeException("You cannot register configs after init");
+        }
     }
 
     @Nonnull
     @Override
     public ConfigWrapper setCategoryData(String category, String description){
         for (CategoryData cat: this.categoryDataList){
-            if (category.equals(cat.getCategory()))
+            if (category.equals(cat.getCategory())) {
                 throw new IllegalArgumentException();
+            }
         }
         this.categoryDataList.add(new CategoryData(category, description));
         addRegisteredCategory(category);
         return this;
     }
 
-    private void addRegisteredCategory(String category){
+    protected void addRegisteredCategory(String category){
         if (!categories.contains(category.toLowerCase())) {
             this.categories.add(category.toLowerCase());
         }
@@ -96,6 +107,11 @@ public class ConfigWrapper implements IConfigWrapper {
 
     @Override
     public void refresh(boolean load) {
+        refreshInternal(load);
+    }
+
+    protected void refreshInternal(boolean load){
+        this.isReloading = true;
         if (load) {
             configuration.load();
         }
@@ -144,18 +160,15 @@ public class ConfigWrapper implements IConfigWrapper {
                             category = classCategory;
                         }
                         addRegisteredCategory(category);
-                        if (field.getType().isAssignableFrom(Integer.TYPE)) {
-                            field.set(o, configuration.getInt(field.getName(), category, (Integer) oldValue, (int) configurable.minValue(), (int) configurable.maxValue(), configurable.comment()));
-                        } else if (field.getType().isAssignableFrom(Boolean.TYPE)) {
-                            field.set(o, configuration.getBoolean(field.getName(), category, (Boolean) oldValue, configurable.comment()));
-                        } else if (field.getType().isAssignableFrom(String.class)){
-                            if (configurable.validStrings().length > 0) {
-                                field.set(o, configuration.getString(field.getName(), category, (String) oldValue, configurable.comment(), configurable.validStrings()));
-                            } else {
-                                field.set(o, configuration.getString(field.getName(), category, (String) oldValue, configurable.comment()));
+                        boolean serialized = false;
+                        for (IConfigElementSerializer serializer : serializers){
+                            if (serializer.setData(field.getType(), o, field, configurable, configuration, category, oldValue, configurable.comment())){
+                                serialized = true;
+                                break;
                             }
-                        } else if (field.getType().isAssignableFrom(Float.TYPE)){
-                            field.set(o, configuration.getFloat(field.getName(), category, (Float) oldValue, configurable.minValue(), configurable.maxValue(), configurable.comment()));
+                        }
+                        if (!serialized){
+                            throw new RuntimeException("Could not find serializer for type "+field.getType());
                         }
                     }
                     field.setAccessible(oldAccess);
@@ -173,6 +186,7 @@ public class ConfigWrapper implements IConfigWrapper {
                             method.invoke(o);
                         }
                     }
+
                     method.setAccessible(oldAccess);
                 } catch (Throwable t) {
                     throw new RuntimeException(t);
@@ -187,16 +201,68 @@ public class ConfigWrapper implements IConfigWrapper {
         if (configuration.hasChanged()) {
             configuration.save();
         }
+        this.isReloading = false;
+    }
+
+    @Nonnull
+    @Override
+    public IConfigWrapper wrapCategoryAsConfigWrapper(String category) {
+        return new ConfigWrapper(wrapCategoryAsConfig(category)){
+
+            @Override
+            public void refresh(boolean load) {
+                if (load && isReloading){
+                    throw new IllegalStateException("Cannot active load config file while master config is reloading.");
+                }
+                super.refresh(load);
+            }
+
+            @Override
+            protected void addRegisteredCategory(String category) {
+                super.addRegisteredCategory(category);
+                ConfigWrapper.this.addRegisteredCategory(category+"."+category);
+            }
+
+        };
     }
 
     @Nonnull
     @Override
     public Configuration wrapCategoryAsConfig(String category) {
-        return wrapCategoryAsConfig(configuration, category);
+        addRegisteredCategory(category);
+        return new CategoryAsConfig(category, configuration){
+
+            @Override
+            public void load() {
+                if (!isReloading) {
+                    super.load();
+                } else {
+                    throw new IllegalStateException("Cannot load config while master configuration is reloading.");
+                }
+            }
+
+
+            @Override
+            public void save() {
+                if (!isReloading) {
+                    super.save();
+                } else {
+                    throw new IllegalStateException("Cannot save config while master configuration is reloading.");
+                }
+            }
+
+        };
     }
 
     public static Configuration wrapCategoryAsConfig(Configuration configuration, String category){
         return new CategoryAsConfig(category, configuration);
+    }
+
+    public static void registerConfigElementSerializer(IConfigElementSerializer serializer){
+        if (FMLUtil.hasReachedState(LoaderState.INITIALIZATION)){
+            throw new RuntimeException("Cannot register config element serializer after PreInit!");
+        }
+        serializers.add(serializer);
     }
 
     private final class CategoryData {
@@ -217,4 +283,41 @@ public class ConfigWrapper implements IConfigWrapper {
         }
 
     }
+
+    static {
+        serializers = Lists.newArrayList();
+        registerConfigElementSerializer((type, instance, field, data, config, category, defaultValue, comment) -> {
+            if (type.isAssignableFrom(Integer.TYPE)) {
+                field.set(instance, config.getInt(field.getName(), category, (Integer) defaultValue, (int) data.minValue(), (int) data.maxValue(), comment));
+                return true;
+            }
+            return false;
+        });
+        registerConfigElementSerializer((type, instance, field, data, config, category, defaultValue, comment) -> {
+            if (type.isAssignableFrom(Boolean.TYPE)) {
+                field.set(instance, config.getBoolean(field.getName(), category, (Boolean) defaultValue, comment));
+                return true;
+            }
+            return false;
+        });
+        registerConfigElementSerializer((type, instance, field, data, config, category, defaultValue, comment) -> {
+            if (field.getType().isAssignableFrom(String.class)){
+                if (data.validStrings().length > 0) {
+                    field.set(instance, config.getString(field.getName(), category, (String) defaultValue, comment, data.validStrings()));
+                } else {
+                    field.set(instance, config.getString(field.getName(), category, (String) defaultValue, comment));
+                }
+                return true;
+            }
+            return false;
+        });
+        registerConfigElementSerializer((type, instance, field, data, config, category, defaultValue, comment) -> {
+            if (field.getType().isAssignableFrom(Float.TYPE)){
+                field.set(instance, config.getFloat(field.getName(), category, (Float) defaultValue, data.minValue(), data.maxValue(), comment));
+                return true;
+            }
+            return false;
+        });
+    }
+
 }

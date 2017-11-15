@@ -8,6 +8,8 @@ import elec332.core.inventory.widget.slot.WidgetSlot;
 import elec332.core.main.ElecCore;
 import elec332.core.network.packets.PacketWindowData;
 import elec332.core.util.InventoryHelper;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.*;
@@ -297,15 +299,16 @@ public final class WindowContainer extends Container {
 
         @SideOnly(Side.CLIENT)
         @Override
-        @Nonnull
-        public net.minecraft.client.renderer.texture.TextureAtlasSprite getBackgroundSprite() {
+        //@Nonnull
+        @SuppressWarnings("all")
+        public TextureAtlasSprite getBackgroundSprite() {
             return widget.getBackgroundSprite();
         }
 
         @Nonnull
         @SideOnly(Side.CLIENT)
         @Override
-        protected net.minecraft.client.renderer.texture.TextureMap getBackgroundMap() {
+        protected TextureMap getBackgroundMap() {
             return widget.getBackgroundMap();
         }
 

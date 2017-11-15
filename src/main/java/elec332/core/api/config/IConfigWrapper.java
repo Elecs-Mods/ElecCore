@@ -34,6 +34,9 @@ public interface IConfigWrapper {
     public Configuration getConfiguration();
 
     @Nonnull
+    public IConfigWrapper wrapCategoryAsConfigWrapper(String category);
+
+    @Nonnull
     public Configuration wrapCategoryAsConfig(String category);
 
 }

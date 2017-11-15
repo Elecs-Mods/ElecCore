@@ -2,11 +2,7 @@ package elec332.core.grid;
 
 import com.google.common.collect.Sets;
 import elec332.core.main.ElecCore;
-import elec332.core.world.DimensionCoordinate;
-import elec332.core.world.PositionedObjectHolder;
-import elec332.core.world.WorldHelper;
-import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
-import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import elec332.core.world.*;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
@@ -16,25 +12,40 @@ import java.lang.reflect.Field;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 /**
  * Created by Elec332 on 1-8-2016.
  */
-public abstract class AbstractGridHandler<T extends ITileEntityLink> implements IStructureWorldEventHandler {
+public abstract class AbstractGridHandler<T extends IPositionable> implements IStructureWorldEventHandler {
 
     public AbstractGridHandler(){
-        this.objectsInternal = new Int2ObjectArrayMap<PositionedObjectHolder<T>>();
+        this.objectsInternal = getWorldPosObjHolder();
+        this.objectsInternal.get().addCreateCallback(new Consumer<PositionedObjectHolder<T>>() {
+
+            @Override
+            public void accept(PositionedObjectHolder<T> obj) {
+                for (PositionedObjectHolder.ChangeCallback<T> callback : changeCallbacks){
+                    obj.registerCallback(callback);
+                }
+            }
+
+        });
         this.extraUnload = Sets.newHashSet();
         this.changeCheck = Sets.newHashSet();
         this.add = Sets.newHashSet();
-        this.objects = Collections.unmodifiableMap(objectsInternal);
         this.changeCallbacks = Sets.newHashSet();
         registerChangeCallback(new PositionedObjectHolder.ChangeCallback<T>() {
             @Override
-            public void onChange(T object, BlockPos pos, boolean add) {
-                if (object == null){
+            public void onChange(T objectU, BlockPos pos, boolean add) {
+                if (objectU == null){
                     return;
                 }
+                if (!(objectU instanceof ITileEntityLink)){
+                    return;
+                }
+                ITileEntityLink object = (ITileEntityLink) objectU;
                 Class type = object.getInformationType();
                 if (type == null){
                     return;
@@ -66,10 +77,18 @@ public abstract class AbstractGridHandler<T extends ITileEntityLink> implements 
         });
     }
 
-    private final Int2ObjectMap<PositionedObjectHolder<T>> objectsInternal;
+    private final Supplier<IMultiWorldPositionedObjectHolder<T>> objectsInternal;
     private final Set<PositionedObjectHolder.ChangeCallback<T>> changeCallbacks;
-    protected final Map<Integer, PositionedObjectHolder<T>> objects;
     protected final Set<DimensionCoordinate> extraUnload, changeCheck, add;
+    protected boolean removeWarningOverride = false;
+
+    protected Supplier<IMultiWorldPositionedObjectHolder<T>> getWorldPosObjHolder(){
+        return new DefaultMultiWorldPositionedObjectHolder<>();
+    }
+
+    protected final Map<Integer, PositionedObjectHolder<T>> getObjects(){
+        return objectsInternal.get().getUnModifiableView();
+    }
 
     //Block changed
     @SuppressWarnings("all")
@@ -108,13 +127,14 @@ public abstract class AbstractGridHandler<T extends ITileEntityLink> implements 
             TileEntity tile = dimCoord.getTileEntity();
             T o = getObject(dimCoord);
             if (o == null && tile == null){
-                return;
+                continue;
             }
             if (o == null && isValidObject(tile)){
                 add.add(dimCoord);
             }
             if (o != null && tile == null){
                 extraUnload.add(dimCoord);
+                continue;
             }
             if (o != null && isValidObject(tile)){
                 if (o.hasChanged()){
@@ -126,7 +146,7 @@ public abstract class AbstractGridHandler<T extends ITileEntityLink> implements 
 
     @Override
     public void worldUnload(World world){
-        PositionedObjectHolder<T> worldObjects = objectsInternal.get(WorldHelper.getDimID(world));
+        PositionedObjectHolder<T> worldObjects = objectsInternal.get().get(world);
         if (worldObjects != null) {
             Set<DimensionCoordinate> unload = Sets.newHashSet();
             for (ChunkPos chunkPos : worldObjects.getChunks()) {
@@ -173,12 +193,12 @@ public abstract class AbstractGridHandler<T extends ITileEntityLink> implements 
             }
             T o = getObject(dimCoord);
             if (o != null){
-                if (oldUpdates.contains(dimCoord) && !ElecCore.suppressSpongeIssues) {
+                if (oldUpdates.contains(dimCoord) && !ElecCore.suppressSpongeIssues && !removeWarningOverride) {
                     throw new IllegalStateException();
                 }
             } else {
                 o = createNewObject(tile);
-                objectsInternal.get(WorldHelper.getDimID(tile.getWorld())).put(o, tile.getPos());
+                objectsInternal.get().get(tile.getWorld()).put(o, tile.getPos());
                 o.hasChanged(); //Set initial data
             }
             internalAdd(o);
@@ -206,20 +226,12 @@ public abstract class AbstractGridHandler<T extends ITileEntityLink> implements 
     }
 
     protected PositionedObjectHolder<T> getDim(DimensionCoordinate dimensionCoordinate){
-        PositionedObjectHolder<T> ret = objectsInternal.get(dimensionCoordinate.getDimension());
-        if (ret == null){
-            ret = new PositionedObjectHolder<>();
-            for (PositionedObjectHolder.ChangeCallback<T> callback : changeCallbacks){
-                ret.registerCallback(callback);
-            }
-            objectsInternal.put(dimensionCoordinate.getDimension(), ret);
-        }
-        return ret;
+        return objectsInternal.get().getOrCreate(dimensionCoordinate.getWorld());
     }
 
     public void registerChangeCallback(PositionedObjectHolder.ChangeCallback<T> callback){
         if (changeCallbacks.add(callback)){
-            for (PositionedObjectHolder<T> o : objectsInternal.values()){
+            for (PositionedObjectHolder<T> o : objectsInternal.get().getValues()){
                 o.registerCallback(callback);
             }
         }
