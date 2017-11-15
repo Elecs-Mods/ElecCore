@@ -79,6 +79,7 @@ public class ElecCore implements IModuleController, IElecCoreMod, IDependencyHan
 	public static final boolean developmentEnvironment;
 	public static boolean debug = false;
 	public static boolean removeJSONErrors = true;
+	private ModContainer elecCoreModContainer;
 
 	public static boolean suppressSpongeIssues = false;
 
@@ -96,6 +97,7 @@ public class ElecCore implements IModuleController, IElecCoreMod, IDependencyHan
 				ModEventHooks hook = new ModEventHooks(fmlMc);
 				FMLUtil.registerToModBus(fmlMc, hook);
 				if (mc.getMod() == this){
+					elecCoreModContainer = mc;
 					hook.onConstuct(event);
 					if (i == mcl.size() - 1){
 						onConstructionLast(event);
@@ -122,7 +124,7 @@ public class ElecCore implements IModuleController, IElecCoreMod, IDependencyHan
 	@Subscribe
 	public void onConstructionLast(FMLEvent e){
 		if (e instanceof FMLConstructionEvent){
-			FMLUtil.runAs(FMLUtil.getModContainer(this), () -> {
+			FMLUtil.runAs(elecCoreModContainer, () -> {
                 asmDataProcessor = new ElecCoreDiscoverer();
                 asmDataProcessor.identify(((FMLConstructionEvent) e).getASMHarvestedData());
                 ElecModHandler.identifyMods();
