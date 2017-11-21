@@ -112,7 +112,7 @@ public class WorldHelper {
 
     public static boolean chunkLoaded(World world, BlockPos pos){
         Chunk chunk = world.getChunkProvider().getLoadedChunk(pos.getX() >> 4, pos.getZ() >> 4);
-        return chunk == null || chunk.isLoaded();
+        return chunk != null && chunk.isLoaded();
     }
 
     public static void markBlockForRenderUpdate(World world, BlockPos pos){
