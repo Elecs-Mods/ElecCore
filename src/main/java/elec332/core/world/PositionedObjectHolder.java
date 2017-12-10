@@ -36,6 +36,12 @@ public class PositionedObjectHolder<T> {
     private final Set<ChangeCallback<T>> callbacks;
     private boolean hasCallbacks;
 
+    public void clear(){
+        positionedMap.values().forEach(PositionChunk::clear);
+        positionedMap.clear();
+        callbacks.clear();
+    }
+
     public void registerCallback(ChangeCallback<T> callback){
         if (callback == null){
             return;
@@ -137,6 +143,10 @@ public class PositionedObjectHolder<T> {
                     callback.onChange(t, pos, false);
                 }
             }
+        }
+
+        public void clear(){
+            posMap.clear();
         }
 
     }

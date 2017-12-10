@@ -1,6 +1,5 @@
 package elec332.core.main;
 
-import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.base.Throwables;
@@ -42,6 +41,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 /**
  * Created by Elec332 on 20-10-2016.
@@ -123,8 +123,7 @@ public class ElecModHandler {
         try {
             String[] annName = annotationClassName.split("\\.");
             String annotationName = annName[annName.length - 1];
-            for (ASMDataTable.ASMData targets : annotations.get(annotationClassName))
-            {
+            for (ASMDataTable.ASMData targets : annotations.get(annotationClassName)) {
                 String targetMod = (String)targets.getAnnotationInfo().get("value");
                 Field f = null;
                 Object injectedMod = null;

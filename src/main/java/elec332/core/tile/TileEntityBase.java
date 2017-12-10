@@ -74,6 +74,10 @@ public class TileEntityBase extends TileEntity implements IElecCoreNetworkTile {
         player.connection.sendPacket(new SPacketUpdateTileEntity(getPos(), ID, data));
     }
 
+    public void syncTile(){
+        sendPacket(0, getUpdateTag());
+    }
+
     @Override
     @Nonnull
     public NBTTagCompound getUpdateTag() {
@@ -87,9 +91,16 @@ public class TileEntityBase extends TileEntity implements IElecCoreNetworkTile {
     }
 
     @Override
+    public void handleUpdateTag(@Nonnull NBTTagCompound tag) {
+        readFromNBT(tag);
+        onDataPacket(0, tag);
+    }
+
+    @Override
     public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity packet) {
         if (packet.getTileEntityType() == 0) {
             readFromNBT(packet.getNbtCompound());
+            onDataPacket(0, packet.getNbtCompound());
         } else {
             onDataPacket(packet.getTileEntityType(), packet.getNbtCompound());
         }

@@ -39,6 +39,7 @@ public class JsonHandler {
             return null;
         }
     }).create();
+
     private static final JsonParser parser = new JsonParser();
 
     public static Gson getGson(){

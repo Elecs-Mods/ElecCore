@@ -255,6 +255,18 @@ public class RenderHelper {
         mc.effectRenderer.addEffect(particle);
     }
 
+    public static void disableStandardItemLighting(){
+        net.minecraft.client.renderer.RenderHelper.disableStandardItemLighting();
+    }
+
+    public static void enableStandardItemLighting(){
+        net.minecraft.client.renderer.RenderHelper.enableStandardItemLighting();
+    }
+
+    public static void enableGUIStandardItemLighting(){
+        net.minecraft.client.renderer.RenderHelper.enableGUIStandardItemLighting();
+    }
+
     static {
         mcTessellator = Tessellator.getInstance();
         tessellator = new ElecTessellator(mcTessellator);

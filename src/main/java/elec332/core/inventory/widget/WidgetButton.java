@@ -5,7 +5,6 @@ import elec332.core.client.RenderHelper;
 import elec332.core.client.util.GuiDraw;
 import elec332.core.inventory.window.Window;
 import elec332.core.util.NBTHelper;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
@@ -62,8 +61,8 @@ public class WidgetButton extends Widget {
     @Override
     public final boolean mouseClicked(int mouseX, int mouseY, int button) {
         if (isMouseOver(mouseX, mouseY) && active){
-            onButtonClicked();
-            sendNBTChangesToServer(new NBTHelper().addToTag(1, "id").serializeNBT());
+            onButtonClicked(button);
+            sendNBTChangesToServer(new NBTHelper().addToTag(1, "id").addToTag(button, "mbi").serializeNBT());
             return true;
         }
         return false;
@@ -72,12 +71,12 @@ public class WidgetButton extends Widget {
     @Override
     public void readNBTChangesFromPacketServerSide(NBTTagCompound tagCompound) {
         if (tagCompound.getInteger("id") == 1){
-            onButtonClicked();
+            onButtonClicked(tagCompound.getInteger("mbi"));
         }
     }
 
-    public void onButtonClicked(){
-        sendButtonEvents();
+    public void onButtonClicked(int mouseButton){
+        sendButtonEvents(mouseButton);
     }
 
     @Override
@@ -123,9 +122,10 @@ public class WidgetButton extends Widget {
         return b;
     }
 
-    public void sendButtonEvents(){
-        for (IButtonEventListener event : buttonEvents)
-            event.onButtonClicked(this);
+    public void sendButtonEvents(int mouseButton){
+        for (IButtonEventListener event : buttonEvents) {
+            event.onButtonClicked(this, mouseButton);
+        }
     }
 
     public WidgetButton addButtonEvent(IButtonEventListener event){
@@ -143,6 +143,10 @@ public class WidgetButton extends Widget {
     }
 
     public static interface IButtonEventListener {
+
+        default public void onButtonClicked(WidgetButton button, int mouseButton){
+            onButtonClicked(button);
+        }
 
         public void onButtonClicked(WidgetButton button);
 

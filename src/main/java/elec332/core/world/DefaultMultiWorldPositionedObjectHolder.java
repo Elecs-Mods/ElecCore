@@ -70,6 +70,12 @@ public class DefaultMultiWorldPositionedObjectHolder<T> implements IMultiWorldPo
 		callbacks.add(callback);
 	}
 
+	@Override
+	public void clear() {
+		objectsInternal.values().forEach(PositionedObjectHolder::clear);
+		objectsInternal.clear();
+	}
+
 	@Nonnull
 	protected PositionedObjectHolder<T> create(){
 		return new PositionedObjectHolder<>();

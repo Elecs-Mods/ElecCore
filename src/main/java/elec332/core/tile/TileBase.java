@@ -2,7 +2,6 @@ package elec332.core.tile;
 
 import com.google.common.collect.Lists;
 import elec332.core.main.ElecCore;
-import elec332.core.network.IElecCoreNetworkTile;
 import elec332.core.util.BlockStateHelper;
 import elec332.core.world.WorldHelper;
 import net.minecraft.block.Block;
@@ -24,7 +23,7 @@ import java.util.List;
  * Created by Elec332 on 8-4-2015.
  */
 @SuppressWarnings("unused")
-public class TileBase extends TileEntityBase implements IElecCoreNetworkTile {
+public class TileBase extends TileEntityBase {
 
     public static void setWorld(TileEntity tile, World world){
         tile.setWorld(world);

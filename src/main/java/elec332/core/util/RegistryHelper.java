@@ -21,7 +21,6 @@ import net.minecraftforge.fml.common.registry.VillagerRegistry;
 import net.minecraftforge.registries.*;
 
 import javax.annotation.Nullable;
-import java.util.concurrent.Callable;
 
 /**
  * Created by Elec332 on 5-4-2016.

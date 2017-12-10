@@ -15,6 +15,8 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import javax.annotation.Nullable;
+
 /**
  * Created by Elec332 on 31-7-2015.
  */
@@ -41,10 +43,16 @@ public class Widget implements IWidget {
         return this;
     }
 
+    public Widget setBackground(ResourceLocation background) {
+        this.background = background;
+        return this;
+    }
+
     private IWidgetContainer container;
     private int id;
     public final int x, y, u, v, width, height;
     private boolean hidden;
+    private ResourceLocation background = null;
 
     @Override
     public void initWidget(IWidgetListener iCrafting){
@@ -94,7 +102,11 @@ public class Widget implements IWidget {
 
     @Override
     public final boolean isMouseOver(int mouseX, int mouseY) {
-        return mouseX >= x - 1 && mouseX < x + width + 1 && mouseY >= y - 1 && mouseY < y + height + 1;
+        return isMouseOver(mouseX, mouseY, x, y, width, height);
+    }
+
+    protected final boolean isMouseOver(int mouseX, int mouseY, int x, int y, int width, int height) {
+        return mouseX >= x && mouseX < x + width && mouseY >= y && mouseY < y + height;
     }
 
     @Override
@@ -109,7 +121,16 @@ public class Widget implements IWidget {
 
     @Override
     @SideOnly(Side.CLIENT)
+    public boolean handleMouseWheel(int wheel, int translatedMouseX, int translatedMouseY){
+        return false;
+    }
+
+    @Override
+    @SideOnly(Side.CLIENT)
     public void draw(Window window, int guiX, int guiY, int mouseX, int mouseY) {
+        if (background != null){
+            RenderHelper.bindTexture(background);
+        }
         GuiDraw.drawTexturedModalRect(guiX + x, guiY + y, u, v, width, height);
     }
 
@@ -128,9 +149,12 @@ public class Widget implements IWidget {
         return hidden;
     }
 
+    @Nullable
     @Override
-    public ToolTip getToolTip(){
+    @SideOnly(Side.CLIENT)
+    public ToolTip getToolTip(int mouseX, int mouseY) {
         return null;
     }
+
 
 }

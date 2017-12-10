@@ -9,7 +9,6 @@ import elec332.core.api.registry.ISingleRegister;
 import elec332.core.api.util.IDependencyHandler;
 import elec332.core.api.util.IRightClickCancel;
 import elec332.core.asm.ASMLoader;
-import elec332.core.client.model.loading.handler.ElecModelHandler;
 import elec332.core.compat.ModNames;
 import elec332.core.effects.AbilityHandler;
 import elec332.core.grid.internal.GridEventHandler;

@@ -8,6 +8,7 @@ import net.minecraftforge.fml.client.config.GuiUtils;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -17,7 +18,7 @@ import java.util.stream.Collectors;
 public class ToolTip{
 
     public ToolTip(){
-        this((ColouredString) null);
+        this(Collections.emptyList());
     }
 
     public ToolTip(ColouredString colouredString){
@@ -43,6 +44,10 @@ public class ToolTip{
 
     private int width = -1;
     private final List<String> tooltip;
+
+    public List<String> getTooltip() {
+        return tooltip;
+    }
 
     @SideOnly(Side.CLIENT)
     public void renderTooltip(int mouseX, int mouseY, int guiLeft, int guiTop){

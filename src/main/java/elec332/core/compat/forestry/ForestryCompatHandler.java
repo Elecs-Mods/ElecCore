@@ -15,7 +15,6 @@ import forestry.api.apiculture.IBeeRoot;
 import forestry.api.core.Tabs;
 import forestry.api.genetics.*;
 import forestry.api.modules.IForestryModule;
-import forestry.api.modules.IModuleManager;
 import forestry.apiculture.ModuleApiculture;
 import forestry.apiculture.genetics.alleles.AlleleBeeSpecies;
 import forestry.modules.ModuleManager;

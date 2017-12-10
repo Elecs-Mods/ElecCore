@@ -71,13 +71,13 @@ public class WidgetEnumChange<E extends Enum> extends WidgetButton {
     }
 
     @Override
-    public void onButtonClicked() {
+    public void onButtonClicked(int mouseButton) {
         nextIdx();
         while (!predicate.apply(getEnum())){
             nextIdx();
         }
         setDisplayString(getEnum().toString());
-        super.onButtonClicked();
+        super.onButtonClicked(mouseButton);
         distributeEvents();
     }
 

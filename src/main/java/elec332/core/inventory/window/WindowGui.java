@@ -90,9 +90,12 @@ public final class WindowGui extends GuiContainer {
 
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
+        GlStateManager.pushMatrix();
+        window.drawScreenPre(mouseX, mouseY, partialTicks);
+        GlStateManager.popMatrix();
         super.drawScreen(mouseX, mouseY, partialTicks);
         GlStateManager.pushMatrix();
-        window.drawScreen(mouseX, mouseY, partialTicks);
+        window.drawScreenPost(mouseX, mouseY, partialTicks);
         GlStateManager.popMatrix();
     }
 

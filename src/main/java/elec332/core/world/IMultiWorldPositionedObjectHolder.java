@@ -37,4 +37,6 @@ public interface IMultiWorldPositionedObjectHolder<T> {
 
 	public void addCreateCallback(Consumer<PositionedObjectHolder<T>> callback);
 
+	public void clear();
+
 }

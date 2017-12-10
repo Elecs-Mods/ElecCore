@@ -9,12 +9,12 @@ import net.minecraftforge.fml.relauncher.Side;
  */
 public interface IPacketRegistry extends IPacketRegistryContainer {
 
-    default public <T extends IMessage & IMessageHandler<T, IMessage>> void registerPacket(Class<T> packetClass, Side side){
+    default public <T extends IMessage & IMessageHandler<T, M>, M extends IMessage> void registerPacket(Class<T> packetClass, Side side){
         registerPacket(packetClass, packetClass, side);
     }
 
     @SuppressWarnings("unchecked")
-    default public <T extends IMessage & IMessageHandler<T, IMessage>> void registerPacket(T type, Side side) {
+    default public <T extends IMessage & IMessageHandler<T, M>, M extends IMessage> void registerPacket(T type, Side side) {
         registerPacket(type, (Class<T>) type.getClass(), side);
     }
 

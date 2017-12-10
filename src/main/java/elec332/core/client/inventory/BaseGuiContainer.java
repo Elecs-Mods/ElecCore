@@ -1,6 +1,7 @@
 package elec332.core.client.inventory;
 
 import elec332.core.inventory.BaseContainer;
+import elec332.core.inventory.tooltip.ToolTip;
 import elec332.core.inventory.widget.IWidget;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
@@ -42,10 +43,15 @@ public abstract class BaseGuiContainer extends GuiContainer implements IResource
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
         RenderHelper.disableStandardItemLighting();
         for (IWidget widget : container.getWidgets()){
-            if (widget.isHidden())
+            if (widget.isHidden()) {
                 continue;
-            if (widget.getToolTip() != null && widget.isMouseOver(translatedMouseX(mouseX), translatedMouseY(mouseY)))
-                widget.getToolTip().renderTooltip(mouseX, mouseY, this.guiLeft, this.guiTop);
+            }
+            if (widget.isMouseOver(translatedMouseX(mouseX), translatedMouseY(mouseY))) {
+                ToolTip toolTip = widget.getToolTip(translatedMouseX(mouseX), translatedMouseY(mouseY));
+                if (toolTip != null) {
+                    toolTip.renderTooltip(mouseX, mouseY, this.guiLeft, this.guiTop);
+                }
+            }
         }
         GlStateManager.popMatrix();
         GlStateManager.enableDepth();

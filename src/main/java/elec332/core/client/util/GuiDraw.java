@@ -5,7 +5,9 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -66,6 +68,28 @@ public class GuiDraw {
         gui.drawHoveringText(textLines, x, y, fontrenderer == null ? RenderHelper.getMCFontrenderer() : fontrenderer);
     }
 
+    public static void drawHoveringText(String text, int x, int y) {
+        gui.drawHoveringText(text, x, y);
+    }
+
+    public static List<String> getItemToolTip(ItemStack stack){
+        return gui.getItemToolTip(stack);
+    }
+
+    public static void drawDefaultBackground(){
+        if (mc.currentScreen != null){
+            mc.currentScreen.drawDefaultBackground();
+        } else {
+            ScaledResolution scaledresolution = new ScaledResolution(mc);
+            gui.width = scaledresolution.getScaledWidth();
+            gui.height = scaledresolution.getScaledHeight();
+            gui.drawDefaultBackground();
+        }
+    }
+
+    public static void renderToolTip(ItemStack stack, int x, int y){
+        gui.renderToolTip(stack, x, y);
+    }
 
     public static GuiScreen getGui() {
         return gui;
@@ -80,6 +104,7 @@ public class GuiDraw {
 
         private GuiDrawGui(){
             zLevel = 0.0F;
+            mc = Minecraft.getMinecraft();
         }
 
         @Override
@@ -92,5 +117,11 @@ public class GuiDraw {
             super.drawHoveringText(textLines, x, y, font);
         }
 
+        @Override
+        public void renderToolTip(ItemStack stack, int x, int y) {
+            super.renderToolTip(stack, x, y);
+        }
+
     }
+
 }

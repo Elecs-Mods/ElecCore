@@ -112,7 +112,7 @@ class ModEventHooks {
 
                     @SubscribeEvent
                     @SuppressWarnings("unchecked")
-                    public void registerStuff(RegistryEvent.Register<?> event1){
+                    public void registerStuff(RegistryEvent.Register event1){
                         for (IObjectRegister register : list){
                             if (register.getType() == event1.getGenericType()){
                                 register.preRegister();

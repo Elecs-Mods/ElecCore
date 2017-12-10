@@ -14,6 +14,7 @@ import org.apache.commons.lang3.Validate;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.lang.ref.WeakReference;
 
 /**
  * Created by Elec332 on 22-7-2016.
@@ -21,20 +22,26 @@ import javax.annotation.Nullable;
 public final class DimensionCoordinate implements INBTSerializable<NBTTagCompound> {
 
     public DimensionCoordinate(DimensionCoordinate dim){
-        this(dim.dim, dim.pos);
+        this(dim.dim, dim.pos, dim.worldRef);
     }
 
     public DimensionCoordinate(World world, BlockPos pos){
-        this(WorldHelper.getDimID(world), pos);
+        this(WorldHelper.getDimID(world), pos, new WeakReference<>(world));
     }
 
     public DimensionCoordinate(int dimension, BlockPos pos){
+        this(dimension, pos, null);
+    }
+
+    private DimensionCoordinate(int dimension, BlockPos pos, WeakReference<World> worldRef){
         this.pos = Validate.notNull(pos, "Cannot have a DimensionCoordinate with a null BlockPos!");
         this.dim = dimension;
+        this.worldRef = worldRef;
     }
 
     private final BlockPos pos;
     private final int dim;
+    private WeakReference<World> worldRef;
 
     @Nonnull
     public BlockPos getPos(){
@@ -53,8 +60,12 @@ public final class DimensionCoordinate implements INBTSerializable<NBTTagCompoun
                 return world;
             }
             return null;
+        } else {
+            if (worldRef == null || worldRef.get() == null){
+                worldRef = new WeakReference<>(DimensionManager.getWorld(dim));
+            }
+            return worldRef.get();
         }
-        return DimensionManager.getWorld(dim);
     }
 
     @Nullable

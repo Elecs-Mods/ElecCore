@@ -17,7 +17,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -106,6 +105,15 @@ public final class WindowContainer extends Container {
     @Override
     public ItemStack slotClick(int slotId, int dragType, ClickType clickTypeIn, EntityPlayer player) {
         return window.slotClick(slotId, dragType, clickTypeIn, player);
+    }
+
+    @Override
+    public boolean canMergeSlot(ItemStack stack, Slot slotIn) {
+        if (slotIn instanceof WidgetLinkedSlot) {
+            return window.canMergeSlot(stack, ((WidgetLinkedSlot) slotIn).widget);
+        } else {
+            return super.canMergeSlot(stack, slotIn);
+        }
     }
 
     @Override

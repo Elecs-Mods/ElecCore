@@ -6,6 +6,7 @@ import com.google.common.collect.Sets;
 import elec332.core.client.RenderHelper;
 import elec332.core.client.util.GuiDraw;
 import elec332.core.inventory.IWidgetContainer;
+import elec332.core.inventory.tooltip.ToolTip;
 import elec332.core.inventory.widget.IWidget;
 import elec332.core.inventory.widget.IWidgetListener;
 import elec332.core.inventory.widget.slot.WidgetSlot;
@@ -13,6 +14,7 @@ import elec332.core.inventory.widget.slot.WidgetSlotOutput;
 import elec332.core.main.ElecCore;
 import elec332.core.proxies.CommonProxy;
 import elec332.core.util.ItemStackHelper;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.ClickType;
@@ -25,6 +27,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.wrapper.PlayerMainInvWrapper;
+import org.lwjgl.input.Mouse;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -208,6 +211,10 @@ public class Window implements IWidgetContainer {
         return slotClickDefault(slotId, dragType, clickTypeIn, player);
     }
 
+    public boolean canMergeSlot(ItemStack stack, WidgetSlot slot){
+        return slot.canMergeSlot(stack);
+    }
+
     protected boolean mergeItemStack(ItemStack stack, int startIndex, int endIndex, boolean reverseDirection){
         return windowContainer.mergeItemStackDefault(stack, startIndex, endIndex, reverseDirection);
     }
@@ -261,6 +268,7 @@ public class Window implements IWidgetContainer {
             wl.setWidget(widget);
             widget.detectAndSendChanges(new Iterable<IWidgetListener>() {
 
+                @Nonnull
                 @Override
                 public Iterator<IWidgetListener> iterator() {
 
@@ -315,6 +323,11 @@ public class Window implements IWidgetContainer {
     }
 
     public void modifyTooltip(List<String> tooltip, WidgetSlot slot, ItemStack stack, int x, int y){
+        modifyTooltip(tooltip, slot, x, y);
+    }
+
+    public void modifyTooltip(List<String> tooltip, IWidget widget, int mouseX, int mouseY){
+        widget.modifyTooltip(tooltip, mouseX, mouseY);
     }
 
     @SideOnly(Side.CLIENT)
@@ -344,26 +357,55 @@ public class Window implements IWidgetContainer {
 
     @SideOnly(Side.CLIENT)
     public void handleMouseInput() throws IOException {
+        int wheel = Mouse.getEventDWheel();
+        if (wheel != 0){
+            int mouseX = Mouse.getEventX() * width / Minecraft.getMinecraft().displayWidth;
+            int mouseY = height - Mouse.getEventY() * height / Minecraft.getMinecraft().displayHeight - 1;
+            handleMouseWheel(wheel, translatedMouseX(mouseX), translatedMouseY(mouseY));
+        }
+    }
+
+    @SideOnly(Side.CLIENT)
+    protected boolean handleMouseWheel(int wheel, int translatedMouseX, int translatedMouseY){
+        for (IWidget widget : widgets){
+            if (widget.handleMouseWheel(wheel, translatedMouseX, translatedMouseY)){
+                return true;
+            }
+        }
+        return false;
     }
 
     @SideOnly(Side.CLIENT)
     protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY){
+
     }
 
     @SideOnly(Side.CLIENT)
-    protected void drawScreen(int mouseX, int mouseY, float partialTicks) {
+    protected void drawScreenPre(int mouseX, int mouseY, float partialTicks) {
+        GuiDraw.drawDefaultBackground();
+    }
+
+    @SideOnly(Side.CLIENT)
+    protected void drawScreenPost(int mouseX, int mouseY, float partialTicks) {
         GlStateManager.disableLighting();
         GlStateManager.disableDepth();
         GlStateManager.pushMatrix();
-        //GlStateManager.translate((float) guiLeft, (float) guiTop, 0.0F);
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
         net.minecraft.client.renderer.RenderHelper.disableStandardItemLighting();
-        for (IWidget widget : getWidgets()){
+        for (IWidget widget : getWidgets()) {
             if (widget.isHidden()) {
                 continue;
             }
-            if (widget.getToolTip() != null && widget.isMouseOver(translatedMouseX(mouseX), translatedMouseY(mouseY))) {
-                widget.getToolTip().renderTooltip(mouseX, mouseY, guiLeft, guiTop);
+            if (widget.isMouseOver(translatedMouseX(mouseX), translatedMouseY(mouseY))) {
+                ToolTip toolTip = widget.getToolTip(translatedMouseX(mouseX), translatedMouseY(mouseY));
+                if (toolTip != null) {
+                    if (widget instanceof WidgetSlot){
+                        modifyTooltip(toolTip.getTooltip(), (WidgetSlot) widget, ((WidgetSlot) widget).getStack(), mouseX, mouseY);
+                    } else {
+                        modifyTooltip(toolTip.getTooltip(), widget, mouseX, mouseY);
+                    }
+                    toolTip.renderTooltip(mouseX, mouseY, this.guiLeft, this.guiTop);
+                }
             }
         }
         GlStateManager.popMatrix();

@@ -10,7 +10,6 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.common.Loader;
 
 import java.util.List;
-import java.util.UUID;
 import java.util.function.Function;
 
 /**

@@ -49,7 +49,7 @@ public class FluidTankWidget extends Widget {
     }
 
     @Override
-    public ToolTip getToolTip() {
+    public ToolTip getToolTip(int mouseX, int mouseY) {
         String fluid = (fluidStack == null || fluidStack.getFluid() == null) ? null : fluidStack.getFluid().getName();
         int amount = fluidStack == null ? 0 : fluidStack.amount;
         return new ToolTip(new ToolTip.ColouredString("Fluid: " + fluid + "  Amount: " + amount));

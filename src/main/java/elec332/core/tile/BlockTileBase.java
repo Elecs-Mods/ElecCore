@@ -43,19 +43,20 @@ public class BlockTileBase extends AbstractBlock implements IWrenchable, ITileEn
         setHardness(2.0F);
         setSoundType(SoundType.STONE); //soundTypeStone
         this.setRegistryName(name);
-        this.setUnlocalizedName(getRegistryName().toString().replace(":", ".").toLowerCase());
+        this.setUnlocalizedName(name.toString().replace(":", ".").toLowerCase());
         this.tileClass = tileClass;
         this.blockName = name.getResourcePath();
         this.modID = name.getResourceDomain();
         if (tileClass != null) {
             randomDisplayTick = IRandomDisplayTickProviderTile.class.isAssignableFrom(tileClass);
-            comparatorInputOverride = IComparatorOverride.class.isAssignableFrom(this.tileClass);
+            comparatorInputOverride = IComparatorOverride.class.isAssignableFrom(tileClass);
+            redstoneHandler = IRedstoneHandler.class.isAssignableFrom(tileClass);
         }
     }
 
     private static final EnumFacing[] HORIZONTAL, ALL;
     private Class<? extends TileEntity> tileClass;
-    private boolean randomDisplayTick, comparatorInputOverride;
+    private boolean randomDisplayTick, comparatorInputOverride, redstoneHandler;
     public final String blockName;
     @SuppressWarnings("unused")
     public final String modID;
@@ -71,12 +72,19 @@ public class BlockTileBase extends AbstractBlock implements IWrenchable, ITileEn
         return this;
     }
 
-    @Override
-    public IBlockState getBlockStateForPlacementC(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer, @Nullable EnumHand hand) {
-        return getBlockState().getBaseState().withProperty(BlockStateHelper.FACING_NORMAL.getProperty(), DirectionHelper.getFacingOnPlacement(placer));
+    private boolean hasFacingProperty(){
+        return getBlockState().getProperties().contains(BlockStateHelper.FACING_NORMAL.getProperty());
     }
 
-
+    @Nonnull
+    @Override
+    public IBlockState getBlockStateForPlacementC(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer, @Nullable EnumHand hand) {
+        if (hasFacingProperty()) {
+            return getBlockState().getBaseState().withProperty(BlockStateHelper.FACING_NORMAL.getProperty(), DirectionHelper.getFacingOnPlacement(placer));
+        } else {
+            return super.getBlockStateForPlacementC(worldIn, pos, facing, hitX, hitY, hitZ, meta, placer, hand);
+        }
+    }
 
     @Override
     public boolean onBlockActivatedC(World world, BlockPos pos, EntityPlayer player, EnumHand hand, IBlockState state, EnumFacing facing, float hitX, float hitY, float hitZ) {
@@ -97,7 +105,6 @@ public class BlockTileBase extends AbstractBlock implements IWrenchable, ITileEn
     }
 
     @Override
-    @SuppressWarnings("all")
     public TileEntity createNewTileEntity(@Nonnull World world, int metadata) {
         try {
             return createTile(tileClass, world, metadata);
@@ -106,6 +113,7 @@ public class BlockTileBase extends AbstractBlock implements IWrenchable, ITileEn
         }
     }
 
+    @SuppressWarnings("all")
     protected TileEntity createTile(Class<? extends TileEntity> clazz, @Nonnull World world, int metadata) throws Exception {
         return clazz.newInstance();
     }
@@ -195,7 +203,7 @@ public class BlockTileBase extends AbstractBlock implements IWrenchable, ITileEn
 
     @Override
     @Nonnull
-    public List<ItemStack> getDrops(IBlockAccess world, BlockPos pos, @Nonnull IBlockState state, int fortune) {
+    public List<ItemStack> getDrops(@Nonnull IBlockAccess world, @Nonnull BlockPos pos, @Nonnull IBlockState state, int fortune) {
         TileEntity tile = WorldHelper.getTileAt(world, pos);
         if (tile instanceof TileBase)
             return ((TileBase) tile).getDrops(fortune);
@@ -204,17 +212,23 @@ public class BlockTileBase extends AbstractBlock implements IWrenchable, ITileEn
 
     @Override
     public int getWeakPower(IBlockState state, IBlockAccess world, BlockPos pos, EnumFacing side) {
-        TileEntity tile = WorldHelper.getTileAt(world, pos);
-        if (tile instanceof IRedstoneHandler)
-            return ((IRedstoneHandler) tile).isProvidingWeakPower(side);
+        if (redstoneHandler) {
+            TileEntity tile = WorldHelper.getTileAt(world, pos);
+            if (tile instanceof IRedstoneHandler) {
+                return ((IRedstoneHandler) tile).isProvidingWeakPower(side);
+            }
+        }
         return super.getWeakPower(state, world, pos, side);
     }
 
     @Override
     public boolean canConnectRedstone(IBlockState state, IBlockAccess world, BlockPos pos, EnumFacing direction) {
-        TileEntity tile = WorldHelper.getTileAt(world, pos);
-        if (tile instanceof IRedstoneHandler)
-            return ((IRedstoneHandler) tile).canConnectRedstone(direction);
+        if (redstoneHandler) {
+            TileEntity tile = WorldHelper.getTileAt(world, pos);
+            if (tile instanceof IRedstoneHandler) {
+                return ((IRedstoneHandler) tile).canConnectRedstone(direction);
+            }
+        }
         return super.canConnectRedstone(state, world, pos, direction);
     }
 
@@ -225,9 +239,12 @@ public class BlockTileBase extends AbstractBlock implements IWrenchable, ITileEn
 
     @Override
     public int getComparatorInputOverride(IBlockState state, World world, BlockPos pos) {
-        TileEntity tile = WorldHelper.getTileAt(world, pos);
-        if (tile instanceof IComparatorOverride)
-            return ((IComparatorOverride) tile).getComparatorInputOverride();
+        if (comparatorInputOverride) {
+            TileEntity tile = WorldHelper.getTileAt(world, pos);
+            if (tile instanceof IComparatorOverride) {
+                return ((IComparatorOverride) tile).getComparatorInputOverride();
+            }
+        }
         return super.getComparatorInputOverride(state, world, pos);
     }
 
@@ -235,7 +252,7 @@ public class BlockTileBase extends AbstractBlock implements IWrenchable, ITileEn
 
     @Override
     public boolean rotateBlock(World world, @Nonnull BlockPos pos, @Nonnull EnumFacing sideHit) {
-        if ((sideHit != EnumFacing.UP && sideHit != EnumFacing.DOWN) || canFaceUpOrDown(world, pos)) {
+        if (hasFacingProperty() && ((sideHit != EnumFacing.UP && sideHit != EnumFacing.DOWN) || canFaceUpOrDown(world, pos))) {
             WorldHelper.setBlockState(world, pos, getDefaultState().withProperty(BlockStateHelper.FACING_NORMAL.getProperty(), sideHit), 3);
             return true;
         }
@@ -251,20 +268,20 @@ public class BlockTileBase extends AbstractBlock implements IWrenchable, ITileEn
     @SuppressWarnings("deprecation")
     @Nonnull
     public IBlockState withMirror(@Nonnull IBlockState state, Mirror mirrorIn) {
-        return getDefaultState().withProperty(BlockStateHelper.FACING_NORMAL.getProperty(), mirrorIn.mirror(state.getValue(BlockStateHelper.FACING_NORMAL.getProperty())));
+        return !hasFacingProperty() ? state : getDefaultState().withProperty(BlockStateHelper.FACING_NORMAL.getProperty(), mirrorIn.mirror(state.getValue(BlockStateHelper.FACING_NORMAL.getProperty())));
     }
 
     @Override
     @Nonnull
     public EnumFacing[] getValidRotations(World world, @Nonnull BlockPos pos) {
-        return canFaceUpOrDown(world, pos) ? ALL : HORIZONTAL;
+        return hasFacingProperty() ? (canFaceUpOrDown(world, pos) ? ALL : HORIZONTAL) : new EnumFacing[0];
     }
 
     @Override
     @SuppressWarnings("deprecation")
     @Nonnull
     public IBlockState withRotation(@Nonnull IBlockState state, Rotation rot) {
-        return getDefaultState().withProperty(BlockStateHelper.FACING_NORMAL.getProperty(), rot.rotate(state.getValue(BlockStateHelper.FACING_NORMAL.getProperty())));
+        return !hasFacingProperty() ? state : getDefaultState().withProperty(BlockStateHelper.FACING_NORMAL.getProperty(), rot.rotate(state.getValue(BlockStateHelper.FACING_NORMAL.getProperty())));
     }
 
     static {

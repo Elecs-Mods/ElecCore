@@ -2,6 +2,7 @@ package elec332.core.inventory.widget.slot;
 
 import elec332.core.client.RenderHelper;
 import elec332.core.client.util.GuiDraw;
+import elec332.core.inventory.tooltip.ToolTip;
 import elec332.core.inventory.widget.Widget;
 import elec332.core.inventory.window.Window;
 import elec332.core.util.ItemStackHelper;
@@ -64,6 +65,10 @@ public class WidgetSlot extends Widget {
      * the itemStack passed in is the output - ie, iron ingots, and pickaxes, not ore and wood.
      */
     public void onCrafting(ItemStack stack) {
+    }
+
+    public boolean canMergeSlot(ItemStack stack){
+        return true;
     }
 
     @Nonnull
@@ -259,6 +264,13 @@ public class WidgetSlot extends Widget {
      */
     public boolean isSameInventory(WidgetSlot other) {
         return other.getInventory() == this.getInventory();
+    }
+
+    @Nullable
+    @Override
+    @SideOnly(Side.CLIENT)
+    public ToolTip getToolTip(int mouseX, int mouseY) {
+        return new ToolTip(GuiDraw.getItemToolTip(getStack()));
     }
 
 }
