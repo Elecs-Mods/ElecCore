@@ -2,7 +2,10 @@ package elec332.core.grid;
 
 import com.google.common.collect.Sets;
 import elec332.core.main.ElecCore;
-import elec332.core.world.*;
+import elec332.core.world.DefaultMultiWorldPositionedObjectHolder;
+import elec332.core.world.DimensionCoordinate;
+import elec332.core.world.IMultiWorldPositionedObjectHolder;
+import elec332.core.world.PositionedObjectHolder;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
@@ -18,7 +21,7 @@ import java.util.function.Supplier;
 /**
  * Created by Elec332 on 1-8-2016.
  */
-public abstract class AbstractGridHandler<T extends ITileEntityLink> implements IStructureWorldEventHandler {
+public abstract class AbstractGridHandler<T extends IPositionable> implements IStructureWorldEventHandler {
 
     public AbstractGridHandler(){
         this.objectsInternal = getWorldPosObjHolder();
@@ -226,7 +229,7 @@ public abstract class AbstractGridHandler<T extends ITileEntityLink> implements 
     }
 
     protected PositionedObjectHolder<T> getDim(DimensionCoordinate dimensionCoordinate){
-        return objectsInternal.get().getOrCreate(dimensionCoordinate.getWorld());
+        return objectsInternal.get().getOrCreate(dimensionCoordinate.getDimension());
     }
 
     public void registerChangeCallback(PositionedObjectHolder.ChangeCallback<T> callback){
