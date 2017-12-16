@@ -270,7 +270,11 @@ public class WidgetSlot extends Widget {
     @Override
     @SideOnly(Side.CLIENT)
     public ToolTip getToolTip(int mouseX, int mouseY) {
-        return new ToolTip(GuiDraw.getItemToolTip(getStack()));
+        ItemStack stack = getStack();
+        if (ItemStackHelper.isStackValid(stack)) {
+            return new ToolTip(GuiDraw.getItemToolTip(stack));
+        }
+        return null;
     }
 
 }
