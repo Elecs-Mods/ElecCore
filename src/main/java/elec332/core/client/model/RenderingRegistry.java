@@ -139,9 +139,9 @@ public final class RenderingRegistry implements IElecRenderingRegistry {
         try {
             Set<ModelResourceLocation> set = (Set<ModelResourceLocation>) ReflectionHelper.makeFinalFieldModifiable(ModelLoader.class.getDeclaredField("missingVariants")).get(modelLoader);
             Map<ResourceLocation, Exception> exceptionMap = (Map<ResourceLocation, Exception>) ReflectionHelper.makeFinalFieldModifiable(ModelLoader.class.getDeclaredField("loadingExceptions")).get(modelLoader);
-            if (ElecCore.removeJSONErrors){
-                exceptionMap.clear();
-            }
+            //if (ElecCore.removeJSONErrors){
+            //    exceptionMap.clear();
+            //}
             for (ModelResourceLocation rl : getValidLocations(modelLoader)){
                 set.remove(rl);
                 exceptionMap.remove(rl);
