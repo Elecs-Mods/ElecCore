@@ -130,7 +130,7 @@ public class ElecQuadBakery implements IElecQuadBakery {
     @SuppressWarnings("ConstantConditions")
     @Override
     public BakedQuad bakeQuad(Vector3f v1, Vector3f v2, TextureAtlasSprite texture, EnumFacing facing, ITransformation rotation, float f1, float f2, float f3, float f4, int tint){
-        BlockFaceUV bfuv = new BlockFaceUV(new float[]{f1, f2, f3, f4}, ((ModelRotation)rotation).quartersX * 90);
+        BlockFaceUV bfuv = new BlockFaceUV(new float[]{f1, f2, f3, f4}, 0);
         BlockPartFace bpf = new BlockPartFace(rotation.rotate(facing), tint, null, bfuv);
         return faceBakery.makeBakedQuad(v1, v2, bpf, texture, facing, rotation, null, false, true);
     }
