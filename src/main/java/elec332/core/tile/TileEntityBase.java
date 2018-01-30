@@ -95,12 +95,13 @@ public class TileEntityBase extends TileEntity implements IElecCoreNetworkTile {
 
     @Override
     @Nonnull
+    @Deprecated
     public NBTTagCompound getUpdateTag() {
         isGatheringPackets = true;
         gatherData = Maps.newHashMap();
         sendInitialLoadPackets();
         isGatheringPackets = false;
-        NBTTagCompound tag = writeToNBT(new NBTTagCompound());
+        NBTTagCompound tag = getInitialData();
         if (!gatherData.isEmpty()){
             NBTTagList list = new NBTTagList();
             gatherData.forEach((key, value) -> {
@@ -112,6 +113,14 @@ public class TileEntityBase extends TileEntity implements IElecCoreNetworkTile {
             tag.setTag("morePackets_eD", list);
         }
         return tag;
+    }
+
+    public NBTTagCompound getInitialData(){
+        return writeToNBT(new NBTTagCompound());
+    }
+
+    public NBTTagCompound getDefaultUpdateTag(){
+        return super.getUpdateTag();
     }
 
     @Override
