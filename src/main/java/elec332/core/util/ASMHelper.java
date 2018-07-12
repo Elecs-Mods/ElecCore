@@ -107,7 +107,7 @@ public class ASMHelper {
         }
         cw.visitEnd();
         File file = new File(ASMHelper.class.getProtectionDomain().getCodeSource().getLocation().getPath().replace(ASMHelper.class.getSimpleName(), "testBackup.class"));
-        if (ElecCore.developmentEnvironment && false) {
+        if (ElecCore.developmentEnvironment) {
             System.out.println(file.toString());
             try {
                 file.createNewFile();

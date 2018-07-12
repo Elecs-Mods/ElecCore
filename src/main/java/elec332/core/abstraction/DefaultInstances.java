@@ -51,7 +51,7 @@ public class DefaultInstances {
     }
 
     public static IItemBlock createDefault(IItemBlock base){
-        return new DefaultItemBlock(base);
+        return new DefaultItemBlock(new ItemBlock(base.getBlock()));
     }
 
     static {
@@ -59,14 +59,10 @@ public class DefaultInstances {
         DEFAULT_ARROW = new DefaultArrow(new ItemArrow());
     }
 
-    public static IItemBlock.IDefaultBlockPlaceBehaviour getDefaultBlockPlacementBehaviour(IItemBlock owner){
-        return new DefaultItemBlock.ExtIB(owner).gBPB();
-    }
-
     private static class DefaultItemBlock extends DefaultItem<IItemBlock> implements IItemBlock {
 
-        private DefaultItemBlock(IItemBlock owner) {
-            super(new ExtIB(owner));
+        private DefaultItemBlock(ItemBlock item) {
+            super(item);
         }
 
         @Override
@@ -82,34 +78,6 @@ public class DefaultInstances {
         @Override
         public boolean placeBlockAt(ItemStack stack, EntityPlayer player, World world, BlockPos pos, EnumFacing side, float hitX, float hitY, float hitZ, IBlockState newState, IDefaultBlockPlaceBehaviour defaultBlockPlaceBehaviour) {
             return defaultBlockPlaceBehaviour.placeBlockAt(stack, player, world, pos, side, hitX, hitY, hitZ, newState);
-        }
-
-        private static class ExtIB extends ItemBlock {
-
-            @SuppressWarnings("all")
-            private ExtIB(IItemBlock owner) {
-                super(owner.getBlock());
-                this.owner = owner;
-            }
-
-            private final IItemBlock owner;
-
-            @Override
-            public boolean placeBlockAt(ItemStack stack, EntityPlayer player, World world, BlockPos pos, EnumFacing side, float hitX, float hitY, float hitZ, IBlockState newState) {
-                return owner.placeBlockAt(stack, player, world, pos, side, hitX, hitY, hitZ, newState, gBPB());
-            }
-
-            public IDefaultBlockPlaceBehaviour gBPB(){
-                return new IDefaultBlockPlaceBehaviour(){
-
-                    @Override
-                    public boolean placeBlockAt(ItemStack stack, EntityPlayer player, World world, BlockPos pos, EnumFacing side, float hitX, float hitY, float hitZ, IBlockState newState) {
-                        return ExtIB.super.placeBlockAt(stack, player, world, pos, side, hitX, hitY, hitZ, newState);
-                    }
-
-                };
-            }
-
         }
 
     }

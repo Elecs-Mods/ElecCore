@@ -1,6 +1,5 @@
 package elec332.core.handler;
 
-import elec332.core.api.annotations.RegisterTile;
 import elec332.core.api.discovery.ASMDataProcessor;
 import elec332.core.api.registration.RegisteredTileEntity;
 import net.minecraft.tileentity.TileEntity;
@@ -14,26 +13,12 @@ import java.util.function.Consumer;
  * Created by Elec332 on 7-3-2016.
  */
 
-@SuppressWarnings("deprecation")
 @ASMDataProcessor(LoaderState.INITIALIZATION)
 public class InitAnnotationProcessor extends AbstractAnnotationProcessor {
 
     @Override
     protected void registerProcesses() {
 
-        registerDataProcessor(RegisterTile.class, new Consumer<ASMDataTable.ASMData>() {
-
-            @Override
-            @SuppressWarnings("unchecked")
-            public void accept(ASMDataTable.ASMData data) {
-                try {
-                    GameRegistry.registerTileEntity((Class<? extends TileEntity>) Class.forName(data.getClassName()), (String) data.getAnnotationInfo().get("name"));
-                } catch (Exception e){
-                    logger.error("Error registering tile: "+data.getClassName());
-                }
-            }
-
-        });
 /*
         registerDataProcessor(RegisteredMultiPart.class, new Consumer<ASMDataTable.ASMData>() {
 

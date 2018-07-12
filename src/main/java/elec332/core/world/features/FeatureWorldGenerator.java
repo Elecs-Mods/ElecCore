@@ -12,6 +12,7 @@ import java.util.Random;
 /**
  * Created by Elec332 on 17-10-2016.
  */
+@SuppressWarnings("all")
 public class FeatureWorldGenerator implements IFeatureGenerator, IConfigurableElement {
 
     public static FeatureWorldGenerator wrap(String name, WorldGenerator worldGenerator){

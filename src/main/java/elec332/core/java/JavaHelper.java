@@ -1,15 +1,22 @@
 package elec332.core.java;
 
+import com.google.common.collect.Lists;
+
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
  * Created by Elec332 on 27-11-2015.
  */
 public class JavaHelper {
+
+    public static <P> Predicate<P> combine(Predicate<P>... predicates){
+        return Lists.newArrayList(predicates).stream().reduce(Predicate::or).orElse(b -> true);
+    }
 
     public static <K, V> Map<K, V> sort(Map<K, V> original, Comparator<Map.Entry<K, V>> comparator){
         return original.entrySet().stream().sorted(comparator).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));

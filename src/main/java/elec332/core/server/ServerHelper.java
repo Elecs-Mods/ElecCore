@@ -198,8 +198,8 @@ public final class ServerHelper implements IExternalSaveHandler {
         if (world instanceof WorldServer) {
             PlayerChunkMap playerManager = ((WorldServer) world).getPlayerChunkMap();
             for (EntityPlayerMP player : getOnlinePlayers()) {
-                Chunk chunk = world.getChunkFromChunkCoords(x >> 4, z >> 4);
-                if (playerManager.isPlayerWatchingChunk(player, chunk.x, chunk.z)) {
+                //Chunk chunk = world.getChunkFromChunkCoords(x >> 4, z >> 4);
+                if (playerManager.isPlayerWatchingChunk(player, x >> 4, z >> 4)) {
                     ret.add(player);
                 }
             }
@@ -357,9 +357,9 @@ public final class ServerHelper implements IExternalSaveHandler {
     @Override
     public void nullifyData() {
         ServerHelper.this.generalData = null;
-        ServerHelper.this.playerData = null;
-        ServerHelper.this.worldData = null;
-        ServerHelper.this.savedData = null;
+        ServerHelper.this.playerData.clear();
+        ServerHelper.this.worldData.clear();
+        ServerHelper.this.savedData.clear();
     }
 
     private void loadLegacy(File folder){

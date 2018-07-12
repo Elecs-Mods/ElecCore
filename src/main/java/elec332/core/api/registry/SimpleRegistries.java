@@ -1,16 +1,13 @@
 package elec332.core.api.registry;
 
-import com.google.common.base.Predicate;
-import com.google.common.base.Predicates;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
+import com.google.common.collect.*;
+import elec332.core.java.JavaHelper;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Predicate;
 
 /**
  * Created by Elec332 on 16-10-2016.
@@ -19,11 +16,11 @@ import java.util.Set;
 public class SimpleRegistries {
 
     public static <T> ISingleObjectRegistry<T> newSingleObjectRegistry(){
-        return newSingleObjectRegistry(Predicates.alwaysTrue());
+        return newSingleObjectRegistry(t -> true);
     }
 
     public static <T> ISingleObjectRegistry<T> newSingleObjectRegistry(Predicate<T>... predicates){
-        return newSingleObjectRegistry(Predicates.and(predicates));
+        return newSingleObjectRegistry(JavaHelper.combine(predicates));
     }
 
     public static <T> ISingleObjectRegistry<T> newSingleObjectRegistry(Predicate<T> predicate){
@@ -35,11 +32,11 @@ public class SimpleRegistries {
     }
 
     public static <T, V> IDualObjectRegistry<T, V> newDualObjectRegistry(){
-        return newDualObjectRegistry(Predicates.alwaysTrue());
+        return newDualObjectRegistry(tvPair -> true);
     }
 
     public static <T, V> IDualObjectRegistry<T, V> newDualObjectRegistry(Predicate<Pair<T, V>>... predicates){
-        return newDualObjectRegistry(Predicates.and(predicates));
+        return newDualObjectRegistry(JavaHelper.combine(predicates));
     }
 
     public static <T, V> IDualObjectRegistry<T, V> newDualObjectRegistry(Predicate<Pair<T, V>> predicate){
@@ -63,7 +60,7 @@ public class SimpleRegistries {
 
         @Override
         public boolean register(T t){
-            return predicate.apply(t) && type.add(t);
+            return predicate.test(t) && type.add(t);
         }
 
         @Override
@@ -86,7 +83,7 @@ public class SimpleRegistries {
 
         @Override
         public boolean register(T t, V v) {
-            if (predicate.apply(Pair.of(t, v))) {
+            if (predicate.test(Pair.of(t, v))) {
                 map.put(t, v);
                 return true;
             }

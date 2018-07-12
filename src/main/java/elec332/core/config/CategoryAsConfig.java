@@ -16,14 +16,17 @@ class CategoryAsConfig extends Configuration {
     private String name;
     private Configuration m;
 
+    @Override
     public ConfigCategory getCategory(String category) {
         return m.getCategory(name + "." + category);
     }
 
+    @Override
     public void save(){
         m.save();
     }
 
+    @Override
     public void load(){
         m.load();
     }

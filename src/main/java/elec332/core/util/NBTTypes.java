@@ -7,15 +7,15 @@ import net.minecraft.nbt.*;
  */
 public enum NBTTypes {
 
-    END((byte)0, NBTTagEnd.class),                  //0
+    END(new NBTTagEnd()),                           //0
     BYTE(new NBTTagByte((byte)0)),                  //1
     SHORT(new NBTTagShort((short)0)),               //2
-    INT(new NBTTagInt(0)),                          //3
-    LONG(new NBTTagLong(0)),                        //4
-    FLOAT(new NBTTagFloat(0)),                      //5
-    DOUBLE(new NBTTagDouble(0)),                    //6
+    INT(new NBTTagInt(0)),                     //3
+    LONG(new NBTTagLong(0)),                   //4
+    FLOAT(new NBTTagFloat(0)),                 //5
+    DOUBLE(new NBTTagDouble(0)),               //6
     BYTE_ARRAY(new NBTTagByteArray(new byte[0])),   //7
-    STRING(new NBTTagString("")),                   //8
+    STRING(new NBTTagString("")),              //8
     LIST(new NBTTagList()),                         //9
     COMPOUND(new NBTTagCompound()),                 //10
     INT_ARRAY(new NBTTagIntArray(new int[0]));      //11
@@ -28,6 +28,9 @@ public enum NBTTypes {
     NBTTypes(byte i, Class<? extends NBTBase> clazz){
         this.ID = i;
         this.clazz = clazz;
+        if (i != ordinal()){
+            throw new IllegalArgumentException();
+        }
     }
 
     private final byte ID;

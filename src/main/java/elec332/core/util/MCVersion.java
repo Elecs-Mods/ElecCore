@@ -25,7 +25,9 @@ public enum MCVersion {
     MC_1_11("1.11"),
     MC_1_11_2("1.11.2"),
     MC_1_12("1.12"),
-    MC_1_12_1("1.12.1");
+    MC_1_12_1("1.12.1"),
+    MC_1_12_2("1.12.2"),
+    MC_1_13("1.13");
 
     MCVersion(String ver){
         this.name = ver;

@@ -26,6 +26,7 @@ import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.client.model.IModel;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.client.model.ModelLoaderRegistry;
+import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -127,6 +128,17 @@ public final class RenderingRegistry implements IElecRenderingRegistry {
     }
 
     void invokeEvent(ModelLoadEvent event){
+        for (ModelResourceLocation mrl : extraModels){
+            IBakedModel model;
+            try {
+                IModel model_ = ModelLoaderRegistry.getModel(new ResourceLocation(mrl.getResourceDomain(), mrl.getResourcePath()));
+                model = model_.bake(model_.getDefaultState(), DefaultVertexFormats.ITEM, ModelLoader.defaultTextureGetter());
+            } catch (Exception e){
+                model = RenderHelper.getMissingModel();
+                FMLLog.log.error("Exception loading blockstate for the variant {}: ", new ResourceLocation(mrl.getResourceDomain(), mrl.getResourcePath()), e);
+            }
+            event.registerModel(mrl, model);
+        }
         for (IModelLoader loader : modelLoaders){
             loader.registerModels(event.getQuadBakery(), event.getModelBakery(), event.getTemplateBakery());
         }
@@ -155,18 +167,6 @@ public final class RenderingRegistry implements IElecRenderingRegistry {
 
     private Set<ModelResourceLocation> getValidLocations(ModelBakery modelLoader){
         IRegistry<ModelResourceLocation, IBakedModel> registry = modelLoader.blockModelShapes.modelManager.modelRegistry;
-
-        for (ModelResourceLocation mrl : extraModels){
-            IBakedModel model;
-            try {
-                IModel model_ = ModelLoaderRegistry.getModel(mrl);
-                model = model_.bake(model_.getDefaultState(), DefaultVertexFormats.ITEM, ModelLoader.defaultTextureGetter());
-            } catch (Exception e){
-                model = RenderHelper.getMissingModel();
-            }
-            registry.putObject(mrl, model);
-        }
-
         return ElecModelHandler.registerBakedModels(registry);
     }
 

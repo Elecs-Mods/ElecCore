@@ -48,7 +48,7 @@ public enum ItemType implements IAbstractionType<IItem, Item> {
                     mn.visitVarInsn(ALOAD, 0);
                     mn.visitFieldInsn(GETFIELD, internalClassName, "instance", Type.getDescriptor(Object.class));
                     mn.visitTypeInsn(CHECKCAST, Type.getInternalName(IItemBlock.class));
-                    mn.visitMethodInsn(INVOKESTATIC, Type.getInternalName(DefaultInstances.class), "getDefaultBlockPlacementBehaviour", "(" + Type.getDescriptor(IItemBlock.class) + ")" + Type.getDescriptor(IItemBlock.IDefaultBlockPlaceBehaviour.class), false);
+                    mn.visitMethodInsn(INVOKESTATIC, Type.getInternalName(AbstractedItemBlock.class), "getDefaultBlockPlacementBehaviour", "(" + Type.getDescriptor(IItemBlock.class) + ")" + Type.getDescriptor(IItemBlock.IDefaultBlockPlaceBehaviour.class), false);
                     mn.visitFieldInsn(PUTFIELD, internalClassName, "defaultBlockPlaceBehaviour", Type.getDescriptor(IItemBlock.IDefaultBlockPlaceBehaviour.class));
                     mn.visitInsn(RETURN);
                     mn.maxStack += 2;

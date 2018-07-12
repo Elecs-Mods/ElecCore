@@ -1,10 +1,10 @@
 package elec332.core.world;
 
+import com.google.common.base.Function;
 import com.google.common.base.Strings;
 import com.google.common.collect.*;
 import elec332.core.api.registry.ISingleObjectRegistry;
 import elec332.core.api.world.*;
-import elec332.core.java.MapWithDefaultValue;
 import elec332.core.main.APIHandler;
 import elec332.core.util.FMLUtil;
 import net.minecraft.nbt.NBTTagCompound;
@@ -34,9 +34,11 @@ enum WorldGenManager implements ISingleObjectRegistry<IWorldGenHook>, IWorldGenM
     WorldGenManager(){
         this.set = Sets.newHashSet();
         this.set_ = Collections.unmodifiableSet(set);
-        this.retroGenChunks = MapWithDefaultValue.newMap(Maps.newHashMap(), HashMultimap::create);
+        this.absentGen = input -> HashMultimap.create();
+        this.retroGenChunks = Maps.newHashMap();
     }
 
+    private final Function<Integer, SetMultimap<ChunkPos, IFeatureGenerator>> absentGen;
     private final Set<IWorldGenHook> set, set_;
     private final Map<Integer, SetMultimap<ChunkPos, IFeatureGenerator>> retroGenChunks;
     private static final String KEY = "ElecWorldGenManager";
@@ -69,7 +71,7 @@ enum WorldGenManager implements ISingleObjectRegistry<IWorldGenHook>, IWorldGenM
 
     @SubscribeEvent
     public void onWorldTick(TickEvent.WorldTickEvent event){
-        SetMultimap<ChunkPos, IFeatureGenerator> map = retroGenChunks.get(WorldHelper.getDimID(event.world));
+        SetMultimap<ChunkPos, IFeatureGenerator> map = retroGenChunks.computeIfAbsent(WorldHelper.getDimID(event.world), absentGen);
         if (!map.isEmpty()){
             ChunkPos pos = map.keySet().iterator().next();
             Set<IFeatureGenerator> s = map.removeAll(pos);
@@ -168,7 +170,7 @@ enum WorldGenManager implements ISingleObjectRegistry<IWorldGenHook>, IWorldGenM
         if (featureGenerators == null || featureGenerators.size() == 0){
             return;
         }
-        retroGenChunks.get(WorldHelper.getDimID(world)).putAll(chunk, featureGenerators);
+        retroGenChunks.computeIfAbsent(WorldHelper.getDimID(world), absentGen).putAll(chunk, featureGenerators);
     }
 
     @Override

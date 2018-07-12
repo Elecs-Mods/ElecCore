@@ -46,7 +46,7 @@ public class WrappedResourcePack implements IResourcePack, FMLContainerHolder {
 
     @Nullable
     @Override
-    public <T extends IMetadataSection> T getPackMetadata(@Nonnull MetadataSerializer metadataSerializer, String metadataSectionName) throws IOException {
+    public <T extends IMetadataSection> T getPackMetadata(@Nonnull MetadataSerializer metadataSerializer, @Nonnull String metadataSectionName) throws IOException {
         return parent.getPackMetadata(metadataSerializer, metadataSectionName);
     }
 

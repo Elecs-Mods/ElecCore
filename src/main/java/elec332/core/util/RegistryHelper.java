@@ -7,6 +7,7 @@ import elec332.core.util.recipes.RecipeHelper;
 import net.minecraft.block.Block;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.item.Item;
+import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionType;
@@ -16,6 +17,7 @@ import net.minecraft.util.SoundEvent;
 import net.minecraft.world.biome.Biome;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityManager;
+import net.minecraftforge.fml.common.registry.EntityEntry;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.fml.common.registry.VillagerRegistry;
 import net.minecraftforge.registries.*;
@@ -96,6 +98,14 @@ public class RegistryHelper {
 
     public static ForgeRegistry<VillagerRegistry.VillagerProfession> getVillagerRegistry(){
         return (ForgeRegistry<VillagerRegistry.VillagerProfession>) ForgeRegistries.VILLAGER_PROFESSIONS;
+    }
+
+    public static ForgeRegistry<IRecipe> getRecipes(){
+        return (ForgeRegistry<IRecipe>) ForgeRegistries.RECIPES;
+    }
+
+    public static ForgeRegistry<EntityEntry> getEntities(){
+        return (ForgeRegistry<EntityEntry>) ForgeRegistries.ENTITIES;
     }
 
     public static BiMap<Block, Item> getBlockItemMap() {

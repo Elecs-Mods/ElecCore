@@ -42,6 +42,7 @@ import java.util.Map;
  * Created by Elec332 on 31-7-2015.
  */
 @SideOnly(Side.CLIENT)
+@SuppressWarnings("all")
 public class RenderHelper {
 
     public static final float renderUnit = 1/16f;

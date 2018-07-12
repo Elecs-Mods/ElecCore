@@ -6,6 +6,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Member;
 import java.lang.reflect.Modifier;
 import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * Created by Elec332 on 29-7-2015.
@@ -43,8 +44,11 @@ public class ReflectionHelper {
     }
 
     public static String[] getAllClassNamesTillMainClass(Class innerClass){
-        if (!isInnerClass(innerClass))
-            return new String[]{innerClass.getSimpleName()};
+        if (!isInnerClass(innerClass)) {
+            return new String[]{
+                    innerClass.getSimpleName()
+            };
+        }
         String cN = innerClass.getCanonicalName();
         String pN = getPackage(innerClass);
         String dot = ".";
@@ -90,15 +94,11 @@ public class ReflectionHelper {
         return field;
     }
 
-    public static void temporarilyAccessField(Field field, IAccessibleField fieldAccess){
+    public static void temporarilyAccessField(Field field, Consumer<Field> fieldAccess){
         boolean b = field.isAccessible();
         field.setAccessible(true);
-        fieldAccess.onAccess(field);
+        fieldAccess.accept(field);
         field.setAccessible(b);
-    }
-
-    public interface IAccessibleField{
-        public void onAccess(Field field);
     }
 
 }

@@ -10,6 +10,7 @@ import net.minecraftforge.common.config.Configuration;
 /**
  * Created by Elec332 on 17-10-2016.
  */
+@SuppressWarnings("all")
 public class FeatureWorldGenMinable extends FeatureWorldGenerator {
 
     public static FeatureWorldGenMinable newOreGenerator(String name, int times, int maxY, int clusterSize, IBlockState state, Predicate<IBlockState> predicate){

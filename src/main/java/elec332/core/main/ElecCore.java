@@ -123,12 +123,14 @@ public class ElecCore implements IModuleController, IElecCoreMod, IDependencyHan
 	@Subscribe
 	public void onConstructionLast(FMLEvent e){
 		if (e instanceof FMLConstructionEvent){
+			logger.info("Preloading...");
 			FMLUtil.runAs(elecCoreModContainer, () -> {
                 asmDataProcessor = new ElecCoreDiscoverer();
                 asmDataProcessor.identify(((FMLConstructionEvent) e).getASMHarvestedData());
                 ElecModHandler.identifyMods();
                 asmDataProcessor.process(LoaderState.CONSTRUCTING);
             });
+			logger.info("Finished preloading");
 		}
 	}
 	@EventHandler
@@ -172,7 +174,6 @@ public class ElecCore implements IModuleController, IElecCoreMod, IDependencyHan
 			config.save();
 		}
 		networkHandler.registerPacket(WindowManager.INSTANCE);
-		ElecCoreRegistrar.dummyLoad();
 		SaveHandler.INSTANCE.dummyLoad();
 		AbilityHandler.instance.init();
 		ElecModHandler.init();
