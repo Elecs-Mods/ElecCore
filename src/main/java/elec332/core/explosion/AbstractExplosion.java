@@ -12,7 +12,6 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.world.ExplosionEvent;
 
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -24,16 +23,16 @@ public abstract class AbstractExplosion extends Explosion {
     public AbstractExplosion(World world, Entity entity, double x, double y, double z, float size) {
         super(world, entity, x, y, z, size, false, true);
         this.world = world;
-        this.location = new BlockPos((int)x, (int)y, (int)z);
+        this.location = new BlockPos((int) x, (int) y, (int) z);
     }
 
     private final World world;
     private final BlockPos location;
 
-    public void explode(){
+    public void explode() {
         ExplosionEvent event = new ExplosionEvent.Start(world, this);
         MinecraftForge.EVENT_BUS.post(event);
-        if (!event.isCanceled()){
+        if (!event.isCanceled()) {
             preExplode();
             doExplode();
             postExplode();
@@ -46,7 +45,7 @@ public abstract class AbstractExplosion extends Explosion {
 
     protected abstract void postExplode();
 
-    protected void damageEntities(float radius, float power){
+    protected void damageEntities(float radius, float power) {
         if (!world.isRemote) {
             radius *= 2.0f;
             BlockPos minCoord = new BlockPos(location);
@@ -57,12 +56,7 @@ public abstract class AbstractExplosion extends Explosion {
             maxCoord.add(maxR, maxR, maxR);
             @SuppressWarnings("unchecked")
             List<EntityLiving> allEntities = world.getEntitiesWithinAABB(EntityLiving.class, new AxisAlignedBB(minCoord, maxCoord));
-            Collections.sort(allEntities, new Comparator<Entity>() {
-                @Override
-                public int compare(Entity o1, Entity o2) {
-                    return (int)(getDistance(o1) - getDistance(o2));
-                }
-            });
+            allEntities.sort((Comparator<Entity>) (o1, o2) -> (int) (getDistance(o1) - getDistance(o2)));
             for (Entity entity : allEntities) {
                 double distance = getDistance(entity) / radius;
                 if (distance <= 1.0D) {
@@ -85,16 +79,16 @@ public abstract class AbstractExplosion extends Explosion {
         }
     }
 
-    private double getDistance(Entity entity){
+    private double getDistance(Entity entity) {
         return entity.getDistance(location.getX(), location.getY(), location.getZ());
     }
 
-    public final float getRadius(){
+    public final float getRadius() {
         return this.size;
     }
 
 
-    public final BlockPos getLocation(){
+    public final BlockPos getLocation() {
         return location;
     }
 

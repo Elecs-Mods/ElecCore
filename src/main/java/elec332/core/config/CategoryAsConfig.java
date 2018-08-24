@@ -8,7 +8,7 @@ import net.minecraftforge.common.config.Configuration;
  */
 class CategoryAsConfig extends Configuration {
 
-    CategoryAsConfig(String m, Configuration ma){
+    CategoryAsConfig(String m, Configuration ma) {
         this.name = m;
         this.m = ma;
     }
@@ -22,12 +22,12 @@ class CategoryAsConfig extends Configuration {
     }
 
     @Override
-    public void save(){
+    public void save() {
         m.save();
     }
 
     @Override
-    public void load(){
+    public void load() {
         m.load();
     }
 

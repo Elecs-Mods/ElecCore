@@ -18,8 +18,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SuppressWarnings({"deprecation", "unused"})
 public abstract class AbstractBlockModel implements IModelWithoutQuads {
 
-    protected static final ImmutableList<BakedQuad> EMPTY_LIST;
-
+    private static final ImmutableList<BakedQuad> EMPTY_LIST;
 
     @Override
     public boolean isAmbientOcclusion() {
@@ -32,7 +31,7 @@ public abstract class AbstractBlockModel implements IModelWithoutQuads {
     }
 
     @Override
-    public boolean isTESRItem() {
+    public boolean isBuiltInRenderer() {
         return false;
     }
 

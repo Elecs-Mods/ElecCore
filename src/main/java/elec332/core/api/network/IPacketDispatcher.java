@@ -36,11 +36,11 @@ public interface IPacketDispatcher extends ElecByteBuf.Factory {
      * Send this message to the specified players.
      * The {@link IMessageHandler} for this message type should be on the CLIENT side.
      *
-     * @param message The message to send
+     * @param message      The message to send
      * @param playerFilter The selector that determines what players to send the message to.
      */
-    default public void sendTo(IMessage message, IEntityFilter<EntityPlayerMP> playerFilter, MinecraftServer server){
-        for (EntityPlayerMP player : playerFilter.filterEntities(server.getPlayerList().getPlayers())){
+    default public void sendTo(IMessage message, IEntityFilter<EntityPlayerMP> playerFilter, MinecraftServer server) {
+        for (EntityPlayerMP player : playerFilter.filterEntities(server.getPlayerList().getPlayers())) {
             sendTo(message, player);
         }
     }
@@ -52,8 +52,8 @@ public interface IPacketDispatcher extends ElecByteBuf.Factory {
      * @param message The message to send
      * @param players The players to send it to
      */
-    default public void sendTo(IMessage message, List<EntityPlayerMP> players){
-        for (EntityPlayerMP player : players){
+    default public void sendTo(IMessage message, List<EntityPlayerMP> players) {
+        for (EntityPlayerMP player : players) {
             sendTo(message, player);
         }
     }
@@ -63,7 +63,7 @@ public interface IPacketDispatcher extends ElecByteBuf.Factory {
      * The {@link IMessageHandler} for this message type should be on the CLIENT side.
      *
      * @param message The message to send
-     * @param player The player to send it to
+     * @param player  The player to send it to
      */
     public void sendTo(IMessage message, EntityPlayerMP player);
 
@@ -72,10 +72,10 @@ public interface IPacketDispatcher extends ElecByteBuf.Factory {
      * The {@link IMessageHandler} for this message type should be on the CLIENT side.
      *
      * @param message The message to send
-     * @param world The world in which the point is located
-     * @param range The range
+     * @param world   The world in which the point is located
+     * @param range   The range
      */
-    default public <M extends IMessage & ILocatedPacket> void sendToAllAround(M message, World world, double range){
+    default public <M extends IMessage & ILocatedPacket> void sendToAllAround(M message, World world, double range) {
         sendToAllAround(message, message.getTargetPoint(world, range));
     }
 
@@ -84,11 +84,11 @@ public interface IPacketDispatcher extends ElecByteBuf.Factory {
      * The {@link IMessageHandler} for this message type should be on the CLIENT side.
      *
      * @param message The message to send
-     * @param world The world to which to send
-     * @param pos The position around which to send
-     * @param range The range around the position
+     * @param world   The world to which to send
+     * @param pos     The position around which to send
+     * @param range   The range around the position
      */
-    default public void sendToAllAround(IMessage message, World world, BlockPos pos, double range){
+    default public void sendToAllAround(IMessage message, World world, BlockPos pos, double range) {
         sendToAllAround(message, new NetworkRegistry.TargetPoint(Preconditions.checkNotNull(world.provider).getDimension(), pos.getX(), pos.getY(), pos.getZ(), range));
     }
 
@@ -97,7 +97,7 @@ public interface IPacketDispatcher extends ElecByteBuf.Factory {
      * The {@link IMessageHandler} for this message type should be on the CLIENT side.
      *
      * @param message The message to send
-     * @param point The {@link NetworkRegistry.TargetPoint} around which to send
+     * @param point   The {@link NetworkRegistry.TargetPoint} around which to send
      */
     public void sendToAllAround(IMessage message, NetworkRegistry.TargetPoint point);
 
@@ -105,7 +105,7 @@ public interface IPacketDispatcher extends ElecByteBuf.Factory {
      * Send this message to everyone within the supplied dimension.
      * The {@link IMessageHandler} for this message type should be on the CLIENT side.
      *
-     * @param message The message to send
+     * @param message     The message to send
      * @param dimensionId The dimension id to target
      */
     public void sendToDimension(IMessage message, int dimensionId);

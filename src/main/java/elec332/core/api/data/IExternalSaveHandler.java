@@ -26,10 +26,10 @@ public interface IExternalSaveHandler {
     @Nullable
     public NBTTagCompound save(ISaveHandler saveHandler, WorldInfo info);
 
-    default public void nullifyData(){
+    default public void nullifyData() {
     }
 
-    default public boolean makeBackups(){
+    default public boolean makeBackups() {
         return true;
     }
 

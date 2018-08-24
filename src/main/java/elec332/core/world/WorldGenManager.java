@@ -1,11 +1,12 @@
 package elec332.core.world;
 
-import com.google.common.base.Function;
 import com.google.common.base.Strings;
 import com.google.common.collect.*;
+import elec332.core.api.APIHandlerInject;
+import elec332.core.api.IAPIHandler;
+import elec332.core.api.annotations.StaticLoad;
 import elec332.core.api.registry.ISingleObjectRegistry;
 import elec332.core.api.world.*;
-import elec332.core.main.APIHandler;
 import elec332.core.util.FMLUtil;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.ChunkPos;
@@ -21,13 +22,14 @@ import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 import javax.annotation.Nonnull;
 import java.util.*;
+import java.util.function.Function;
 
 /**
  * Created by Elec332 on 17-10-2016.
  */
 @SuppressWarnings("unused")
-@APIHandler.StaticLoad
-enum WorldGenManager implements ISingleObjectRegistry<IWorldGenHook>, IWorldGenManager {
+@StaticLoad
+enum  WorldGenManager implements ISingleObjectRegistry<IWorldGenHook>, IWorldGenManager {
 
     INSTANCE;
 
@@ -41,7 +43,7 @@ enum WorldGenManager implements ISingleObjectRegistry<IWorldGenHook>, IWorldGenM
     private final Function<Integer, SetMultimap<ChunkPos, IFeatureGenerator>> absentGen;
     private final Set<IWorldGenHook> set, set_;
     private final Map<Integer, SetMultimap<ChunkPos, IFeatureGenerator>> retroGenChunks;
-    private static final String KEY = "ElecWorldGenManager";
+    private static final String KEY = "eleccore:worldgenmanager";
 
     @SubscribeEvent
     public void populateChunk(PopulateChunkEvent.Post event) {
@@ -115,9 +117,9 @@ enum WorldGenManager implements ISingleObjectRegistry<IWorldGenHook>, IWorldGenM
         public void chunkLoadedFromDisk(Chunk chunk, NBTTagCompound data, IWorldGenManager worldGenManager) {
             NBTTagCompound tag = data.getCompoundTag(owner);
             boolean b = tag.hasKey(chunkPopulator.getName());
-            if ((!b || !chunkPopulator.getGenKey().equals(tag.getString(chunkPopulator.getName()))) && chunkPopulator.shouldRegen(b)){
+            if((!b || !chunkPopulator.getGenKey().equals(tag.getString(chunkPopulator.getName()))) && chunkPopulator.shouldRegen(b)){
                 worldGenManager.registerForRetroGen(chunk.getWorld(), chunk.getPos(), this);
-            }  else {
+            } else {
                 this.lastKey = chunkPopulator.getGenKey();
             }
         }
@@ -183,9 +185,13 @@ enum WorldGenManager implements ISingleObjectRegistry<IWorldGenHook>, IWorldGenM
         return set_;
     }
 
+    @APIHandlerInject
+    public void injectWorldGenManager(IAPIHandler apiHandler){
+        apiHandler.inject(INSTANCE, IWorldGenManager.class);
+    }
+
     static {
         MinecraftForge.EVENT_BUS.register(INSTANCE);
-        APIHandler.INSTANCE.inject(INSTANCE, IWorldGenManager.class);
     }
 
 }

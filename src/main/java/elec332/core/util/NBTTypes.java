@@ -8,8 +8,8 @@ import net.minecraft.nbt.*;
 public enum NBTTypes {
 
     END(new NBTTagEnd()),                           //0
-    BYTE(new NBTTagByte((byte)0)),                  //1
-    SHORT(new NBTTagShort((short)0)),               //2
+    BYTE(new NBTTagByte((byte) 0)),                 //1
+    SHORT(new NBTTagShort((short) 0)),              //2
     INT(new NBTTagInt(0)),                     //3
     LONG(new NBTTagLong(0)),                   //4
     FLOAT(new NBTTagFloat(0)),                 //5
@@ -21,14 +21,15 @@ public enum NBTTypes {
     INT_ARRAY(new NBTTagIntArray(new int[0]));      //11
 
     ///##########################///
-    NBTTypes(NBTBase nbtBase){
+
+    NBTTypes(NBTBase nbtBase) {
         this(nbtBase.getId(), nbtBase.getClass());
     }
 
-    NBTTypes(byte i, Class<? extends NBTBase> clazz){
+    NBTTypes(byte i, Class<? extends NBTBase> clazz) {
         this.ID = i;
         this.clazz = clazz;
-        if (i != ordinal()){
+        if (i != ordinal()) {
             throw new IllegalArgumentException();
         }
     }
@@ -44,17 +45,17 @@ public enum NBTTypes {
         return clazz;
     }
 
-    public boolean equals(int i){
+    public boolean equals(int i) {
         return i == ID;
     }
 
-    public static Class<? extends NBTBase> getClass(int i){
-        for (NBTTypes data : NBTTypes.values()){
+    public static Class<? extends NBTBase> getClass(int i) {
+        for (NBTTypes data : NBTTypes.values()) {
             if (data.ID == i) {
                 return data.clazz;
             }
         }
-        throw new IllegalArgumentException("No NBT-Type for ID: "+i);
+        throw new IllegalArgumentException("No NBT-Type for ID: " + i);
     }
 
 }

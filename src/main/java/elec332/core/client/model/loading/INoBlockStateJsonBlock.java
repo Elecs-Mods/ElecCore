@@ -1,8 +1,8 @@
 package elec332.core.client.model.loading;
 
 import com.google.common.collect.Lists;
-import elec332.core.util.BlockStateHelper;
-import elec332.core.util.DirectionHelper;
+import elec332.core.client.RenderHelper;
+import elec332.core.util.IBlockStateHelper;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.model.ModelRotation;
@@ -38,7 +38,7 @@ public interface INoBlockStateJsonBlock extends IBlockModelItemLink {
         @SideOnly(Side.CLIENT)
         default VariantList getVariantsFor(IBlockState state){
             Block b = state.getBlock();
-            ModelRotation mr = DirectionHelper.getRotationFromFacing(state.getValue(BlockStateHelper.FACING_NORMAL.getProperty()));
+            ModelRotation mr = RenderHelper.getDefaultRotationFromFacing(state.getValue(IBlockStateHelper.FACING_NORMAL.getProperty()));
             Variant variant = new Variant(b.getRegistryName(), mr, false, 1);
             return new VariantList(Lists.newArrayList(variant));
         }

@@ -1,14 +1,17 @@
 package elec332.core.client.model;
 
 import com.google.common.collect.ImmutableList;
+import elec332.core.api.APIHandlerInject;
+import elec332.core.api.IAPIHandler;
 import elec332.core.api.client.model.IElecModelBakery;
+import elec332.core.api.client.model.IElecTemplateBakery;
 import elec332.core.api.client.model.map.IBakedModelRotationMap;
+import elec332.core.api.client.model.model.IModelWithoutQuads;
 import elec332.core.api.client.model.model.IQuadProvider;
 import elec332.core.api.client.model.template.IModelTemplate;
 import elec332.core.api.client.model.template.IQuadTemplate;
 import elec332.core.api.client.model.template.IQuadTemplateSidedMap;
 import elec332.core.client.model.map.BakedModelRotationMap;
-import elec332.core.client.model.template.ElecTemplateBakery;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.model.*;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -25,7 +28,7 @@ import java.util.List;
  * Created by Elec332 on 5-12-2015.
  */
 @SideOnly(Side.CLIENT)
-@SuppressWarnings({"WeakerAccess", "deprecation", "unused"})
+@SuppressWarnings("all")
 public class ElecModelBakery implements IElecModelBakery {
 
     protected static final ElecModelBakery instance = new ElecModelBakery();
@@ -34,7 +37,8 @@ public class ElecModelBakery implements IElecModelBakery {
 
     private static final List<BakedQuad> EMPTY_LIST;
     private static final ElecQuadBakery quadBakery;
-    private static final IModelTemplate defaultBlockTemplate, defaultItemTemplate;
+    private static IModelTemplate defaultBlockTemplate, defaultItemTemplate;
+    private static IElecTemplateBakery templateBakery;
     public static final ItemCameraTransforms DEFAULT_ITEM, DEFAULT_BLOCK;
 
     @Override
@@ -71,7 +75,7 @@ public class ElecModelBakery implements IElecModelBakery {
     @Override
     public IBakedModel forTemplateOverrideQuads(IModelTemplate template, ModelRotation rotation, @Nullable IQuadTemplateSidedMap sidedQuads, @Nullable List<IQuadTemplate> generalQuads) {
         if (sidedQuads == null) {
-            sidedQuads = ElecTemplateBakery.instance.newQuadSidedMap();
+            sidedQuads = templateBakery.newQuadSidedMap();
         }
         if (generalQuads == null) {
             generalQuads = ImmutableList.of();
@@ -91,8 +95,21 @@ public class ElecModelBakery implements IElecModelBakery {
     public IBakedModel forQuadProvider(IModelTemplate template, final IQuadProvider quadProvider){
         return new DefaultBakedModel(template){
 
-            @Override
             @Nonnull
+            @Override
+            public List<BakedQuad> getQuads(IBlockState state, EnumFacing facing, long rand) {
+                return quadProvider.getBakedQuads(state, facing, rand);
+            }
+
+        };
+    }
+
+    @Override
+    public IBakedModel forQuadProvider(IModelWithoutQuads modelWithoutQuads, IQuadProvider quadProvider) {
+        return new DefaultBakedModel(modelWithoutQuads){
+
+            @Nonnull
+            @Override
             public List<BakedQuad> getQuads(IBlockState state, EnumFacing facing, long rand) {
                 return quadProvider.getBakedQuads(state, facing, rand);
             }
@@ -115,6 +132,11 @@ public class ElecModelBakery implements IElecModelBakery {
         return DEFAULT_BLOCK;
     }
 
+    @APIHandlerInject
+    public void injectModelBakery(IAPIHandler apiHandler){
+        apiHandler.inject(instance, IElecModelBakery.class);
+    }
+
     private BakedItemModel _forTemplateNoQuadsI(IModelTemplate template){
         return new BakedItemModel(template);
     }
@@ -128,6 +150,16 @@ public class ElecModelBakery implements IElecModelBakery {
     }
 
     private class DefaultBakedModel implements IBakedModel {
+
+        private DefaultBakedModel(IModelWithoutQuads template){
+            this.sidedQuads = null;
+            this.generalQuads = EMPTY_LIST;
+            this.ao = template.isAmbientOcclusion();
+            this.gui3D = template.isGui3d();
+            this.builtIn = template.isBuiltInRenderer();
+            this.texture = template.getParticleTexture();
+            this.ict = template.getItemCameraTransforms();
+        }
 
         private DefaultBakedModel(IModelTemplate template){
             this.sidedQuads = null;
@@ -195,13 +227,18 @@ public class ElecModelBakery implements IElecModelBakery {
 
     }
 
+    @APIHandlerInject
+    public void getTemplates(IElecTemplateBakery templateBakery){
+        defaultBlockTemplate = templateBakery.newDefaultBlockTemplate();
+        defaultItemTemplate = templateBakery.newDefaultItemTemplate();
+        ElecModelBakery.templateBakery = templateBakery;
+    }
+
     static {
         EMPTY_LIST = ImmutableList.of();
         quadBakery = ElecQuadBakery.instance;
         DEFAULT_ITEM = new ItemCameraTransforms(new ItemTransformVec3f(new Vector3f(0, 0, 0), applyTranslationScale(new Vector3f(0, 3, 1)), new Vector3f(0.55f, 0.55f, 0.55f)), new ItemTransformVec3f(new Vector3f(0, 0, 0), applyTranslationScale(new Vector3f(0, 3, 1)), new Vector3f(0.55f, 0.55f, 0.55f)), new ItemTransformVec3f(new Vector3f(0, -90, 25), applyTranslationScale(new Vector3f(1.13f, 3.2f, 1.13f)), new Vector3f(0.68f, 0.68f, 0.68f)), new ItemTransformVec3f(new Vector3f(0, -90, 25), applyTranslationScale(new Vector3f(1.13f, 3.2f, 1.13f)), new Vector3f(0.68f, 0.68f, 0.68f)), new ItemTransformVec3f(new Vector3f(0, 180, 0), applyTranslationScale(new Vector3f(0, 13, 7)), new Vector3f(1, 1, 1)), ItemTransformVec3f.DEFAULT, new ItemTransformVec3f(new Vector3f(0, 0, 0), applyTranslationScale(new Vector3f(0, 2, 0)), new Vector3f(0.5f, 0.5f, 0.5f)), ItemTransformVec3f.DEFAULT);
         DEFAULT_BLOCK = new ItemCameraTransforms(new ItemTransformVec3f(new Vector3f(75, 45, 0), applyTranslationScale(new Vector3f(0, 2.5f, 0)), new Vector3f(0.375f, 0.375f, 0.375f)), new ItemTransformVec3f(new Vector3f(75, 45, 0), applyTranslationScale(new Vector3f(0, 2.5f, 0)), new Vector3f(0.375f, 0.375f, 0.375f)), new ItemTransformVec3f(new Vector3f(0, 225, 0), applyTranslationScale(new Vector3f(0, 0, 0)), new Vector3f(0.40f, 0.40f, 0.40f)), new ItemTransformVec3f(new Vector3f(0, 45, 0), applyTranslationScale(new Vector3f(0, 0, 0)), new Vector3f(0.40f, 0.40f, 0.40f)), ItemTransformVec3f.DEFAULT, new ItemTransformVec3f(new Vector3f(30, 225, 0), applyTranslationScale(new Vector3f(0, 0, 0)), new Vector3f(0.625f, 0.625f, 0.625f)), new ItemTransformVec3f(new Vector3f(0, 0, 0), applyTranslationScale(new Vector3f(0, 3, 0)), new Vector3f(0.25f, 0.25f, 0.25f)), new ItemTransformVec3f(new Vector3f(0, 0, 0), applyTranslationScale(new Vector3f(0, 0, 0)), new Vector3f(0.5f, 0.5f, 0.5f)));
-        defaultBlockTemplate = ElecTemplateBakery.instance.newDefaultBlockTemplate();
-        defaultItemTemplate = ElecTemplateBakery.instance.newDefaultItemTemplate();
     }
 
     private static Vector3f applyTranslationScale(Vector3f vec){

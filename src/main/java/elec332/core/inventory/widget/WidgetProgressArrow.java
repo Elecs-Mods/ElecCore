@@ -23,7 +23,7 @@ public class WidgetProgressArrow extends Widget {
     @Override
     public void detectAndSendChanges(Iterable<IWidgetListener> crafters) {
         int progress = iHasProgressBar.getProgress();
-        if (lastProgress != progress){
+        if (lastProgress != progress) {
             sendProgressBarUpdate(crafters, progress);
             lastProgress = progress;
         }
@@ -44,8 +44,8 @@ public class WidgetProgressArrow extends Widget {
             progress = 0;
         }
         bindTexture(new ResourceLocation("eleccore", "progressbars.png"));
-        int fullArrow = (int)(23 * progress);
-        if (right){
+        int fullArrow = (int) (23 * progress);
+        if (right) {
             GuiDraw.drawTexturedModalRect(guiX + x, guiY + y, 0, 0, width, height);
             GuiDraw.drawTexturedModalRect(guiX + x, guiY + y, 0, 16, fullArrow, height);
         } else {

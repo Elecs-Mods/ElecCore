@@ -15,7 +15,7 @@ public interface IModelWithoutQuads {
 
     public boolean isGui3d();
 
-    public boolean isTESRItem();
+    public boolean isBuiltInRenderer();
 
     public TextureAtlasSprite getParticleTexture();
 

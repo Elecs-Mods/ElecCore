@@ -18,11 +18,9 @@ import javax.annotation.Nullable;
 /**
  * Created by Elec332 on 15-10-2016.
  */
-@SuppressWarnings("deprecation")
 public class FluidHelper {
 
     @Nullable
-    @SuppressWarnings("deprecation")
     public static IFluidHandler getFluidHandler(IBlockAccess iba, BlockPos pos, EnumFacing facing){
         TileEntity tile = WorldHelper.getTileAt(iba, pos);
         if (tile.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, facing)){

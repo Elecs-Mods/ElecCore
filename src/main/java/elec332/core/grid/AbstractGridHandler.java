@@ -1,11 +1,11 @@
 package elec332.core.grid;
 
 import com.google.common.collect.Sets;
-import elec332.core.main.ElecCore;
-import elec332.core.world.DefaultMultiWorldPositionedObjectHolder;
+import elec332.core.ElecCore;
 import elec332.core.world.DimensionCoordinate;
-import elec332.core.world.IMultiWorldPositionedObjectHolder;
-import elec332.core.world.PositionedObjectHolder;
+import elec332.core.world.posmap.DefaultMultiWorldPositionedObjectHolder;
+import elec332.core.world.posmap.IMultiWorldPositionedObjectHolder;
+import elec332.core.world.posmap.PositionedObjectHolder;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
@@ -23,13 +23,13 @@ import java.util.function.Supplier;
  */
 public abstract class AbstractGridHandler<T extends IPositionable> implements IStructureWorldEventHandler {
 
-    public AbstractGridHandler(){
+    public AbstractGridHandler() {
         this.objectsInternal = getWorldPosObjHolder();
         this.objectsInternal.get().addCreateCallback(new Consumer<PositionedObjectHolder<T>>() {
 
             @Override
             public void accept(PositionedObjectHolder<T> obj) {
-                for (PositionedObjectHolder.ChangeCallback<T> callback : changeCallbacks){
+                for (PositionedObjectHolder.ChangeCallback<T> callback : changeCallbacks) {
                     obj.registerCallback(callback);
                 }
             }
@@ -42,34 +42,34 @@ public abstract class AbstractGridHandler<T extends IPositionable> implements IS
         registerChangeCallback(new PositionedObjectHolder.ChangeCallback<T>() {
             @Override
             public void onChange(T objectU, BlockPos pos, boolean add) {
-                if (objectU == null){
+                if (objectU == null) {
                     return;
                 }
-                if (!(objectU instanceof ITileEntityLink)){
+                if (!(objectU instanceof ITileEntityLink)) {
                     return;
                 }
                 ITileEntityLink object = (ITileEntityLink) objectU;
                 Class type = object.getInformationType();
-                if (type == null){
+                if (type == null) {
                     return;
                 }
                 TileEntity tile = object.getTileEntity();
                 if (tile != null) {
                     for (Field field : tile.getClass().getDeclaredFields()) {
-                        if (field.isAnnotationPresent(GridInformation.class)){
+                        if (field.isAnnotationPresent(GridInformation.class)) {
                             Class clazz = field.getAnnotation(GridInformation.class).value();
-                            if (clazz == type){
-                                if (!field.getType().isAssignableFrom(type)){
+                            if (clazz == type) {
+                                if (!field.getType().isAssignableFrom(type)) {
                                     throw new IllegalArgumentException();
                                 }
                                 Object o = add ? object.getInformation() : null;
-                                if (o != null && !type.isAssignableFrom(o.getClass())){
+                                if (o != null && !type.isAssignableFrom(o.getClass())) {
                                     throw new IllegalArgumentException();
                                 }
                                 try {
                                     field.setAccessible(true);
                                     field.set(tile, o);
-                                } catch (Exception e){
+                                } catch (Exception e) {
                                     throw new RuntimeException(e);
                                 }
                             }
@@ -85,21 +85,21 @@ public abstract class AbstractGridHandler<T extends IPositionable> implements IS
     protected final Set<DimensionCoordinate> extraUnload, changeCheck, add;
     protected boolean removeWarningOverride = false;
 
-    protected Supplier<IMultiWorldPositionedObjectHolder<T>> getWorldPosObjHolder(){
+    protected Supplier<IMultiWorldPositionedObjectHolder<T>> getWorldPosObjHolder() {
         return new DefaultMultiWorldPositionedObjectHolder<>();
     }
 
-    protected final Map<Integer, PositionedObjectHolder<T>> getObjects(){
+    protected final Map<Integer, PositionedObjectHolder<T>> getObjects() {
         return objectsInternal.get().getUnModifiableView();
     }
 
     //Block changed
     @SuppressWarnings("all")
     @Override
-    public void checkNotifyStuff(Set<DimensionCoordinate> updates){
+    public void checkNotifyStuff(Set<DimensionCoordinate> updates) {
         for (DimensionCoordinate dimCoord : updates) {
             T o = getObject(dimCoord);
-            if (o == null){
+            if (o == null) {
                 continue;
             }
             TileEntity tile = dimCoord.getTileEntity();
@@ -111,10 +111,10 @@ public abstract class AbstractGridHandler<T extends IPositionable> implements IS
                 //Nothing to do, no tile and no energy object.
                 return;
             } else {
-                if (!o.getPosition().isLoaded()){
+                if (!o.getPosition().isLoaded()) {
                     throw new IllegalStateException(); //Something has gone terribly wrong somewhere...
                 }
-                if (o.hasChanged()){
+                if (o.hasChanged()) {
                     changeCheck.add(dimCoord);
                     return;
                 }
@@ -125,22 +125,22 @@ public abstract class AbstractGridHandler<T extends IPositionable> implements IS
 
     //Block added/removed (most likely atleast)
     @Override
-    public void checkBlockUpdates(Set<DimensionCoordinate> updates){
-        for (DimensionCoordinate dimCoord : updates){
+    public void checkBlockUpdates(Set<DimensionCoordinate> updates) {
+        for (DimensionCoordinate dimCoord : updates) {
             TileEntity tile = dimCoord.isLoaded() ? dimCoord.getTileEntity() : null;
             T o = getObject(dimCoord);
-            if (o == null && tile == null){
+            if (o == null && tile == null) {
                 continue;
             }
-            if (o == null && isValidObject(tile)){
+            if (o == null && isValidObject(tile)) {
                 add.add(dimCoord);
             }
-            if (o != null && tile == null){
+            if (o != null && tile == null) {
                 extraUnload.add(dimCoord);
                 continue;
             }
-            if (o != null && isValidObject(tile)){
-                if (o.hasChanged()){
+            if (o != null && isValidObject(tile)) {
+                if (o.hasChanged()) {
                     changeCheck.add(dimCoord);
                 }
             }
@@ -148,7 +148,7 @@ public abstract class AbstractGridHandler<T extends IPositionable> implements IS
     }
 
     @Override
-    public void worldUnload(World world){
+    public void worldUnload(World world) {
         PositionedObjectHolder<T> worldObjects = objectsInternal.get().get(world);
         if (worldObjects != null) {
             Set<DimensionCoordinate> unload = Sets.newHashSet();
@@ -162,18 +162,18 @@ public abstract class AbstractGridHandler<T extends IPositionable> implements IS
     }
 
     @Override
-    public void checkChunkUnload(Set<DimensionCoordinate> updates){
+    public void checkChunkUnload(Set<DimensionCoordinate> updates) {
         updates.addAll(extraUnload);
         updates.addAll(changeCheck);
         unloadObjects_Internal(updates);
         extraUnload.clear();
     }
 
-    protected void unloadObjects_Internal(Set<DimensionCoordinate> updates){
+    protected void unloadObjects_Internal(Set<DimensionCoordinate> updates) {
         Set<DimensionCoordinate> updates_ = Collections.unmodifiableSet(updates);
-        for (DimensionCoordinate dimCoord : updates){
+        for (DimensionCoordinate dimCoord : updates) {
             T o = getObject(dimCoord);
-            if (o == null){
+            if (o == null) {
                 System.out.println("????_-3"); //???
                 continue;
             }
@@ -185,17 +185,17 @@ public abstract class AbstractGridHandler<T extends IPositionable> implements IS
     protected abstract void onObjectRemoved(T o, Set<DimensionCoordinate> allUpdates);
 
     @Override
-    public void checkChunkLoad(Set<DimensionCoordinate> updates){
+    public void checkChunkLoad(Set<DimensionCoordinate> updates) {
         Set<DimensionCoordinate> oldUpdates = Sets.newHashSet(updates);
         updates.addAll(add);
         updates.addAll(changeCheck);
-        for (DimensionCoordinate dimCoord : updates){
+        for (DimensionCoordinate dimCoord : updates) {
             TileEntity tile = dimCoord.getTileEntity();
-            if (tile == null || !isValidObject(tile)){
+            if (tile == null || !isValidObject(tile)) {
                 continue;
             }
             T o = getObject(dimCoord);
-            if (o != null){
+            if (o != null) {
                 if (oldUpdates.contains(dimCoord) && !ElecCore.suppressSpongeIssues && !removeWarningOverride) {
                     throw new IllegalStateException();
                 }
@@ -220,21 +220,21 @@ public abstract class AbstractGridHandler<T extends IPositionable> implements IS
 
     protected abstract T createNewObject(TileEntity tile);
 
-    protected void removeObject(DimensionCoordinate dimensionCoordinate){
+    protected void removeObject(DimensionCoordinate dimensionCoordinate) {
         getDim(dimensionCoordinate).remove(dimensionCoordinate.getPos());
     }
 
-    protected T getObject(DimensionCoordinate dimensionCoordinate){
+    protected T getObject(DimensionCoordinate dimensionCoordinate) {
         return getDim(dimensionCoordinate).get(dimensionCoordinate.getPos());
     }
 
-    protected PositionedObjectHolder<T> getDim(DimensionCoordinate dimensionCoordinate){
+    protected PositionedObjectHolder<T> getDim(DimensionCoordinate dimensionCoordinate) {
         return objectsInternal.get().getOrCreate(dimensionCoordinate.getDimension());
     }
 
-    public void registerChangeCallback(PositionedObjectHolder.ChangeCallback<T> callback){
-        if (changeCallbacks.add(callback)){
-            for (PositionedObjectHolder<T> o : objectsInternal.get().getValues()){
+    public void registerChangeCallback(PositionedObjectHolder.ChangeCallback<T> callback) {
+        if (changeCallbacks.add(callback)) {
+            for (PositionedObjectHolder<T> o : objectsInternal.get().getValues()) {
                 o.registerCallback(callback);
             }
         }

@@ -1,5 +1,7 @@
 package elec332.core.client.model.template;
 
+import elec332.core.api.APIHandlerInject;
+import elec332.core.api.IAPIHandler;
 import elec332.core.api.client.model.IElecTemplateBakery;
 import elec332.core.api.client.model.template.*;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -15,7 +17,7 @@ import javax.annotation.Nonnull;
 @SideOnly(Side.CLIENT)
 public final class ElecTemplateBakery implements IElecTemplateBakery {
 
-    public static final ElecTemplateBakery instance = new ElecTemplateBakery();
+    private static final ElecTemplateBakery instance = new ElecTemplateBakery();
     private ElecTemplateBakery(){
     }
 
@@ -116,6 +118,11 @@ public final class ElecTemplateBakery implements IElecTemplateBakery {
             ret.addQuadForSide(EnumFacing.VALUES[i], templateQuadForTexture(EnumFacing.VALUES[i], textures[i]));
         }
         return ret;
+    }
+
+    @APIHandlerInject
+    public void injectTemplateBakery(IAPIHandler apiHandler){
+        apiHandler.inject(instance, IElecTemplateBakery.class);
     }
 
 }

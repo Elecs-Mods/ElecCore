@@ -1,10 +1,10 @@
 package elec332.core.world.schematic;
 
 import com.google.common.collect.Maps;
+import elec332.core.ElecCore;
 import elec332.core.api.structure.ISchematic;
 import elec332.core.api.util.Area;
-import elec332.core.main.ElecCore;
-import elec332.core.util.IOUtil;
+import elec332.core.util.IOHelper;
 import elec332.core.util.NBTTypes;
 import elec332.core.util.RegistryHelper;
 import elec332.core.world.WorldHelper;
@@ -49,7 +49,7 @@ public enum  SchematicHelper {
 
     public Schematic loadSchematic(ResourceLocation rl){
         try {
-            return loadSchematic(IOUtil.getFromResource(rl));
+            return loadSchematic(IOHelper.getFromResource(rl));
         } catch (IOException e){
             ElecCore.logger.fatal("Error loading schematic at: "+rl);
             ElecCore.logger.fatal(e);

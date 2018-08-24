@@ -12,7 +12,7 @@ public interface ISimplePacket {
     public void toBytes(ElecByteBuf byteBuf);
 
     @Nullable
-    default public ISimplePacketHandler getPacketHandler(){
+    default public ISimplePacketHandler getPacketHandler() {
         return null;
     }
 

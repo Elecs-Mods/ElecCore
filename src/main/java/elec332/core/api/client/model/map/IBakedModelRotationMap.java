@@ -32,15 +32,15 @@ public interface IBakedModelRotationMap<M extends IBakedModel> {
      * Sets a model for the given rotation.
      *
      * @param rotation The rotation of the model.
-     * @param model The model for the rotation
+     * @param model    The model for the rotation
      * @throws RotationNotSupportedException If the specified rotation is not supported.
      */
     public void setModel(ModelRotation rotation, M model) throws RotationNotSupportedException;
 
     public class RotationNotSupportedException extends IllegalArgumentException {
 
-        public RotationNotSupportedException(ModelRotation rotation){
-            super("Model rotation for "+rotation+" is not supported.");
+        public RotationNotSupportedException(ModelRotation rotation) {
+            super("Model rotation for " + rotation + " is not supported.");
         }
 
     }

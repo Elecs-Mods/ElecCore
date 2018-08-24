@@ -14,7 +14,7 @@ import javax.annotation.Nullable;
  */
 public class NBTSerializableSaveHandler implements IExternalSaveHandler {
 
-    public NBTSerializableSaveHandler(String name, INBTSerializable<NBTTagCompound> nbtSerializable){
+    public NBTSerializableSaveHandler(String name, INBTSerializable<NBTTagCompound> nbtSerializable) {
         this.name = Preconditions.checkNotNull(name);
         this.nbtSerializable = Preconditions.checkNotNull(nbtSerializable);
         this.clearable = nbtSerializable instanceof IClearable ? (IClearable) nbtSerializable : null;
@@ -42,7 +42,7 @@ public class NBTSerializableSaveHandler implements IExternalSaveHandler {
 
     @Override
     public void nullifyData() {
-        if (clearable != null){
+        if (clearable != null) {
             clearable.clear();
         }
     }

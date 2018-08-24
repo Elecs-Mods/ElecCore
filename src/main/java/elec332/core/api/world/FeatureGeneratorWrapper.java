@@ -9,10 +9,13 @@ import java.util.Random;
 
 /**
  * Created by Elec332 on 16-10-2016.
+ *
+ * Wraps an {@link IFeatureGenerator} to an {@link IAdvancedChunkPopulator},
+ * which allows for some extra features.
  */
 public class FeatureGeneratorWrapper implements IAdvancedChunkPopulator, IConfigurableElement {
 
-    public FeatureGeneratorWrapper(IFeatureGenerator generator){
+    public FeatureGeneratorWrapper(IFeatureGenerator generator) {
         this.generator = generator;
         this.name = generator.getName();
     }
@@ -43,7 +46,7 @@ public class FeatureGeneratorWrapper implements IAdvancedChunkPopulator, IConfig
 
     @Override
     public void reconfigure(Configuration config) {
-        if (this.generator instanceof IConfigurableElement){
+        if (this.generator instanceof IConfigurableElement) {
             ((IConfigurableElement) this.generator).reconfigure(config);
         }
         this.genkey = config.getString("generationKey", getName(), this.genkey, "When this key differs from the key stored in the chunk data, the chunk will be retrogenned.");

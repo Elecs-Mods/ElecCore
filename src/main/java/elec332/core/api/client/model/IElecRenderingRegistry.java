@@ -1,8 +1,6 @@
 package elec332.core.api.client.model;
 
 import elec332.core.api.client.ITextureLoader;
-import elec332.core.client.model.loading.IModelAndTextureLoader;
-import elec332.core.client.model.loading.IModelLoader;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;

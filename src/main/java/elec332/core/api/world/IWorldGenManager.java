@@ -17,8 +17,8 @@ public interface IWorldGenManager {
      * without causing any tick issues when a lot of IFeatureGenerators are
      * enqueued at once.
      *
-     * @param world The world the chunk is located in
-     * @param chunk The position of the chunk
+     * @param world             The world the chunk is located in
+     * @param chunk             The position of the chunk
      * @param featureGenerators The IFeatureGenerators to register
      */
     public void registerForRetroGen(@Nonnull World world, @Nonnull ChunkPos chunk, IFeatureGenerator... featureGenerators);
@@ -29,8 +29,8 @@ public interface IWorldGenManager {
      * without causing any tick issues when a lot of IFeatureGenerators are
      * enqueued at once.
      *
-     * @param world The world the chunk is located in
-     * @param chunk The position of the chunk
+     * @param world             The world the chunk is located in
+     * @param chunk             The position of the chunk
      * @param featureGenerators The IFeatureGenerators to register
      */
     public void registerForRetroGen(@Nonnull World world, @Nonnull ChunkPos chunk, Collection<IFeatureGenerator> featureGenerators);

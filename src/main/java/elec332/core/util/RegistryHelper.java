@@ -2,8 +2,6 @@ package elec332.core.util;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.BiMap;
-import elec332.core.api.registry.ICraftingManager;
-import elec332.core.util.recipes.RecipeHelper;
 import net.minecraft.block.Block;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.item.Item;
@@ -112,9 +110,10 @@ public class RegistryHelper {
         return GameData.getBlockItemMap();
     }
 
-    public static ICraftingManager getCraftingManager() {
+    /*public static ICraftingManager getCraftingManager() {
+        CraftingManager
         return RecipeHelper.getCraftingManager();
-    }
+    }*/
 
     //Callback helpers
 

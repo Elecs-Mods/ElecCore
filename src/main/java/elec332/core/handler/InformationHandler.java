@@ -1,8 +1,7 @@
 package elec332.core.handler;
 
+import elec332.core.api.annotations.StaticLoad;
 import elec332.core.api.info.*;
-import elec332.core.main.APIHandler;
-import elec332.core.main.ElecCoreRegistrar;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -15,7 +14,7 @@ import javax.annotation.Nonnull;
 /**
  * Created by Elec332 on 16-10-2016.
  */
-@APIHandler.StaticLoad
+@StaticLoad
 public enum InformationHandler implements IInfoProvider, IInfoProviderEntity {
 
     INSTANCE;

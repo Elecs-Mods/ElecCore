@@ -6,9 +6,9 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import elec332.core.api.client.model.loading.IModelHandler;
 import elec332.core.api.client.model.loading.ModelHandler;
-import elec332.core.client.model.RenderingRegistry;
 import elec332.core.client.model.loading.INoBlockStateJsonBlock;
 import elec332.core.client.model.loading.INoJsonBlock;
+import elec332.core.loader.client.RenderingRegistry;
 import net.minecraft.block.Block;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.IBlockState;
@@ -60,7 +60,7 @@ public class BlockVariantModelHandler implements IModelHandler {
 
     @Override
     @SuppressWarnings("all")
-    public void registerModels() {
+    public void preHandleModels() {
         for (Block block : RenderingRegistry.instance().getAllValidBlocks()){
             if (block instanceof INoBlockStateJsonBlock && !(block instanceof INoJsonBlock)){
 

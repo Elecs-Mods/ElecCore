@@ -27,12 +27,12 @@ import net.minecraftforge.fml.relauncher.Side;
 class DefaultSimpleNetworkHandler implements ISimpleNetworkPacketManager, IMessageHandler<DefaultSimpleNetworkHandler.PacketSimplePacket, IMessage> {
 
     @SuppressWarnings("all")
-    DefaultSimpleNetworkHandler(INetworkHandler networkHandler, String s){
+    DefaultSimpleNetworkHandler(INetworkHandler networkHandler, String s) {
         this.idToHandler = new TIntObjectHashMap<ISimplePacketHandler>();
         this.handlerToId = new TObjectIntHashMap<ISimplePacketHandler>();
         this.packetToId = new TObjectIntHashMap<Class<? extends ISimplePacket>>();
         this.b = 0;
-        for (Side side : Side.values()){
+        for (Side side : Side.values()) {
             networkHandler.registerPacket(this, PacketSimplePacket.class, side);
         }
         this.packetDispatcher = networkHandler;
@@ -126,19 +126,19 @@ class DefaultSimpleNetworkHandler implements ISimpleNetworkPacketManager, IMessa
         packetDispatcher.sendToServer(from(data, packetHandler));
     }
 
-    private PacketSimplePacket from(ISimplePacket message){
+    private PacketSimplePacket from(ISimplePacket message) {
         return new PacketSimplePacket(packetToId.get(message.getClass()), fetchData(message));
     }
 
-    private PacketSimplePacket from(ISimplePacket message, ISimplePacketHandler handler){
+    private PacketSimplePacket from(ISimplePacket message, ISimplePacketHandler handler) {
         return new PacketSimplePacket(handlerToId.get(handler), fetchData(message));
     }
 
-    private PacketSimplePacket from(ByteBuf data, ISimplePacketHandler handler){
+    private PacketSimplePacket from(ByteBuf data, ISimplePacketHandler handler) {
         return new PacketSimplePacket(handlerToId.get(handler), data);
     }
 
-    private ByteBuf fetchData(ISimplePacket packet){
+    private ByteBuf fetchData(ISimplePacket packet) {
         ElecByteBuf ret = new ElecByteBufImpl(UnpooledByteBufAllocator.DEFAULT.ioBuffer());
         packet.toBytes(ret);
         return ret;
@@ -148,7 +148,7 @@ class DefaultSimpleNetworkHandler implements ISimpleNetworkPacketManager, IMessa
     public void registerPacket(Class<? extends ISimplePacket> packet) {
         try {
             registerPacket(packet.newInstance());
-        } catch (Exception e){
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
@@ -156,7 +156,7 @@ class DefaultSimpleNetworkHandler implements ISimpleNetworkPacketManager, IMessa
     @Override
     public void registerPacket(ISimplePacket packet) {
         ISimplePacketHandler handler = packet.getPacketHandler();
-        if (handler == null){
+        if (handler == null) {
             throw new UnsupportedOperationException();
         }
         registerPacket(packet, handler);
@@ -174,7 +174,7 @@ class DefaultSimpleNetworkHandler implements ISimpleNetworkPacketManager, IMessa
     public void registerPacket(Class<? extends ISimplePacket> packet, ISimplePacketHandler packetHandler) {
         try {
             registerPacket(packet.newInstance(), packetHandler);
-        } catch (Exception e){
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
@@ -185,7 +185,7 @@ class DefaultSimpleNetworkHandler implements ISimpleNetworkPacketManager, IMessa
         Preconditions.checkNotNull(packet);
         Preconditions.checkNotNull(packetHandler);
         ISimplePacketHandler ph = packet.getPacketHandler();
-        if (ph != null && ph != packetHandler){
+        if (ph != null && ph != packetHandler) {
             throw new IllegalArgumentException();
         }
         packetToId.put(packet.getClass(), b);
@@ -207,10 +207,10 @@ class DefaultSimpleNetworkHandler implements ISimpleNetworkPacketManager, IMessa
     public static class PacketSimplePacket implements IMessage {
 
 
-        public PacketSimplePacket(){
+        public PacketSimplePacket() {
         }
 
-        PacketSimplePacket(int i, ByteBuf buf){
+        PacketSimplePacket(int i, ByteBuf buf) {
             this.i = (byte) i;
             this.data = buf;
         }

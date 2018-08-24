@@ -3,11 +3,9 @@ package elec332.core.inventory.window;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import elec332.core.inventory.AbstractSlot;
+import elec332.core.ElecCore;
 import elec332.core.inventory.widget.slot.WidgetSlot;
-import elec332.core.main.ElecCore;
 import elec332.core.network.packets.PacketWindowData;
-import elec332.core.util.InventoryHelper;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.entity.player.EntityPlayer;
@@ -30,7 +28,7 @@ import java.util.Map;
  */
 public final class WindowContainer extends Container {
 
-    public WindowContainer(EntityPlayer player, Window window){
+    public WindowContainer(EntityPlayer player, Window window) {
         this.listeners = Lists.newArrayList();
         this.thePlayer = player;
         this.window = window;
@@ -51,7 +49,7 @@ public final class WindowContainer extends Container {
 
     private static final IInventory NULL_INVENTORY;
 
-    public Window getWindow(){
+    public Window getWindow() {
         return window;
     }
 
@@ -61,7 +59,7 @@ public final class WindowContainer extends Container {
         super.addListener(listener);
         WindowListener windowListener = new WindowListener(listener);
         window.onListenerAdded(windowListener);
-        if (!listeners.contains(listener)){
+        if (!listeners.contains(listener)) {
             listeners.add(windowListener);
         }
     }
@@ -138,15 +136,15 @@ public final class WindowContainer extends Container {
 
     @Override
     protected Slot addSlotToContainer(Slot slotIn) {
-        if (!(slotIn instanceof WidgetLinkedSlot)){
-            externalSlots.put(slotIn, InventoryHelper.wrapSlot(slotIn));
+        if (!(slotIn instanceof WidgetLinkedSlot)) {
+            externalSlots.put(slotIn, new WrappedWidgetSlot(slotIn));
         }
         return super.addSlotToContainer(slotIn);
     }
 
     private class WindowListener implements IWindowListener {
 
-        private WindowListener(IContainerListener listener){
+        private WindowListener(IContainerListener listener) {
             this.listener = listener;
         }
 
@@ -154,7 +152,7 @@ public final class WindowContainer extends Container {
 
         @Override
         public void updateCraftingInventory(List<ItemStack> itemsList) {
-            if (!(itemsList instanceof NonNullList)){
+            if (!(itemsList instanceof NonNullList)) {
                 throw new IllegalArgumentException();
             }
             listener.sendAllContents(WindowContainer.this, (NonNullList<ItemStack>) itemsList);
@@ -187,7 +185,7 @@ public final class WindowContainer extends Container {
 
     }
 
-    class WidgetLinkedSlot extends AbstractSlot {
+    class WidgetLinkedSlot extends Slot {
 
         private WidgetLinkedSlot(WidgetSlot widget) {
             super(NULL_INVENTORY, widget.getSlotIndex(), widget.x, widget.y);
@@ -207,7 +205,7 @@ public final class WindowContainer extends Container {
         }
 
         @Override
-        public void onSwapCraftC(int p_190900_1_) {
+        protected void onSwapCraft(int p_190900_1_) {
             widget.onSwapCraft(p_190900_1_);
         }
 
@@ -216,10 +214,10 @@ public final class WindowContainer extends Container {
             widget.onCrafting(stack);
         }
 
-        @Nonnull
         @Override
-        public ItemStack onTakenFromSlotC(EntityPlayer p_190901_1_, @Nonnull ItemStack p_190901_2_) {
-            return widget.onTake(p_190901_1_, p_190901_2_);
+        @Nonnull
+        public ItemStack onTake(@Nonnull EntityPlayer thePlayer, @Nonnull ItemStack stack) {
+            return widget.onTake(thePlayer, stack);
         }
 
         @Override
@@ -327,7 +325,7 @@ public final class WindowContainer extends Container {
 
         @Override
         public boolean isSameInventory(Slot other) {
-            return widget.isSameInventory(((WidgetLinkedSlot)other).widget);
+            return widget.isSameInventory(((WidgetLinkedSlot) other).widget);
         }
 
     }
@@ -380,7 +378,7 @@ public final class WindowContainer extends Container {
         @SideOnly(Side.CLIENT)
         public void handleMouseClickDefault(WidgetSlot slotIn, int slotId, int mouseButton, @Nonnull ClickType type) {
             Slot slot = slotIn == null ? null : slotStuff.get(slotIn);
-            if (slotIn != null && slot == null){
+            if (slotIn != null && slot == null) {
                 throw new IllegalArgumentException();
             }
             windowGui.handleMouseClickDefault(slot, slotId, mouseButton, type);

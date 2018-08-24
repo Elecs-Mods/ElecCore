@@ -43,6 +43,7 @@ public abstract class ElecByteBuf extends ByteBuf {
     /**
      * Write a String with UTF8 byte encoding to the buffer.
      * It is encoded as <varint length>[<UTF8 char bytes>]
+     *
      * @param string The string to write
      */
     public abstract ElecByteBuf writeString(String string);
@@ -61,7 +62,7 @@ public abstract class ElecByteBuf extends ByteBuf {
      *
      * @param toWrite The integer to write
      */
-    public ElecByteBuf writeVarInt(int toWrite){
+    public ElecByteBuf writeVarInt(int toWrite) {
         return writeVarInt(toWrite, 5);
     }
 
@@ -79,7 +80,7 @@ public abstract class ElecByteBuf extends ByteBuf {
      *
      * @return The integer
      */
-    public int readVarInt(){
+    public int readVarInt() {
         return readVarInt(5);
     }
 
@@ -106,7 +107,6 @@ public abstract class ElecByteBuf extends ByteBuf {
     public abstract ElecByteBuf writeEnumValue(Enum<?> value);
 
     public abstract <T extends Enum<T>> T readEnumValue(Class<T> enumClass);
-
 
 
     // Link-through

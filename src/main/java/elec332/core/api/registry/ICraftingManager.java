@@ -22,31 +22,31 @@ public interface ICraftingManager {
     public void registerRecipe(IRecipe recipe);
 
     @SuppressWarnings("all")
-    public default void registerRecipe(IRecipe recipe, String name){
+    public default void registerRecipe(IRecipe recipe, String name) {
         registerRecipe(recipe, new ResourceLocation(Loader.instance().activeModContainer().getModId(), name));
     }
 
     public void registerRecipe(IRecipe recipe, ResourceLocation name);
 
     @Deprecated
-    public default void addShapelessRecipe(ItemStack stack, Object... recipeComponents){
+    public default void addShapelessRecipe(ItemStack stack, Object... recipeComponents) {
         addShapelessRecipe((stack.toString() + Lists.newArrayList(recipeComponents)).replace(":", "-"), stack, recipeComponents);
     }
 
     @SuppressWarnings("all")
-    public default void addShapelessRecipe(String name, ItemStack stack, Object... recipeComponents){
+    public default void addShapelessRecipe(String name, ItemStack stack, Object... recipeComponents) {
         addShapelessRecipe(new ResourceLocation(Loader.instance().activeModContainer().getModId(), name), stack, recipeComponents);
     }
 
     public void addShapelessRecipe(ResourceLocation name, ItemStack stack, Object... recipeComponents);
 
     @Deprecated
-    public default void addRecipe(ItemStack stack, Object... recipeComponents){
+    public default void addRecipe(ItemStack stack, Object... recipeComponents) {
         addRecipe((stack.toString() + Lists.newArrayList(recipeComponents)).replace(":", "-"), stack, recipeComponents);
     }
 
     @SuppressWarnings("all")
-    public default void addRecipe(String name, ItemStack stack, Object... recipeComponents){
+    public default void addRecipe(String name, ItemStack stack, Object... recipeComponents) {
         addRecipe(new ResourceLocation(Loader.instance().activeModContainer().getModId(), name), stack, recipeComponents);
     }
 

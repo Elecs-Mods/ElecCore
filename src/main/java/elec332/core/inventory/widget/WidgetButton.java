@@ -4,7 +4,7 @@ import com.google.common.collect.Lists;
 import elec332.core.client.RenderHelper;
 import elec332.core.client.util.GuiDraw;
 import elec332.core.inventory.window.Window;
-import elec332.core.util.NBTHelper;
+import elec332.core.util.NBTBuilder;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
@@ -21,7 +21,7 @@ import java.util.List;
 @SuppressWarnings("unused")
 public class WidgetButton extends Widget {
 
-    public WidgetButton(int x, int y, int width, int height){
+    public WidgetButton(int x, int y, int width, int height) {
         this(x, y, 0, 0, width, height);
     }
 
@@ -35,7 +35,7 @@ public class WidgetButton extends Widget {
         this.active = true;
     }
 
-    public WidgetButton(int x, int y, int u, int v, int width, int height, IButtonEventListener... events){
+    public WidgetButton(int x, int y, int u, int v, int width, int height, IButtonEventListener... events) {
         this(x, y, u, v, width, height);
         Collections.addAll(buttonEvents, events);
     }
@@ -45,7 +45,7 @@ public class WidgetButton extends Widget {
     private boolean active;
     protected String displayString;
 
-    public WidgetButton setDisplayString(String s){
+    public WidgetButton setDisplayString(String s) {
         this.displayString = s;
         return this;
     }
@@ -60,9 +60,9 @@ public class WidgetButton extends Widget {
 
     @Override
     public final boolean mouseClicked(int mouseX, int mouseY, int button) {
-        if (isMouseOver(mouseX, mouseY) && active){
+        if (isMouseOver(mouseX, mouseY) && active) {
             onButtonClicked(button);
-            sendNBTChangesToServer(new NBTHelper().addToTag(1, "id").addToTag(button, "mbi").serializeNBT());
+            sendNBTChangesToServer(new NBTBuilder().setInteger("id", 1).setInteger("mbi", button).serializeNBT());
             return true;
         }
         return false;
@@ -70,12 +70,12 @@ public class WidgetButton extends Widget {
 
     @Override
     public void readNBTChangesFromPacketServerSide(NBTTagCompound tagCompound) {
-        if (tagCompound.getInteger("id") == 1){
+        if (tagCompound.getInteger("id") == 1) {
             onButtonClicked(tagCompound.getInteger("mbi"));
         }
     }
 
-    public void onButtonClicked(int mouseButton){
+    public void onButtonClicked(int mouseButton) {
         sendButtonEvents(mouseButton);
     }
 
@@ -122,29 +122,29 @@ public class WidgetButton extends Widget {
         return b;
     }
 
-    public void sendButtonEvents(int mouseButton){
+    public void sendButtonEvents(int mouseButton) {
         for (IButtonEventListener event : buttonEvents) {
             event.onButtonClicked(this, mouseButton);
         }
     }
 
-    public WidgetButton addButtonEvent(IButtonEventListener event){
+    public WidgetButton addButtonEvent(IButtonEventListener event) {
         if (!buttonEvents.contains(event))
             buttonEvents.add(event);
         return this;
     }
 
-    public void removeButtonEvent(IButtonEventListener event){
+    public void removeButtonEvent(IButtonEventListener event) {
         buttonEvents.remove(event);
     }
 
-    public void clearEvents(){
+    public void clearEvents() {
         buttonEvents.clear();
     }
 
     public static interface IButtonEventListener {
 
-        default public void onButtonClicked(WidgetButton button, int mouseButton){
+        default public void onButtonClicked(WidgetButton button, int mouseButton) {
             onButtonClicked(button);
         }
 

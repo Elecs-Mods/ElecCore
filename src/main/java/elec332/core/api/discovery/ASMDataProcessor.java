@@ -9,6 +9,8 @@ import java.lang.annotation.Target;
 
 /**
  * Created by Elec332 on 7-3-2016.
+ *
+ * Used to annotate a class that implements {@link IASMDataProcessor}
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
@@ -25,5 +27,12 @@ public @interface ASMDataProcessor {
      * @return The (array of) LoaderState(s) in which to load this.
      */
     public LoaderState[] value();
+
+    /**
+     * The importance of this {@link IASMDataProcessor}, higher = earlier processing
+     *
+     * @return Importance of this {@link IASMDataProcessor}
+     */
+    public int importance() default -1;
 
 }

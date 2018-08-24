@@ -15,29 +15,29 @@ import java.util.stream.Collectors;
 /**
  * Created by Elec332 on 31-7-2015.
  */
-public class ToolTip{
+public class ToolTip {
 
-    public ToolTip(){
+    public ToolTip() {
         this(Collections.emptyList());
     }
 
-    public ToolTip(ColouredString colouredString){
+    public ToolTip(ColouredString colouredString) {
         this(Lists.newArrayList(colouredString));
     }
 
-    public ToolTip(List<ColouredString> s){
+    public ToolTip(List<ColouredString> s) {
         this.tooltip = s.stream().map(ColouredString::toString).collect(Collectors.toList());
     }
 
-    public ToolTip(String s){
+    public ToolTip(String s) {
         this(Lists.newArrayList(s));
     }
 
-    public ToolTip(List<String> s, Object... o){
+    public ToolTip(List<String> s, Object... o) {
         this.tooltip = s;
     }
 
-    public ToolTip setWidth(int width){
+    public ToolTip setWidth(int width) {
         this.width = width;
         return this;
     }
@@ -50,19 +50,19 @@ public class ToolTip{
     }
 
     @SideOnly(Side.CLIENT)
-    public void renderTooltip(int mouseX, int mouseY, int guiLeft, int guiTop){
+    public void renderTooltip(int mouseX, int mouseY, int guiLeft, int guiTop) {
         Minecraft mc = Minecraft.getMinecraft();
         GuiUtils.drawHoveringText(null, tooltip, mouseX, mouseY, mc.displayWidth, mc.displayHeight, width, RenderHelper.getMCFontrenderer());
     }
 
     public static class ColouredString {
 
-        public ColouredString(String s){
+        public ColouredString(String s) {
             this(TextFormatting.GRAY, s);
         }
 
-        public ColouredString(TextFormatting colour, String s){
-            this.string = colour+s;
+        public ColouredString(TextFormatting colour, String s) {
+            this.string = colour + s;
         }
 
         private final String string;

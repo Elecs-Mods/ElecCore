@@ -14,7 +14,7 @@ public interface IAdvancedChunkPopulator {
 
     public String getGenKey();
 
-    default public boolean shouldRegen(boolean hasInitialGen){
+    default public boolean shouldRegen(boolean hasInitialGen) {
         return true;
     }
 

@@ -7,7 +7,7 @@ import elec332.core.api.network.ElecByteBuf;
  */
 public interface INetworkObjectSender {
 
-    default public void writePacket(int id, ElecByteBuf data){
+    default public void writePacket(int id, ElecByteBuf data) {
     }
 
     public void setNetworkObjectHandler(INetworkObjectHandler handler);

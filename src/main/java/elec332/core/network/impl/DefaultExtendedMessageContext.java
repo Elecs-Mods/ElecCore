@@ -1,7 +1,7 @@
 package elec332.core.network.impl;
 
+import elec332.core.ElecCore;
 import elec332.core.api.network.IExtendedMessageContext;
-import elec332.core.main.ElecCore;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.INetHandler;
 import net.minecraft.network.NetworkManager;
@@ -15,7 +15,7 @@ import net.minecraftforge.fml.relauncher.Side;
  */
 class DefaultExtendedMessageContext implements IExtendedMessageContext {
 
-    DefaultExtendedMessageContext(MessageContext messageContext){
+    DefaultExtendedMessageContext(MessageContext messageContext) {
         this.messageContext = messageContext;
     }
 
@@ -43,7 +43,7 @@ class DefaultExtendedMessageContext implements IExtendedMessageContext {
 
     @Override
     public void sendPacket(Packet<?> packetIn) {
-        if (getSide().isClient()){
+        if (getSide().isClient()) {
             getClientHandler().sendPacket(packetIn);
         } else {
             getServerHandler().sendPacket(packetIn);

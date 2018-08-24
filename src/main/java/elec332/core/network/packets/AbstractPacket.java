@@ -1,36 +1,29 @@
 package elec332.core.network.packets;
 
-import elec332.core.main.ElecCore;
-import io.netty.buffer.ByteBuf;
+import elec332.core.ElecCore;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
+import java.util.function.Supplier;
+
 /**
  * Created by Elec332 on 23-2-2015.
  */
-public abstract class AbstractPacket implements IMessage, IMessageHandler<AbstractPacket, IMessage> {
+public abstract class AbstractPacket extends AbstractMessage implements IMessageHandler<AbstractPacket, IMessage> {
 
-    public AbstractPacket(){
+    public AbstractPacket() {
+        super((NBTTagCompound) null);
     }
 
-    public AbstractPacket(NBTTagCompound b){
-        this.networkPackageObject = b;
+    public AbstractPacket(Supplier<NBTTagCompound> dataSupplier){
+        super(dataSupplier);
     }
 
-    @Override
-    public void fromBytes(ByteBuf buf) {
-        this.networkPackageObject = ByteBufUtils.readTag(buf);
+    public AbstractPacket(NBTTagCompound b) {
+        super(b);
     }
-
-    @Override
-    public void toBytes(ByteBuf buf) {
-        ByteBufUtils.writeTag(buf, this.networkPackageObject);
-    }
-
-    public NBTTagCompound networkPackageObject;
 
     @Override
     @Deprecated //Warning, not thread safe!
@@ -39,8 +32,9 @@ public abstract class AbstractPacket implements IMessage, IMessageHandler<Abstra
             @Override
             public void run() {
                 Object o = onMessageThreadSafe(message, ctx);
-                if (o != null)
+                if (o != null) {
                     throw new RuntimeException();
+                }
             }
         }, ctx.side);
         return null;

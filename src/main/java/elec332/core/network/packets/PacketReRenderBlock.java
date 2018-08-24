@@ -10,14 +10,14 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
  */
 public class PacketReRenderBlock extends AbstractPacketTileAction {
 
-    public PacketReRenderBlock(){
+    public PacketReRenderBlock() {
     }
 
-    public PacketReRenderBlock(TileEntity tile){
+    public PacketReRenderBlock(TileEntity tile) {
         super(tile, writeTileToNBT(tile));
     }
 
-    private static NBTTagCompound writeTileToNBT(TileEntity tile){
+    private static NBTTagCompound writeTileToNBT(TileEntity tile) {
         NBTTagCompound tag = new NBTTagCompound();
         tile.writeToNBT(tag);
         return tag;

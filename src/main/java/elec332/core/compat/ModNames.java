@@ -1,6 +1,6 @@
 package elec332.core.compat;
 
-import elec332.core.main.ElecCore;
+import elec332.core.ElecCore;
 import net.minecraftforge.common.ForgeModContainer;
 
 /**

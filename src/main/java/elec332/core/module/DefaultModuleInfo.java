@@ -18,16 +18,24 @@ import static java.util.Objects.requireNonNull;
  */
 public class DefaultModuleInfo implements IModuleInfo {
 
-    public DefaultModuleInfo(String owner, String name, String modDeps, String moduleDeps, boolean ADRIM, boolean alwaysOn, String mainClazz, IModuleController moduleController){
+    public DefaultModuleInfo(IModuleInfo info){
+        this(info.getOwner(), info.getName(), info.getModDependencies(), info.getModuleDependencies(), info.autoDisableIfRequirementsNotMet(), info.alwaysEnabled(), info.getModuleClass(), info.getModuleController(), info.getCombinedName());
+    }
+
+    public DefaultModuleInfo(String owner, String name, String modDeps, String moduleDeps, boolean ADRIM, boolean alwaysOn, String mainClazz, IModuleController moduleController) {
+        this(owner, name, IModuleInfo.parseDependencyInfo(modDeps), Strings.isNullOrEmpty(moduleDeps) ? ImmutableList.of() : ImmutableList.copyOf(Lists.newArrayList(moduleDeps.split(";"))),  ADRIM, alwaysOn, mainClazz, moduleController, new ResourceLocation(owner, name.toLowerCase()));
+    }
+
+    public DefaultModuleInfo(String owner, String name, List<ArtifactVersion> modDeps, List<String> moduleDeps, boolean ADRIM, boolean alwaysOn, String mainClazz, IModuleController moduleController, ResourceLocation combinedName) {
         this.owner = requireNonNull(owner);
         this.name = requireNonNull(name);
-        this.modDeps = IModuleInfo.parseDependencyInfo(modDeps);
-        this.moduleDeps = Strings.isNullOrEmpty(moduleDeps) ? ImmutableList.of() : ImmutableList.copyOf(Lists.newArrayList(moduleDeps.split(";")));
+        this.modDeps = requireNonNull(modDeps);
+        this.moduleDeps = requireNonNull(moduleDeps);
         this.autoDIRNM = ADRIM;
         this.alwaysEnabled = alwaysOn;
-        this.clazz = mainClazz;
-        this.moduleController = moduleController;
-        this.combinedName = new ResourceLocation(this.owner, this.name.toLowerCase());
+        this.clazz = requireNonNull(mainClazz);
+        this.moduleController = requireNonNull(moduleController);
+        this.combinedName = requireNonNull(combinedName);
     }
 
     private final String owner, name, clazz;
@@ -36,7 +44,6 @@ public class DefaultModuleInfo implements IModuleInfo {
     private final List<ArtifactVersion> modDeps;
     private final List<String> moduleDeps;
     private final IModuleController moduleController;
-
 
     @Nonnull
     @Override

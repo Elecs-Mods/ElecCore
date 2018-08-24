@@ -11,7 +11,7 @@ import java.util.List;
  */
 public class WidgetEnumChange<E extends Enum> extends WidgetButton {
 
-    public WidgetEnumChange(int x, int y, int width, int height, Class<E> clazz, Predicate<E> predicate){
+    public WidgetEnumChange(int x, int y, int width, int height, Class<E> clazz, Predicate<E> predicate) {
         this(x, y, width, height, clazz);
         this.predicate = predicate;
         checkPredicate();
@@ -36,17 +36,17 @@ public class WidgetEnumChange<E extends Enum> extends WidgetButton {
     private int index;
     private Predicate<E> predicate;
 
-    public WidgetEnumChange<E> addButtonEvent(IEnumChangedEvent<WidgetEnumChange<E>> event){
+    public WidgetEnumChange<E> addButtonEvent(IEnumChangedEvent<WidgetEnumChange<E>> event) {
         this.list.add(event);
         return this;
     }
 
-    public E getEnum(){
+    public E getEnum() {
         return enumClass.getEnumConstants()[index];
     }
 
-    public void setEnum(E e){
-        if (!predicate.apply(e)){
+    public void setEnum(E e) {
+        if (!predicate.apply(e)) {
             return;
         }
         boolean b = true;
@@ -64,7 +64,7 @@ public class WidgetEnumChange<E extends Enum> extends WidgetButton {
         }
     }
 
-    public WidgetEnumChange<E> setPredicate(Predicate<E> predicate){
+    public WidgetEnumChange<E> setPredicate(Predicate<E> predicate) {
         this.predicate = predicate;
         checkPredicate();
         return this;
@@ -73,7 +73,7 @@ public class WidgetEnumChange<E extends Enum> extends WidgetButton {
     @Override
     public void onButtonClicked(int mouseButton) {
         nextIdx();
-        while (!predicate.apply(getEnum())){
+        while (!predicate.apply(getEnum())) {
             nextIdx();
         }
         setDisplayString(getEnum().toString());
@@ -81,33 +81,33 @@ public class WidgetEnumChange<E extends Enum> extends WidgetButton {
         distributeEvents();
     }
 
-    private void nextIdx(){
+    private void nextIdx() {
         index++;
-        if (index >= enumClass.getEnumConstants().length){
+        if (index >= enumClass.getEnumConstants().length) {
             index = 0;
         }
     }
 
-    private void checkPredicate(){
+    private void checkPredicate() {
         boolean b = false;
-        for (E e : enumClass.getEnumConstants()){
-            if (predicate.apply(e)){
+        for (E e : enumClass.getEnumConstants()) {
+            if (predicate.apply(e)) {
                 b = true;
                 break;
             }
         }
-        if (!b){
+        if (!b) {
             throw new IllegalStateException();
         }
     }
 
-    private void distributeEvents(){
+    private void distributeEvents() {
         for (IEnumChangedEvent<WidgetEnumChange<E>> event : list) {
             event.onEnumChanged(this);
         }
     }
 
-    public interface IEnumChangedEvent<E extends WidgetEnumChange>{
+    public interface IEnumChangedEvent<E extends WidgetEnumChange> {
 
         public void onEnumChanged(E widget);
 

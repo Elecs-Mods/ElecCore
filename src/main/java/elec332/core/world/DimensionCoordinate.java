@@ -1,7 +1,7 @@
 package elec332.core.world;
 
-import elec332.core.main.ElecCore;
-import elec332.core.util.NBTHelper;
+import elec332.core.ElecCore;
+import elec332.core.util.NBTBuilder;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
@@ -104,7 +104,7 @@ public final class DimensionCoordinate implements INBTSerializable<NBTTagCompoun
 
     @Override
     public NBTTagCompound serializeNBT() {
-        return new NBTHelper().addToTag(pos).addToTag(dim, "dim").serializeNBT();
+        return new NBTBuilder().setBlockPos(pos).setInteger("dim", dim).serializeNBT();
     }
 
     @Override
@@ -113,8 +113,8 @@ public final class DimensionCoordinate implements INBTSerializable<NBTTagCompoun
     }
 
     public static DimensionCoordinate fromNBT(NBTTagCompound tag){
-        NBTHelper nbt = new NBTHelper(tag);
-        return new DimensionCoordinate(nbt.getInteger("dim"), nbt.getPos());
+        NBTBuilder nbt = new NBTBuilder(tag);
+        return new DimensionCoordinate(nbt.getInteger("dim"), nbt.getBlockPos());
     }
 
     public static DimensionCoordinate fromTileEntity(TileEntity tile){

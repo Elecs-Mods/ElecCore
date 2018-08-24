@@ -92,8 +92,7 @@ class ElecByteBufImpl extends ElecByteBuf {
     }
 
     @Override
-    public BlockPos readBlockPos()
-    {
+    public BlockPos readBlockPos() {
         return BlockPos.fromLong(this.readLong());
     }
 
@@ -158,7 +157,8 @@ class ElecByteBufImpl extends ElecByteBuf {
     @Deprecated
     @SuppressWarnings("deprecation")
     public ElecByteBuf order(ByteOrder p_order_1_) {
-        this.buf.order(p_order_1_);return this;
+        this.buf.order(p_order_1_);
+        return this;
     }
 
     @Override

@@ -9,11 +9,11 @@ import javax.annotation.Nonnull;
  */
 public interface IPositionable {
 
-	@Nonnull
-	public DimensionCoordinate getPosition();
+    @Nonnull
+    public DimensionCoordinate getPosition();
 
-	default public boolean hasChanged(){
-		return false;
-	}
+    default public boolean hasChanged() {
+        return false;
+    }
 
 }

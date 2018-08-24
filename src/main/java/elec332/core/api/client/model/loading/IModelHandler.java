@@ -11,21 +11,50 @@ import java.util.function.Function;
 
 /**
  * Created by Elec332 on 18-9-2016.
+ *
+ * Main model handler interface, used to handle
+ * (register, make, ...) models for all sorts of things
  */
 public interface IModelHandler {
 
-    default public boolean enabled(){
+    /**
+     * @return Whether this model handler is enabled or not
+     */
+    default public boolean enabled() {
         return true;
     }
 
+    /**
+     * Can be used to fetch sub-handlers (annotated with {@link ModelHandler}
+     *
+     * @param list All objects annotated with {@link ModelHandler}
+     */
     public void getModelHandlers(List<?> list);
 
-    public void registerModels();
+    /**
+     * Used to setup handler and prepare for registering the models.
+     *
+     * Gets called after {@link IModelHandler#getModelHandlers(List)}
+     */
+    public void preHandleModels();
 
-    default public void cleanExceptions(Map<ResourceLocation, Exception> loaderExceptions){
-    }
-
+    /**
+     * Used to register the models to the registry,
+     * a getter for fetching already existing/loaded models is provided
+     *
+     * @param bakedModelGetter The getter for fetching already existing/loaded models
+     * @return A Non-null map with the models that need to be registered
+     */
     @Nonnull
     public Map<ModelResourceLocation, IBakedModel> registerBakedModels(Function<ModelResourceLocation, IBakedModel> bakedModelGetter);
+
+    /**
+     * Can be used to remove exceptions from being displayed in the logs,
+     * e.g. because they have been handled/solved by this handler
+     *
+     * @param loaderExceptions The map with all model-loading exceptions, from which exceptions can be cleared
+     */
+    default public void cleanExceptions(Map<ResourceLocation, Exception> loaderExceptions) {
+    }
 
 }

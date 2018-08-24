@@ -1,12 +1,12 @@
 package elec332.core.compat.waila;
 
+import elec332.core.ElecCore;
 import elec332.core.api.info.IInfoDataAccessorBlock;
 import elec332.core.api.info.IInformation;
 import elec332.core.api.info.InfoMod;
 import elec332.core.api.module.ElecModule;
 import elec332.core.compat.ModNames;
 import elec332.core.handler.InformationHandler;
-import elec332.core.main.ElecCore;
 import elec332.core.util.RayTraceHelper;
 import elec332.core.world.WorldHelper;
 import mcp.mobius.waila.api.IWailaConfigHandler;
@@ -52,19 +52,21 @@ public class WailaCompatHandler implements IWailaDataProvider {
         registrar.registerNBTProvider(instance, Block.class);
     }
 
+    @Nonnull
     @Override
     public ItemStack getWailaStack(IWailaDataAccessor accessor, IWailaConfigHandler config) {
-        return null;
+        return accessor.getStack();
     }
 
+    @Nonnull
     @Override
     public List<String> getWailaHead(ItemStack itemStack, List<String> currentTip, IWailaDataAccessor accessor, IWailaConfigHandler config) {
         return currentTip;
     }
 
+    @Nonnull
     @Override
-    public List<String> getWailaBody(ItemStack itemStack, List<String> currentTip, IWailaDataAccessor accessor, IWailaConfigHandler config) {
-        final List<String> currentTipF = currentTip;
+    public List<String> getWailaBody(ItemStack itemStack, final List<String> currentTip, IWailaDataAccessor accessor, IWailaConfigHandler config) {
         if (accessor.getNBTData() != null && !accessor.getNBTData().getBoolean("_nope_")) {
             InformationHandler.INSTANCE.addInformation(new IInformation() {
 
@@ -76,7 +78,7 @@ public class WailaCompatHandler implements IWailaDataProvider {
 
                 @Override
                 public void addInformation(String line) {
-                    currentTipF.add(line);
+                    currentTip.add(line);
                 }
 
             }, new IInfoDataAccessorBlock() {
@@ -149,11 +151,13 @@ public class WailaCompatHandler implements IWailaDataProvider {
         return currentTip;
     }
 
+    @Nonnull
     @Override
     public List<String> getWailaTail(ItemStack itemStack, List<String> currentTip, IWailaDataAccessor accessor, IWailaConfigHandler config) {
         return currentTip;
     }
 
+    @Nonnull
     @Override
     public NBTTagCompound getNBTData(EntityPlayerMP player, TileEntity te, NBTTagCompound tag, World world, BlockPos pos) {
         if (tag == null){
@@ -164,7 +168,6 @@ public class WailaCompatHandler implements IWailaDataProvider {
         if (rtr == null){
             fTag.setBoolean("_nope_", true);
             return fTag;
-
         }
         final RayTraceResult rtrF = rtr;
         return InformationHandler.INSTANCE.getInfoNBTData(fTag, te, player, new IInfoDataAccessorBlock() {

@@ -9,7 +9,8 @@ import org.lwjgl.util.vector.Vector3f;
 
 /**
  * Created by Elec332 on 6-12-2015.
- */@SideOnly(Side.CLIENT)
+ */
+@SideOnly(Side.CLIENT)
 public interface IQuadTemplate {
 
     public Vector3f getV1();

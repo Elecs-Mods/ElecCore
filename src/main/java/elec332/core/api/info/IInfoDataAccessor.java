@@ -12,15 +12,30 @@ import javax.annotation.Nonnull;
  */
 public interface IInfoDataAccessor {
 
+    /**
+     * The player looking at the object.
+     *
+     * @return The player
+     */
     @Nonnull
     public EntityPlayer getPlayer();
 
+    /**
+     * The world in which the object is located
+     *
+     * @return The world
+     */
     @Nonnull
     public World getWorld();
 
     @Nonnull
     public NBTTagCompound getData();
 
+    /**
+     * The exact position at which the object was hit
+     *
+     * @return The hit vec
+     */
     public Vec3d getHitVec();
 
 }

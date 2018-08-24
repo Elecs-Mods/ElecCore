@@ -11,15 +11,14 @@ import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nonnull;
-import java.util.List;
 
 /**
  * Created by Elec332 on 21-8-2016.
@@ -35,7 +34,6 @@ public class ItemEnumBased<E extends Enum<E> & IEnumItem> extends AbstractItem i
         this.values[0].initializeItem(this);
     }
 
-    @SuppressWarnings("all")
     protected final Class<E> clazz;
     protected final E[] values;
     private final boolean nji;
@@ -59,7 +57,7 @@ public class ItemEnumBased<E extends Enum<E> & IEnumItem> extends AbstractItem i
     }
 
     @Override
-    public void getSubItemsC(@Nonnull Item item, List<ItemStack> subItems, CreativeTabs creativeTab) {
+    public void getSubItems(@Nonnull CreativeTabs creativeTab, @Nonnull NonNullList<ItemStack> subItems) {
         if (!isInCreativeTab(creativeTab)){
             return;
         }

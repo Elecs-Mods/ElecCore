@@ -3,15 +3,14 @@ package elec332.core.inventory.window;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import elec332.core.ElecCore;
 import elec332.core.client.RenderHelper;
 import elec332.core.client.util.GuiDraw;
-import elec332.core.inventory.IWidgetContainer;
 import elec332.core.inventory.tooltip.ToolTip;
 import elec332.core.inventory.widget.IWidget;
 import elec332.core.inventory.widget.IWidgetListener;
 import elec332.core.inventory.widget.slot.WidgetSlot;
 import elec332.core.inventory.widget.slot.WidgetSlotOutput;
-import elec332.core.main.ElecCore;
 import elec332.core.proxies.CommonProxy;
 import elec332.core.util.ItemStackHelper;
 import net.minecraft.client.Minecraft;
@@ -39,11 +38,11 @@ import java.util.*;
  */
 public class Window implements IWidgetContainer {
 
-    public Window(){
+    public Window() {
         this(-1, -1);
     }
 
-    public Window(int xSize, int ySize, IWindowModifier... modifiers){
+    public Window(int xSize, int ySize, IWindowModifier... modifiers) {
         hasInit = false;
         this.widgets = Lists.newArrayList();
         this.widgets_ = Collections.unmodifiableList(widgets);
@@ -56,13 +55,13 @@ public class Window implements IWidgetContainer {
         this.tooBig = this.xSize < defaultX || this.xSize > (defaultX - 6) * 2 || this.ySize < defaultY || this.ySize > (defaultY - 6) * 2;
     }
 
-    final void setContainer(IWindowContainer windowContainer){
+    final void setContainer(IWindowContainer windowContainer) {
         this.windowContainer = windowContainer;
     }
 
-    final void initWindow_(){
-        if (modifiers != null){
-            for (IWindowModifier modifier : modifiers){
+    final void initWindow_() {
+        if (modifiers != null) {
+            for (IWindowModifier modifier : modifiers) {
                 modifier.modifyWindow(this);
             }
         }
@@ -70,11 +69,11 @@ public class Window implements IWidgetContainer {
         hasInit = true;
     }
 
-    protected void initWindow(){
+    protected void initWindow() {
 
     }
 
-    public Window addModifier(IWindowModifier modifier){
+    public Window addModifier(IWindowModifier modifier) {
         if (!hasInit) {
             modifiers.add(modifier);
         } else {
@@ -97,20 +96,32 @@ public class Window implements IWidgetContainer {
     private int playerInvIndexStart = 0;
     private int playerInvIndexStop = 0;
 
-    /** The X size of the inventory window in pixels. */
+    /**
+     * The X size of the inventory window in pixels.
+     */
     public final int xSize;
-    /** The Y size of the inventory window in pixels. */
+    /**
+     * The Y size of the inventory window in pixels.
+     */
     public final int ySize;
-    /** The width of the screen object. */
+    /**
+     * The width of the screen object.
+     */
     @SideOnly(Side.CLIENT)
     protected int width;
-    /** The height of the screen object. */
+    /**
+     * The height of the screen object.
+     */
     @SideOnly(Side.CLIENT)
     protected int height;
-    /** Starting X position for the Gui. Inconsistent use for Gui backgrounds. */
+    /**
+     * Starting X position for the Gui. Inconsistent use for Gui backgrounds.
+     */
     @SideOnly(Side.CLIENT)
     public int guiLeft;
-    /** Starting Y position for the Gui. Inconsistent use for Gui backgrounds. */
+    /**
+     * Starting Y position for the Gui. Inconsistent use for Gui backgrounds.
+     */
     @SideOnly(Side.CLIENT)
     public int guiTop;
 
@@ -130,13 +141,13 @@ public class Window implements IWidgetContainer {
             widget.initWidget(wl);
         }
         this.widgets.add(widget);
-        if (widget instanceof WidgetSlot){
+        if (widget instanceof WidgetSlot) {
             windowContainer.addSlotToWindow((WidgetSlot) widget);
         }
         return widget;
     }
 
-    public Window addPlayerInventoryToContainer(){
+    public Window addPlayerInventoryToContainer() {
         this.playerInvIndexStart = windowContainer.getSlotListSize();
         IItemHandler playerInv = new PlayerMainInvWrapper(getPlayer().inventory);
         for (int i = 0; i < 3; i++) {
@@ -146,7 +157,7 @@ public class Window implements IWidgetContainer {
         }
 
         for (int i = 0; i < 9; i++) {
-           addWidget(new WidgetSlot(playerInv, i, 8 + i * 18, 142 + this.offset));
+            addWidget(new WidgetSlot(playerInv, i, 8 + i * 18, 142 + this.offset));
         }
         this.playerInvIndexStop = windowContainer.getSlotListSize();
         return this;
@@ -175,13 +186,13 @@ public class Window implements IWidgetContainer {
                         }
                     }
                 }
-                if (slotID >= playerInvIndexStart && slotID < playerInvIndexStop-9) {
-                    if (!this.mergeItemStack(itemstack1, playerInvIndexStop-9, playerInvIndexStop, false)) {
+                if (slotID >= playerInvIndexStart && slotID < playerInvIndexStop - 9) {
+                    if (!this.mergeItemStack(itemstack1, playerInvIndexStop - 9, playerInvIndexStop, false)) {
                         if (itemstack1.stackSize < 1)
                             putStackInSlot(slotID, ItemStackHelper.NULL_STACK);  //Workaround for ghost itemstacks
                         return ItemStackHelper.NULL_STACK;
                     }
-                } else if (slotID >= playerInvIndexStop-9 && slotID < playerInvIndexStop && !this.mergeItemStack(itemstack1, playerInvIndexStart, playerInvIndexStop-9, false)) {
+                } else if (slotID >= playerInvIndexStop - 9 && slotID < playerInvIndexStop && !this.mergeItemStack(itemstack1, playerInvIndexStart, playerInvIndexStop - 9, false)) {
                     if (itemstack1.stackSize < 1)
                         putStackInSlot(slotID, ItemStackHelper.NULL_STACK);  //Workaround for ghost itemstacks
                     return ItemStackHelper.NULL_STACK;
@@ -211,11 +222,11 @@ public class Window implements IWidgetContainer {
         return slotClickDefault(slotId, dragType, clickTypeIn, player);
     }
 
-    public boolean canMergeSlot(ItemStack stack, WidgetSlot slot){
+    public boolean canMergeSlot(ItemStack stack, WidgetSlot slot) {
         return slot.canMergeSlot(stack);
     }
 
-    protected boolean mergeItemStack(ItemStack stack, int startIndex, int endIndex, boolean reverseDirection){
+    protected boolean mergeItemStack(ItemStack stack, int startIndex, int endIndex, boolean reverseDirection) {
         return windowContainer.mergeItemStackDefault(stack, startIndex, endIndex, reverseDirection);
     }
 
@@ -238,7 +249,7 @@ public class Window implements IWidgetContainer {
     }
 
 
-    public void onListenerAdded(IWindowListener listener){
+    public void onListenerAdded(IWindowListener listener) {
         WidgetListener wl = new WidgetListener();
         wl.setListener(listener);
         for (IWidget widget : widgets) {
@@ -262,9 +273,9 @@ public class Window implements IWidgetContainer {
         widgets.get(id).updateProgressbar(data);
     }
 
-    public void detectAndSendChanges(Container from){
+    public void detectAndSendChanges(Container from) {
         final WidgetListener wl = new WidgetListener();
-        for (IWidget widget : widgets){
+        for (IWidget widget : widgets) {
             wl.setWidget(widget);
             widget.detectAndSendChanges(new Iterable<IWidgetListener>() {
 
@@ -296,8 +307,8 @@ public class Window implements IWidgetContainer {
         }
     }
 
-    public void onWindowClosed(EntityPlayer playerIn){
-        for (IWidget widget : widgets_){
+    public void onWindowClosed(EntityPlayer playerIn) {
+        for (IWidget widget : widgets_) {
             widget.onWindowClosed(playerIn);
         }
     }
@@ -312,6 +323,7 @@ public class Window implements IWidgetContainer {
     public boolean canInteractWith(@Nonnull EntityPlayer playerIn) {
         return true;
     }
+
     /**
      * Puts an ItemStack in a slot.
      */
@@ -319,14 +331,14 @@ public class Window implements IWidgetContainer {
         windowContainer.getSlot(slotID).putStack(stack);
     }
 
-    public void onPacket(NBTTagCompound tag, Side receiver){
+    public void onPacket(NBTTagCompound tag, Side receiver) {
     }
 
-    public void modifyTooltip(List<String> tooltip, WidgetSlot slot, ItemStack stack, int x, int y){
+    public void modifyTooltip(List<String> tooltip, WidgetSlot slot, ItemStack stack, int x, int y) {
         modifyTooltip(tooltip, slot, x, y);
     }
 
-    public void modifyTooltip(List<String> tooltip, IWidget widget, int mouseX, int mouseY){
+    public void modifyTooltip(List<String> tooltip, IWidget widget, int mouseX, int mouseY) {
         widget.modifyTooltip(tooltip, mouseX, mouseY);
     }
 
@@ -337,7 +349,7 @@ public class Window implements IWidgetContainer {
 
     @SideOnly(Side.CLIENT)
     protected boolean mouseClicked(int mouseX, int mouseY, int button) throws IOException {
-        for (IWidget widget : getWidgets()){
+        for (IWidget widget : getWidgets()) {
             if (!widget.isHidden() && widget.isMouseOver(translatedMouseX(mouseX), translatedMouseY(mouseY)) && widget.mouseClicked(translatedMouseX(mouseX), translatedMouseY(mouseY), button)) {
                 return true;
             }
@@ -346,9 +358,9 @@ public class Window implements IWidgetContainer {
     }
 
     @SideOnly(Side.CLIENT)
-    protected boolean keyTyped(char typedChar, int keyCode){
-        for (IWidget widget : getWidgets()){
-            if (!widget.isHidden() && widget.keyTyped(typedChar, keyCode)){
+    protected boolean keyTyped(char typedChar, int keyCode) {
+        for (IWidget widget : getWidgets()) {
+            if (!widget.isHidden() && widget.keyTyped(typedChar, keyCode)) {
                 return true;
             }
         }
@@ -358,7 +370,7 @@ public class Window implements IWidgetContainer {
     @SideOnly(Side.CLIENT)
     public void handleMouseInput() throws IOException {
         int wheel = Mouse.getEventDWheel();
-        if (wheel != 0){
+        if (wheel != 0) {
             int mouseX = Mouse.getEventX() * width / Minecraft.getMinecraft().displayWidth;
             int mouseY = height - Mouse.getEventY() * height / Minecraft.getMinecraft().displayHeight - 1;
             handleMouseWheel(wheel, translatedMouseX(mouseX), translatedMouseY(mouseY));
@@ -366,9 +378,9 @@ public class Window implements IWidgetContainer {
     }
 
     @SideOnly(Side.CLIENT)
-    protected boolean handleMouseWheel(int wheel, int translatedMouseX, int translatedMouseY){
-        for (IWidget widget : widgets){
-            if (widget.handleMouseWheel(wheel, translatedMouseX, translatedMouseY)){
+    protected boolean handleMouseWheel(int wheel, int translatedMouseX, int translatedMouseY) {
+        for (IWidget widget : widgets) {
+            if (widget.handleMouseWheel(wheel, translatedMouseX, translatedMouseY)) {
                 return true;
             }
         }
@@ -376,7 +388,7 @@ public class Window implements IWidgetContainer {
     }
 
     @SideOnly(Side.CLIENT)
-    protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY){
+    protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
 
     }
 
@@ -399,7 +411,7 @@ public class Window implements IWidgetContainer {
             if (widget.isMouseOver(translatedMouseX(mouseX), translatedMouseY(mouseY))) {
                 ToolTip toolTip = widget.getToolTip(translatedMouseX(mouseX), translatedMouseY(mouseY));
                 if (toolTip != null) {
-                    if (widget instanceof WidgetSlot){
+                    if (widget instanceof WidgetSlot) {
                         modifyTooltip(toolTip.getTooltip(), (WidgetSlot) widget, ((WidgetSlot) widget).getStack(), mouseX, mouseY);
                     } else {
                         modifyTooltip(toolTip.getTooltip(), widget, mouseX, mouseY);
@@ -424,10 +436,10 @@ public class Window implements IWidgetContainer {
             GuiDraw.drawTexturedModalRect(k, l, 0, 0, xSize, ySize);
         } else {
             RenderHelper.bindTexture(DEFAULT_BACKGROUND);
-            if (normalSize){
+            if (normalSize) {
                 GuiDraw.drawTexturedModalRect(k, l, 0, 0, defaultX, defaultY);
             } else {
-                if (!tooBig){
+                if (!tooBig) {
                     int xS = defaultX - 6;
                     int xY = defaultY - 6;
                     GuiDraw.drawTexturedModalRect(k, l, 0, 0, xS, xY);
@@ -443,10 +455,10 @@ public class Window implements IWidgetContainer {
         GlStateManager.popMatrix();
     }
 
-    protected void drawWidgets(int k, int l, int mouseX, int mouseY){
+    protected void drawWidgets(int k, int l, int mouseX, int mouseY) {
         GlStateManager.pushMatrix();
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-        for (IWidget widget : getWidgets()){
+        for (IWidget widget : getWidgets()) {
             if (!widget.isHidden()) {
                 widget.draw(this, k, l, translatedMouseX(mouseX), translatedMouseY(mouseY));
             }
@@ -455,7 +467,7 @@ public class Window implements IWidgetContainer {
     }
 
     @SideOnly(Side.CLIENT)
-    public boolean doesWindowPauseGame(){
+    public boolean doesWindowPauseGame() {
         return false;
     }
 
@@ -469,15 +481,15 @@ public class Window implements IWidgetContainer {
         return windowContainer.getSlotListSize();
     }
 
-    public final void detectAndSendChanges(){
+    public final void detectAndSendChanges() {
         windowContainer.detectAndSendChanges();
     }
 
-    public final EntityPlayer getPlayer(){
+    public final EntityPlayer getPlayer() {
         return windowContainer == null ? CommonProxy.currentOpeningPlayer.get() : windowContainer.getPlayer();
     }
 
-    public final List<IWindowListener> getListeners(){
+    public final List<IWindowListener> getListeners() {
         return windowContainer.getListeners();
     }
 
@@ -490,15 +502,15 @@ public class Window implements IWidgetContainer {
         return windowContainer.slotClickDefault(slotId, dragType, clickTypeIn, player);
     }
 
-    protected final void sendPacket(NBTTagCompound tag){
+    protected final void sendPacket(NBTTagCompound tag) {
         windowContainer.sendPacket(tag);
     }
 
-    protected int translatedMouseX(int mouseX){
+    protected int translatedMouseX(int mouseX) {
         return mouseX - this.guiLeft;
     }
 
-    protected int translatedMouseY(int mouseY){
+    protected int translatedMouseY(int mouseY) {
         return mouseY - this.guiTop;
     }
 
@@ -506,20 +518,20 @@ public class Window implements IWidgetContainer {
         return background;
     }
 
-    public int getWindowID(){
+    public int getWindowID() {
         return windowContainer.getWindowID();
     }
 
     private class WidgetListener implements IWidgetListener {
 
-        private WidgetListener(){
+        private WidgetListener() {
         }
 
-        private void setListener(IWindowListener listener){
+        private void setListener(IWindowListener listener) {
             this.listener = listener;
         }
 
-        private void setWidget(IWidget widget){
+        private void setWidget(IWidget widget) {
             this.widget = widget;
         }
 

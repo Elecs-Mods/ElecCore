@@ -13,7 +13,7 @@ import javax.annotation.Nullable;
  */
 public class DefaultTileEntityLink implements ITileEntityLink {
 
-    protected DefaultTileEntityLink(TileEntity tile){
+    protected DefaultTileEntityLink(TileEntity tile) {
         this.tile = tile;
         this.coord = DimensionCoordinate.fromTileEntity(tile);
     }
@@ -48,10 +48,10 @@ public class DefaultTileEntityLink implements ITileEntityLink {
     @Override
     public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing facing) {
         T t = getCachedCapability(capability, facing);
-        if (t != null){
+        if (t != null) {
             return t;
         }
-        if (tile == null){
+        if (tile == null) {
             return null;
         }
         return tile.getCapability(capability, facing);

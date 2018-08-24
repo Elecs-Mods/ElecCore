@@ -7,7 +7,7 @@ import net.minecraft.item.ItemStack;
  */
 public interface IRightClickCancel {
 
-    default public boolean cancelInteraction(ItemStack stack){
+    default public boolean cancelInteraction(ItemStack stack) {
         return true;
     }
 

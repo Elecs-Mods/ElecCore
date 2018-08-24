@@ -40,7 +40,7 @@ public interface IModuleInfo {
      * when false, this module will not be loaded when some dependencies are missing
      *
      * @return Whether this module should automatically disable when some of the
-     *          dependencies are missing.
+     * dependencies are missing.
      */
     public boolean autoDisableIfRequirementsNotMet();
 
@@ -88,13 +88,13 @@ public interface IModuleInfo {
     @Nonnull
     public IModuleController getModuleController();
 
-    public static List<ArtifactVersion> parseDependencyInfo(String modDependencies){
+    public static List<ArtifactVersion> parseDependencyInfo(String modDependencies) {
         List<ArtifactVersion> ret = Lists.newArrayList();
-        if (Strings.isNullOrEmpty(modDependencies)){
+        if (Strings.isNullOrEmpty(modDependencies)) {
             return ImmutableList.of();
         }
         String[] parts = modDependencies.split(";");
-        for (String s : parts){
+        for (String s : parts) {
             ret.add(VersionParser.parseVersionReference(s));
         }
         return ImmutableList.copyOf(ret);

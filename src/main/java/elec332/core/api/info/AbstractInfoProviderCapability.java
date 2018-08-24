@@ -10,12 +10,12 @@ import javax.annotation.Nonnull;
 /**
  * Created by Elec332 on 16-10-2016.
  *
- * Abstract IInfoProvider for an {@link Capability}
+ * Abstract IInfoProvider for a {@link Capability}
  */
 @SuppressWarnings("all")
 public abstract class AbstractInfoProviderCapability<O> implements IInfoProvider {
 
-    public AbstractInfoProviderCapability(Capability<O> capability){
+    public AbstractInfoProviderCapability(Capability<O> capability) {
         this.capability = capability;
     }
 
@@ -24,9 +24,9 @@ public abstract class AbstractInfoProviderCapability<O> implements IInfoProvider
     @Override
     public final void addInformation(@Nonnull IInformation information, @Nonnull IInfoDataAccessorBlock hitData) {
         TileEntity tile = hitData.getTileEntity();
-        if (tile != null && tile.hasCapability(capability, hitData.getSide())){
+        if (tile != null && tile.hasCapability(capability, hitData.getSide())) {
             O cap = tile.getCapability(capability, hitData.getSide());
-            if (cap != null){
+            if (cap != null) {
                 addInformation(information, hitData, cap);
             }
         }
@@ -35,9 +35,9 @@ public abstract class AbstractInfoProviderCapability<O> implements IInfoProvider
     @Nonnull
     @Override
     public final NBTTagCompound getInfoNBTData(@Nonnull NBTTagCompound tag, TileEntity tile, @Nonnull EntityPlayerMP player, @Nonnull IInfoDataAccessorBlock hitData) {
-        if (tile != null && tile.hasCapability(capability, hitData.getSide())){
+        if (tile != null && tile.hasCapability(capability, hitData.getSide())) {
             O cap = tile.getCapability(capability, hitData.getSide());
-            if (cap != null){
+            if (cap != null) {
                 getNBTData(tag, tile, cap, player, hitData);
             }
         }

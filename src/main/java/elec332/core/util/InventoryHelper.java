@@ -1,10 +1,7 @@
 package elec332.core.util;
 
-import elec332.core.inventory.widget.slot.WidgetSlot;
-import elec332.core.mcabstractionlayer.impl.WrappedWidgetSlot;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.Slot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -25,6 +22,7 @@ import java.util.List;
 /**
  * Created by Elec332 on 27-3-2015.
  */
+//TODO: Cleanup
 public class InventoryHelper {
 
     @SideOnly(Side.CLIENT)
@@ -35,10 +33,6 @@ public class InventoryHelper {
     @SideOnly(Side.CLIENT)
     public static void addInformation(Item item, ItemStack stack, World world, List<String> tooltip, boolean advanced){
         item.addInformation(stack, world, tooltip, advanced ? ITooltipFlag.TooltipFlags.ADVANCED : ITooltipFlag.TooltipFlags.NORMAL);
-    }
-
-    public static WidgetSlot wrapSlot(Slot slot){
-        return new WrappedWidgetSlot(slot);
     }
 
     public static void readItemsFromNBT(@Nonnull NBTTagCompound data, @Nonnull List<ItemStack> items){
@@ -75,9 +69,6 @@ public class InventoryHelper {
         return tag;
     }
 
-    /*
-     * I don't want to depend on MC methods where possible.
-     */
     @Nonnull
     @Deprecated
     public static ItemStack copyItemStack(@Nullable ItemStack stack){
@@ -94,57 +85,6 @@ public class InventoryHelper {
     }
 
     public static boolean addItemToInventory(IItemHandler inventory, ItemStack itemstack, int start, int end, boolean simulate) {
-        /*List<Integer> possSlots = Lists.newArrayList();
-        ItemStack copiedStack = itemstack.copy();
-        boolean emptied = false;
-        for (int i = start; i < end; i++) {
-            ItemStack stack = inventory.getStackInSlot(i);
-            if (areEqualNoSize(stack, itemstack)){
-                possSlots.add(i);
-                copiedStack = inventory.insertItem(i, copiedStack, true);
-                emptied = !ItemStackHelper.isStackValid(copiedStack);
-                if (emptied){
-                    if (simulate){
-                        return true;
-                    } else {
-                        break;
-                    }
-                }
-            }
-        }
-        if (!emptied) {
-            for (int i = start; i < end; i++) {
-                if (!possSlots.contains(i)) {
-                    copiedStack = inventory.insertItem(i, copiedStack, true);
-                    if (!ItemStackHelper.isStackValid(copiedStack)){
-                        if (simulate){
-                            return true;
-                        } else {
-                            break;
-                        }
-                    }
-                }
-            }
-        }
-        if (ItemStackHelper.isStackValid(copiedStack)){
-            return false;
-        }
-        copiedStack = itemstack.copy();
-        for (int i : possSlots){
-            copiedStack = inventory.insertItem(i, copiedStack, false);
-            if (!ItemStackHelper.isStackValid(copiedStack)){
-                return true;
-            }
-        }
-        for (int i = start; i < end; i++) {
-            if (!possSlots.contains(i)) {
-                copiedStack = inventory.insertItem(i, copiedStack, false);
-                if (!ItemStackHelper.isStackValid(copiedStack)){
-                    return true;
-                }
-            }
-        }
-        return false;*/
         return !ItemStackHelper.isStackValid(ItemHandlerHelper.insertItemStacked(inventory, itemstack, simulate));
     }
 
@@ -200,8 +140,9 @@ public class InventoryHelper {
         int total = 0;
         if (doesInventoryHaveOreDictItem(inventory, s)){
             for (ItemStack oreStack : OreDictionary.getOres(s)){
-                for (int p = 0; p < amountOfItemsInventoryHas(inventory, oreStack); p++)
+                for (int p = 0; p < amountOfItemsInventoryHas(inventory, oreStack); p++) {
                     total++;
+                }
             }
         }
         return total;
@@ -221,8 +162,9 @@ public class InventoryHelper {
         if (getFirstSlotWithItemStackNoNBT(inventory, stack) != -1){
             for (int q : getSlotsWithItemStackNoNBT(inventory, stack)){
                 ItemStack inSlot = inventory.getStackInSlot(q);
-                for (int p = 0; p < inSlot.stackSize; p++)
+                for (int p = 0; p < inSlot.stackSize; p++) {
                     total++;
+                }
             }
         }
         return total;
@@ -233,15 +175,18 @@ public class InventoryHelper {
         for(int i = 0; i < inventory.getSlots(); i++) {
             ItemStack stackInSlot = inventory.getStackInSlot(i);
             if(ItemStackHelper.isStackValid(stackInSlot) && stack != null && stackInSlot.getItem() == stack.getItem()) {
-                if (stackInSlot.getItemDamage() == stack.getItemDamage() || stack.getItemDamage() == OreDictionary.WILDCARD_VALUE)
+                if (stackInSlot.getItemDamage() == stack.getItemDamage() || stack.getItemDamage() == OreDictionary.WILDCARD_VALUE) {
                     ret.add(i);
-                if (!stackInSlot.getItem().getHasSubtypes() && !stack.getItem().getHasSubtypes())
+                }
+                if (!stackInSlot.getItem().getHasSubtypes() && !stack.getItem().getHasSubtypes()) {
                     ret.add(i);
+                }
             }
         }
-        if (!ret.isEmpty())
+        if (!ret.isEmpty()) {
             return ret.toArray(new Integer[ret.size()]);
-        else return null;
+        }
+        return null;
     }
 
     public static int getFirstSlotWithItemStackNoNBT(IItemHandler inventory, ItemStack stack){

@@ -10,6 +10,7 @@ import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidTankProperties;
 
 import javax.annotation.Nullable;
+import java.util.function.Supplier;
 
 /**
  * Created by Elec332 on 11-8-2016.
@@ -18,6 +19,17 @@ public abstract class FluidTankWrapper implements IFluidHandler, IFluidTank, INB
 
     public static FluidTankWrapper withCapacity(int capacity){
         return of(new FluidTank(capacity));
+    }
+
+    public static FluidTankWrapper of(final Supplier<IFluidTank> tank){
+        return new FluidTankWrapper() {
+
+            @Override
+            protected IFluidTank getTank() {
+                return tank.get();
+            }
+
+        };
     }
 
     public static FluidTankWrapper of(final IFluidTank tank){

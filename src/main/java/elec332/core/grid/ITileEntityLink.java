@@ -23,12 +23,12 @@ public interface ITileEntityLink extends IPositionable, ICapabilityProvider {
     public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing facing);
 
     @Nullable
-    default public Class getInformationType(){
+    default public Class getInformationType() {
         return null;
     }
 
     @Nullable
-    default public Object getInformation(){
+    default public Object getInformation() {
         return null;
     }
 

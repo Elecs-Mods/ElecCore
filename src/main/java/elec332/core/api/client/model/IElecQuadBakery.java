@@ -27,7 +27,7 @@ public interface IElecQuadBakery {
     /**
      * Bakes all the template quads in the ITemplateMap for a fixed rotation
      *
-     * @param from The IQuadTemplateSidedMap containing the template quads.
+     * @param from     The IQuadTemplateSidedMap containing the template quads.
      * @param rotation The fixed quad rotation.
      * @return The ISidedMap with the baked quads.
      */
@@ -44,7 +44,7 @@ public interface IElecQuadBakery {
     /**
      * Bakes all template quads in the list for a fixed rotation.
      *
-     * @param from A list containing template quads.
+     * @param from     A list containing template quads.
      * @param rotation The fixed quad rotation.
      * @return A new list with the baked quads.
      */

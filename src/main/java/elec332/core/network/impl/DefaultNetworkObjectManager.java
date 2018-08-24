@@ -1,12 +1,12 @@
 package elec332.core.network.impl;
 
 import com.google.common.collect.Lists;
+import elec332.core.ElecCore;
 import elec332.core.api.network.ElecByteBuf;
 import elec332.core.api.network.INetworkHandler;
 import elec332.core.api.network.IPacketDispatcher;
 import elec332.core.api.network.object.*;
 import elec332.core.api.util.IEntityFilter;
-import elec332.core.main.ElecCore;
 import elec332.core.util.FMLUtil;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -29,7 +29,7 @@ import java.util.List;
 @SuppressWarnings("all")
 class DefaultNetworkObjectManager implements INetworkObjectManager, IMessageHandler<DefaultNetworkObjectManager.PacketNetworkObject, IMessage> {
 
-    DefaultNetworkObjectManager(INetworkHandler handler){
+    DefaultNetworkObjectManager(INetworkHandler handler) {
         this.packetDispatcher = handler;
         handler.registerPacket(this, PacketNetworkObject.class, Side.CLIENT);
         handler.registerPacket(this, PacketNetworkObject.class, Side.SERVER);
@@ -42,11 +42,11 @@ class DefaultNetworkObjectManager implements INetworkObjectManager, IMessageHand
     private byte i;
 
     @Override
-    public <N extends INetworkObjectReceiver> INetworkObjectHandler<?> registerNetworkObject(N networkObject){
-        if (networkObject instanceof INetworkObjectSender){
+    public <N extends INetworkObjectReceiver> INetworkObjectHandler<?> registerNetworkObject(N networkObject) {
+        if (networkObject instanceof INetworkObjectSender) {
             return registerNetworkObject(networkObject, (INetworkObjectSender) networkObject);
         }
-        if (!FMLUtil.isInModInitialisation()){
+        if (!FMLUtil.isInModInitialisation()) {
             throw new IllegalStateException();
         }
         NOH<?> ret = new NOH(i, null, networkObject);
@@ -58,18 +58,18 @@ class DefaultNetworkObjectManager implements INetworkObjectManager, IMessageHand
 
     @Override
     public <N extends INetworkObjectReceiver, S extends INetworkObjectSender> INetworkObjectHandler<S> registerNetworkObject(@Nullable N networkObjectR, @Nullable S networkObjectS) {
-        if (!FMLUtil.isInModInitialisation() || (networkObjectS == null && networkObjectR == null)){
+        if (!FMLUtil.isInModInitialisation() || (networkObjectS == null && networkObjectR == null)) {
             throw new IllegalStateException();
         }
         NOH<S> ret = new NOH<S>(i, networkObjectS, networkObjectR);
         packetStuff.add(ret);
         i++;
 
-        if (networkObjectS != networkObjectR){
+        if (networkObjectS != networkObjectR) {
             if (networkObjectR != null) {
                 networkObjectR.setNetworkObjectHandler(ret);
             }
-            if (networkObjectS != null){
+            if (networkObjectS != null) {
                 networkObjectS.setNetworkObjectHandler(ret);
             }
         } else {
@@ -81,7 +81,7 @@ class DefaultNetworkObjectManager implements INetworkObjectManager, IMessageHand
 
     @Override
     public <N extends INetworkObject> INetworkObjectHandler<N> registerSpecialNetworkObject(N networkObject) {
-        if (!FMLUtil.isInModInitialisation()){
+        if (!FMLUtil.isInModInitialisation()) {
             throw new IllegalStateException();
         }
         NOH<N> ret = new NOH<N>(i, networkObject, networkObject);
@@ -99,7 +99,7 @@ class DefaultNetworkObjectManager implements INetworkObjectManager, IMessageHand
             public void run() {
                 Iterator<NOH> iterator = packetStuff.iterator();
                 NOH noh = iterator.next();
-                while (!noh.handle(message)){
+                while (!noh.handle(message)) {
                     noh = iterator.next();
                 }
             }
@@ -110,7 +110,7 @@ class DefaultNetworkObjectManager implements INetworkObjectManager, IMessageHand
 
     private class NOH<T extends INetworkObjectSender> implements INetworkObjectHandler<T>, DefaultByteBufFactory {
 
-        private NOH(byte i, @Nullable T obj, @Nullable INetworkObjectReceiver receiver){
+        private NOH(byte i, @Nullable T obj, @Nullable INetworkObjectReceiver receiver) {
             this.b = i;
             this.obj = obj;
             this.receiver = receiver;
@@ -121,7 +121,7 @@ class DefaultNetworkObjectManager implements INetworkObjectManager, IMessageHand
         private INetworkObjectReceiver receiver;
 
         @Override
-        public void sendToAll(int id){
+        public void sendToAll(int id) {
             ByteBuf buf = Unpooled.buffer();
             if (getNetworkObjectSender() != null) {
                 getNetworkObjectSender().writePacket(id, new ElecByteBufImpl(buf));
@@ -130,7 +130,7 @@ class DefaultNetworkObjectManager implements INetworkObjectManager, IMessageHand
         }
 
         @Override
-        public void sendTo(int id, IEntityFilter<EntityPlayerMP> playerFilter, MinecraftServer server){
+        public void sendTo(int id, IEntityFilter<EntityPlayerMP> playerFilter, MinecraftServer server) {
             ByteBuf buf = Unpooled.buffer();
             if (getNetworkObjectSender() != null) {
                 getNetworkObjectSender().writePacket(id, new ElecByteBufImpl(buf));
@@ -139,7 +139,7 @@ class DefaultNetworkObjectManager implements INetworkObjectManager, IMessageHand
         }
 
         @Override
-        public void sendTo(int id, List<EntityPlayerMP> players){
+        public void sendTo(int id, List<EntityPlayerMP> players) {
             ByteBuf buf = Unpooled.buffer();
             if (getNetworkObjectSender() != null) {
                 getNetworkObjectSender().writePacket(id, new ElecByteBufImpl(buf));
@@ -148,7 +148,7 @@ class DefaultNetworkObjectManager implements INetworkObjectManager, IMessageHand
         }
 
         @Override
-        public void sendTo(int id, EntityPlayerMP player){
+        public void sendTo(int id, EntityPlayerMP player) {
             ByteBuf buf = Unpooled.buffer();
             if (getNetworkObjectSender() != null) {
                 getNetworkObjectSender().writePacket(id, new ElecByteBufImpl(buf));
@@ -157,7 +157,7 @@ class DefaultNetworkObjectManager implements INetworkObjectManager, IMessageHand
         }
 
         @Override
-        public void sendToAllAround(int id, NetworkRegistry.TargetPoint point){
+        public void sendToAllAround(int id, NetworkRegistry.TargetPoint point) {
             ByteBuf buf = Unpooled.buffer();
             if (getNetworkObjectSender() != null) {
                 getNetworkObjectSender().writePacket(id, new ElecByteBufImpl(buf));
@@ -166,7 +166,7 @@ class DefaultNetworkObjectManager implements INetworkObjectManager, IMessageHand
         }
 
         @Override
-        public void sendToDimension(int id, int dimensionId){
+        public void sendToDimension(int id, int dimensionId) {
             ByteBuf buf = Unpooled.buffer();
             if (getNetworkObjectSender() != null) {
                 getNetworkObjectSender().writePacket(id, new ElecByteBufImpl(buf));
@@ -175,7 +175,7 @@ class DefaultNetworkObjectManager implements INetworkObjectManager, IMessageHand
         }
 
         @Override
-        public void sendToServer(int id){
+        public void sendToServer(int id) {
             ByteBuf buf = Unpooled.buffer();
             if (getNetworkObjectSender() != null) {
                 getNetworkObjectSender().writePacket(id, new ElecByteBufImpl(buf));
@@ -184,37 +184,37 @@ class DefaultNetworkObjectManager implements INetworkObjectManager, IMessageHand
         }
 
         @Override
-        public void sendToAll(int id, NBTTagCompound data){
+        public void sendToAll(int id, NBTTagCompound data) {
             sendToAll(id, fromTag(data));
         }
 
         @Override
-        public void sendTo(int id, NBTTagCompound data, IEntityFilter<EntityPlayerMP> playerFilter, MinecraftServer server){
+        public void sendTo(int id, NBTTagCompound data, IEntityFilter<EntityPlayerMP> playerFilter, MinecraftServer server) {
             sendTo(id, fromTag(data), playerFilter, server);
         }
 
         @Override
-        public void sendTo(int id, NBTTagCompound data, List<EntityPlayerMP> players){
+        public void sendTo(int id, NBTTagCompound data, List<EntityPlayerMP> players) {
             sendTo(id, fromTag(data), players);
         }
 
         @Override
-        public void sendTo(int id, NBTTagCompound data, EntityPlayerMP player){
+        public void sendTo(int id, NBTTagCompound data, EntityPlayerMP player) {
             sendTo(id, fromTag(data), player);
         }
 
         @Override
-        public void sendToAllAround(int id, NBTTagCompound data, NetworkRegistry.TargetPoint point){
+        public void sendToAllAround(int id, NBTTagCompound data, NetworkRegistry.TargetPoint point) {
             sendToAllAround(id, fromTag(data), point);
         }
 
         @Override
-        public void sendToDimension(int id, NBTTagCompound data, int dimensionId){
+        public void sendToDimension(int id, NBTTagCompound data, int dimensionId) {
             sendToDimension(id, fromTag(data), dimensionId);
         }
 
         @Override
-        public void sendToServer(int id, NBTTagCompound data){
+        public void sendToServer(int id, NBTTagCompound data) {
             sendToServer(id, fromTag(data));
         }
 
@@ -249,17 +249,17 @@ class DefaultNetworkObjectManager implements INetworkObjectManager, IMessageHand
             return obj;
         }
 
-        private ByteBuf fromTag(NBTTagCompound tag){
+        private ByteBuf fromTag(NBTTagCompound tag) {
             ElecByteBuf buf = new ElecByteBufImpl(Unpooled.buffer());
             buf.writeNBTTagCompoundToBuffer(tag);
             return buf;
         }
 
-        private boolean handle(PacketNetworkObject packet){
-            if (packet.i == b){
+        private boolean handle(PacketNetworkObject packet) {
+            if (packet.i == b) {
                 try {
                     receiver.onPacket(packet.i2, new ElecByteBufImpl(packet.data));
-                } catch (Exception e){
+                } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
                 return true;
@@ -271,10 +271,10 @@ class DefaultNetworkObjectManager implements INetworkObjectManager, IMessageHand
 
     public static class PacketNetworkObject implements IMessage {
 
-        public PacketNetworkObject(){
+        public PacketNetworkObject() {
         }
 
-        PacketNetworkObject(byte b, byte b2, ByteBuf buf){
+        PacketNetworkObject(byte b, byte b2, ByteBuf buf) {
             this.i = b;
             this.i2 = b2;
             this.data = buf;

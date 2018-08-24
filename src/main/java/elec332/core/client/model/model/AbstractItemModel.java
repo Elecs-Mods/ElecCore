@@ -15,6 +15,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.util.vector.Vector3f;
 
+import javax.annotation.Nonnull;
 import java.util.List;
 
 /**
@@ -28,6 +29,7 @@ public abstract class AbstractItemModel implements IBakedModel {
     protected static final ImmutableList<BakedQuad> EMPTY_LIST;
 
     @Override
+    @Nonnull
     public List<BakedQuad> getQuads(IBlockState state, EnumFacing side, long rand) {
         return side == null ? getGeneralQuads() : EMPTY_LIST;
     }
@@ -50,6 +52,7 @@ public abstract class AbstractItemModel implements IBakedModel {
     }
 
     @Override
+    @Nonnull
     public ItemOverrideList getOverrides() {
         return ItemOverrideList.NONE;
     }
@@ -59,6 +62,7 @@ public abstract class AbstractItemModel implements IBakedModel {
     }
 
     @Override
+    @Nonnull
     public TextureAtlasSprite getParticleTexture() {
         return Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite(getTextureLocation().toString());
     }
@@ -66,6 +70,7 @@ public abstract class AbstractItemModel implements IBakedModel {
     public abstract ResourceLocation getTextureLocation();
 
     @Override
+    @Nonnull
     public ItemCameraTransforms getItemCameraTransforms() {
         return DEFAULT_ITEM_TRANSFORM;
     }

@@ -6,6 +6,11 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 /**
  * Created by Elec332 on 25-11-2015.
+ *
+ * A tessellator that works like 1.7.10, meaning that
+ * it remembers the brightness, opaque and color settings, and that
+ * {@link ITessellator#addVertexWithUV(double, double, double, double, double)}
+ * can be called for creating vertices
  */
 @SideOnly(Side.CLIENT)
 public interface ITessellator {
@@ -23,6 +28,10 @@ public interface ITessellator {
     public void setColorRGBA(int red, int green, int blue, int alpha);
 
     public void addVertexWithUV(double x, double y, double z, double u, double v);
+
+    public void startDrawingWorldBlock();
+
+    public void startDrawingGui();
 
     public Tessellator getMCTessellator();
 

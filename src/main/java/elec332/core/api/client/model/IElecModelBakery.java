@@ -1,6 +1,7 @@
 package elec332.core.api.client.model;
 
 import elec332.core.api.client.model.map.IBakedModelRotationMap;
+import elec332.core.api.client.model.model.IModelWithoutQuads;
 import elec332.core.api.client.model.model.IQuadProvider;
 import elec332.core.api.client.model.template.IModelTemplate;
 import elec332.core.api.client.model.template.IQuadTemplate;
@@ -33,6 +34,8 @@ public interface IElecModelBakery {
     public IBakedModel itemModelForTextures(TextureAtlasSprite... textures);
 
     public IBakedModel forQuadProvider(IModelTemplate template, final IQuadProvider quadProvider);
+
+    public IBakedModel forQuadProvider(IModelWithoutQuads modelWithoutQuads, final IQuadProvider quadProvider);
 
     public IBakedModel itemModelForTextures(IModelTemplate template, TextureAtlasSprite... textures);
 

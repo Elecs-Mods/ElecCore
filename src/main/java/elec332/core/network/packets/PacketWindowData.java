@@ -16,7 +16,7 @@ import javax.annotation.Nullable;
  */
 public class PacketWindowData implements ISimplePacket, ISimplePacketHandler {
 
-    public PacketWindowData(WindowContainer container, NBTTagCompound tag){
+    public PacketWindowData(WindowContainer container, NBTTagCompound tag) {
         this.tag = tag;
         this.window = container.windowId;
     }

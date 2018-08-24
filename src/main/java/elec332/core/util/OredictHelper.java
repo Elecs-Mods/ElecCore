@@ -1,11 +1,11 @@
 package elec332.core.util;
 
-import com.google.common.collect.ImmutableList;
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
-import elec332.core.main.ElecCore;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.oredict.OreDictionary;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -14,41 +14,38 @@ import java.util.List;
 @SuppressWarnings({"deprecation", "unused"})
 public class OredictHelper {
 
-    private static List<String> allOres = Lists.newArrayList();
-    private static List<String> allIngots = Lists.newArrayList();
-    private static List<String> allDusts = Lists.newArrayList();
+    private static List<String> allOres = Lists.newArrayList(), allIngots = Lists.newArrayList(), allDusts = Lists.newArrayList();
+    private static List<String> allOres_ = Collections.unmodifiableList(allOres), allIngots_ = Collections.unmodifiableList(allIngots), allDusts_ = Collections.unmodifiableList(allDusts);
 
     public static void initLists(){
         allDusts.clear();
         allIngots.clear();
         allOres.clear();
         String[] names = OreDictionary.getOreNames();
-        for (int i = 0; i < names.length; i++) {
-            String s = names[i];
-            if (s == null){ //What?!?
-                ElecCore.systemPrintDebug("Null ore for ID: "+i);
+        for (String s : names) {
+            if (Strings.isNullOrEmpty(s)) { //What?!?
                 continue;
             }
             if (s.startsWith("ore")) {
                 allOres.add(s);
             } else if (s.startsWith("ingot")) {
                 allIngots.add(s);
-            } else if (s.startsWith("dust")){
+            } else if (s.startsWith("dust")) {
                 allDusts.add(s);
             }
         }
     }
 
     public static List<String> getAllOres() {
-        return ImmutableList.copyOf(allOres);
+        return allOres_;
     }
 
     public static List<String> getAllIngots() {
-        return ImmutableList.copyOf(allIngots);
+        return allIngots_;
     }
 
     public static List<String> getAllDusts(){
-        return ImmutableList.copyOf(allDusts);
+        return allDusts_;
     }
 
     public static String concatOreName(String oreName){
@@ -81,10 +78,6 @@ public class OredictHelper {
 
     public static List<ItemStack> getOres(String name, boolean alwaysCreateEntry){
         return OreDictionary.getOres(name, alwaysCreateEntry);
-    }
-
-    static {
-        initLists();
     }
 
 }

@@ -9,9 +9,11 @@ import javax.annotation.Nullable;
 
 /**
  * Created by Elec332 on 29-10-2016.
- *
+ * <p>
  * This class used to be abstract, but you cannot
  * subscribe to abstract events :(
+ *
+ * Event that can be used to handle model-related stuff
  */
 public class ModelLoadEvent extends Event {
 

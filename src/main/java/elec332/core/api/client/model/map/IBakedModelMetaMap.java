@@ -29,7 +29,7 @@ public interface IBakedModelMetaMap<M extends IBakedModel> {
     /**
      * Sets the model for the given metadata.
      *
-     * @param meta The meta from the model.
+     * @param meta  The meta from the model.
      * @param model The model you want to set for the given metadata.
      */
     public void setModelForMeta(int meta, M model);

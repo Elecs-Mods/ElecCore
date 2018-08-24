@@ -6,7 +6,7 @@ package elec332.core.api.network.object;
 public interface INetworkObject extends INetworkObjectSender, INetworkObjectReceiver {
 
     @Override
-    default public void setNetworkObjectHandler(INetworkObjectHandler handler){
+    default public void setNetworkObjectHandler(INetworkObjectHandler handler) {
     }
 
 }

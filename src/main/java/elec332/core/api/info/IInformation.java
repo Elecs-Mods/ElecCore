@@ -4,13 +4,15 @@ import javax.annotation.Nonnull;
 
 /**
  * Created by Elec332 on 16-10-2016.
+ *
+ * Represents the information that will be given to the player
  */
 public interface IInformation {
 
     @Nonnull
     public InfoMod getProviderType();
 
-    default public void add(String line){
+    default public void add(String line) {
         addInformation(line);
     }
 

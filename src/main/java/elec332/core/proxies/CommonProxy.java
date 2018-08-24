@@ -11,44 +11,44 @@ import net.minecraftforge.fml.common.network.IGuiHandler;
  */
 public class CommonProxy implements IGuiHandler {
 
-	public boolean isClient() {
-		return false;
-	}
+    public boolean isClient() {
+        return false;
+    }
 
-	public void preInitRendering(){
-	}
+    public void preInitRendering() {
+    }
 
-	public void postInitRendering(){
-	}
+    public void postInitRendering() {
+    }
 
-	public void addPersonalMessageToPlayer(String s){
-	}
+    public void addPersonalMessageToPlayer(String s) {
+    }
 
-	public World getClientWorld(){
-		return null;
-	}
+    public World getClientWorld() {
+        return null;
+    }
 
-	public EntityPlayer getClientPlayer(){
-		return null;
-	}
+    public EntityPlayer getClientPlayer() {
+        return null;
+    }
 
-	@Override
-	public synchronized WindowContainer getServerGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z) {
-		currentOpeningPlayer.set(player);
-		WindowContainer ret = new WindowContainer(player, WindowManager.INSTANCE.get(ID & 0xFF).createWindow((byte) (ID >> 8), player, world, x, y, z));
-		currentOpeningPlayer.remove();
-		return ret;
-	}
+    @Override
+    public synchronized WindowContainer getServerGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z) {
+        currentOpeningPlayer.set(player);
+        WindowContainer ret = new WindowContainer(player, WindowManager.INSTANCE.get(ID & 0xFF).createWindow((byte) (ID >> 8), player, world, x, y, z));
+        currentOpeningPlayer.remove();
+        return ret;
+    }
 
-	@Override
-	public synchronized Object getClientGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z) {
-		throw new RuntimeException();
-	}
+    @Override
+    public synchronized Object getClientGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z) {
+        throw new RuntimeException();
+    }
 
-	public static final ThreadLocal<EntityPlayer> currentOpeningPlayer;
+    public static final ThreadLocal<EntityPlayer> currentOpeningPlayer;
 
-	static {
-		currentOpeningPlayer = new ThreadLocal<>();
-	}
+    static {
+        currentOpeningPlayer = new ThreadLocal<>();
+    }
 
 }

@@ -10,7 +10,7 @@ import net.minecraft.world.World;
 /**
  * Created by Elec332 on 13-8-2015.
  */
-public class Elexplosion extends AbstractExplosion{
+public class Elexplosion extends AbstractExplosion {
 
     public Elexplosion(World world, Entity entity, double x, double y, double z, float size) {
         super(world, entity, x, y, z, size);
@@ -18,7 +18,7 @@ public class Elexplosion extends AbstractExplosion{
 
     @Override
     protected void preExplode() {
-        damageEntities(getRadius()*1.5f, getRadius());
+        damageEntities(getRadius() * 1.5f, getRadius());
     }
 
     @Override
@@ -48,4 +48,5 @@ public class Elexplosion extends AbstractExplosion{
     protected void postExplode() {
 
     }
+
 }

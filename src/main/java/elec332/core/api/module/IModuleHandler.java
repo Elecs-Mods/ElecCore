@@ -8,6 +8,7 @@ import org.apache.logging.log4j.Logger;
 /**
  * Created by Elec332 on 15-10-2016.
  */
+@Deprecated
 public interface IModuleHandler {
 
     public Logger getLogger();

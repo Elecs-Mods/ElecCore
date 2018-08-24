@@ -1,6 +1,6 @@
 package elec332.core.inventory.window;
 
-import elec332.core.main.ElecCore;
+import elec332.core.ElecCore;
 import elec332.core.util.InventoryHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -68,7 +68,7 @@ public final class WindowGui extends GuiContainer {
 
     @Override
     protected void keyTyped(char typedChar, int keyCode) throws IOException {
-        if (!window.keyTyped(typedChar, keyCode)){
+        if (!window.keyTyped(typedChar, keyCode)) {
             super.keyTyped(typedChar, keyCode);
         }
     }
@@ -81,10 +81,10 @@ public final class WindowGui extends GuiContainer {
 
     @Override
     protected void handleMouseClick(Slot slotIn, int slotId, int mouseButton, @Nonnull ClickType type) {
-        window.handleMouseClick(slotIn == null ? null : ((WindowContainer.WidgetLinkedSlot)slotIn).widget, slotId, mouseButton, type);
+        window.handleMouseClick(slotIn == null ? null : ((WindowContainer.WidgetLinkedSlot) slotIn).widget, slotId, mouseButton, type);
     }
 
-    void handleMouseClickDefault(Slot slotIn, int slotId, int mouseButton, @Nonnull ClickType type){
+    void handleMouseClickDefault(Slot slotIn, int slotId, int mouseButton, @Nonnull ClickType type) {
         super.handleMouseClick(slotIn, slotId, mouseButton, type);
     }
 

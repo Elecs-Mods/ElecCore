@@ -1,15 +1,15 @@
 package elec332.core.hud;
 
 import com.google.common.base.Strings;
+import elec332.core.ElecCore;
+import elec332.core.api.config.IConfigurableElement;
 import elec332.core.hud.position.Alignment;
 import elec332.core.hud.position.HorizontalStartingPoint;
 import elec332.core.hud.position.IStartingPoint;
 import elec332.core.hud.position.VerticalStartingPoint;
-import elec332.core.main.ElecCore;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.ScaledResolution;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
@@ -23,7 +23,7 @@ import javax.annotation.Nonnull;
 /**
  * Created by Elec332 on 13-1-2017.
  */
-public abstract class AbstractHud {
+public abstract class AbstractHud implements IConfigurableElement {
 
     public AbstractHud(@Nonnull Alignment alignment, @Nonnull IStartingPoint horizontal, @Nonnull IStartingPoint vertical){
         MinecraftForge.EVENT_BUS.register(this);
@@ -37,7 +37,7 @@ public abstract class AbstractHud {
         if (Strings.isNullOrEmpty(s)){
             throw new IllegalArgumentException();
         }
-        if (cL){
+        if (configuredOnce){
             throw new IllegalStateException();
         }
         this.category = s;
@@ -45,15 +45,16 @@ public abstract class AbstractHud {
     }
 
     private String category;
-    private boolean cL;
+    private boolean configuredOnce;
     private static final String[] a, h, v;
     private Alignment alignment = Alignment.LEFT;
     private IStartingPoint horiz = HorizontalStartingPoint.LEFT, ver = VerticalStartingPoint.MIDDLE;
 
-    public final void configureHud(Configuration config){
+    @Override
+    public void reconfigure(Configuration config) {
         if (config != null) {
-            if (!cL) {
-                cL = true;
+            if (!configuredOnce) {
+                configuredOnce = true;
             }
             this.alignment = Alignment.valueOf(config.getString("alignment", category, alignment.toString(), "The alignment for this hud.", a));
             if (!(horiz instanceof HorizontalStartingPoint && ver instanceof VerticalStartingPoint)){
@@ -66,7 +67,7 @@ public abstract class AbstractHud {
         }
     }
 
-    public final String getConfigCategory() {
+    public String getConfigCategory() {
         return this.category;
     }
 
@@ -107,7 +108,7 @@ public abstract class AbstractHud {
     @SideOnly(Side.CLIENT)
     @SubscribeEvent
     public final void onRenderTick(TickEvent.RenderTickEvent event) {
-        EntityPlayer player = ElecCore.proxy.getClientPlayer();
+        EntityPlayerSP player = (EntityPlayerSP) ElecCore.proxy.getClientPlayer();
         if (player != null && Minecraft.getMinecraft().inGameHasFocus && shouldRenderHud(player, event.renderTickTime, event.phase)) {
             Minecraft mc = Minecraft.getMinecraft();
             ScaledResolution res = new ScaledResolution(mc);
@@ -116,12 +117,12 @@ public abstract class AbstractHud {
             int startX = getHorizontalStartingPoint().getStartingPoint(mc, res, hudHeight);
             int startY = getVerticalStartingPoint().getStartingPoint(mc, res, hudHeight);
 
-            renderHud((EntityPlayerSP) player, ElecCore.proxy.getClientWorld(), getAlignment(), startX, startY, event.renderTickTime);
+            renderHud(player, ElecCore.proxy.getClientWorld(), getAlignment(), startX, startY, event.renderTickTime);
 
         }
     }
 
-    protected boolean shouldRenderHud(@Nonnull EntityPlayer player, float partialTicks, TickEvent.Phase phase){
+    protected boolean shouldRenderHud(@Nonnull EntityPlayerSP player, float partialTicks, TickEvent.Phase phase){
         return phase == TickEvent.Phase.END;
     }
 

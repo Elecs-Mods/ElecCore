@@ -46,14 +46,14 @@ public interface INetworkObjectHandler<N extends INetworkObjectSender> extends E
 
     public void sendToAll(int id, ByteBuf data);
 
-    default public void sendTo(int id, ByteBuf data, IEntityFilter<EntityPlayerMP> playerFilter, MinecraftServer server){
-        for (EntityPlayerMP player : playerFilter.filterEntities(server.getPlayerList().getPlayers())){
+    default public void sendTo(int id, ByteBuf data, IEntityFilter<EntityPlayerMP> playerFilter, MinecraftServer server) {
+        for (EntityPlayerMP player : playerFilter.filterEntities(server.getPlayerList().getPlayers())) {
             sendTo(id, data, player);
         }
     }
 
-    default public void sendTo(int id, ByteBuf data, List<EntityPlayerMP> players){
-        for (EntityPlayerMP player : players){
+    default public void sendTo(int id, ByteBuf data, List<EntityPlayerMP> players) {
+        for (EntityPlayerMP player : players) {
             sendTo(id, data, player);
         }
     }

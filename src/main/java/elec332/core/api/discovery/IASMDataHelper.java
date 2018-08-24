@@ -7,6 +7,8 @@ import java.util.Set;
 
 /**
  * Created by Elec332 on 7-3-2016.
+ *
+ * Wrapper for {@link ASMDataTable} with a few extra features
  */
 public interface IASMDataHelper {
 

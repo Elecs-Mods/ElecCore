@@ -5,14 +5,11 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import elec332.core.api.registry.ISingleObjectRegistry;
 import elec332.core.api.registry.SimpleRegistries;
-import elec332.core.handler.ModEventHandler;
-import elec332.core.server.ServerHelper;
 import net.minecraft.command.ICommand;
 import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.client.ClientCommandHandler;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
-import net.minecraftforge.fml.common.event.FMLStateEvent;
 
 import java.util.List;
 import java.util.Set;
@@ -30,7 +27,14 @@ public class CommandHelper {
         return clientCommandRegistry;
     }
 
+    public static void registerCommands(FMLServerStartingEvent event){
+        for (ICommand command : commands){
+            event.registerServerCommand(command);
+        }
+    }
+
     private static final ISingleObjectRegistry<ICommand> serverCommandRegistry, clientCommandRegistry;
+    private static final List<ICommand> commands = Lists.newArrayList();
 
     static {
         if (FMLCommonHandler.instance().getSide().isClient()){
@@ -51,7 +55,7 @@ public class CommandHelper {
         } else {
             clientCommandRegistry = SimpleRegistries.emptySingleObjectRegistry();
         }
-        final List<ICommand> commands = Lists.newArrayList();
+
         serverCommandRegistry = new ISingleObjectRegistry<ICommand>() {
 
             @Override
@@ -62,24 +66,12 @@ public class CommandHelper {
 
             @Override
             public Set<ICommand> getAllRegisteredObjects() {
-                MinecraftServer server = ServerHelper.instance.getMinecraftServer();
+                MinecraftServer server = FMLCommonHandler.instance().getMinecraftServerInstance();
                 return server == null ? ImmutableSet.of() : Sets.newHashSet(server.commandManager.getCommands().values());
             }
 
         };
 
-        ModEventHandler.registerCallback(new ModEventHandler.Callback() {
-
-            @Override
-            public void onEvent(FMLStateEvent event) {
-                if (event instanceof FMLServerStartingEvent){
-                    for (ICommand command : commands){
-                        ((FMLServerStartingEvent) event).registerServerCommand(command);
-                    }
-                }
-            }
-
-        });
     }
 
 }

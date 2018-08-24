@@ -49,7 +49,7 @@ public class WidgetText extends Widget {
         FontRenderer font = RenderHelper.getMCFontrenderer();
         int oH = font.FONT_HEIGHT;
         String txt = StatCollector.translateToLocal(this.txt.get());
-        if (txtSize > 0){
+        if (txtSize > 0) {
             font.FONT_HEIGHT = txtSize;
         }
         int xN = centerWindow ? window.xSize / 2 : x;

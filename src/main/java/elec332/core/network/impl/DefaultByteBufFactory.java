@@ -10,12 +10,12 @@ import io.netty.buffer.Unpooled;
 interface DefaultByteBufFactory extends ElecByteBuf.Factory {
 
     @Override
-    default public ElecByteBuf createByteBuf(){
+    default public ElecByteBuf createByteBuf() {
         return createByteBuf(Unpooled.buffer());
     }
 
     @Override
-    default public ElecByteBuf createByteBuf(ByteBuf parent){
+    default public ElecByteBuf createByteBuf(ByteBuf parent) {
         return new ElecByteBufImpl(parent);
     }
 

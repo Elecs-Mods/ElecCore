@@ -1,15 +1,14 @@
 package elec332.core.api.util;
 
+import net.minecraft.util.math.BlockPos;
+
 /*
  * This class was originally created by Lumaceon.
  * You can find it here: https://github.com/Lumaceon/ClockworkPhase2/blob/master/src/main/java/lumaceon/mods/clockworkphase2/util/Area.java
  */
-
-import net.minecraft.util.math.BlockPos;
-
 public class Area {
 
-    public Area(BlockPos pos1, BlockPos pos2){
+    public Area(BlockPos pos1, BlockPos pos2) {
         this(pos1.getX(), pos1.getY(), pos1.getZ(), pos2.getX(), pos2.getY(), pos2.getZ());
     }
 
@@ -52,11 +51,11 @@ public class Area {
         return getBlockWidth() * getBlockHeight() * getBlockLength();
     }
 
-    public Area offset(BlockPos pos){
+    public Area offset(BlockPos pos) {
         return offset(pos.getX(), pos.getY(), pos.getZ());
     }
 
-    public Area offset(int x, int y, int z){
+    public Area offset(int x, int y, int z) {
         return new Area(minX + x, minY + y, minZ + z, maxX + x, maxY + y, maxZ + z);
     }
 

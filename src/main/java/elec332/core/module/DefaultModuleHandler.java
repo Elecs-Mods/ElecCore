@@ -16,12 +16,12 @@ import org.apache.logging.log4j.Logger;
  */
 public class DefaultModuleHandler implements IModuleHandler {
 
-    public DefaultModuleHandler(IModuleContainer module){
+    public DefaultModuleHandler(IModuleContainer module) {
         this.module = module;
     }
 
     @APIHandlerInject
-    private static INetworkManager networkManager;
+    private static INetworkManager networkManager = null;
     private final IModuleContainer module;
     private ISimpleNetworkPacketManager packetManager;
 
@@ -32,7 +32,7 @@ public class DefaultModuleHandler implements IModuleHandler {
 
     @Override
     public ISimpleNetworkPacketManager getPacketHandler() {
-        if (packetManager == null){
+        if (packetManager == null) {
             packetManager = networkManager.getAdditionalSimpleNetworkManager(module.getOwnerMod(), module.getName());
         }
         return packetManager;

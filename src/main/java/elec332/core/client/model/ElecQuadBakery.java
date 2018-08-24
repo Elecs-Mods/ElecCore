@@ -2,23 +2,20 @@ package elec332.core.client.model;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
+import elec332.core.api.APIHandlerInject;
+import elec332.core.api.IAPIHandler;
 import elec332.core.api.client.model.IElecQuadBakery;
 import elec332.core.api.client.model.model.IQuadProvider;
 import elec332.core.api.client.model.template.IQuadTemplate;
 import elec332.core.api.client.model.template.IQuadTemplateSidedMap;
-import elec332.core.client.model.template.ElecTemplateBakery;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.model.*;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.EnumFacing;
-import net.minecraftforge.client.event.ModelBakeEvent;
 import net.minecraftforge.client.model.ItemLayerModel;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.model.ITransformation;
 import net.minecraftforge.common.model.TRSRTransformation;
-import net.minecraftforge.fml.common.eventhandler.EventPriority;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.util.vector.Vector3f;
@@ -90,7 +87,7 @@ public class ElecQuadBakery implements IElecQuadBakery {
      */
     @Override
     public List<BakedQuad> bakeQuads(List<IQuadTemplate> from, ITransformation rotation){
-        ImmutableList.Builder<BakedQuad> builder = new ImmutableList.Builder<BakedQuad>();
+        ImmutableList.Builder<BakedQuad> builder = new ImmutableList.Builder<>();
         for (IQuadTemplate quadTemplate : from){
             builder.add(bakeQuad(quadTemplate, rotation == null ? quadTemplate.getRotation() : rotation));
         }
@@ -151,14 +148,9 @@ public class ElecQuadBakery implements IElecQuadBakery {
         return builder.build();
     }
 
-    /*
-     * Event stuff
-     */
-
-    @SubscribeEvent(priority = EventPriority.HIGH)
-    @SideOnly(Side.CLIENT)
-    public void bakeModels(ModelBakeEvent event){
-        MinecraftForge.EVENT_BUS.post(new ModelLoadEventImpl(this, ElecModelBakery.instance, ElecTemplateBakery.instance, event.getModelRegistry()));
+    @APIHandlerInject
+    public void injectQuadBakery(IAPIHandler apiHandler){
+        apiHandler.inject(instance, IElecQuadBakery.class);
     }
 
     private class SidedMap implements IQuadProvider {

@@ -12,20 +12,20 @@ import net.minecraftforge.fml.relauncher.Side;
 public interface IElecPacketRegistry extends IPacketRegistry {
 
     @SuppressWarnings("unchecked")
-    default public <T extends AbstractPacket> void registerServerPacket(Class<T> packetClass){
-        registerPacket((Class<? extends IMessageHandler<T, IMessage>>)packetClass, packetClass, Side.SERVER);
+    default public <T extends AbstractPacket> void registerServerPacket(Class<T> packetClass) {
+        registerPacket((Class<? extends IMessageHandler<T, IMessage>>) packetClass, packetClass, Side.SERVER);
     }
 
     @SuppressWarnings("unchecked")
-    default public <T extends AbstractPacket> void registerClientPacket(Class<T> packetClass){
-        registerPacket((Class<? extends IMessageHandler<T, IMessage>>)packetClass, packetClass, Side.CLIENT);
+    default public <T extends AbstractPacket> void registerClientPacket(Class<T> packetClass) {
+        registerPacket((Class<? extends IMessageHandler<T, IMessage>>) packetClass, packetClass, Side.CLIENT);
     }
 
-    default public void registerServerPacket(AbstractPacket packet){
+    default public void registerServerPacket(AbstractPacket packet) {
         registerPacket(packet, Side.SERVER);
     }
 
-    default public void registerClientPacket(AbstractPacket packet){
+    default public void registerClientPacket(AbstractPacket packet) {
         registerPacket(packet, Side.CLIENT);
     }
 

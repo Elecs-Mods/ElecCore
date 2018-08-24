@@ -6,15 +6,15 @@ package elec332.core.inventory.window;
 public interface ISimpleWindowFactory extends IWindowFactory, IWindowModifier {
 
     @Override
-    default public Window createWindow(Object... args){
+    default public Window createWindow(Object... args) {
         return new Window(getXSize(), getYSize(), this);
     }
 
-    default public int getXSize(){
+    default public int getXSize() {
         return -1;
     }
 
-    default public int getYSize(){
+    default public int getYSize() {
         return -1;
     }
 

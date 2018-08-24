@@ -9,7 +9,7 @@ public interface INetworkObjectReceiver {
 
     public void onPacket(int id, ElecByteBuf data);
 
-    default public void setNetworkObjectHandler(INetworkObjectHandler handler){
+    default public void setNetworkObjectHandler(INetworkObjectHandler handler) {
     }
 
 }

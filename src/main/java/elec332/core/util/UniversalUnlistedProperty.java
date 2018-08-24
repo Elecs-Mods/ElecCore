@@ -9,7 +9,7 @@ import java.util.function.Predicate;
  */
 public class UniversalUnlistedProperty<T> implements IUnlistedProperty<T> {
 
-    public UniversalUnlistedProperty(String name, Class<T> clazz){
+    public UniversalUnlistedProperty(String name, Class<T> clazz) {
         this(name, clazz, null);
     }
 

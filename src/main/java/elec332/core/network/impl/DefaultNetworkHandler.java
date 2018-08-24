@@ -31,7 +31,7 @@ import java.util.Map;
  */
 class DefaultNetworkHandler implements IElecNetworkHandler, DefaultByteBufFactory {
 
-    DefaultNetworkHandler(SimpleNetworkWrapper networkWrapper){
+    DefaultNetworkHandler(SimpleNetworkWrapper networkWrapper) {
         this.networkWrapper = networkWrapper;
         this.channelName = getCurrentNameFrom(networkWrapper);
         this.i = getCurrentIndexFrom(networkWrapper);
@@ -40,7 +40,7 @@ class DefaultNetworkHandler implements IElecNetworkHandler, DefaultByteBufFactor
         this.packetManagers = Maps.newHashMap();
     }
 
-    DefaultNetworkHandler(String channelName){
+    DefaultNetworkHandler(String channelName) {
         this.channelName = channelName.toLowerCase();
         this.networkWrapper = new SimpleNetworkWrapper(this.channelName);
         this.i = 0;
@@ -57,19 +57,19 @@ class DefaultNetworkHandler implements IElecNetworkHandler, DefaultByteBufFactor
     private int i;
 
     @Nonnull
-    ISimpleNetworkPacketManager getSimpleNetworkManager(String s){
-        if (s.equals(channelName)){
+    ISimpleNetworkPacketManager getSimpleNetworkManager(String s) {
+        if (s.equals(channelName)) {
             return simpleNetworkPacketManager;
         }
         ISimpleNetworkPacketManager ret = packetManagers.get(s);
-        if (ret == null){
+        if (ret == null) {
             packetManagers.put(s, ret = new DefaultSimpleNetworkHandler(this, s));
         }
         return Preconditions.checkNotNull(ret);
     }
 
     @Override
-    public <M extends IMessage, R extends IMessage> void registerPacket(IMessageHandler<M, R> messageHandler, Class<M> messageType, Side side){
+    public <M extends IMessage, R extends IMessage> void registerPacket(IMessageHandler<M, R> messageHandler, Class<M> messageType, Side side) {
         networkWrapper.registerMessage(messageHandler, messageType, i, side);
         ++i;
     }
@@ -127,16 +127,16 @@ class DefaultNetworkHandler implements IElecNetworkHandler, DefaultByteBufFactor
     //Unfortunately I had to write this...
 
     @SuppressWarnings("unchecked")
-    private static int getCurrentIndexFrom(SimpleNetworkWrapper networkWrapper){
+    private static int getCurrentIndexFrom(SimpleNetworkWrapper networkWrapper) {
         try {
             FMLIndexedMessageToMessageCodec c = (FMLIndexedMessageToMessageCodec) codec.get(networkWrapper);
             byte[] ids = ((TByteObjectHashMap) discriminators.get(c)).keys();
             int ret = 0;
-            for (byte b : ids){
+            for (byte b : ids) {
                 ret = Math.max(ret, b);
             }
             return ret;
-        } catch (Exception e){
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
@@ -153,19 +153,19 @@ class DefaultNetworkHandler implements IElecNetworkHandler, DefaultByteBufFactor
     }
 
     @SuppressWarnings("unchecked")
-    static EnumMap<Side, Map<String, FMLEmbeddedChannel>> getRegistryChannels(){
+    static EnumMap<Side, Map<String, FMLEmbeddedChannel>> getRegistryChannels() {
         try {
             return (EnumMap<Side, Map<String, FMLEmbeddedChannel>>) registryChannels.get(NetworkRegistry.INSTANCE);
-        } catch (Exception e){
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
     @SuppressWarnings("unchecked")
-    static EnumMap<Side, FMLEmbeddedChannel> getNetworkChannels(SimpleNetworkWrapper wrapper){
+    static EnumMap<Side, FMLEmbeddedChannel> getNetworkChannels(SimpleNetworkWrapper wrapper) {
         try {
             return (EnumMap<Side, FMLEmbeddedChannel>) wrapperChannels.get(wrapper);
-        } catch (Exception e){
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
@@ -176,10 +176,9 @@ class DefaultNetworkHandler implements IElecNetworkHandler, DefaultByteBufFactor
         try {
             codec = SimpleNetworkWrapper.class.getDeclaredField("packetCodec");
             discriminators = FMLIndexedMessageToMessageCodec.class.getDeclaredField("discriminators");
-
             wrapperChannels = SimpleNetworkWrapper.class.getDeclaredField("channels");
             registryChannels = NetworkRegistry.class.getDeclaredField("channels");
-        } catch (Exception e){
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }

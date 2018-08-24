@@ -14,7 +14,7 @@ public interface IBakedModelMetaRotationMap<M extends IBakedModel> extends IBake
     /**
      * Returns a model for the specified rotation and metadata.
      *
-     * @param meta The metadata from the model.
+     * @param meta     The metadata from the model.
      * @param rotation The rotation of the model.
      * @return The model for the given parameters.
      * @throws RotationNotSupportedException If the specified rotation is not supported.
@@ -24,9 +24,9 @@ public interface IBakedModelMetaRotationMap<M extends IBakedModel> extends IBake
     /**
      * Sets the model for the specified rotation and metadata values.
      *
-     * @param meta The metadata from the model.
+     * @param meta     The metadata from the model.
      * @param rotation The rotation from the model.
-     * @param model The model you want to set for the given rotation and metadata.
+     * @param model    The model you want to set for the given rotation and metadata.
      * @throws RotationNotSupportedException If the specified rotation is not supported.
      */
     public void setModelForMetaAndRotation(int meta, ModelRotation rotation, M model) throws RotationNotSupportedException;
@@ -34,7 +34,7 @@ public interface IBakedModelMetaRotationMap<M extends IBakedModel> extends IBake
     /**
      * Bulk version of #setModelForMetaAndRotation
      *
-     * @param meta The meta from the specified IBakedModelRotationMap
+     * @param meta     The meta from the specified IBakedModelRotationMap
      * @param modelMap The rotation map for the specified meta.
      * @throws RotationNotSupportedException If the specified rotation is not supported.
      */

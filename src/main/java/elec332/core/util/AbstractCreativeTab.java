@@ -1,8 +1,8 @@
 package elec332.core.util;
 
-import elec332.core.mcabstractionlayer.impl.MCAbstractedCreativeTab;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -34,19 +34,35 @@ public abstract class AbstractCreativeTab extends CreativeTabs {
 
     @Nonnull
     private static CreativeTabs createTab(int index, String label, Supplier<ItemStack> icon){
-        return new MCAbstractedCreativeTab(index, label, icon);
+        return new AbstractCreativeTab(index, label, icon){
+        };
     }
 
-    public AbstractCreativeTab(int index, String label) {
+    public AbstractCreativeTab(String label, Supplier<ItemStack> icon) {
+        this(getNextID(), label, icon);
+    }
+
+    public AbstractCreativeTab(int index, String label, Supplier<ItemStack> icon) {
         super(index, label);
+        this.icon = icon;
+        initStack();
     }
 
-    public AbstractCreativeTab(String label) {
-        super(label);
+    @SideOnly(Side.CLIENT)
+    private ItemStack clientStack;
+    private final Supplier<ItemStack> icon;
+
+    private void initStack(){
+        if (FMLCommonHandler.instance().getSide().isClient()){
+            clientStack = icon.get();
+        }
     }
 
     @Nonnull
+    @Override
     @SideOnly(Side.CLIENT)
-    protected abstract ItemStack getDisplayStack();
+    public ItemStack getTabIconItem() {
+        return this.clientStack;
+    }
 
 }

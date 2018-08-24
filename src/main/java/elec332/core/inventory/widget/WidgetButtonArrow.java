@@ -25,10 +25,10 @@ public class WidgetButtonArrow extends WidgetButton {
         bindTexture(new ResourceLocation("eleccore", "buttons.png"));
         int u = this.u;
         int v = this.v;
-        if (!isActive()){
-            u += direction.tw*2;
-            v += direction.th*2;
-        } else if (isMouseOver(mouseX, mouseY)){
+        if (!isActive()) {
+            u += direction.tw * 2;
+            v += direction.th * 2;
+        } else if (isMouseOver(mouseX, mouseY)) {
             u += direction.tw;
             v += direction.th;
         }
@@ -41,10 +41,10 @@ public class WidgetButtonArrow extends WidgetButton {
         return this;
     }
 
-    public enum Direction{
+    public enum Direction {
         UP(36, 0, 19, 12, 0, 12), DOWN(55, 0, 19, 12, 0, 12), LEFT(0, 19, 12, 19, 12, 0), RIGHT(0, 0, 12, 19, 12, 0);
 
-        private Direction(int u, int v, int width, int height, int tw, int th){
+        private Direction(int u, int v, int width, int height, int tw, int th) {
             this.u = u;
             this.v = v;
             this.width = width;

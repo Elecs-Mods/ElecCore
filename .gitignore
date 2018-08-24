@@ -1,6 +1,7 @@
 *.db
 build/
 build.bat
+classes/
 
 # eclipse
 bin

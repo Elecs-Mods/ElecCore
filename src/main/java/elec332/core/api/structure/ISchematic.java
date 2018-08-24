@@ -18,7 +18,7 @@ public interface ISchematic {
      * @param pos Coordinate within the local schematic coordinates.
      * @return The blocks located at the specified local schematic coordinates, or null if out of bounds.
      */
-    default public Block getBlock(BlockPos pos){
+    default public Block getBlock(BlockPos pos) {
         return getBlock(pos.getX(), pos.getY(), pos.getZ());
     }
 
@@ -62,7 +62,7 @@ public interface ISchematic {
      * @param pos Coordinate within the local schematic coordinates.
      * @return The metadata for the block at the specified local schematic coordinates.
      */
-    default public byte getMetaData(BlockPos pos){
+    default public byte getMetaData(BlockPos pos) {
         return getMetadata(pos.getX(), pos.getY(), pos.getZ());
     }
 
@@ -79,7 +79,7 @@ public interface ISchematic {
     public byte getMetadata(int x, int y, int z);
 
     @SuppressWarnings("deprecation")
-    default public IBlockState getBlockState(BlockPos pos){
+    default public IBlockState getBlockState(BlockPos pos) {
         return getBlock(pos).getStateFromMeta(getMetaData(pos));
     }
 
@@ -94,7 +94,7 @@ public interface ISchematic {
      *
      * @return The horizon for this schematic.
      */
-    default public short getHorizon(){
+    default public short getHorizon() {
         return 0;
     }
 

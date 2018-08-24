@@ -9,7 +9,7 @@ import org.apache.logging.log4j.Logger;
  */
 public class LoadTimer {
 
-    public LoadTimer(Logger logger, String mod){
+    public LoadTimer(Logger logger, String mod) {
         this.logger = logger;
         this.mod = mod;
     }
@@ -19,21 +19,21 @@ public class LoadTimer {
     private long start;
     private LoaderState.ModState lastState;
 
-    public void startPhase(FMLStateEvent event){
-        if (lastState != null){
+    public void startPhase(FMLStateEvent event) {
+        if (lastState != null) {
             throw new IllegalStateException("Cannot start phase without ending phase " + lastState + "first.");
         }
         start = System.currentTimeMillis();
         lastState = event.getModState();
     }
 
-    public void endPhase(FMLStateEvent event){
+    public void endPhase(FMLStateEvent event) {
         LoaderState.ModState modState = event.getModState();
-        if (this.lastState != modState){
+        if (this.lastState != modState) {
             throw new IllegalArgumentException();
         }
         lastState = null;
-        logger.info(mod + " has "+modState.toString()+" in "+(System.currentTimeMillis()-start)+" ms");
+        logger.info(mod + " has " + modState.toString() + " in " + (System.currentTimeMillis() - start) + " ms");
     }
 
 }

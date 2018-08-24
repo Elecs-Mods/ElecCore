@@ -9,7 +9,7 @@ import net.minecraftforge.fml.relauncher.Side;
  */
 public interface IPacketRegistry extends IPacketRegistryContainer {
 
-    default public <T extends IMessage & IMessageHandler<T, M>, M extends IMessage> void registerPacket(Class<T> packetClass, Side side){
+    default public <T extends IMessage & IMessageHandler<T, M>, M extends IMessage> void registerPacket(Class<T> packetClass, Side side) {
         registerPacket(packetClass, packetClass, side);
     }
 
@@ -18,10 +18,10 @@ public interface IPacketRegistry extends IPacketRegistryContainer {
         registerPacket(type, (Class<T>) type.getClass(), side);
     }
 
-    default public <M extends IMessage, R extends IMessage> void registerPacket(Class<? extends IMessageHandler<M, R>> messageHandler, Class<M> messageType, Side side){
+    default public <M extends IMessage, R extends IMessage> void registerPacket(Class<? extends IMessageHandler<M, R>> messageHandler, Class<M> messageType, Side side) {
         try {
             registerPacket(messageHandler.newInstance(), messageType, side);
-        } catch (Exception e){
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
@@ -31,7 +31,7 @@ public interface IPacketRegistry extends IPacketRegistryContainer {
     @Override
     public void registerPacketsTo(IPacketRegistry packetRegistry);
 
-    default public void importFrom(IPacketRegistryContainer packetRegistryContainer){
+    default public void importFrom(IPacketRegistryContainer packetRegistryContainer) {
         if (packetRegistryContainer != this) {
             packetRegistryContainer.registerPacketsTo(this);
         }

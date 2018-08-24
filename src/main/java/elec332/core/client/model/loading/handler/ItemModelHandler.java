@@ -2,11 +2,11 @@ package elec332.core.client.model.loading.handler;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import elec332.core.ElecCore;
 import elec332.core.api.client.model.loading.IItemModelHandler;
 import elec332.core.api.client.model.loading.IModelHandler;
 import elec332.core.api.client.model.loading.ModelHandler;
-import elec332.core.client.model.RenderingRegistry;
-import elec332.core.main.ElecCore;
+import elec332.core.loader.client.RenderingRegistry;
 import net.minecraft.client.renderer.ItemMeshDefinition;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
@@ -43,7 +43,7 @@ public class ItemModelHandler implements IModelHandler {
     }
 
     @Override
-    public void registerModels() {
+    public void preHandleModels() {
         ElecCore.logger.info("Prehandling Item Models");
         for (Item item : RenderingRegistry.instance().getAllValidItems()){
             for (IItemModelHandler handler : itemModelHandlers){

@@ -4,7 +4,7 @@ import net.minecraft.world.World;
 
 /**
  * Created by Elec332 on 23-8-2016.
- *
+ * <p>
  * Taken from MagicBees, original code can be found here:
  * https://github.com/MagicBees/MagicBees/blob/master/src/main/java/magicbees/main/utils/MoonPhase.java
  */
@@ -26,7 +26,7 @@ public enum MoonPhase {
     }
 
     public boolean isBetween(MoonPhase first, MoonPhase second) {
-        if(first.ordinal() <= second.ordinal()) {
+        if (first.ordinal() <= second.ordinal()) {
             return first.ordinal() <= this.ordinal() && this.ordinal() <= second.ordinal();
         } else {
             return first.ordinal() <= this.ordinal() && this.ordinal() <= WAXING_GIBBOUS.ordinal() || FULL.ordinal() <= this.ordinal() && this.ordinal() <= second.ordinal();
@@ -42,7 +42,7 @@ public enum MoonPhase {
     }
 
     public static MoonPhase getMoonPhaseFromTime(long time) {
-        return values()[(int)((time - 6000L) / 24000L) % 8];
+        return values()[(int) ((time - 6000L) / 24000L) % 8];
     }
 
 }

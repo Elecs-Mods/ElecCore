@@ -11,11 +11,11 @@ import javax.annotation.Nullable;
  */
 public class SaveHandlerWrapper implements IExternalSaveHandler {
 
-    public static SaveHandlerWrapper wrap(String name, IExternalSaveHandler... handlers){
+    public static SaveHandlerWrapper wrap(String name, IExternalSaveHandler... handlers) {
         return new SaveHandlerWrapper(name, handlers);
     }
 
-    private SaveHandlerWrapper(String name, IExternalSaveHandler[] saveHandlers){
+    private SaveHandlerWrapper(String name, IExternalSaveHandler[] saveHandlers) {
         this.saveHandlers = saveHandlers;
         this.name = name;
     }
@@ -30,7 +30,7 @@ public class SaveHandlerWrapper implements IExternalSaveHandler {
 
     @Override
     public void load(ISaveHandler saveHandler, WorldInfo info, NBTTagCompound tag) {
-        for (IExternalSaveHandler saveHandler1 : saveHandlers){
+        for (IExternalSaveHandler saveHandler1 : saveHandlers) {
             saveHandler1.load(saveHandler, info, tag.getCompoundTag(saveHandler1.getName()));
         }
     }
@@ -39,9 +39,9 @@ public class SaveHandlerWrapper implements IExternalSaveHandler {
     @Override
     public NBTTagCompound save(ISaveHandler saveHandler, WorldInfo info) {
         NBTTagCompound ret = new NBTTagCompound();
-        for (IExternalSaveHandler saveHandler1 : saveHandlers){
+        for (IExternalSaveHandler saveHandler1 : saveHandlers) {
             NBTTagCompound tag = saveHandler1.save(saveHandler, info);
-            if (tag != null){
+            if (tag != null) {
                 ret.setTag(saveHandler1.getName(), tag);
             }
         }
@@ -50,7 +50,7 @@ public class SaveHandlerWrapper implements IExternalSaveHandler {
 
     @Override
     public void nullifyData() {
-        for (IExternalSaveHandler saveHandler : saveHandlers){
+        for (IExternalSaveHandler saveHandler : saveHandlers) {
             saveHandler.nullifyData();
         }
     }

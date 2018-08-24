@@ -1,7 +1,7 @@
 package elec332.core.inventory.widget;
 
-import elec332.core.inventory.IWidgetContainer;
 import elec332.core.inventory.tooltip.ToolTip;
+import elec332.core.inventory.window.IWidgetContainer;
 import elec332.core.inventory.window.Window;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
@@ -45,10 +45,10 @@ public interface IWidget {
     @Nullable
     public ToolTip getToolTip(int mouseX, int mouseY);
 
-    public default void modifyTooltip(List<String> tooltip, int mouseX, int mouseY){
+    public default void modifyTooltip(List<String> tooltip, int mouseX, int mouseY) {
     }
 
-    default public void onWindowClosed(EntityPlayer player){
+    default public void onWindowClosed(EntityPlayer player) {
     }
 
 }

@@ -13,7 +13,7 @@ import java.util.List;
  */
 class DefaultPacketRegistry implements IPacketRegistry {
 
-    DefaultPacketRegistry(){
+    DefaultPacketRegistry() {
         this.registeredPackets = Lists.newArrayList();
     }
 
@@ -27,14 +27,14 @@ class DefaultPacketRegistry implements IPacketRegistry {
 
     @Override
     public void registerPacketsTo(IPacketRegistry packetRegistry) {
-        for (Wrapper wrapper : registeredPackets){
+        for (Wrapper wrapper : registeredPackets) {
             packetRegistry.registerPacket(wrapper.messageHandler, wrapper.messageType, wrapper.side);
         }
     }
 
     private class Wrapper<M extends IMessage, R extends IMessage> {
 
-        private Wrapper(IMessageHandler<M, R> messageHandler, Class<M> messageType, Side side){
+        private Wrapper(IMessageHandler<M, R> messageHandler, Class<M> messageType, Side side) {
             this.messageHandler = messageHandler;
             this.messageType = messageType;
             this.side = side;

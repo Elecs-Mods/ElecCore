@@ -1,12 +1,12 @@
 package elec332.core.grid.internal;
 
-import elec332.core.world.IElecWorldEventListener;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IWorldEventListener;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
@@ -15,7 +15,7 @@ import javax.annotation.Nullable;
  * Created by Elec332 on 23-7-2016.
  */
 @SuppressWarnings("all")
-public enum WorldEventHandler implements IElecWorldEventListener {
+public enum WorldEventHandler implements IWorldEventListener {
 
     INSTANCE;
 
@@ -42,7 +42,6 @@ public enum WorldEventHandler implements IElecWorldEventListener {
 
     @Override
     public void spawnParticle(int particleID, boolean ignoreRange, boolean minParticles, double xCoord, double yCoord, double zCoord, double xSpeed, double ySpeed, double zSpeed, int... parameters) {
-
     }
 
     @Override
@@ -63,6 +62,10 @@ public enum WorldEventHandler implements IElecWorldEventListener {
 
     @Override
     public void sendBlockBreakProgress(int breakerId, BlockPos pos, int progress) {
+    }
+
+    @Override
+    public void spawnParticle(int particleID, boolean ignoreRange, double xCoord, double yCoord, double zCoord, double xSpeed, double ySpeed, double zSpeed, int... parameters) {
     }
 
 }

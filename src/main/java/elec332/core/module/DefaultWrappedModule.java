@@ -18,7 +18,7 @@ import java.util.List;
  */
 public class DefaultWrappedModule implements IModuleContainer {
 
-    public DefaultWrappedModule(Object o, IModuleInfo moduleInfo){
+    public DefaultWrappedModule(Object o, IModuleInfo moduleInfo) {
         this.module = o;
         this.name = moduleInfo.getName();
         this.owner = moduleInfo.getOwner();
@@ -30,8 +30,8 @@ public class DefaultWrappedModule implements IModuleContainer {
         this.alwaysEnabled = moduleInfo.alwaysEnabled();
         this.moduleController = moduleInfo.getModuleController();
         ModContainer mc = null;
-        for (ModContainer m : Loader.instance().getActiveModList()){
-            if (m.getModId().equals(owner)){
+        for (ModContainer m : Loader.instance().getActiveModList()) {
+            if (m.getModId().equals(owner)) {
                 mc = m;
                 break;
             }
@@ -88,7 +88,7 @@ public class DefaultWrappedModule implements IModuleContainer {
     @Override
     public void invokeEvent(Object event) throws Exception {
         Class objClass = this.module.getClass();
-        for (Method method : objClass.getDeclaredMethods()){
+        for (Method method : objClass.getDeclaredMethods()) {
             if (method.isAnnotationPresent(ElecModule.EventHandler.class) || method.isAnnotationPresent(Mod.EventHandler.class)) {
 
                 if (method.getParameterTypes().length != 1) {

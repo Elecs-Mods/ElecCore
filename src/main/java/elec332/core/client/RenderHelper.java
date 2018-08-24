@@ -1,10 +1,9 @@
 package elec332.core.client;
 
 import com.google.common.collect.Maps;
+import elec332.core.ElecCore;
 import elec332.core.api.client.ITessellator;
-import elec332.core.client.tesselator.ElecTessellator;
-import elec332.core.client.tesselator.RenderBlocks;
-import elec332.core.main.ElecCore;
+import elec332.core.client.util.ElecTessellator;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.particle.Particle;
@@ -50,7 +49,6 @@ public class RenderHelper {
     private static final Tessellator mcTessellator;
     private static final ITessellator tessellator;
     private static final Minecraft mc;
-    private static final RenderBlocks renderBlocks;
     private static final Map<BufferBuilder, ITessellator> worldRenderTessellators;
     private static final Map<EnumFacing, ITransformation[]> rotateAroundMap;
     private static IBakedModel nullModel;
@@ -64,11 +62,6 @@ public class RenderHelper {
             worldRenderTessellators.put(renderer, ret);
         }
         return ret;
-    }
-
-    @Nonnull
-    public static RenderBlocks getBlockRenderer(){
-        return renderBlocks;
     }
 
     @Nonnull
@@ -155,7 +148,7 @@ public class RenderHelper {
     }
 
     @Nonnull
-    public static ModelRotation defaultFor(EnumFacing facing){
+    public static ModelRotation getDefaultRotationFromFacing(EnumFacing facing){
         switch (facing){
             case EAST:
                 return ModelRotation.X0_Y90;
@@ -272,7 +265,6 @@ public class RenderHelper {
         mcTessellator = Tessellator.getInstance();
         tessellator = new ElecTessellator(mcTessellator);
         mc = Minecraft.getMinecraft();
-        renderBlocks = new RenderBlocks();
         worldRenderTessellators = Maps.newHashMap();
         worldRenderTessellators.put(mcTessellator.getBuffer(), tessellator);
         rotateAroundMap = Maps.newEnumMap(EnumFacing.class);

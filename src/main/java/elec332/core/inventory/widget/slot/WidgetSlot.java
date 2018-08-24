@@ -67,7 +67,7 @@ public class WidgetSlot extends Widget {
     public void onCrafting(ItemStack stack) {
     }
 
-    public boolean canMergeSlot(ItemStack stack){
+    public boolean canMergeSlot(ItemStack stack) {
         return true;
     }
 
@@ -203,6 +203,7 @@ public class WidgetSlot extends Widget {
 
     /**
      * Gets the path of the texture file to use for the background image of this slot when drawing the GUI.
+     *
      * @return The resource location for the background image
      */
     @SideOnly(Side.CLIENT)
@@ -213,6 +214,7 @@ public class WidgetSlot extends Widget {
 
     /**
      * Sets the texture file to use for the background image of the slot when it's empty.
+     *
      * @param texture the resourcelocation for the texture
      */
     @SideOnly(Side.CLIENT)
@@ -222,6 +224,7 @@ public class WidgetSlot extends Widget {
 
     /**
      * Sets which icon index to use as the background image of the slot when it's empty.
+     *
      * @param name The icon to use, null for none
      */
     public void setBackgroundName(@Nonnull String name) {
@@ -240,7 +243,7 @@ public class WidgetSlot extends Widget {
         if (backgroundMap == null) {
             backgroundMap = net.minecraft.client.Minecraft.getMinecraft().getTextureMapBlocks();
         }
-        return (net.minecraft.client.renderer.texture.TextureMap)backgroundMap;
+        return (net.minecraft.client.renderer.texture.TextureMap) backgroundMap;
     }
 
     /**
@@ -259,6 +262,7 @@ public class WidgetSlot extends Widget {
 
     /**
      * Checks if the other slot is in the same inventory, by comparing the inventory reference.
+     *
      * @param other the other inventory
      * @return true if the other slot is in the same inventory
      */
