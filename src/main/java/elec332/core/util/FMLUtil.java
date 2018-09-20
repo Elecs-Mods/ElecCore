@@ -98,6 +98,9 @@ public class FMLUtil {
             ((EventBus)eventBus.get(modContainer)).register(o);
         } catch (IllegalAccessException e) {
             throw new RuntimeException(e);
+        } catch (NullPointerException e) {
+            //Should be impossible, but happens anyways...
+            //Fixes an issue with LLibrary mods
         }
     }
 

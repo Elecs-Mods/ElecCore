@@ -139,7 +139,7 @@ class DefaultSimpleNetworkHandler implements ISimpleNetworkPacketManager, IMessa
     }
 
     private ByteBuf fetchData(ISimplePacket packet){
-        ElecByteBuf ret = new ElecByteBufImpl(UnpooledByteBufAllocator.DEFAULT.ioBuffer());
+        ElecByteBuf ret = new ElecByteBufImpl(Unpooled.buffer());
         packet.toBytes(ret);
         return ret;
     }

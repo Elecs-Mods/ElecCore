@@ -86,6 +86,9 @@ public class ElecCore implements IModuleController, IElecCoreMod, IDependencyHan
 	public void construction(FMLConstructionEvent event){
 		logger = LogManager.getLogger("ElecCore");
 		Launch.classLoader.registerTransformer(ASMLoader.class.getCanonicalName());
+		if (event.getASMHarvestedData() == null){
+			return;
+		}
 		ASMLoader.injectEarly(new CompatASMHandler());
 		boolean reg = false;
 		List<ModContainer> mcl = FMLUtil.getLoader().getModList();

@@ -415,8 +415,12 @@ public final class ServerHelper implements IExternalSaveHandler {
 
         @SubscribeEvent
         public void onPlayerDisconnected(PlayerEvent.PlayerLoggedOutEvent event){
-            if (!(event.player instanceof EntityPlayerMP))
+            if (!(event.player instanceof EntityPlayerMP)) {
                 return;
+            }
+            if (ServerHelper.this.playerData == null){
+                return; //On rare ocasions the callback to disconnect players when shutting down a server gets called after the worlddata is saved.
+            }
             ElecPlayer player = ServerHelper.this.playerData.get(PlayerHelper.getPlayerUUID(event.player));
             if (player == null){
                 ElecCore.logger.error("A player disconnected from the server without connecting first!");
