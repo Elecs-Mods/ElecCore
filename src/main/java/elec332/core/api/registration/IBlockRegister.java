@@ -9,9 +9,4 @@ import net.minecraft.block.Block;
  */
 public interface IBlockRegister extends IObjectRegister<Block> {
 
-    @Override
-    default public Class<Block> getType() {
-        return Block.class;
-    }
-
 }

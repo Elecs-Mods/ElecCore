@@ -87,34 +87,14 @@ public class ClientProxy extends CommonProxy {
 
     static {
 
-        COLORED_ITEM = new IItemColor() {
+        COLORED_ITEM = (stack, tintIndex) -> ((IColoredItem) stack.getItem()).getColorFromItemStack(stack, tintIndex);
 
-            @Override
-            public int colorMultiplier(@Nonnull ItemStack stack, int tintIndex) {
-                return ((IColoredItem) stack.getItem()).getColorFromItemStack(stack, tintIndex);
-            }
-
+        COLORED_ITEMBLOCK = (stack, tintIndex) -> {
+            Block block = ((ItemBlock) stack.getItem()).getBlock();
+            return ((IColoredBlock) block).colorMultiplier(block.getStateFromMeta(stack.getItemDamage()), null, null, tintIndex);
         };
 
-        COLORED_ITEMBLOCK = new IItemColor() {
-
-            @Override
-            @SuppressWarnings("deprecation")
-            public int colorMultiplier(@Nonnull ItemStack stack, int tintIndex) {
-                Block block = ((ItemBlock) stack.getItem()).getBlock();
-                return ((IColoredBlock) block).colorMultiplier(block.getStateFromMeta(stack.getItemDamage()), null, null, tintIndex);
-            }
-
-        };
-
-        COLORED_BLOCK = new IBlockColor() {
-
-            @Override
-            public int colorMultiplier(@Nonnull IBlockState state, @Nullable IBlockAccess worldIn, @Nullable BlockPos pos, int tintIndex) {
-                return ((IColoredBlock) state.getBlock()).colorMultiplier(state, worldIn, pos, tintIndex);
-            }
-
-        };
+        COLORED_BLOCK = (state, worldIn, pos, tintIndex) -> ((IColoredBlock) state.getBlock()).colorMultiplier(state, worldIn, pos, tintIndex);
 
     }
 

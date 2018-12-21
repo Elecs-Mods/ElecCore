@@ -163,7 +163,7 @@ enum ASMDataHandler {
         }
     }
 
-    @APIHandlerInject
+    @APIHandlerInject(weight = 1)
     public void injectASMHelper(IAPIHandler apiHandler){
         apiHandler.inject(this.asmDataHelper, IASMDataHelper.class);
     }

@@ -5,6 +5,9 @@ import elec332.core.api.network.IExtendedMessageContext;
 
 /**
  * Created by Elec332 on 23-10-2016.
+ *
+ * Packet-handler for simple packets, can be used for multiple packets.
+ * A packet can also have a custom packet-handler chosen by the sender.
  */
 public interface ISimplePacketHandler {
 

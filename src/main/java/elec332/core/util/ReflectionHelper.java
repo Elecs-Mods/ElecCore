@@ -13,10 +13,23 @@ import java.util.function.Consumer;
  */
 public class ReflectionHelper {
 
+    /**
+     * Checks if the provided {@link Member} is static
+     *
+     * @param member The {@link Member} to be checked
+     * @return Whether the provided {@link Member} is static
+     */
     public static boolean isStatic(Member member) {
         return (member.getModifiers() & Modifier.STATIC) == Modifier.STATIC;
     }
 
+    /**
+     * If the provided class is an inner-class, returns all classes "above" it,
+     * until it reaches the "main" declaring class
+     *
+     * @param innerClass The class to be checked
+     * @return All classes until the declaring class
+     */
     public static Class[] getAllTillMainClass(Class innerClass) {
         if (!isInnerClass(innerClass)) {
             return new Class[]{innerClass};
@@ -43,6 +56,13 @@ public class ReflectionHelper {
         return ret.toArray(new Class[ret.size()]);
     }
 
+    /**
+     * If the provided class is an inner-class, returns all class names "above" it,
+     * until it reaches the "main" declaring class
+     *
+     * @param innerClass The class to be checked
+     * @return All class names until the declaring class
+     */
     public static String[] getAllClassNamesTillMainClass(Class innerClass) {
         if (!isInnerClass(innerClass)) {
             return new String[]{
@@ -56,10 +76,22 @@ public class ReflectionHelper {
         return cN.replace(pN, "").replace(dot, " ").split(" ");
     }
 
+    /**
+     * Gets the package name in which this class is located
+     *
+     * @param clazz The class
+     * @return The package name in which this class is located
+     */
     public static String getPackage(Class clazz) {
         return clazz.getPackage().getName();
     }
 
+    /**
+     * Checks the provided classname to see if it exists
+     *
+     * @param s The classname
+     * @return Whether the class exists
+     */
     public static boolean isClass(String s) {
         String s1 = s.replace("$", ".");
         try {
@@ -75,10 +107,22 @@ public class ReflectionHelper {
         }
     }
 
+    /**
+     * Checks whether the provided class is an inner class
+     *
+     * @param clazz The class
+     * @return Whether the provided class is an inner class
+     */
     public static boolean isInnerClass(Class clazz) {
         return clazz.getName().contains("$");
     }
 
+    /**
+     * Makes a final field modifiable
+     *
+     * @param field The field
+     * @return The same field, but modifiable
+     */
     public static Field makeFinalFieldModifiable(Field field) throws NoSuchFieldException, IllegalAccessException {
         field.setAccessible(true);
         int i = field.getModifiers();
@@ -89,16 +133,15 @@ public class ReflectionHelper {
         return field;
     }
 
+    /**
+     * Makes a field accessible
+     *
+     * @param field The field
+     * @return The same field, but accessible
+     */
     public static Field makeFieldAccessible(Field field) {
         field.setAccessible(true);
         return field;
-    }
-
-    public static void temporarilyAccessField(Field field, Consumer<Field> fieldAccess) {
-        boolean b = field.isAccessible();
-        field.setAccessible(true);
-        fieldAccess.accept(field);
-        field.setAccessible(b);
     }
 
 }

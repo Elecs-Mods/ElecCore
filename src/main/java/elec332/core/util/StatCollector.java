@@ -4,6 +4,8 @@ import net.minecraft.util.text.translation.I18n;
 
 /**
  * Created by Elec332 on 10-3-2016.
+ *
+ * Translation helper
  */
 @SuppressWarnings("deprecation")
 public class StatCollector {

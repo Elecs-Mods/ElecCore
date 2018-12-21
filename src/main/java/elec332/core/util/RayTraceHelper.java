@@ -17,6 +17,14 @@ import javax.annotation.Nullable;
  */
 public class RayTraceHelper {
 
+    /**
+     * Re-raytraces the provided position, to e.g. get more hit data than may be provided in some methods
+     *
+     * @param world The world
+     * @param player The player from which to start the raytracing
+     * @param pos The position to raytrace to
+     * @return The {@link RayTraceResult} from the raytrace
+     */
     @Nullable
     @SuppressWarnings("all")
     public static RayTraceResult retraceBlock(World world, EntityPlayer player, BlockPos pos) {
@@ -28,6 +36,13 @@ public class RayTraceHelper {
         return blockState.collisionRayTrace(world, pos, headVec, endVec);
     }
 
+    /**
+     * Perform a raytrace with a specified maximum distance
+     *
+     * @param player The player from which to start the raytracing
+     * @param distance The maximum raytracing distance
+     * @return The {@link RayTraceResult} from the raytrace
+     */
     public static RayTraceResult rayTrace(EntityLivingBase player, double distance) {
         Vec3d vec3d = new Vec3d(player.posX, player.posY + player.getEyeHeight(), player.posZ);
         Vec3d vec3d1 = getVectorForRotation(player.rotationPitch, player.rotationYawHead);

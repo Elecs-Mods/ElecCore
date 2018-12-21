@@ -5,6 +5,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.List;
 
 /**
@@ -12,15 +13,33 @@ import java.util.List;
  */
 public class ItemStackHelper {
 
+    /**
+     * Used to check if stacks are "valid" and non-empty
+     *
+     * @param stack The {@link ItemStack} to be checked
+     * @return Whether the provided stack is "valid" and non-empty
+     */
     public static boolean isStackValid(ItemStack stack){
         return stack != null && stack != NULL_STACK && !stack.isEmpty && !stack.isEmpty();
     }
 
+    /**
+     * Copies the specified {@link ItemStack}, null proof
+     *
+     * @param stack The stack
+     * @return A copy of the provided {@link ItemStack}
+     */
     @Nonnull
-    public static ItemStack copyItemStack(ItemStack stack){
+    public static ItemStack copyItemStack(@Nullable ItemStack stack){
         return stack == null || stack == NULL_STACK ? NULL_STACK : stack.copy();
     }
 
+    /**
+     * loads an {@link ItemStack} from the provided {@link NBTTagCompound}
+     *
+     * @param tag The NBT data
+     * @return The {@link ItemStack} loaded from the provided {@link NBTTagCompound}
+     */
     public static ItemStack loadItemStackFromNBT(NBTTagCompound tag){
         return new ItemStack(tag);
     }

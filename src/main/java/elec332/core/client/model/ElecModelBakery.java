@@ -5,13 +5,11 @@ import elec332.core.api.APIHandlerInject;
 import elec332.core.api.IAPIHandler;
 import elec332.core.api.client.model.IElecModelBakery;
 import elec332.core.api.client.model.IElecTemplateBakery;
-import elec332.core.api.client.model.map.IBakedModelRotationMap;
 import elec332.core.api.client.model.model.IModelWithoutQuads;
 import elec332.core.api.client.model.model.IQuadProvider;
 import elec332.core.api.client.model.template.IModelTemplate;
 import elec332.core.api.client.model.template.IQuadTemplate;
 import elec332.core.api.client.model.template.IQuadTemplateSidedMap;
-import elec332.core.client.model.map.BakedModelRotationMap;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.model.*;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -41,21 +39,6 @@ public class ElecModelBakery implements IElecModelBakery {
     private static IElecTemplateBakery templateBakery;
     public static final ItemCameraTransforms DEFAULT_ITEM, DEFAULT_BLOCK;
 
-    @Override
-    public IBakedModelRotationMap<IBakedModel> forTemplateRotation(IModelTemplate template){
-        return forTemplate(template, false, true);
-    }
-
-    @Override
-    public IBakedModelRotationMap<IBakedModel> forTemplate(IModelTemplate template, boolean x, boolean y){
-        BakedModelRotationMap<IBakedModel> ret = new BakedModelRotationMap<>(x, y);
-        for (ModelRotation rotation : ModelRotation.values()){
-            if (ret.isRotationSupported(rotation)){
-                ret.setModel(rotation, forTemplate(template, rotation));
-            }
-        }
-        return ret;
-    }
 
     @Override
     public IBakedModel forTemplate(IModelTemplate template){

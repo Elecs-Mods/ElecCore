@@ -27,6 +27,11 @@ import javax.annotation.Nullable;
  */
 public class RegistryHelper {
 
+    /**
+     * Registers an empty cabability, meaning that it has no serialization and no default implementation.
+     *
+     * @param clazz The capability type
+     */
     public static <T> void registerEmptyCapability(Class<T> clazz){
         CapabilityManager.INSTANCE.register(clazz, new Capability.IStorage<T>() {
 
@@ -43,18 +48,6 @@ public class RegistryHelper {
         }, () -> {
             throw new UnsupportedOperationException();
         });
-    }
-
-    public static <K extends IForgeRegistryEntry<?>> K register(K object, ResourceLocation name){
-        Preconditions.checkNotNull(object);
-        Preconditions.checkNotNull(name);
-        object.setRegistryName(name);
-        return register(object);
-    }
-
-    @SuppressWarnings("all")
-    public static <K extends IForgeRegistryEntry<?>> K register(K object){
-        return (K) GameData.register_impl((IForgeRegistryEntry) object);
     }
 
     public static <T extends IForgeRegistryEntry<T>, C extends IForgeRegistry.AddCallback<T> & IForgeRegistry.ClearCallback<T> & IForgeRegistry.CreateCallback<T>> ForgeRegistry<T> createRegistry(ResourceLocation registryName, Class<T> registryType, C callback){
@@ -110,41 +103,11 @@ public class RegistryHelper {
         return GameData.getBlockItemMap();
     }
 
-    /*public static ICraftingManager getCraftingManager() {
-        CraftingManager
-        return RecipeHelper.getCraftingManager();
-    }*/
+    /**
+     * Callback with all callback types
+     */
+    public interface FullRegistryCallback<T extends IForgeRegistryEntry<T>> extends IForgeRegistry.AddCallback<T>, IForgeRegistry.ClearCallback<T>, IForgeRegistry.CreateCallback<T>, IForgeRegistry.ValidateCallback<T> {
 
-    //Callback helpers
-
-    public interface FullRegistryCallback<T extends IForgeRegistryEntry<T>> extends IForgeRegistry.AddCallback<T>, IForgeRegistry.ClearCallback<T>, IForgeRegistry.CreateCallback<T> {
-
-    }
-
-    @SuppressWarnings("unchecked")
-    public static <T extends IForgeRegistryEntry<T>> FullRegistryCallback<T> getNullCallback(){
-        return (FullRegistryCallback<T>) NULL_CALLBACK;
-    }
-
-    private static final FullRegistryCallback NULL_CALLBACK;
-
-    static {
-        NULL_CALLBACK = new FullRegistryCallback() {
-
-            @Override
-            public void onCreate(IForgeRegistryInternal owner, RegistryManager stage) {
-            }
-
-            @Override
-            public void onClear(IForgeRegistryInternal owner, RegistryManager stage) {
-            }
-
-            @Override
-            public void onAdd(IForgeRegistryInternal owner, RegistryManager stage, int id, IForgeRegistryEntry obj, @Nullable IForgeRegistryEntry oldObj) {
-
-            }
-
-        };
     }
 
 }

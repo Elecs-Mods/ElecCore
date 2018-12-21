@@ -115,6 +115,7 @@ public abstract class ElecByteBuf extends ByteBuf {
     public abstract ElecByteBuf capacity(int p_capacity_1_);
 
     @Override
+    @SuppressWarnings("deprecation")
     public abstract ElecByteBuf order(ByteOrder p_order_1_);
 
     @Override

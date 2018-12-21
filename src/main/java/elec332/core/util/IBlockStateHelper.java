@@ -11,6 +11,7 @@ import net.minecraft.util.EnumFacing;
 /**
  * Created by Elec332 on 7-12-2015.
  */
+@Deprecated
 public interface IBlockStateHelper<M extends Comparable<M>> {
 
     public static final IBlockStateHelper<EnumFacing> FACING_NORMAL = new IBlockStateHelper<EnumFacing>() {

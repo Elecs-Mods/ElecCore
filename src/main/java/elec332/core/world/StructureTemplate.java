@@ -17,6 +17,9 @@ import net.minecraft.world.chunk.IChunkProvider;
 
 import java.util.Set;
 
+/**
+ * A class to help with the generation of schematics
+ */
 public class StructureTemplate {
 
     public StructureTemplate(Schematic schematic, GenerationType generationType, Integer... dimensions) {
@@ -33,7 +36,13 @@ public class StructureTemplate {
     protected Set<Integer> dimensions;
     protected GenerationType generationType;
 
-    public void generateStructure(BlockPos location, World world, IChunkProvider chunkProvider) {
+    /**
+     * Generates a structure at the provided coordinates
+     *
+     * @param location The coordinates
+     * @param world The world
+     */
+    public void generateStructure(BlockPos location, World world) {
         if (!world.isRemote) { /* You never know what someone else might be trying to do */
             int xCoord = location.getX();
             int yCoord = location.getY();

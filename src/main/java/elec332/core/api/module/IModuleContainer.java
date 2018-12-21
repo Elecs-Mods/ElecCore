@@ -26,7 +26,4 @@ public interface IModuleContainer extends IModuleInfo {
      */
     public void invokeEvent(Object event) throws Exception;
 
-    @Nonnull
-    public IModuleHandler getHandler();
-
 }

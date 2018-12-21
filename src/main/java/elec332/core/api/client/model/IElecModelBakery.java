@@ -1,6 +1,5 @@
 package elec332.core.api.client.model;
 
-import elec332.core.api.client.model.map.IBakedModelRotationMap;
 import elec332.core.api.client.model.model.IModelWithoutQuads;
 import elec332.core.api.client.model.model.IQuadProvider;
 import elec332.core.api.client.model.template.IModelTemplate;
@@ -18,10 +17,6 @@ import java.util.List;
  * Created by Elec332 on 29-10-2016.
  */
 public interface IElecModelBakery {
-
-    public IBakedModelRotationMap<IBakedModel> forTemplateRotation(IModelTemplate template);
-
-    public IBakedModelRotationMap<IBakedModel> forTemplate(IModelTemplate template, boolean x, boolean y);
 
     public IBakedModel forTemplate(IModelTemplate template);
 

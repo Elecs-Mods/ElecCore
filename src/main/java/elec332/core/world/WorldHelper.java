@@ -126,7 +126,6 @@ public class WorldHelper {
         }
     }
 
-
     public static void dropStack(World world, BlockPos blockLoc, ItemStack stack) {
         dropStack(world, blockLoc.getX(), blockLoc.getY(), blockLoc.getZ(), stack);
     }
@@ -158,8 +157,9 @@ public class WorldHelper {
         }
         if (world.provider == null) {
             for (Integer i : DimensionManager.getIDs()) {
-                if (DimensionManager.getWorld(i) == world)
+                if (DimensionManager.getWorld(i) == world) {
                     return i;
+                }
             }
             throw new RuntimeException("Unable to determine the dimension of world: " + world);
         }

@@ -21,6 +21,8 @@ import java.io.File;
 
 /**
  * Created by Elec332 on 20-7-2016.
+ *
+ * TODO: Move to world cap
  */
 @StaticLoad
 public enum SaveHandler {

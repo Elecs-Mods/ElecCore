@@ -13,7 +13,7 @@ import java.awt.*;
 /**
  * Created by Elec332 on 8-1-2017.
  */
-public enum  Alignment {
+public enum Alignment {
 
     LEFT {
 

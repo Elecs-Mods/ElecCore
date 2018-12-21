@@ -29,7 +29,7 @@ import java.util.function.Function;
  */
 @SuppressWarnings("unused")
 @StaticLoad
-enum  WorldGenManager implements ISingleObjectRegistry<IWorldGenHook>, IWorldGenManager {
+enum WorldGenManager implements ISingleObjectRegistry<IWorldGenHook>, IWorldGenManager {
 
     INSTANCE;
 

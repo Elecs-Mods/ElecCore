@@ -21,6 +21,9 @@ import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.discovery.ASMDataTable;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -45,7 +48,7 @@ public class ElecCoreSetup {
     @APIHandlerInject
     private static void onModuleManagerLoaded(IModuleManager moduleManager){
         moduleManager.registerFieldProcessor(ElecModule.Instance.class, IModuleContainer::getModule);
-        moduleManager.registerFieldProcessor(ElecModule.Network.class, iModuleContainer -> iModuleContainer.getHandler().getPacketHandler());
+        moduleManager.registerFieldProcessor(ElecModule.Network.class, iModuleContainer -> networkManager.getAdditionalSimpleNetworkManager(iModuleContainer.getOwnerMod(), iModuleContainer.getName()));
         moduleManager.registerModuleDiscoverer((asmData, moduleControllerGetter) -> {
             List<IModuleInfo> ret = Lists.newArrayList();
             for (ASMDataTable.ASMData data : asmData.getAnnotationList(ElecModule.class)) {
@@ -84,7 +87,14 @@ public class ElecCoreSetup {
                     @SuppressWarnings("all")
                     public void registerStuff(RegistryEvent.Register event1){
                         for (IObjectRegister register : list){
-                            if (register.getType() == event1.getGenericType()){
+                            Type ty = Arrays.stream(register.getClass().getAnnotatedInterfaces())
+                                    .filter(annotatedType -> annotatedType.getType() instanceof ParameterizedType)
+                                    .filter(annotatedType -> ((ParameterizedType)register.getClass().getAnnotatedInterfaces()[0].getType()).getRawType().equals(IObjectRegister.class))
+                                    .findFirst()
+                                    .get()
+                                    .getType();
+
+                            if (((ParameterizedType)ty).getActualTypeArguments()[0].equals(event1.getGenericType())){
                                 register.preRegister();
                                 register.register(event1.getRegistry());
                             }

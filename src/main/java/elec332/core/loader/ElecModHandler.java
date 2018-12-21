@@ -8,6 +8,7 @@ import com.google.common.collect.Sets;
 import elec332.core.ElecCore;
 import elec332.core.api.APIHandlerInject;
 import elec332.core.api.IAPIHandler;
+import elec332.core.api.annotations.StaticLoad;
 import elec332.core.api.discovery.IASMDataHelper;
 import elec332.core.api.mod.IElecCoreMod;
 import elec332.core.api.mod.IElecCoreModHandler;
@@ -32,6 +33,7 @@ import java.util.stream.Collectors;
 /**
  * Created by Elec332 on 20-10-2016.
  */
+@StaticLoad
 enum ElecModHandler implements IElecCoreModHandler {
 
     INSTANCE;
@@ -41,7 +43,7 @@ enum ElecModHandler implements IElecCoreModHandler {
         handlers = Sets.newHashSet();
     }
 
-    @APIHandlerInject
+    @APIHandlerInject(weight = Short.MAX_VALUE)
     private IASMDataHelper asmData = null;
     private Map<Class<? extends Annotation>, Function<ModContainer, Object>> reg;
     private Set<BiConsumer<ModContainer, IElecCoreMod>> handlers;
@@ -140,7 +142,7 @@ enum ElecModHandler implements IElecCoreModHandler {
         handlers.add(handler);
     }
 
-    @APIHandlerInject
+    @APIHandlerInject()
     public void injectModHandler(IAPIHandler apiHandler){
         apiHandler.inject(INSTANCE, IElecCoreModHandler.class);
     }

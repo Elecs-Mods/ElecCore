@@ -11,6 +11,6 @@ public interface IRotatable {
 
     public EnumFacing getFacing();
 
-    public boolean rotateBlock(World world, BlockPos pos);
+    public boolean rotateBlock(World world, BlockPos pos, EnumFacing sideHit);
 
 }

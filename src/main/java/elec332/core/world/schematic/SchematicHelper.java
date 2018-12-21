@@ -33,10 +33,16 @@ import java.util.Map;
  * This was originally created by Lumaceon, rewritten by Elec332.
  * You can find the original here: https://github.com/Lumaceon/ClockworkPhase2/blob/master/src/main/java/lumaceon/mods/clockworkphase2/util/SchematicUtility.java
  */
-public enum  SchematicHelper {
+public enum SchematicHelper {
 
     INSTANCE;
 
+    /**
+     * Loads a schematic from a file
+     *
+     * @param file The file
+     * @return The schematic loaded from the specified file
+     */
     public Schematic loadSchematic(File file){
         try {
             return loadSchematic(new FileInputStream(file));
@@ -47,6 +53,12 @@ public enum  SchematicHelper {
         }
     }
 
+    /**
+     * Loads a schematic from a {@link ResourceLocation}
+     *
+     * @param rl The Resource location
+     * @return The schematic loaded from the specified {@link ResourceLocation}
+     */
     public Schematic loadSchematic(ResourceLocation rl){
         try {
             return loadSchematic(IOHelper.getFromResource(rl));
@@ -57,6 +69,12 @@ public enum  SchematicHelper {
         }
     }
 
+    /**
+     * Loads a schematic from a {@link InputStream}
+     *
+     * @param is The inputstream
+     * @return The schematic loaded from the specified {@link InputStream}
+     */
     public Schematic loadSchematic(InputStream is){
         try {
             NBTTagCompound tag = CompressedStreamTools.readCompressed(is);
@@ -70,8 +88,9 @@ public enum  SchematicHelper {
     }
 
     /**
-     * Loads a .modschematic file and returns a ModSchematic class. Does not load .schematic files.
+     * Loads a schematic from NBT
      *
+     * @param nbt The NBT data
      * @return The loaded ModSchematic.
      */
     public Schematic loadModSchematic(NBTTagCompound nbt){
@@ -102,6 +121,12 @@ public enum  SchematicHelper {
         }
     }
 
+    /**
+     * Writes a schematic to NBT
+     *
+     * @param schematic_ The schematic
+     * @return The specified schematic serialized to NBT
+     */
     public NBTTagCompound writeSchematic(ISchematic schematic_) {
         Schematic schematic = wrap(schematic_);
         NBTTagCompound nbt = new NBTTagCompound();
@@ -143,9 +168,11 @@ public enum  SchematicHelper {
     }
 
     /**
-     * Creates a Schematic.
+     * Creates a Schematic from the specified area.
      *
-     * @param area     The area in the World which will be saved as a .modschematic file.
+     * @param world The world
+     * @param area The area in the World from which a schematic will be created.
+     * @param horizon The horizon, AKA offset down
      */
     public Schematic createModSchematic(IBlockAccess world, Area area, short horizon) {
         if (world == null || area == null) {
@@ -185,6 +212,10 @@ public enum  SchematicHelper {
         return new Schematic(tileList, area.getBlockWidth(), area.getBlockHeight(), area.getBlockHeight(), horizon, data, blocks);
     }
 
+    /**
+     * Wraps a generic {@link ISchematic} into a version which can be used by the serializer.
+     * Inefficient, usage of the default implementation is recommended
+     */
     @SuppressWarnings("all")
     public Schematic wrap(ISchematic schematic){
         if (schematic instanceof Schematic){

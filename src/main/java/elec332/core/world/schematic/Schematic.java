@@ -10,10 +10,11 @@ import net.minecraft.util.math.BlockPos;
 import java.util.Map;
 
 /*
- * These three classes were made by Lumaceon.
- * You can find them here: https://github.com/Lumaceon/ClockworkPhase2/blob/master/src/main/java/lumaceon/mods/clockworkphase2/util/SchematicUtility.java
+ * This was originally created by Lumaceon, rewritten by Elec332.
+ * You can find the original here: https://github.com/Lumaceon/ClockworkPhase2/blob/master/src/main/java/lumaceon/mods/clockworkphase2/util/SchematicUtility.java
+ *
+ * Default schematic implementation
  */
-
 public class Schematic implements ISchematic {
 
     protected final NBTTagList tileDataList;
@@ -21,7 +22,6 @@ public class Schematic implements ISchematic {
     protected byte[] data;
     protected Block[] blocks;
     private Map<BlockPos, NBTTagCompound> tiles;
-    private int areaBlockCount; //Does not actually count blocks, just the size of the area in blocks.
 
     protected Schematic(NBTTagList tileEntities, short width, short height, short length, short horizon, byte[] data, Block[] blocks) {
         this.tileDataList = tileEntities;
@@ -31,7 +31,6 @@ public class Schematic implements ISchematic {
         this.horizon = horizon;
         this.data = data;
         this.blocks = blocks;
-        areaBlockCount = width * height * length;
         tiles = Maps.newHashMap();
         reloadTileMap();
     }

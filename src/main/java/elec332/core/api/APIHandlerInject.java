@@ -11,4 +11,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.FIELD, ElementType.METHOD})
 public @interface APIHandlerInject {
+
+    int weight() default Byte.MAX_VALUE;
+
 }

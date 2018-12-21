@@ -9,9 +9,4 @@ import net.minecraft.item.Item;
  */
 public interface IItemRegister extends IObjectRegister<Item> {
 
-    @Override
-    default public Class<Item> getType() {
-        return Item.class;
-    }
-
 }

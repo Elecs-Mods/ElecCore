@@ -16,6 +16,4 @@ public interface IObjectRegister<T extends IForgeRegistryEntry<T>> {
 
     public void register(IForgeRegistry<T> registry);
 
-    public Class<T> getType();
-
 }

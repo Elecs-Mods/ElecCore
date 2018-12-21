@@ -6,6 +6,8 @@ import javax.annotation.Nullable;
 
 /**
  * Created by Elec332 on 23-10-2016.
+ *
+ * A simple packet
  */
 public interface ISimplePacket {
 

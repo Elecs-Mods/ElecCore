@@ -18,6 +18,14 @@ public class IOHelper {
 
     public static final IObjectIO<NBTTagCompound> NBT_IO, NBT_COMPRESSED_IO;
 
+    /**
+     * Gets the {@link InputStream} from the provided {@link ResourceLocation},
+     * also works on the {@link net.minecraftforge.fml.relauncher.Side#SERVER}
+     * (MC's method doesn't)
+     *
+     * @param resourceLocation The location of the resource
+     * @return The {@link InputStream} from the provided {@link ResourceLocation}
+     */
     @Nonnull
     public static InputStream getFromResource(@Nonnull ResourceLocation resourceLocation) throws IOException {
         String location = "/assets/" + resourceLocation.getResourceDomain() + "/" + resourceLocation.getResourcePath();
@@ -28,18 +36,38 @@ public class IOHelper {
         throw new FileNotFoundException(location);
     }
 
+    /**
+     * Makes sure the folder exists, tries to create it if it doesn't.
+     * If it doesn't exist, and fails to creates it, it throws a {@link RuntimeException}
+     *
+     * @param folder The folder to be checked
+     */
     public static void ensureExists(File folder){
         if (!folder.exists() && !folder.mkdir()){
             throw new RuntimeException();
         }
     }
 
+    /**
+     * Checkes whether the specified files exists, and if it does, it tries to delete it.
+     * Throws an {@link RuntimeException} if it fails to delete it.
+     *
+     * @param file The file to be deleted
+     */
     public static void deleteIfExists(File file){
         if (file.exists() && !file.delete()) {
             throw new RuntimeException();
         }
     }
 
+    /**
+     * tries to read an object from a file. If the specified file has errored,
+     * or doesn't exist at all, it tries to read from a backup file
+     *
+     * @param file The file ro be read
+     * @param io The IO implementation
+     * @return The object read from the specified file
+     */
     public static <T> T readWithPossibleBackup(@Nonnull File file, @Nonnull IObjectIO<T> io) {
         File backup = null;
         boolean b = false;
@@ -72,6 +100,15 @@ public class IOHelper {
         }
     }
 
+    /**
+     * Writes the specified object ({@param obj}) to a file,
+     * uses the old save file as a backup in case the write fails, of the program is suddenly stopped
+     *
+     * @param file The file to write to
+     * @param obj The object to be written to the specified file
+     * @param io The IO implementation
+     */
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     public static <T> void writeWithBackup(@Nonnull File file, @Nonnull T obj, @Nonnull IObjectIO<T> io) {
         File fileBack, fileNew;
         try {
@@ -90,20 +127,46 @@ public class IOHelper {
         deleteIfExists(fileNew);
     }
 
+    /**
+     * Gets the backup filename of a file
+     *
+     * @param file The file
+     * @return The backup filename of the specified file
+     */
     public static File getBackupFile(@Nonnull File file) throws IOException {
         return new File(file.getCanonicalPath()+"_back");
     }
 
+    /**
+     * Utility class used to write objects to a file
+     */
     public interface IObjectIO<T> {
 
+        /**
+         * Attempts to write an object to a file
+         *
+         * @param file The file
+         * @param obj The object to be written to the specified file
+         * @throws IOException When the operation has failed
+         */
         default public void write(File file, T obj) throws IOException {
             throw new UnsupportedOperationException();
         }
 
+        /**
+         * Attempts to read an object from a file
+         *
+         * @param file The file
+         * @return The object read from the specified file
+         * @throws IOException When the operation has failed
+         */
         default public T read(File file) throws IOException {
             throw new UnsupportedOperationException();
         }
 
+        /**
+         * @return A default value, gets called when the read has failed
+         */
         default public T returnOnReadFail(){
             throw new RuntimeException();
         }

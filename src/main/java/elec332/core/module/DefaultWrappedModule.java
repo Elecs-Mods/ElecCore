@@ -37,7 +37,6 @@ public class DefaultWrappedModule implements IModuleContainer {
             }
         }
         this.mod = Preconditions.checkNotNull(mc);
-        this.moduleHandler = new DefaultModuleHandler(this);
     }
 
     private final String name, owner, clazz;
@@ -47,7 +46,6 @@ public class DefaultWrappedModule implements IModuleContainer {
     private final List<String> moduleDependencies;
     private final List<ArtifactVersion> modDependencies;
     private final IModuleController moduleController;
-    private final IModuleHandler moduleHandler;
     private final ModContainer mod;
 
     @Nonnull
@@ -100,12 +98,6 @@ public class DefaultWrappedModule implements IModuleContainer {
                 method.invoke(this.module, event);
             }
         }
-    }
-
-    @Nonnull
-    @Override
-    public IModuleHandler getHandler() {
-        return moduleHandler;
     }
 
     @Nonnull

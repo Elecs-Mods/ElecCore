@@ -13,4 +13,7 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface StaticLoad {
+
+    int weight() default Byte.MAX_VALUE;
+
 }

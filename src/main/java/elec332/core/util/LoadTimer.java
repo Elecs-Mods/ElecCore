@@ -6,6 +6,8 @@ import org.apache.logging.log4j.Logger;
 
 /**
  * Created by Elec332 on 7-5-2016.
+ *
+ * A load-timer, for keeping track of mod (event) loading times
  */
 public class LoadTimer {
 
@@ -19,6 +21,11 @@ public class LoadTimer {
     private long start;
     private LoaderState.ModState lastState;
 
+    /**
+     * Starts the timer for the specified event, should be called at the beginning of the event
+     *
+     * @param event The FML loading event
+     */
     public void startPhase(FMLStateEvent event) {
         if (lastState != null) {
             throw new IllegalStateException("Cannot start phase without ending phase " + lastState + "first.");
@@ -27,6 +34,12 @@ public class LoadTimer {
         lastState = event.getModState();
     }
 
+    /**
+     * Stops the timer for the specified event and prints the time it took to the specified logger,
+     * should be called at the end of the event
+     *
+     * @param event The FML loading event
+     */
     public void endPhase(FMLStateEvent event) {
         LoaderState.ModState modState = event.getModState();
         if (this.lastState != modState) {
