@@ -33,7 +33,8 @@ import java.util.Optional;
 public class ElecQuadBakery implements IElecQuadBakery {
 
     protected static final ElecQuadBakery instance = new ElecQuadBakery();
-    private ElecQuadBakery(){
+
+    private ElecQuadBakery() {
         this.faceBakery = new FaceBakery(); //Because MC is selfish and keeps his private...
     }
 
@@ -47,21 +48,21 @@ public class ElecQuadBakery implements IElecQuadBakery {
      * @return The ISidedMap with the baked quads.
      */
     @Override
-    public IQuadProvider bakeQuads(IQuadTemplateSidedMap from){
+    public IQuadProvider bakeQuads(IQuadTemplateSidedMap from) {
         return bakeQuads(from, null);
     }
 
     /**
      * Bakes all the template quads in the ITemplateMap for a fixed rotation
      *
-     * @param from The IQuadTemplateSidedMap containing the template quads.
+     * @param from     The IQuadTemplateSidedMap containing the template quads.
      * @param rotation The fixed quad rotation.
      * @return The ISidedMap with the baked quads.
      */
     @Override
-    public IQuadProvider bakeQuads(IQuadTemplateSidedMap from, ITransformation rotation){
+    public IQuadProvider bakeQuads(IQuadTemplateSidedMap from, ITransformation rotation) {
         SidedMap ret = new SidedMap();
-        for (EnumFacing facing : EnumFacing.VALUES){
+        for (EnumFacing facing : EnumFacing.VALUES) {
             ret.setQuadsForSide(rotation == null ? facing : rotation.rotate(facing), bakeQuads(from.getForSide(facing), rotation));
         }
         return ret;
@@ -74,59 +75,59 @@ public class ElecQuadBakery implements IElecQuadBakery {
      * @return A new list with the baked quads.
      */
     @Override
-    public List<BakedQuad> bakeQuads(List<IQuadTemplate> from){
+    public List<BakedQuad> bakeQuads(List<IQuadTemplate> from) {
         return bakeQuads(from, null);
     }
 
     /**
      * Bakes all template quads in the list for a fixed rotation.
      *
-     * @param from A list containing template quads.
+     * @param from     A list containing template quads.
      * @param rotation The fixed quad rotation.
      * @return A new list with the baked quads.
      */
     @Override
-    public List<BakedQuad> bakeQuads(List<IQuadTemplate> from, ITransformation rotation){
+    public List<BakedQuad> bakeQuads(List<IQuadTemplate> from, ITransformation rotation) {
         ImmutableList.Builder<BakedQuad> builder = new ImmutableList.Builder<>();
-        for (IQuadTemplate quadTemplate : from){
+        for (IQuadTemplate quadTemplate : from) {
             builder.add(bakeQuad(quadTemplate, rotation == null ? quadTemplate.getRotation() : rotation));
         }
         return builder.build();
     }
 
     @Override
-    public BakedQuad bakeQuad(Vector3f v1, Vector3f v2, TextureAtlasSprite texture, EnumFacing facing){
+    public BakedQuad bakeQuad(Vector3f v1, Vector3f v2, TextureAtlasSprite texture, EnumFacing facing) {
         return bakeQuad(v1, v2, texture, facing, ModelRotation.X0_Y0);
     }
 
     @Override
-    public BakedQuad bakeQuad(Vector3f v1, Vector3f v2, TextureAtlasSprite texture, EnumFacing facing, ITransformation rotation){
+    public BakedQuad bakeQuad(Vector3f v1, Vector3f v2, TextureAtlasSprite texture, EnumFacing facing, ITransformation rotation) {
         return bakeQuad(v1, v2, texture, facing, rotation, 0, 0, 16, 16);
     }
 
     @Override
-    public BakedQuad bakeQuad(Vector3f v1, Vector3f v2, TextureAtlasSprite texture, EnumFacing facing, ITransformation rotation, float f1, float f2, float f3, float f4){
+    public BakedQuad bakeQuad(Vector3f v1, Vector3f v2, TextureAtlasSprite texture, EnumFacing facing, ITransformation rotation, float f1, float f2, float f3, float f4) {
         return bakeQuad(v1, v2, texture, facing, rotation, f1, f2, f3, f4, -1);
     }
 
     @Override
-    public BakedQuad bakeQuad(IQuadTemplate template){
+    public BakedQuad bakeQuad(IQuadTemplate template) {
         return bakeQuad(template, template.getRotation());
     }
 
     @Override
-    public BakedQuad bakeQuad(IQuadTemplate template, ITransformation rotation){
+    public BakedQuad bakeQuad(IQuadTemplate template, ITransformation rotation) {
         return bakeQuad(template.getV1(), template.getV2(), template.getTexture(), template.getSide(), rotation, template.getUVData(), template.getTintIndex());
     }
 
     @Override
-    public BakedQuad bakeQuad(Vector3f v1, Vector3f v2, TextureAtlasSprite texture, EnumFacing facing, ITransformation rotation, IQuadTemplate.IUVData uvData, int tint){
+    public BakedQuad bakeQuad(Vector3f v1, Vector3f v2, TextureAtlasSprite texture, EnumFacing facing, ITransformation rotation, IQuadTemplate.IUVData uvData, int tint) {
         return bakeQuad(v1, v2, texture, facing, rotation, uvData.getUMin(), uvData.getVMin(), uvData.getUMax(), uvData.getVMax(), tint);
     }
 
     @SuppressWarnings("ConstantConditions")
     @Override
-    public BakedQuad bakeQuad(Vector3f v1, Vector3f v2, TextureAtlasSprite texture, EnumFacing facing, ITransformation rotation, float f1, float f2, float f3, float f4, int tint){
+    public BakedQuad bakeQuad(Vector3f v1, Vector3f v2, TextureAtlasSprite texture, EnumFacing facing, ITransformation rotation, float f1, float f2, float f3, float f4, int tint) {
         BlockFaceUV bfuv = new BlockFaceUV(new float[]{f1, f2, f3, f4}, 0);
         BlockPartFace bpf = new BlockPartFace(rotation.rotate(facing), tint, null, bfuv);
         return faceBakery.makeBakedQuad(v1, v2, bpf, texture, facing, rotation, null, false, true);
@@ -140,7 +141,7 @@ public class ElecQuadBakery implements IElecQuadBakery {
      * @return the list of baked quads for the given textures.
      */
     @Override
-    public List<BakedQuad> getGeneralItemQuads(TextureAtlasSprite... textures){
+    public List<BakedQuad> getGeneralItemQuads(TextureAtlasSprite... textures) {
         ImmutableList.Builder<BakedQuad> builder = ImmutableList.builder();
         for (int i = 0; i < textures.length; i++) {
             builder.addAll(ItemLayerModel.getQuadsForSprite(i, textures[i], DefaultVertexFormats.ITEM, Optional.of(TRSRTransformation.identity())));
@@ -149,30 +150,30 @@ public class ElecQuadBakery implements IElecQuadBakery {
     }
 
     @APIHandlerInject
-    public void injectQuadBakery(IAPIHandler apiHandler){
+    public void injectQuadBakery(IAPIHandler apiHandler) {
         apiHandler.inject(instance, IElecQuadBakery.class);
     }
 
     private class SidedMap implements IQuadProvider {
 
-        private SidedMap(){
+        private SidedMap() {
             this(Maps.newEnumMap(EnumFacing.class));
         }
 
-        private SidedMap(EnumMap<EnumFacing, List<BakedQuad>> quads){
+        private SidedMap(EnumMap<EnumFacing, List<BakedQuad>> quads) {
             this.quads = quads;
         }
 
         private final EnumMap<EnumFacing, List<BakedQuad>> quads;
 
-        public void setQuadsForSide(EnumFacing side, List<BakedQuad> newQuads){
+        public void setQuadsForSide(EnumFacing side, List<BakedQuad> newQuads) {
             quads.put(side, newQuads);
         }
 
         @Override
         public List<BakedQuad> getBakedQuads(@Nullable IBlockState state, EnumFacing side, long random) {
             List<BakedQuad> ret = quads.get(side);
-            if (ret == null){
+            if (ret == null) {
                 ret = EMPTY_LIST;
             }
             return ret;

@@ -21,7 +21,7 @@ import java.util.function.Consumer;
  */
 public abstract class AbstractAnnotationProcessor implements IASMDataProcessor {
 
-    public AbstractAnnotationProcessor(){
+    public AbstractAnnotationProcessor() {
         processList = Maps.newHashMap();
         registerProcesses();
     }
@@ -32,14 +32,14 @@ public abstract class AbstractAnnotationProcessor implements IASMDataProcessor {
 
     protected abstract void registerProcesses();
 
-    protected void registerDataProcessor(Class<? extends Annotation> clazz, Consumer<ASMDataTable.ASMData> consumer, boolean register){
-        if (register){
+    protected void registerDataProcessor(Class<? extends Annotation> clazz, Consumer<ASMDataTable.ASMData> consumer, boolean register) {
+        if (register) {
             registerDataProcessor(clazz, consumer);
         }
     }
 
-    protected void registerDataProcessor(Class<? extends Annotation> clazz, Consumer<ASMDataTable.ASMData> consumer){
-        if (clazz == null || consumer == null){
+    protected void registerDataProcessor(Class<? extends Annotation> clazz, Consumer<ASMDataTable.ASMData> consumer) {
+        if (clazz == null || consumer == null) {
             throw new IllegalArgumentException();
         }
         processList.put(clazz, consumer);
@@ -47,9 +47,9 @@ public abstract class AbstractAnnotationProcessor implements IASMDataProcessor {
 
     @Override
     public void processASMData(IASMDataHelper asmData, LoaderState state) {
-        for (Map.Entry<Class<? extends Annotation>, Consumer<ASMDataTable.ASMData>> entry : processList.entrySet()){
-            if (entry.getKey() != null && entry.getValue() != null){
-                for (ASMDataTable.ASMData data : asmData.getAnnotationList(entry.getKey())){
+        for (Map.Entry<Class<? extends Annotation>, Consumer<ASMDataTable.ASMData>> entry : processList.entrySet()) {
+            if (entry.getKey() != null && entry.getValue() != null) {
+                for (ASMDataTable.ASMData data : asmData.getAnnotationList(entry.getKey())) {
                     entry.getValue().accept(data);
                 }
             }
@@ -58,15 +58,15 @@ public abstract class AbstractAnnotationProcessor implements IASMDataProcessor {
 
     @Nonnull
     @SuppressWarnings("all")
-    protected Object instantiate(Class<?> clazz, Object... params){
+    protected Object instantiate(Class<?> clazz, Object... params) {
         return instantiate(clazz, true, params);
     }
 
     @Nullable
-    protected Object instantiate(Class<?> clazz, boolean crash, Object... params){
+    protected Object instantiate(Class<?> clazz, boolean crash, Object... params) {
         try {
             Constructor c = null;
-            if (params == null || params.length == 0){
+            if (params == null || params.length == 0) {
                 c = clazz.getDeclaredConstructor();
             }
             if (c == null) {
@@ -79,11 +79,11 @@ public abstract class AbstractAnnotationProcessor implements IASMDataProcessor {
             }
             c.setAccessible(true);
             return c.newInstance(params);
-        } catch (Exception e){
-            if (crash){
+        } catch (Exception e) {
+            if (crash) {
                 throw new RuntimeException(e);
             } else {
-                logger.error("Error invocating class: "+clazz.getCanonicalName());
+                logger.error("Error invocating class: " + clazz.getCanonicalName());
                 logger.error(e);
                 return null;
             }
@@ -92,19 +92,19 @@ public abstract class AbstractAnnotationProcessor implements IASMDataProcessor {
 
     @Nonnull
     @SuppressWarnings("all")
-    protected Class<?> loadClass(ASMDataTable.ASMData asmData){
+    protected Class<?> loadClass(ASMDataTable.ASMData asmData) {
         return loadClass(asmData, true);
     }
 
     @Nullable
-    protected Class<?> loadClass(ASMDataTable.ASMData asmData, boolean crash){
+    protected Class<?> loadClass(ASMDataTable.ASMData asmData, boolean crash) {
         try {
             return Class.forName(asmData.getClassName(), true, Loader.instance().getModClassLoader());
-        } catch (Exception e){
+        } catch (Exception e) {
             if (crash) {
                 throw new RuntimeException(e);
             } else {
-                logger.error("Error loading class: "+asmData.getClassName());
+                logger.error("Error loading class: " + asmData.getClassName());
                 logger.error(e);
                 return null;
             }

@@ -19,15 +19,15 @@ import java.util.List;
 public class MutableQuadSidedMap implements IQuadTemplateSidedMap {
 
     @Nonnull
-    public static MutableQuadSidedMap newQuadSidedMap(){
+    public static MutableQuadSidedMap newQuadSidedMap() {
         EnumMap<EnumFacing, List<IQuadTemplate>> param = Maps.newEnumMap(EnumFacing.class);
-        for (EnumFacing facing : EnumFacing.VALUES){
+        for (EnumFacing facing : EnumFacing.VALUES) {
             param.put(facing, Lists.<IQuadTemplate>newArrayList());
         }
         return new MutableQuadSidedMap(param);
     }
 
-    private MutableQuadSidedMap(EnumMap<EnumFacing, List<IQuadTemplate>> quads){
+    private MutableQuadSidedMap(EnumMap<EnumFacing, List<IQuadTemplate>> quads) {
         this.quads = quads;
     }
 
@@ -40,7 +40,7 @@ public class MutableQuadSidedMap implements IQuadTemplateSidedMap {
 
     @Override
     public void addQuadsForSide(EnumFacing side, List<IQuadTemplate> toAdd) {
-        for (IQuadTemplate template : toAdd){
+        for (IQuadTemplate template : toAdd) {
             addQuadForSide(side, template);
         }
     }
@@ -54,7 +54,7 @@ public class MutableQuadSidedMap implements IQuadTemplateSidedMap {
     @Override
     public List<IQuadTemplate> getForSide(EnumFacing side) {
         List<IQuadTemplate> ret = quads.get(side);
-        if (ret == null){
+        if (ret == null) {
             ret = Lists.newArrayList();
             quads.put(side, ret);
         }

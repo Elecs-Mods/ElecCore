@@ -21,7 +21,7 @@ import java.util.function.Predicate;
 @SuppressWarnings("all")
 public final class ElecCoreRegistrar {
 
-    private ElecCoreRegistrar(){
+    private ElecCoreRegistrar() {
         throw new IllegalAccessError();
     }
 

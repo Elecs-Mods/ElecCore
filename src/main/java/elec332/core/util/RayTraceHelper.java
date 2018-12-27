@@ -20,9 +20,9 @@ public class RayTraceHelper {
     /**
      * Re-raytraces the provided position, to e.g. get more hit data than may be provided in some methods
      *
-     * @param world The world
+     * @param world  The world
      * @param player The player from which to start the raytracing
-     * @param pos The position to raytrace to
+     * @param pos    The position to raytrace to
      * @return The {@link RayTraceResult} from the raytrace
      */
     @Nullable
@@ -39,7 +39,7 @@ public class RayTraceHelper {
     /**
      * Perform a raytrace with a specified maximum distance
      *
-     * @param player The player from which to start the raytracing
+     * @param player   The player from which to start the raytracing
      * @param distance The maximum raytracing distance
      * @return The {@link RayTraceResult} from the raytrace
      */

@@ -38,7 +38,7 @@ public class Schematic implements ISchematic {
     /**
      * Reloads the tile data in the schematic.
      */
-    private void reloadTileMap(){
+    private void reloadTileMap() {
         tiles.clear();
         for (int i = 0; i < tileDataList.tagCount(); i++) {
             NBTTagCompound tag = tileDataList.getCompoundTagAt(i).copy();
@@ -57,7 +57,7 @@ public class Schematic implements ISchematic {
      * @return The blocks located at the specified local schematic coordinates, or null if out of bounds.
      */
     @Override
-    public Block getBlock(int x, int y, int z){
+    public Block getBlock(int x, int y, int z) {
         return blocks[getIndexFromCoordinates(x, y, z)];
     }
 
@@ -73,7 +73,7 @@ public class Schematic implements ISchematic {
     @Override
     public NBTTagCompound getTileData(int x, int y, int z, int worldX, int worldY, int worldZ) {
         NBTTagCompound tag = getTileData(x, y, z);
-        if (tag != null){
+        if (tag != null) {
             tag.setInteger("x", worldX);
             tag.setInteger("y", worldY);
             tag.setInteger("z", worldZ);

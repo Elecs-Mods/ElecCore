@@ -17,7 +17,7 @@ import java.util.List;
 
 /**
  * Created by Elec332 on 13-8-2015.
- *
+ * <p>
  * Less-laggy implementation of an explosion
  */
 public abstract class AbstractExplosion extends Explosion {
@@ -64,7 +64,7 @@ public abstract class AbstractExplosion extends Explosion {
      * Damage done depends on the power and distance from the center
      *
      * @param radius The radius in which to damage entities
-     * @param power The blast power
+     * @param power  The blast power
      */
     protected void damageEntities(float radius, float power) {
         if (!world.isRemote) {

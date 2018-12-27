@@ -7,7 +7,7 @@ import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 
 /**
  * Created by Elec332 on 11-3-2016.
- *
+ * <p>
  * Model handler for blocks
  */
 public interface IBlockModelHandler {
@@ -32,8 +32,8 @@ public interface IBlockModelHandler {
     /**
      * Used to create/fetch the model for this {@param block}
      *
-     * @param state The block state
-     * @param identifier The identifier of this block state
+     * @param state                The block state
+     * @param identifier           The identifier of this block state
      * @param fullResourceLocation The full ModelResourceLocation for this model
      * @return The model for this {@param state}
      */

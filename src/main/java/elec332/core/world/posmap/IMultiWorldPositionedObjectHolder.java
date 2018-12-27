@@ -12,7 +12,7 @@ import java.util.function.Consumer;
 
 /**
  * Created by Elec332 on 8-11-2017.
- *
+ * <p>
  * A {@link PositionedObjectHolder} spanning multiple dimensions
  */
 public interface IMultiWorldPositionedObjectHolder<T> extends IClearable {

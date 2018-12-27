@@ -27,7 +27,7 @@ enum ASMDataHandler {
 
     INSTANCE;
 
-    ASMDataHandler(){
+    ASMDataHandler() {
         asmLoaderMap = Maps.newHashMap();
         validStates = ImmutableList.of(LoaderState.PREINITIALIZATION, LoaderState.INITIALIZATION, LoaderState.POSTINITIALIZATION, LoaderState.AVAILABLE);
     }
@@ -38,8 +38,8 @@ enum ASMDataHandler {
     private final List<LoaderState> validStates;
     private IASMDataHelper asmDataHelper;
 
-    void identify(ASMDataTable dataTable){
-        for (LoaderState state : validStates){
+    void identify(ASMDataTable dataTable) {
+        for (LoaderState state : validStates) {
             asmLoaderMap.put(state, Lists.newArrayList());
         }
         this.asmDataHelper = new IASMDataHelper() {
@@ -59,19 +59,19 @@ enum ASMDataHandler {
             @Override
             public Set<IAdvancedASMData> getAdvancedAnnotationList(Class<? extends Annotation> annotationClass) {
                 String s = annotationClass.getName();
-                if (!useCache){
+                if (!useCache) {
                     return createNew(s);
                 }
                 Set<IAdvancedASMData> ret = annotationData.get(s);
-                if (ret == null){
+                if (ret == null) {
                     annotationData.put(s, ret = createNew(s));
                 }
                 return ret;
             }
 
-            private Set<IAdvancedASMData> createNew(String s){
+            private Set<IAdvancedASMData> createNew(String s) {
                 Set<IAdvancedASMData> ret = Sets.newHashSet();
-                for (ASMDataTable.ASMData data : getASMDataTable().getAll(s)){
+                for (ASMDataTable.ASMData data : getASMDataTable().getAll(s)) {
                     ret.add(new AdvancedASMData(data));
                 }
                 return ImmutableSet.copyOf(ret);
@@ -151,10 +151,10 @@ enum ASMDataHandler {
         }
     }
 
-    void process(LoaderState state){
-        if (validStates.contains(state)){
+    void process(LoaderState state) {
+        if (validStates.contains(state)) {
             List<IASMDataProcessor> dataProcessors = asmLoaderMap.get(state);
-            for (IASMDataProcessor dataProcessor : dataProcessors){
+            for (IASMDataProcessor dataProcessor : dataProcessors) {
                 dataProcessor.processASMData(asmDataHelper, state);
             }
             asmLoaderMap.remove(state);
@@ -164,13 +164,13 @@ enum ASMDataHandler {
     }
 
     @APIHandlerInject(weight = 1)
-    public void injectASMHelper(IAPIHandler apiHandler){
+    public void injectASMHelper(IAPIHandler apiHandler) {
         apiHandler.inject(this.asmDataHelper, IASMDataHelper.class);
     }
 
     private static class AdvancedASMData implements IAdvancedASMData {
 
-        private AdvancedASMData(ASMDataTable.ASMData asmData){
+        private AdvancedASMData(ASMDataTable.ASMData asmData) {
             this.asmData = asmData;
             this.isField = asmData.getObjectName().indexOf('(') == -1;
             this.isClass = asmData.getObjectName().indexOf('.') != -1;
@@ -209,12 +209,12 @@ enum ASMDataHandler {
 
         @Override
         public Class<?> loadClass() {
-            if (clazz != null){
+            if (clazz != null) {
                 return clazz;
             }
             try {
                 return clazz = FMLUtil.loadClass(asmData.getClassName());
-            } catch (Exception e){
+            } catch (Exception e) {
                 throw new RuntimeException(e);
             }
         }
@@ -226,7 +226,7 @@ enum ASMDataHandler {
 
         @Override
         public String getFieldName() {
-            if (!isField()){
+            if (!isField()) {
                 throw new IllegalAccessError();
             }
             return asmData.getObjectName();
@@ -234,17 +234,17 @@ enum ASMDataHandler {
 
         @Override
         public Field getField() {
-            if (field != null){
+            if (field != null) {
                 return field;
             }
-            if (!isField()){
+            if (!isField()) {
                 throw new IllegalAccessError();
             }
             try {
                 field = loadClass().getDeclaredField(getFieldName());
                 field.setAccessible(true);
                 return field;
-            } catch (Exception e){
+            } catch (Exception e) {
                 throw new RuntimeException(e);
             }
         }
@@ -261,14 +261,14 @@ enum ASMDataHandler {
 
         @Override
         public String getMethodName() {
-            if (!isMethod()){
+            if (!isMethod()) {
                 throw new IllegalAccessError();
             }
-            if (methodName == null){
+            if (methodName == null) {
                 String targetName = asmData.getObjectName();
                 int i = targetName.indexOf('('), i2 = targetName.indexOf(')');
                 methodName = targetName.substring(0, i);
-                if (i2 - i == 1){
+                if (i2 - i == 1) {
                     methodParams = "";
                     paramTypes = new Type[0];
                     params = new Class[0];
@@ -281,27 +281,27 @@ enum ASMDataHandler {
 
         @Override
         public Method getMethod() {
-            if (method != null){
+            if (method != null) {
                 return method;
             }
-            if (!isMethod()){
+            if (!isMethod()) {
                 throw new IllegalAccessError();
             }
             try {
                 method = loadClass().getDeclaredMethod(getMethodName(), getMethodParameters());
                 method.setAccessible(true);
                 return method;
-            } catch (Exception e){
+            } catch (Exception e) {
                 throw new RuntimeException(e);
             }
         }
 
         @Override
         public Type[] getMethodParameterTypes() {
-            if (methodParams == null){
+            if (methodParams == null) {
                 getMethodName();
             }
-            if (paramTypes != null){
+            if (paramTypes != null) {
                 return paramTypes;
             }
             return paramTypes = Type.getArgumentTypes(methodParams);
@@ -309,10 +309,10 @@ enum ASMDataHandler {
 
         @Override
         public Class<?>[] getMethodParameters() {
-            if (params != null){
+            if (params != null) {
                 return params;
             }
-            if (!isMethod()){
+            if (!isMethod()) {
                 throw new IllegalAccessError();
             }
             Type[] p = getMethodParameterTypes();
@@ -321,7 +321,7 @@ enum ASMDataHandler {
                 for (int i = 0; i < p.length; i++) {
                     ret[i] = Class.forName(p[i].getClassName());
                 }
-            } catch (Exception e){
+            } catch (Exception e) {
                 throw new RuntimeException(e);
             }
             return params = ret;

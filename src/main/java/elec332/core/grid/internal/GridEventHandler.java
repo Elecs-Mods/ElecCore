@@ -53,7 +53,7 @@ class GridEventHandler {
     }
 
     @SubscribeEvent
-    public void worldLoad(WorldEvent.Load event){
+    public void worldLoad(WorldEvent.Load event) {
         World world = event.getWorld();
         if (!world.isRemote) {
             world.removeEventListener(WorldEventHandler.INSTANCE);

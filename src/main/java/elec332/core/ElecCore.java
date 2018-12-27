@@ -126,7 +126,7 @@ public class ElecCore implements IModuleController, IElecCoreMod {
     }
 
     @EventHandler
-    public void onServerStarting(FMLServerStartingEvent event){
+    public void onServerStarting(FMLServerStartingEvent event) {
         CommandHelper.registerCommands(event);
     }
 

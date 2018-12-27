@@ -19,7 +19,7 @@ import java.util.Set;
  */
 public class WrappedResourcePack implements IResourcePack, FMLContainerHolder {
 
-    public WrappedResourcePack(@Nonnull IResourcePack parent, @Nonnull ModContainer owner){
+    public WrappedResourcePack(@Nonnull IResourcePack parent, @Nonnull ModContainer owner) {
         this.parent = parent;
         this.owner = owner;
     }

@@ -7,7 +7,7 @@ import java.lang.annotation.Target;
 
 /**
  * Created by Elec332 on 8-3-2016.
- *
+ * <p>
  * Used to register multiparts, annotate your multipart class to register it
  */
 @Retention(RetentionPolicy.RUNTIME)

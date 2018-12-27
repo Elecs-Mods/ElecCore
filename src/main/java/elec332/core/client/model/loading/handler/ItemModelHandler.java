@@ -25,7 +25,7 @@ import java.util.function.Function;
 @ModelHandler
 public class ItemModelHandler implements IModelHandler {
 
-    public ItemModelHandler(){
+    public ItemModelHandler() {
         itemModelHandlers = Lists.newArrayList();
         itemResourceLocations = Maps.newHashMap();
     }
@@ -35,8 +35,8 @@ public class ItemModelHandler implements IModelHandler {
 
     @Override
     public void getModelHandlers(List<?> list) {
-        for (Object o : list){
-            if (o instanceof IItemModelHandler){
+        for (Object o : list) {
+            if (o instanceof IItemModelHandler) {
                 itemModelHandlers.add((IItemModelHandler) o);
             }
         }
@@ -45,9 +45,9 @@ public class ItemModelHandler implements IModelHandler {
     @Override
     public void preHandleModels() {
         ElecCore.logger.info("Prehandling Item Models");
-        for (Item item : RenderingRegistry.instance().getAllValidItems()){
-            for (IItemModelHandler handler : itemModelHandlers){
-                if (handler.handleItem(item)){
+        for (Item item : RenderingRegistry.instance().getAllValidItems()) {
+            for (IItemModelHandler handler : itemModelHandlers) {
+                if (handler.handleItem(item)) {
                     String s = handler.getIdentifier(item);
                     final ModelResourceLocation mr = new ModelResourceLocation(item.getRegistryName().toString(), s);
                     ModelLoader.setCustomMeshDefinition(item, new ItemMeshDefinition() {
@@ -70,10 +70,10 @@ public class ItemModelHandler implements IModelHandler {
     @Nonnull
     public Map<ModelResourceLocation, IBakedModel> registerBakedModels(Function<ModelResourceLocation, IBakedModel> modelGetter) {
         Map<ModelResourceLocation, IBakedModel> ret = Maps.newHashMap();
-        for (Map.Entry<Item, ModelResourceLocation> entry : itemResourceLocations.entrySet()){
+        for (Map.Entry<Item, ModelResourceLocation> entry : itemResourceLocations.entrySet()) {
             ModelResourceLocation mrl = entry.getValue();
-            for (IItemModelHandler handler : itemModelHandlers){
-                if (handler.handleItem(entry.getKey())){
+            for (IItemModelHandler handler : itemModelHandlers) {
+                if (handler.handleItem(entry.getKey())) {
                     ret.put(mrl, handler.getModelFor(entry.getKey(), mrl.getVariant(), mrl));
                     break;
                 }

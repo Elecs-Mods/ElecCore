@@ -4,7 +4,7 @@ import net.minecraft.item.Item;
 
 /**
  * Created by Elec332 on 12-10-2017.
- *
+ * <p>
  * Item version of {@link IObjectRegister}
  */
 public interface IItemRegister extends IObjectRegister<Item> {

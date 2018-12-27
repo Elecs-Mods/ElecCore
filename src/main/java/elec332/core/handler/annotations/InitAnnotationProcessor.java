@@ -40,12 +40,12 @@ public class InitAnnotationProcessor extends AbstractAnnotationProcessor {
             @Override
             public void accept(ASMDataTable.ASMData asmData) {
                 Class<?> clazz = loadClass(asmData, false);
-                if (clazz == null){
+                if (clazz == null) {
                     return;
                 }
                 @SuppressWarnings("all") //Compile errors
-                Object instance = instantiate(clazz, false, new Object[0]);
-                if (instance == null){
+                        Object instance = instantiate(clazz, false, new Object[0]);
+                if (instance == null) {
                     return;
                 }
                 callbacks.add(instance);
@@ -58,7 +58,7 @@ public class InitAnnotationProcessor extends AbstractAnnotationProcessor {
             @Override
             public void accept(ASMDataTable.ASMData asmData) {
                 Object instance = instantiate(loadClass(asmData));
-                if (instance instanceof ICallbackProcessor){
+                if (instance instanceof ICallbackProcessor) {
                     ((ICallbackProcessor) instance).getCallbacks(callbacks_);
                 }
             }
@@ -103,13 +103,13 @@ public class InitAnnotationProcessor extends AbstractAnnotationProcessor {
                 try {
                     String name = (String) data.getAnnotationInfo().get("value");
                     Class<? extends TileEntity> clazz = (Class<? extends TileEntity>) Class.forName(data.getClassName());
-                    if (!name.contains(":")){
+                    if (!name.contains(":")) {
                         String mod = FMLUtil.getOwnerName(clazz);
                         name = mod + ":" + name;
                     }
                     GameRegistry.registerTileEntity(clazz, new ResourceLocation(name));
-                } catch (Exception e){
-                    logger.error("Error registering tile: "+data.getClassName());
+                } catch (Exception e) {
+                    logger.error("Error registering tile: " + data.getClassName());
                 }
             }
 

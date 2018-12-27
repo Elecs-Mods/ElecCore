@@ -32,7 +32,7 @@ import java.util.Map;
  */
 public class ElecCoreSetup {
 
-    private ElecCoreSetup(){
+    private ElecCoreSetup() {
         throw new UnsupportedOperationException();
     }
 
@@ -46,7 +46,7 @@ public class ElecCoreSetup {
     static IWorldGenManager worldGenManager = null;
 
     @APIHandlerInject
-    private static void onModuleManagerLoaded(IModuleManager moduleManager){
+    private static void onModuleManagerLoaded(IModuleManager moduleManager) {
         moduleManager.registerFieldProcessor(ElecModule.Instance.class, IModuleContainer::getModule);
         moduleManager.registerFieldProcessor(ElecModule.Network.class, iModuleContainer -> networkManager.getAdditionalSimpleNetworkManager(iModuleContainer.getOwnerMod(), iModuleContainer.getName()));
         moduleManager.registerModuleDiscoverer((asmData, moduleControllerGetter) -> {
@@ -69,7 +69,7 @@ public class ElecCoreSetup {
     }
 
     @APIHandlerInject
-    private static void registerModHandlers(IElecCoreModHandler modHandler){
+    private static void registerModHandlers(IElecCoreModHandler modHandler) {
         modHandler.registerSimpleFieldHandler(ModNetworkHandler.class, networkManager::getNetworkHandler);
         modHandler.registerModHandler((mc, mod) -> mod.registerClientCommands(CommandHelper.getClientCommandRegistry()));
         modHandler.registerModHandler((mc, mod) -> mod.registerServerCommands(CommandHelper.getServerCommandRegistry()));
@@ -80,21 +80,21 @@ public class ElecCoreSetup {
         modHandler.registerModHandler((mc, mod) -> {
             List<IObjectRegister<?>> list = Lists.newArrayList();
             mod.registerRegisters(list::add);
-            if (!list.isEmpty()){
-                MinecraftForge.EVENT_BUS.register(new Object(){
+            if (!list.isEmpty()) {
+                MinecraftForge.EVENT_BUS.register(new Object() {
 
                     @SubscribeEvent
                     @SuppressWarnings("all")
-                    public void registerStuff(RegistryEvent.Register event1){
-                        for (IObjectRegister register : list){
+                    public void registerStuff(RegistryEvent.Register event1) {
+                        for (IObjectRegister register : list) {
                             Type ty = Arrays.stream(register.getClass().getAnnotatedInterfaces())
                                     .filter(annotatedType -> annotatedType.getType() instanceof ParameterizedType)
-                                    .filter(annotatedType -> ((ParameterizedType)register.getClass().getAnnotatedInterfaces()[0].getType()).getRawType().equals(IObjectRegister.class))
+                                    .filter(annotatedType -> ((ParameterizedType) register.getClass().getAnnotatedInterfaces()[0].getType()).getRawType().equals(IObjectRegister.class))
                                     .findFirst()
                                     .get()
                                     .getType();
 
-                            if (((ParameterizedType)ty).getActualTypeArguments()[0].equals(event1.getGenericType())){
+                            if (((ParameterizedType) ty).getActualTypeArguments()[0].equals(event1.getGenericType())) {
                                 register.preRegister();
                                 register.register(event1.getRegistry());
                             }
@@ -107,7 +107,7 @@ public class ElecCoreSetup {
 
     }
 
-    private static void registerConfigSerializers(){
+    private static void registerConfigSerializers() {
         ConfigWrapper.registerConfigElementSerializer((type, instance, field, data, config, category, defaultValue, comment) -> {
             if (type.isAssignableFrom(Integer.TYPE)) {
                 field.set(instance, config.getInt(field.getName(), category, (Integer) defaultValue, (int) data.minValue(), (int) data.maxValue(), comment));

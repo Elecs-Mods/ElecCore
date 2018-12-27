@@ -6,7 +6,7 @@ import org.apache.logging.log4j.Logger;
 
 /**
  * Created by Elec332 on 7-5-2016.
- *
+ * <p>
  * A load-timer, for keeping track of mod (event) loading times
  */
 public class LoadTimer {

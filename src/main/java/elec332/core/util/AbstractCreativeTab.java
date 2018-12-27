@@ -14,27 +14,27 @@ import java.util.function.Supplier;
  */
 public abstract class AbstractCreativeTab extends CreativeTabs {
 
-    public static AbstractCreativeTab create(String label, ItemStack icon){
+    public static AbstractCreativeTab create(String label, ItemStack icon) {
         return create(getNextID(), label, icon);
     }
 
-    public static AbstractCreativeTab create(String label, Supplier<ItemStack> icon){
+    public static AbstractCreativeTab create(String label, Supplier<ItemStack> icon) {
         return create(getNextID(), label, icon);
     }
 
     @Nonnull
-    public static AbstractCreativeTab create(int index, String label, ItemStack icon){
+    public static AbstractCreativeTab create(int index, String label, ItemStack icon) {
         return create(index, label, () -> icon);
     }
 
     @Nonnull
-    public static AbstractCreativeTab create(int index, String label, Supplier<ItemStack> icon){
+    public static AbstractCreativeTab create(int index, String label, Supplier<ItemStack> icon) {
         return (AbstractCreativeTab) createTab(index, label, icon);
     }
 
     @Nonnull
-    private static CreativeTabs createTab(int index, String label, Supplier<ItemStack> icon){
-        return new AbstractCreativeTab(index, label, icon){
+    private static CreativeTabs createTab(int index, String label, Supplier<ItemStack> icon) {
+        return new AbstractCreativeTab(index, label, icon) {
         };
     }
 
@@ -52,8 +52,8 @@ public abstract class AbstractCreativeTab extends CreativeTabs {
     private ItemStack clientStack;
     private final Supplier<ItemStack> icon;
 
-    private void initStack(){
-        if (FMLCommonHandler.instance().getSide().isClient()){
+    private void initStack() {
+        if (FMLCommonHandler.instance().getSide().isClient()) {
             clientStack = icon.get();
         }
     }

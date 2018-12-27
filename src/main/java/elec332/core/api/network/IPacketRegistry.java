@@ -6,7 +6,7 @@ import net.minecraftforge.fml.relauncher.Side;
 
 /**
  * Created by Elec332 on 15-10-2016.
- *
+ * <p>
  * A packet registry
  */
 public interface IPacketRegistry extends IPacketRegistryContainer {
@@ -15,7 +15,7 @@ public interface IPacketRegistry extends IPacketRegistryContainer {
      * Registers a packet to this packet registry
      *
      * @param packetClass The packet class
-     * @param side the side for the packet handler
+     * @param side        the side for the packet handler
      */
     default public <T extends IMessage & IMessageHandler<T, M>, M extends IMessage> void registerPacket(Class<T> packetClass, Side side) {
         registerPacket(packetClass, packetClass, side);
@@ -36,8 +36,8 @@ public interface IPacketRegistry extends IPacketRegistryContainer {
      * Registers a packet to this packet registry
      *
      * @param messageHandler The class of the message handler
-     * @param messageType The message class
-     * @param side the side for the packet handler
+     * @param messageType    The message class
+     * @param side           the side for the packet handler
      */
     default public <M extends IMessage, R extends IMessage> void registerPacket(Class<? extends IMessageHandler<M, R>> messageHandler, Class<M> messageType, Side side) {
         try {
@@ -51,8 +51,8 @@ public interface IPacketRegistry extends IPacketRegistryContainer {
      * Registers a packet to this packet registry
      *
      * @param messageHandler The message handler
-     * @param messageType The message class
-     * @param side the side for the packet handler
+     * @param messageType    The message class
+     * @param side           the side for the packet handler
      */
     public <M extends IMessage, R extends IMessage> void registerPacket(IMessageHandler<M, R> messageHandler, Class<M> messageType, Side side);
 

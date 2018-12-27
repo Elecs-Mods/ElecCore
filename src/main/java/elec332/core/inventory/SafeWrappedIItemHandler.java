@@ -9,30 +9,30 @@ import javax.annotation.Nonnull;
 
 /**
  * Created by Elec332 on 15-5-2016.
- *
+ * <p>
  * Wrapper for an {@link IItemHandlerModifiable},
  * can be used as a safe wrapper for ItemHandlers that can become null
  */
 public class SafeWrappedIItemHandler implements IItemHandlerModifiable, IClearable {
 
-    public static SafeWrappedIItemHandler of(IItemHandlerModifiable i){
+    public static SafeWrappedIItemHandler of(IItemHandlerModifiable i) {
         return new SafeWrappedIItemHandler(i);
     }
 
-    private SafeWrappedIItemHandler(IItemHandlerModifiable itemHandler){
+    private SafeWrappedIItemHandler(IItemHandlerModifiable itemHandler) {
         this.itemHandler = itemHandler;
     }
 
     private IItemHandlerModifiable itemHandler;
 
     @Override
-    public void clear(){
+    public void clear() {
         itemHandler = null;
     }
 
     @Override
     public void setStackInSlot(int slot, @Nonnull ItemStack stack) {
-        if (itemHandler == null){
+        if (itemHandler == null) {
             return;
         }
         itemHandler.setStackInSlot(slot, stack);

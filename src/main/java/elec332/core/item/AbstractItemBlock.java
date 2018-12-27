@@ -14,7 +14,7 @@ public class AbstractItemBlock extends ItemBlock {
         super(block);
     }
 
-    public AbstractItemBlock(Block block, ResourceLocation rl){
+    public AbstractItemBlock(Block block, ResourceLocation rl) {
         this(block);
         if (rl != null) {
             setRegistryName(rl);
@@ -22,7 +22,7 @@ public class AbstractItemBlock extends ItemBlock {
         }
     }
 
-    public void setUnlocalizedNameFromName(){
+    public void setUnlocalizedNameFromName() {
         setUnlocalizedName(getRegistryName().toString().replace(":", ".").toLowerCase());
     }
 

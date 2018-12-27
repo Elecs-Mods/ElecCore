@@ -25,7 +25,7 @@ import javax.annotation.Nonnull;
  */
 public abstract class AbstractHud implements IConfigurableElement {
 
-    public AbstractHud(@Nonnull Alignment alignment, @Nonnull IStartingPoint horizontal, @Nonnull IStartingPoint vertical){
+    public AbstractHud(@Nonnull Alignment alignment, @Nonnull IStartingPoint horizontal, @Nonnull IStartingPoint vertical) {
         MinecraftForge.EVENT_BUS.register(this);
         this.alignment = alignment;
         this.horiz = horizontal;
@@ -33,11 +33,11 @@ public abstract class AbstractHud implements IConfigurableElement {
         this.category = Configuration.CATEGORY_CLIENT;
     }
 
-    public AbstractHud setConfigCategory(String s){
-        if (Strings.isNullOrEmpty(s)){
+    public AbstractHud setConfigCategory(String s) {
+        if (Strings.isNullOrEmpty(s)) {
             throw new IllegalArgumentException();
         }
-        if (configuredOnce){
+        if (configuredOnce) {
             throw new IllegalStateException();
         }
         this.category = s;
@@ -57,7 +57,7 @@ public abstract class AbstractHud implements IConfigurableElement {
                 configuredOnce = true;
             }
             this.alignment = Alignment.valueOf(config.getString("alignment", category, alignment.toString(), "The alignment for this hud.", a));
-            if (!(horiz instanceof HorizontalStartingPoint && ver instanceof VerticalStartingPoint)){
+            if (!(horiz instanceof HorizontalStartingPoint && ver instanceof VerticalStartingPoint)) {
                 configureCustom(config, horiz, ver);
             } else {
                 horiz = HorizontalStartingPoint.valueOf(config.getString("horizontalPosition", category, horiz.toString(), "The horizontal position of this hud.", h));
@@ -75,11 +75,11 @@ public abstract class AbstractHud implements IConfigurableElement {
      * If your HUD uses one or more non-default horizontal or vertical starting points, this method will be called,
      * as the system doesn't know how to configure those.
      *
-     * @param config The config
+     * @param config     The config
      * @param horizontal The (non-default) horizontal starting point
-     * @param vertical The (non-default) vertical starting point
+     * @param vertical   The (non-default) vertical starting point
      */
-    protected void configureCustom(@Nonnull Configuration config, @Nonnull IStartingPoint horizontal, @Nonnull IStartingPoint vertical){
+    protected void configureCustom(@Nonnull Configuration config, @Nonnull IStartingPoint horizontal, @Nonnull IStartingPoint vertical) {
         throw new UnsupportedOperationException();
     }
 
@@ -91,17 +91,17 @@ public abstract class AbstractHud implements IConfigurableElement {
     protected abstract void configure(@Nonnull Configuration config);
 
     @Nonnull
-    protected Alignment getAlignment(){
+    protected Alignment getAlignment() {
         return alignment;
     }
 
     @Nonnull
-    protected IStartingPoint getHorizontalStartingPoint(){
+    protected IStartingPoint getHorizontalStartingPoint() {
         return horiz;
     }
 
     @Nonnull
-    protected IStartingPoint getVerticalStartingPoint(){
+    protected IStartingPoint getVerticalStartingPoint() {
         return ver;
     }
 
@@ -122,7 +122,7 @@ public abstract class AbstractHud implements IConfigurableElement {
         }
     }
 
-    protected boolean shouldRenderHud(@Nonnull EntityPlayerSP player, float partialTicks, TickEvent.Phase phase){
+    protected boolean shouldRenderHud(@Nonnull EntityPlayerSP player, float partialTicks, TickEvent.Phase phase) {
         return phase == TickEvent.Phase.END;
     }
 

@@ -9,7 +9,7 @@ import java.util.Map;
 
 /**
  * Created by Elec332 on 29-10-2016.
- *
+ * <p>
  * Wrapper for {@link net.minecraftforge.fml.common.discovery.ASMDataTable.ASMData}
  * with more features for easier handling
  */

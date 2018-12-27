@@ -13,16 +13,16 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class ElecTessellator implements ITessellator {
 
-    public ElecTessellator(){
+    public ElecTessellator() {
         this(Tessellator.getInstance());
     }
 
-    public ElecTessellator(Tessellator tessellator){
+    public ElecTessellator(Tessellator tessellator) {
         this(tessellator.getBuffer());
         this.tessellator = tessellator;
     }
 
-    public ElecTessellator(BufferBuilder worldRenderer){
+    public ElecTessellator(BufferBuilder worldRenderer) {
         this.worldRenderer = worldRenderer;
     }
 
@@ -32,28 +32,28 @@ public class ElecTessellator implements ITessellator {
     private int color1, color2, color3, color4;
 
     @Override
-    public void setBrightness(int brightness){
+    public void setBrightness(int brightness) {
         brightness1 = brightness >> 16 & 65535;
         brightness2 = brightness & 65535;
     }
 
     @Override
-    public void setColorOpaque_F(float f1, float f2, float f3){
+    public void setColorOpaque_F(float f1, float f2, float f3) {
         setColorOpaque((int) (f1 * 255.0F), (int) (f2 * 255.0F), (int) (f3 * 255.0F));
     }
 
     @Override
-    public void setColorOpaque(int i1, int i2, int i3){
+    public void setColorOpaque(int i1, int i2, int i3) {
         setColorRGBA(i1, i2, i3, 255);
     }
 
     @Override
-    public void setColorRGBA_F(float f1, float f2, float f3, float f4){
-        this.setColorRGBA((int)(f1 * 255.0F), (int)(f2 * 255.0F), (int)(f3 * 255.0F), (int)(f4 * 255.0F));
+    public void setColorRGBA_F(float f1, float f2, float f3, float f4) {
+        this.setColorRGBA((int) (f1 * 255.0F), (int) (f2 * 255.0F), (int) (f3 * 255.0F), (int) (f4 * 255.0F));
     }
 
     @Override
-    public void setColorRGBA_I(int color, int i2){
+    public void setColorRGBA_I(int color, int i2) {
         int k = color >> 16 & 255;
         int l = color >> 8 & 255;
         int i1 = color & 255;
@@ -61,7 +61,7 @@ public class ElecTessellator implements ITessellator {
     }
 
     @Override
-    public void setColorRGBA(int i1, int i2, int i3, int i4){
+    public void setColorRGBA(int i1, int i2, int i3, int i4) {
         this.color1 = i1;
         this.color2 = i2;
         this.color3 = i3;
@@ -69,17 +69,17 @@ public class ElecTessellator implements ITessellator {
     }
 
     @Override
-    public void startDrawingWorldBlock(){
+    public void startDrawingWorldBlock() {
         worldRenderer.begin(7, DefaultVertexFormats.BLOCK);
     }
 
     @Override
-    public void startDrawingGui(){
+    public void startDrawingGui() {
         worldRenderer.begin(7, DefaultVertexFormats.POSITION_TEX);
     }
 
     @Override
-    public void addVertexWithUV(double x, double y, double z, double u, double v){
+    public void addVertexWithUV(double x, double y, double z, double u, double v) {
         worldRenderer.pos(x, y, z);
         drawColor();
         worldRenderer.tex(u, v); //tex
@@ -88,14 +88,14 @@ public class ElecTessellator implements ITessellator {
     }
 
     @Override
-    public Tessellator getMCTessellator(){
+    public Tessellator getMCTessellator() {
         if (tessellator == null) {
             throw new IllegalStateException();
         }
         return tessellator;
     }
 
-    private void drawColor(){
+    private void drawColor() {
         worldRenderer.color(color1, color2, color3, color4);
     }
 }

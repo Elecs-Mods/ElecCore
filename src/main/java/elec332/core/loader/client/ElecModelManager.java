@@ -39,7 +39,7 @@ enum ElecModelManager implements IASMDataProcessor {
 
     INSTANCE;
 
-    ElecModelManager(){
+    ElecModelManager() {
         this.modelHandlers = Lists.newArrayList();
         MinecraftForge.EVENT_BUS.register(this);
     }
@@ -49,17 +49,17 @@ enum ElecModelManager implements IASMDataProcessor {
     @Override
     public void processASMData(IASMDataHelper asmData, LoaderState state) {
         List<Object> list = Lists.newArrayList();
-        for (ASMDataTable.ASMData data : asmData.getAnnotationList(ModelHandler.class)){
+        for (ASMDataTable.ASMData data : asmData.getAnnotationList(ModelHandler.class)) {
             String s = data.getClassName();
             try {
                 list.add(Class.forName(s).newInstance());
-            } catch (Exception e){
-                throw new RuntimeException("Error registering ModelHandler class: "+s, e);
+            } catch (Exception e) {
+                throw new RuntimeException("Error registering ModelHandler class: " + s, e);
             }
         }
         List<?> param = ImmutableList.copyOf(list);
-        for (Object o : list){
-            if (o instanceof IModelHandler){
+        for (Object o : list) {
+            if (o instanceof IModelHandler) {
                 IModelHandler modelHandler = (IModelHandler) o;
                 if (modelHandler.enabled()) {
                     modelHandlers.add(modelHandler);
@@ -72,23 +72,23 @@ enum ElecModelManager implements IASMDataProcessor {
     @SubscribeEvent
     public void registerModels(ModelRegistryEvent event) {
         ElecCore.logger.info("Registering models");
-        for (IModelHandler modelHandler : modelHandlers){
+        for (IModelHandler modelHandler : modelHandlers) {
             modelHandler.preHandleModels();
         }
     }
 
-    Set<ModelResourceLocation> registerBakedModels(IRegistry<ModelResourceLocation, IBakedModel> registry){
+    Set<ModelResourceLocation> registerBakedModels(IRegistry<ModelResourceLocation, IBakedModel> registry) {
         ElecCore.logger.info("Handling models");
         Set<ModelResourceLocation> ret = Sets.newHashSet();
         IBakedModel missingModel = registry.getObject(ModelBakery.MODEL_MISSING);
 
         Map<ModelResourceLocation, IBakedModel> models = Maps.newHashMap();
 
-        for (IModelHandler modelHandler : modelHandlers){
+        for (IModelHandler modelHandler : modelHandlers) {
             models.putAll(modelHandler.registerBakedModels(registry::getObject));
         }
 
-        for (Map.Entry<ModelResourceLocation, IBakedModel> entry : models.entrySet()){
+        for (Map.Entry<ModelResourceLocation, IBakedModel> entry : models.entrySet()) {
             registry.putObject(entry.getKey(), MoreObjects.firstNonNull(entry.getValue(), missingModel));
             ret.add(entry.getKey());
         }
@@ -96,8 +96,8 @@ enum ElecModelManager implements IASMDataProcessor {
         return ret;
     }
 
-    void cleanModelLoadingExceptions(Map<ResourceLocation, Exception> locationExceptions){
-        for (IModelHandler modelHandler : modelHandlers){
+    void cleanModelLoadingExceptions(Map<ResourceLocation, Exception> locationExceptions) {
+        for (IModelHandler modelHandler : modelHandlers) {
             modelHandler.cleanExceptions(locationExceptions);
         }
     }

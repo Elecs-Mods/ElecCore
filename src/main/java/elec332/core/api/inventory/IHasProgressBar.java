@@ -2,7 +2,7 @@ package elec332.core.api.inventory;
 
 /**
  * Created by Elec332 on 20-5-2015.
- *
+ * <p>
  * Used for 'things' that have a progress bar in their GUI
  */
 public interface IHasProgressBar {

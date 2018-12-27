@@ -10,7 +10,7 @@ import javax.annotation.Nullable;
 
 /**
  * Created by Elec332 on 1-8-2016.
- *
+ * <p>
  * Default tile wrapper for e.g. grids
  */
 public class DefaultTileEntityLink implements ITileEntityLink {

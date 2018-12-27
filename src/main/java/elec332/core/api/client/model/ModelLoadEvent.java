@@ -12,7 +12,7 @@ import javax.annotation.Nullable;
  * <p>
  * This class used to be abstract, but you cannot
  * subscribe to abstract events :(
- *
+ * <p>
  * Event that can be used to handle model-related stuff
  */
 public class ModelLoadEvent extends Event {

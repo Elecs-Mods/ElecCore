@@ -5,7 +5,7 @@ package elec332.core.client.model.loading;
  */
 public interface IBlockModelItemLink {
 
-    default public boolean itemInheritsModel(){
+    default public boolean itemInheritsModel() {
         return true;
     }
 

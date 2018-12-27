@@ -10,16 +10,16 @@ import java.util.function.Supplier;
 
 /**
  * Created by Elec332 on 15-2-2017.
- *
+ * <p>
  * Wraps an {@link IItemHandler}
  */
 public abstract class WrappedItemHandler implements IItemHandlerModifiable {
 
-    public static IItemHandlerModifiable wrap(@Nonnull final IItemHandler itemHandler, final boolean in, final boolean out){
+    public static IItemHandlerModifiable wrap(@Nonnull final IItemHandler itemHandler, final boolean in, final boolean out) {
         return wrap(() -> itemHandler, in, out);
     }
 
-    public static IItemHandlerModifiable wrap(@Nonnull final Supplier<IItemHandler> itemHandler, final boolean in, final boolean out){
+    public static IItemHandlerModifiable wrap(@Nonnull final Supplier<IItemHandler> itemHandler, final boolean in, final boolean out) {
         return new WrappedItemHandler() {
 
             @Nonnull
@@ -43,11 +43,11 @@ public abstract class WrappedItemHandler implements IItemHandlerModifiable {
         };
     }
 
-    public static IItemHandlerModifiable wrap(final IItemHandler itemHandler){
+    public static IItemHandlerModifiable wrap(final IItemHandler itemHandler) {
         return wrap(() -> itemHandler);
     }
 
-    public static IItemHandlerModifiable wrap(final Supplier<IItemHandler> itemHandler){
+    public static IItemHandlerModifiable wrap(final Supplier<IItemHandler> itemHandler) {
         return new WrappedItemHandler() {
 
             @Nonnull
@@ -92,7 +92,7 @@ public abstract class WrappedItemHandler implements IItemHandlerModifiable {
 
     @Override
     public void setStackInSlot(int slot, @Nonnull ItemStack stack) {
-        if (getItemHandler() instanceof IItemHandlerModifiable){
+        if (getItemHandler() instanceof IItemHandlerModifiable) {
             ((IItemHandlerModifiable) getItemHandler()).setStackInSlot(slot, stack);
             return;
         }

@@ -8,7 +8,7 @@ import java.util.Set;
 
 /**
  * Created by Elec332 on 28-10-2016.
- *
+ * <p>
  * Interface for handling dynamic multiblock structures, can span multiple dimensions
  */
 public interface IStructureWorldEventHandler {

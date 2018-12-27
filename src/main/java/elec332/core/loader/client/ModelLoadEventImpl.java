@@ -20,7 +20,7 @@ import javax.annotation.Nullable;
 @SideOnly(Side.CLIENT)
 class ModelLoadEventImpl extends ModelLoadEvent {
 
-    ModelLoadEventImpl(IElecQuadBakery quadBakery, IElecModelBakery modelBakery, IElecTemplateBakery templateBakery, IRegistry<ModelResourceLocation, IBakedModel> registry){
+    ModelLoadEventImpl(IElecQuadBakery quadBakery, IElecModelBakery modelBakery, IElecTemplateBakery templateBakery, IRegistry<ModelResourceLocation, IBakedModel> registry) {
         this.quadBakery = quadBakery;
         this.modelBakery = modelBakery;
         this.templateBakery = templateBakery;
@@ -51,7 +51,7 @@ class ModelLoadEventImpl extends ModelLoadEvent {
     }
 
     @Override
-    public void registerModel(ModelResourceLocation mrl, IBakedModel model){
+    public void registerModel(ModelResourceLocation mrl, IBakedModel model) {
         registry.putObject(mrl, model);
     }
 

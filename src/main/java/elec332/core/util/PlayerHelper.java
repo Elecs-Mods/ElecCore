@@ -61,7 +61,7 @@ public class PlayerHelper {
      * Sends a message to the specified player
      *
      * @param player The player
-     * @param s The message
+     * @param s      The message
      */
     public static void sendMessageToPlayer(@Nonnull ICommandSender player, String s) {
         sendMessageToPlayer(player, new TextComponentString(s));
@@ -71,7 +71,7 @@ public class PlayerHelper {
      * Sends a message to the specified player
      *
      * @param player The player
-     * @param s The message
+     * @param s      The message
      */
     public static void sendMessageToPlayer(@Nonnull ICommandSender player, ITextComponent s) {
         player.sendMessage(s);
@@ -104,7 +104,7 @@ public class PlayerHelper {
      * Insta-kills an entity without glitches, with the specified player as attacker.
      *
      * @param attacker The player smiting the target
-     * @param target The entity that will be dead very soon
+     * @param target   The entity that will be dead very soon
      */
     public static void smiteEntity(EntityPlayer attacker, EntityLivingBase target) {
         EntityHelper.smiteEntity(DamageSource.causePlayerDamage(attacker), target);
@@ -124,7 +124,7 @@ public class PlayerHelper {
      * Perform a raytrace with a specified maximum distance
      *
      * @param player The player from which to start the raytracing
-     * @param range The raytracing range
+     * @param range  The raytracing range
      * @return The {@link RayTraceResult} from the raytrace
      */
     public static RayTraceResult getPosPlayerIsLookingAt(EntityPlayer player, double range) {

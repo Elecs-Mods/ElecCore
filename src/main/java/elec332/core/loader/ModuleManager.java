@@ -58,11 +58,11 @@ enum ModuleManager implements IModuleManager {
     private Set<BiFunction<IASMDataHelper, Function<String, IModuleController>, List<IModuleInfo>>> moduleDiscoverers;
     private Set<String> erroredMods;
     private boolean locked, loaded;
-    
+
     @APIHandlerInject
     private IASMDataHelper asmData = null;
 
-    void init(){
+    void init() {
         moduleControllers = FMLUtil.getLoader().getActiveModList().stream()
                 .filter(mc -> mc.getMod() instanceof IModuleController)
                 .collect(Collectors.toMap(ModContainer::getModId, mc -> (IModuleController) mc.getMod()));
@@ -72,7 +72,7 @@ enum ModuleManager implements IModuleManager {
 
         moduleDiscoverers.forEach(func -> {
             List<IModuleInfo> list = func.apply(asmData, ModuleManager.this::getModuleController);
-            if (list == null){
+            if (list == null) {
                 return;
             }
             list.stream()
@@ -106,7 +106,7 @@ enum ModuleManager implements IModuleManager {
         loaded = true;
     }
 
-    private List<IModuleInfo> checkModDependencies(){
+    private List<IModuleInfo> checkModDependencies() {
         Map<String, ArtifactVersion> names = Maps.newHashMap();
         for (ModContainer mod : Loader.instance().getActiveModList()) {
             names.put(mod.getModId(), mod.getProcessedVersion());
@@ -139,7 +139,7 @@ enum ModuleManager implements IModuleManager {
         return list;
     }
 
-    private List<IModuleInfo> checkModuleDependencies(List<IModuleInfo> list){
+    private List<IModuleInfo> checkModuleDependencies(List<IModuleInfo> list) {
         Set<String> moduleNames = list.stream()
                 .map(IModuleInfo::getCombinedName)
                 .map(Object::toString)
@@ -151,8 +151,8 @@ enum ModuleManager implements IModuleManager {
                             .filter(Objects::nonNull)
                             .filter(s -> !moduleNames.contains(s))
                             .collect(Collectors.toList());
-                    if (!missingDeps.isEmpty()){
-                        if (!moduleInfo.autoDisableIfRequirementsNotMet()){
+                    if (!missingDeps.isEmpty()) {
+                        if (!moduleInfo.autoDisableIfRequirementsNotMet()) {
                             throw new RuntimeException("Module: " + moduleInfo.getCombinedName() + " requires module(s) " + missingDeps + " to be present.");
                         }
                         return false;
@@ -162,8 +162,8 @@ enum ModuleManager implements IModuleManager {
                 .collect(Collectors.toList());
     }
 
-    private void constructModules(List<IModuleInfo> list){
-        for (IModuleInfo module : list){
+    private void constructModules(List<IModuleInfo> list) {
+        for (IModuleInfo module : list) {
             if (activeModuleNames.get(module.getCombinedName()) != null) {
                 throw new RuntimeException("Found duplicate module name: " + module.getCombinedName());
             }
@@ -187,7 +187,7 @@ enum ModuleManager implements IModuleManager {
     }
 
     @SuppressWarnings("all")
-    private void registerModulesToModBus(){
+    private void registerModulesToModBus() {
         for (IModuleContainer module : activeModules) {
             ModContainer mc = module.getOwnerMod();
             if (!FMLUtil.hasFMLModContainer(mc)) {
@@ -199,7 +199,7 @@ enum ModuleManager implements IModuleManager {
                     @com.google.common.eventbus.Subscribe
                     public void onEvent(Object event) {
                         try {
-                            System.out.println("invoke "+event+" on "+module);
+                            System.out.println("invoke " + event + " on " + module);
                             module.invokeEvent(event);
                         } catch (Exception e) {
                             throw new RuntimeException("Error invoking event on module " + module.getModule() + ", owned by: " + module.getOwnerMod(), e.getCause());
@@ -287,7 +287,7 @@ enum ModuleManager implements IModuleManager {
     }
 
     @APIHandlerInject
-    public void injectModuleManager(IAPIHandler apiHandler){
+    public void injectModuleManager(IAPIHandler apiHandler) {
         apiHandler.inject(INSTANCE, IModuleManager.class);
     }
 
@@ -311,7 +311,7 @@ enum ModuleManager implements IModuleManager {
         try {
             eventBus = FMLModContainer.class.getDeclaredField("eventBus");
             eventBus.setAccessible(true);
-        } catch (Exception e){
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }

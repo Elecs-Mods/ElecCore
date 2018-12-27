@@ -23,22 +23,22 @@ import java.util.List;
 public class MutableModelTemplate implements IMutableModelTemplate {
 
     @Nonnull
-    public static MutableModelTemplate newDefaultItemTemplate(){
+    public static MutableModelTemplate newDefaultItemTemplate() {
         return newTemplate().setItemCameraTransforms(ElecModelBakery.DEFAULT_ITEM);
     }
 
     @Nonnull
-    public static MutableModelTemplate newDefaultBlockTemplate(){
+    public static MutableModelTemplate newDefaultBlockTemplate() {
         return newTemplate().setGui3d(true).setItemCameraTransforms(ElecModelBakery.DEFAULT_BLOCK);
     }
 
     @Nonnull
-    public static MutableModelTemplate newTemplate(){
+    public static MutableModelTemplate newTemplate() {
         return new MutableModelTemplate();
     }
 
     @Nonnull
-    public static MutableModelTemplate copyOf(IModelTemplate template){
+    public static MutableModelTemplate copyOf(IModelTemplate template) {
         MutableModelTemplate ret = newTemplate();
         ret.ao = template.isAmbientOcclusion();
         ret.gui3d = template.isGui3d();
@@ -46,13 +46,13 @@ public class MutableModelTemplate implements IMutableModelTemplate {
         ret.texture = template.getTexture();
         ret.transforms = template.getItemCameraTransforms();
         ret.generalQuads = Lists.newArrayList();
-        for (IQuadTemplate quadTemplate : template.getGeneralQuads()){
+        for (IQuadTemplate quadTemplate : template.getGeneralQuads()) {
             ret.generalQuads.add(MutableQuadTemplate.copyOf(quadTemplate));
         }
         ret.sidedQuads = MutableQuadSidedMap.newQuadSidedMap();
-        for (EnumFacing facing : EnumFacing.VALUES){
+        for (EnumFacing facing : EnumFacing.VALUES) {
             List<IQuadTemplate> toAdd = Lists.newArrayList();
-            for (IQuadTemplate quadTemplate : template.getSidedQuads().getForSide(facing)){
+            for (IQuadTemplate quadTemplate : template.getSidedQuads().getForSide(facing)) {
                 toAdd.add(MutableQuadTemplate.copyOf(quadTemplate));
             }
             ret.sidedQuads.setQuadsForSide(facing, toAdd);
@@ -60,7 +60,7 @@ public class MutableModelTemplate implements IMutableModelTemplate {
         return ret;
     }
 
-    private MutableModelTemplate(){
+    private MutableModelTemplate() {
         this.transforms = ItemCameraTransforms.DEFAULT;
     }
 

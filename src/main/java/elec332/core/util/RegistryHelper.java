@@ -1,6 +1,5 @@
 package elec332.core.util;
 
-import com.google.common.base.Preconditions;
 import com.google.common.collect.BiMap;
 import net.minecraft.block.Block;
 import net.minecraft.enchantment.Enchantment;
@@ -20,8 +19,6 @@ import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.fml.common.registry.VillagerRegistry;
 import net.minecraftforge.registries.*;
 
-import javax.annotation.Nullable;
-
 /**
  * Created by Elec332 on 5-4-2016.
  */
@@ -32,7 +29,7 @@ public class RegistryHelper {
      *
      * @param clazz The capability type
      */
-    public static <T> void registerEmptyCapability(Class<T> clazz){
+    public static <T> void registerEmptyCapability(Class<T> clazz) {
         CapabilityManager.INSTANCE.register(clazz, new Capability.IStorage<T>() {
 
             @Override
@@ -50,12 +47,12 @@ public class RegistryHelper {
         });
     }
 
-    public static <T extends IForgeRegistryEntry<T>, C extends IForgeRegistry.AddCallback<T> & IForgeRegistry.ClearCallback<T> & IForgeRegistry.CreateCallback<T>> ForgeRegistry<T> createRegistry(ResourceLocation registryName, Class<T> registryType, C callback){
+    public static <T extends IForgeRegistryEntry<T>, C extends IForgeRegistry.AddCallback<T> & IForgeRegistry.ClearCallback<T> & IForgeRegistry.CreateCallback<T>> ForgeRegistry<T> createRegistry(ResourceLocation registryName, Class<T> registryType, C callback) {
         return createRegistry(registryName, registryType, 0, Byte.MAX_VALUE, callback);
     }
 
     @SuppressWarnings("deprecation")
-    public static <T extends IForgeRegistryEntry<T>, C extends IForgeRegistry.AddCallback<T> & IForgeRegistry.ClearCallback<T> & IForgeRegistry.CreateCallback<T>> ForgeRegistry<T> createRegistry(ResourceLocation registryName, Class<T> registryType, int minId, int maxId, C callback){
+    public static <T extends IForgeRegistryEntry<T>, C extends IForgeRegistry.AddCallback<T> & IForgeRegistry.ClearCallback<T> & IForgeRegistry.CreateCallback<T>> ForgeRegistry<T> createRegistry(ResourceLocation registryName, Class<T> registryType, int minId, int maxId, C callback) {
         return (ForgeRegistry<T>) new RegistryBuilder<T>().setName(registryName).addCallback(callback).setType(registryType).setIDRange(minId, maxId).create();
     }
 
@@ -64,38 +61,38 @@ public class RegistryHelper {
     }
 
     public static ForgeRegistry<Item> getItemRegistry() {
-        return (ForgeRegistry<Item>)ForgeRegistries.ITEMS;
+        return (ForgeRegistry<Item>) ForgeRegistries.ITEMS;
     }
 
     public static ForgeRegistry<Potion> getPotionRegistry() {
-        return (ForgeRegistry<Potion>)ForgeRegistries.POTIONS;
+        return (ForgeRegistry<Potion>) ForgeRegistries.POTIONS;
     }
 
     public static ForgeRegistry<Biome> getBiomeRegistry() {
-        return (ForgeRegistry<Biome>)ForgeRegistries.BIOMES;
+        return (ForgeRegistry<Biome>) ForgeRegistries.BIOMES;
     }
 
     public static ForgeRegistry<SoundEvent> getSoundEventRegistry() {
-        return (ForgeRegistry<SoundEvent>)ForgeRegistries.SOUND_EVENTS;
+        return (ForgeRegistry<SoundEvent>) ForgeRegistries.SOUND_EVENTS;
     }
 
     public static ForgeRegistry<PotionType> getPotionTypesRegistry() {
-        return (ForgeRegistry<PotionType>)ForgeRegistries.POTION_TYPES;
+        return (ForgeRegistry<PotionType>) ForgeRegistries.POTION_TYPES;
     }
 
     public static ForgeRegistry<Enchantment> getEnchantmentRegistry() {
-        return (ForgeRegistry<Enchantment>)ForgeRegistries.ENCHANTMENTS;
+        return (ForgeRegistry<Enchantment>) ForgeRegistries.ENCHANTMENTS;
     }
 
-    public static ForgeRegistry<VillagerRegistry.VillagerProfession> getVillagerRegistry(){
+    public static ForgeRegistry<VillagerRegistry.VillagerProfession> getVillagerRegistry() {
         return (ForgeRegistry<VillagerRegistry.VillagerProfession>) ForgeRegistries.VILLAGER_PROFESSIONS;
     }
 
-    public static ForgeRegistry<IRecipe> getRecipes(){
+    public static ForgeRegistry<IRecipe> getRecipes() {
         return (ForgeRegistry<IRecipe>) ForgeRegistries.RECIPES;
     }
 
-    public static ForgeRegistry<EntityEntry> getEntities(){
+    public static ForgeRegistry<EntityEntry> getEntities() {
         return (ForgeRegistry<EntityEntry>) ForgeRegistries.ENTITIES;
     }
 

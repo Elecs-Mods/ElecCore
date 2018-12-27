@@ -9,7 +9,7 @@ import javax.annotation.Nonnull;
 
 /**
  * Created by Elec332 on 16-10-2016.
- *
+ * <p>
  * Abstract IInfoProvider for a {@link Capability}
  */
 @SuppressWarnings("all")

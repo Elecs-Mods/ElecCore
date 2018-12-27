@@ -19,12 +19,12 @@ import javax.annotation.Nonnull;
 public class MutableQuadTemplate implements IMutableQuadTemplate {
 
     @Nonnull
-    public static MutableQuadTemplate templateForTexture(EnumFacing side, TextureAtlasSprite texture){
+    public static MutableQuadTemplate templateForTexture(EnumFacing side, TextureAtlasSprite texture) {
         return newTemplate(side).setTexture(texture);
     }
 
     @Nonnull
-    public static MutableQuadTemplate newTemplate(EnumFacing side){
+    public static MutableQuadTemplate newTemplate(EnumFacing side) {
         return new MutableQuadTemplate(side);
     }
 
@@ -41,7 +41,7 @@ public class MutableQuadTemplate implements IMutableQuadTemplate {
         return ret;
     }
 
-    private MutableQuadTemplate(EnumFacing side){
+    private MutableQuadTemplate(EnumFacing side) {
         this.uvData = DEFAULT_UV;
         this.rotation = ModelRotation.X0_Y0;
         this.side = side;
@@ -138,18 +138,18 @@ public class MutableQuadTemplate implements IMutableQuadTemplate {
         return tintIndex;
     }
 
-    public static IMutableUVData forUV(float f1, float f2, float f3, float f4){
+    public static IMutableUVData forUV(float f1, float f2, float f3, float f4) {
         return new MutableUVData(f1, f2, f3, f4);
     }
 
-    public static IUVData makeImmutable(IUVData data){
+    public static IUVData makeImmutable(IUVData data) {
         return new ImmutableUVData(data);
     }
 
 
     private static class MutableUVData implements IMutableUVData {
 
-        private MutableUVData(float f1, float f2, float f3, float f4){
+        private MutableUVData(float f1, float f2, float f3, float f4) {
             uMin = f1;
             vMin = f2;
             uMax = f3;
@@ -206,11 +206,11 @@ public class MutableQuadTemplate implements IMutableQuadTemplate {
 
     private static class ImmutableUVData implements IUVData {
 
-        private ImmutableUVData(IUVData from){
+        private ImmutableUVData(IUVData from) {
             this(from.getUMin(), from.getVMin(), from.getUMax(), from.getVMax());
         }
 
-        private ImmutableUVData(float f1, float f2, float f3, float f4){
+        private ImmutableUVData(float f1, float f2, float f3, float f4) {
             uMin = f1;
             vMin = f2;
             uMax = f3;

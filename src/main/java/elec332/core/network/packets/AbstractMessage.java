@@ -12,7 +12,7 @@ import java.util.function.Supplier;
  */
 public abstract class AbstractMessage implements IMessage {
 
-    public AbstractMessage(Supplier<NBTTagCompound> dataSupplier){
+    public AbstractMessage(Supplier<NBTTagCompound> dataSupplier) {
         this(dataSupplier.get());
     }
 

@@ -7,7 +7,7 @@ import java.lang.annotation.Target;
 
 /**
  * Created by Elec332 on 29-10-2016.
- *
+ * <p>
  * Loads the annotated class (So the static initializer block will get called) after preInit, but before init
  */
 @Target(ElementType.TYPE)

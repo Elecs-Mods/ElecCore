@@ -10,7 +10,7 @@ import java.lang.annotation.Target;
 
 /**
  * Created by Elec332 on 13-8-2018.
- *
+ * <p>
  * Used on a {@link TileEntity} to bind the specified {@link TileEntitySpecialRenderer} to it.
  */
 @Retention(RetentionPolicy.RUNTIME)

@@ -9,7 +9,7 @@ import java.lang.annotation.Target;
 
 /**
  * Created by Elec332 on 7-3-2016.
- *
+ * <p>
  * Used to annotate a class that implements {@link IASMDataProcessor}
  */
 @Retention(RetentionPolicy.RUNTIME)

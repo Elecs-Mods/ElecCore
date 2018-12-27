@@ -6,7 +6,7 @@ import net.minecraft.util.ResourceLocation;
 
 /**
  * Created by Elec332 on 9-12-2015.
- *
+ * <p>
  * Simple helper to register icons ({@link TextureAtlasSprite}'s)
  */
 public interface IIconRegistrar {

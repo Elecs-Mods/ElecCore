@@ -20,7 +20,7 @@ import java.util.function.Supplier;
 
 /**
  * Created by Elec332 on 1-8-2016.
- *
+ * <p>
  * An abstract implementation of {@link IStructureWorldEventHandler} that can be used for
  * dynamic grids (that span multiple worlds)
  */
@@ -188,7 +188,7 @@ public abstract class AbstractGridHandler<T extends IPositionable> implements IS
     /**
      * Gets called when an object is about to be removed
      *
-     * @param o The object being removed
+     * @param o          The object being removed
      * @param allUpdates All other objects being removed
      */
     protected abstract void onObjectRemoved(T o, Set<DimensionCoordinate> allUpdates);

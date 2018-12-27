@@ -25,12 +25,12 @@ public class INoJsonBlockHandler implements IBlockModelHandler {
 
     @Override
     public String getIdentifier(IBlockState state) {
-        return ""+WorldHelper.getBlockMeta(state);
+        return "" + WorldHelper.getBlockMeta(state);
     }
 
     @Override
     public IBakedModel getModelFor(IBlockState state, String identifier, ModelResourceLocation fullResourceLocation) {
-        return ((INoJsonBlock)state.getBlock()).getBlockModel(state);
+        return ((INoJsonBlock) state.getBlock()).getBlockModel(state);
     }
 
 }

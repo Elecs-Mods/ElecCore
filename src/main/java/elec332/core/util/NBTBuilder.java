@@ -9,21 +9,21 @@ import java.util.function.Supplier;
 
 /**
  * Created by Elec332 on 27-7-2018
- *
+ * <p>
  * Builder for {@link NBTTagCompound}
  * Can be used to chain writes to a {@link NBTTagCompound}
  */
 public class NBTBuilder implements INBTSerializable<NBTTagCompound>, Supplier<NBTTagCompound> {
 
-    public static NBTBuilder from(NBTTagCompound tag){
+    public static NBTBuilder from(NBTTagCompound tag) {
         return new NBTBuilder(tag);
     }
 
-    public NBTBuilder(){
+    public NBTBuilder() {
         this(new NBTTagCompound());
     }
 
-    public NBTBuilder(NBTTagCompound tag){
+    public NBTBuilder(NBTTagCompound tag) {
         this.tag = Preconditions.checkNotNull(tag);
     }
 
@@ -31,24 +31,24 @@ public class NBTBuilder implements INBTSerializable<NBTTagCompound>, Supplier<NB
 
     /////////////////////////////
 
-    public NBTBuilder setBlockPos(BlockPos pos){
+    public NBTBuilder setBlockPos(BlockPos pos) {
         this.tag.setLong("position", pos.toLong());
         return this;
     }
 
-    public NBTBuilder setTag(String name, NBTTagCompound tag){
+    public NBTBuilder setTag(String name, NBTTagCompound tag) {
         this.tag.setTag(name, tag);
         return this;
     }
 
-    public NBTBuilder setInteger(String name, int i){
+    public NBTBuilder setInteger(String name, int i) {
         this.tag.setInteger(name, i);
         return this;
     }
 
     /////////////////////////////
 
-    public BlockPos getBlockPos(){
+    public BlockPos getBlockPos() {
         return BlockPos.fromLong(this.tag.getLong("position"));
     }
 
@@ -56,7 +56,7 @@ public class NBTBuilder implements INBTSerializable<NBTTagCompound>, Supplier<NB
         return this.tag.getCompoundTag(name);
     }
 
-    public int getInteger(String name){
+    public int getInteger(String name) {
         return this.tag.getInteger(name);
     }
 

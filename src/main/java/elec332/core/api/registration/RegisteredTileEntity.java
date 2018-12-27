@@ -9,7 +9,7 @@ import java.lang.annotation.Target;
 
 /**
  * Created by Elec332 on 14-1-2016.
- *
+ * <p>
  * Used to register {@link TileEntity}'s, annotate your TileEntity class to register it
  */
 @Retention(RetentionPolicy.RUNTIME)

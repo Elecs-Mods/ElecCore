@@ -21,7 +21,7 @@ public enum InformationHandler implements IInfoProvider, IInfoProviderEntity {
 
     @Override
     public void addInformation(@Nonnull IInformation information, @Nonnull IInfoDataAccessorBlock hitData) {
-        for (IInfoProvider info : ElecCoreRegistrar.INFORMATION_PROVIDERS.getAllRegisteredObjects()){
+        for (IInfoProvider info : ElecCoreRegistrar.INFORMATION_PROVIDERS.getAllRegisteredObjects()) {
             info.addInformation(information, hitData);
         }
     }
@@ -29,7 +29,7 @@ public enum InformationHandler implements IInfoProvider, IInfoProviderEntity {
     @Override
     @Nonnull
     public NBTTagCompound getInfoNBTData(@Nonnull NBTTagCompound tag, TileEntity tile, @Nonnull EntityPlayerMP player, @Nonnull IInfoDataAccessorBlock hitData) {
-        for (IInfoProvider info : ElecCoreRegistrar.INFORMATION_PROVIDERS.getAllRegisteredObjects()){
+        for (IInfoProvider info : ElecCoreRegistrar.INFORMATION_PROVIDERS.getAllRegisteredObjects()) {
             tag = info.getInfoNBTData(tag, tile, player, hitData);
         }
         return tag;
@@ -37,7 +37,7 @@ public enum InformationHandler implements IInfoProvider, IInfoProviderEntity {
 
     @Override
     public void addInformation(@Nonnull IInformation information, @Nonnull IInfoDataAccessorEntity hitData) {
-        for (IInfoProviderEntity info : ElecCoreRegistrar.INFORMATION_PROVIDERS_ENTITY.getAllRegisteredObjects()){
+        for (IInfoProviderEntity info : ElecCoreRegistrar.INFORMATION_PROVIDERS_ENTITY.getAllRegisteredObjects()) {
             info.addInformation(information, hitData);
         }
     }
@@ -45,7 +45,7 @@ public enum InformationHandler implements IInfoProvider, IInfoProviderEntity {
     @Nonnull
     @Override
     public NBTTagCompound getNBTData(@Nonnull NBTTagCompound tag, @Nonnull World world, @Nonnull Entity entity, @Nonnull EntityPlayerMP player) {
-        for (IInfoProviderEntity info : ElecCoreRegistrar.INFORMATION_PROVIDERS_ENTITY.getAllRegisteredObjects()){
+        for (IInfoProviderEntity info : ElecCoreRegistrar.INFORMATION_PROVIDERS_ENTITY.getAllRegisteredObjects()) {
             tag = info.getNBTData(tag, world, entity, player);
         }
         return tag;
@@ -58,11 +58,11 @@ public enum InformationHandler implements IInfoProvider, IInfoProviderEntity {
             @Override
             public void addInformation(@Nonnull IInformation information, @Nonnull IInfoDataAccessorBlock hitData) {
                 Block block = hitData.getBlock();
-                if (block instanceof IInfoProvider){
+                if (block instanceof IInfoProvider) {
                     ((IInfoProvider) block).addInformation(information, hitData);
                 }
                 TileEntity tile = hitData.getTileEntity();
-                if (tile instanceof IInfoProvider){
+                if (tile instanceof IInfoProvider) {
                     ((IInfoProvider) tile).addInformation(information, hitData);
                 }
             }
@@ -71,10 +71,10 @@ public enum InformationHandler implements IInfoProvider, IInfoProviderEntity {
             @Override
             public NBTTagCompound getInfoNBTData(@Nonnull NBTTagCompound tag, TileEntity tile, @Nonnull EntityPlayerMP player, @Nonnull IInfoDataAccessorBlock hitData) {
                 Block block = hitData.getBlock();
-                if (block instanceof IInfoProvider){
+                if (block instanceof IInfoProvider) {
                     tag = ((IInfoProvider) block).getInfoNBTData(tag, tile, player, hitData);
                 }
-                if (tile instanceof IInfoProvider){
+                if (tile instanceof IInfoProvider) {
                     return ((IInfoProvider) tile).getInfoNBTData(tag, tile, player, hitData);
                 }
                 return tag;
@@ -87,7 +87,7 @@ public enum InformationHandler implements IInfoProvider, IInfoProviderEntity {
             @Override
             public void addInformation(@Nonnull IInformation information, @Nonnull IInfoDataAccessorEntity hitData) {
                 Entity entity = hitData.getEntity();
-                if (entity instanceof IInfoProviderEntity){
+                if (entity instanceof IInfoProviderEntity) {
                     ((IInfoProviderEntity) entity).addInformation(information, hitData);
                 }
             }

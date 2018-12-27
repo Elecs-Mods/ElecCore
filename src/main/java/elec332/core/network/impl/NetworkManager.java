@@ -96,7 +96,7 @@ enum NetworkManager implements INetworkManager<DefaultNetworkHandler> {
     }
 
     @APIHandlerInject
-    public void injectNetworkManager(IAPIHandler apiHandler){
+    public void injectNetworkManager(IAPIHandler apiHandler) {
         apiHandler.inject(INSTANCE, INetworkManager.class);
     }
 

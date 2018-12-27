@@ -8,18 +8,18 @@ import net.minecraft.util.ResourceLocation;
  */
 public abstract class AbstractItem extends Item {
 
-    public AbstractItem(){
+    public AbstractItem() {
         this(null);
     }
 
-    public AbstractItem(ResourceLocation rl){
+    public AbstractItem(ResourceLocation rl) {
         if (rl != null) {
             setRegistryName(rl);
             setUnlocalizedNameFromName();
         }
     }
 
-    public void setUnlocalizedNameFromName(){
+    public void setUnlocalizedNameFromName() {
         setUnlocalizedName(getRegistryName().toString().replace(":", ".").toLowerCase());
     }
 

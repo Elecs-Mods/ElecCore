@@ -11,7 +11,7 @@ import java.util.function.Function;
 
 /**
  * Created by Elec332 on 18-9-2016.
- *
+ * <p>
  * Main model handler interface, used to handle
  * (register, make, ...) models for all sorts of things
  */
@@ -33,7 +33,7 @@ public interface IModelHandler {
 
     /**
      * Used to setup handler and prepare for registering the models.
-     *
+     * <p>
      * Gets called after {@link IModelHandler#getModelHandlers(List)}
      */
     public void preHandleModels();

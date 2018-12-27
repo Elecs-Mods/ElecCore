@@ -124,7 +124,7 @@ public class ConfigWrapper implements IConfigWrapper {
         }
         for (Object o : instances) {
             Class objClass = o.getClass();
-            if (o instanceof Class){
+            if (o instanceof Class) {
                 objClass = (Class) o;
                 o = null;
             }

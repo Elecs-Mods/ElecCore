@@ -13,7 +13,6 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
-import net.minecraft.world.chunk.IChunkProvider;
 
 import java.util.Set;
 
@@ -40,7 +39,7 @@ public class StructureTemplate {
      * Generates a structure at the provided coordinates
      *
      * @param location The coordinates
-     * @param world The world
+     * @param world    The world
      */
     public void generateStructure(BlockPos location, World world) {
         if (!world.isRemote) { /* You never know what someone else might be trying to do */
@@ -126,7 +125,7 @@ public class StructureTemplate {
         return getDimensions() != null && !getDimensions().isEmpty();
     }
 
-    public boolean canSpawnInDimension(int dimension){
+    public boolean canSpawnInDimension(int dimension) {
         return !isDimensionRestricted() || getDimensions().contains(dimension);
     }
 

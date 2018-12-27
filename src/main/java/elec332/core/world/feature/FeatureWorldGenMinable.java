@@ -6,26 +6,25 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.block.state.pattern.BlockMatcher;
 import net.minecraft.init.Blocks;
 import net.minecraft.world.gen.feature.WorldGenMinable;
-import net.minecraft.world.gen.feature.WorldGenerator;
 import net.minecraftforge.common.config.Configuration;
 
 /**
  * Created by Elec332 on 17-10-2016.
- *
+ * <p>
  * An {@link IFeatureGenerator} wrapper of a {@link WorldGenMinable}, highly configurable
  */
 @SuppressWarnings("all")
 public class FeatureWorldGenMinable extends FeatureWorldGenerator {
 
-    public static FeatureWorldGenMinable newOreGenerator(String name, int times, int maxY, int clusterSize, IBlockState state, Predicate<IBlockState> predicate){
+    public static FeatureWorldGenMinable newOreGenerator(String name, int times, int maxY, int clusterSize, IBlockState state, Predicate<IBlockState> predicate) {
         return newOreGenerator(name, clusterSize, times, state, predicate).setMaxY(maxY);
     }
 
-    public static FeatureWorldGenMinable newOreGenerator(String name, int times, int clusterSize, IBlockState state, Predicate<IBlockState> predicate){
+    public static FeatureWorldGenMinable newOreGenerator(String name, int times, int clusterSize, IBlockState state, Predicate<IBlockState> predicate) {
         return new FeatureWorldGenMinable(name, times, new WorldGenMinable(state, clusterSize, predicate));
     }
 
-    public static FeatureWorldGenMinable wrap(String name, int times, WorldGenMinable worldGenMinable){
+    public static FeatureWorldGenMinable wrap(String name, int times, WorldGenMinable worldGenMinable) {
         return new FeatureWorldGenMinable(name, times, worldGenMinable);
     }
 
@@ -33,7 +32,7 @@ public class FeatureWorldGenMinable extends FeatureWorldGenerator {
         super(name, times, worldGenMinable);
     }
 
-    public FeatureWorldGenMinable setClusterSize(int newSize){
+    public FeatureWorldGenMinable setClusterSize(int newSize) {
         this.worldGenerator = new WorldGenMinable(((WorldGenMinable) worldGenerator).oreBlock, Math.min(newSize, getMaxClusterSize()), ((WorldGenMinable) worldGenerator).predicate);
         return this;
     }
@@ -58,7 +57,7 @@ public class FeatureWorldGenMinable extends FeatureWorldGenerator {
         return (FeatureWorldGenMinable) super.setShouldGen(shouldGen);
     }
 
-    protected int getMaxClusterSize(){
+    protected int getMaxClusterSize() {
         return 30;
     }
 
@@ -67,7 +66,7 @@ public class FeatureWorldGenMinable extends FeatureWorldGenerator {
         super.reconfigure(config);
         int old = ((WorldGenMinable) worldGenerator).numberOfBlocks;
         int size = config.getInt("clusterSize", getConfigCategoryName(), old, 0, getMaxClusterSize(), "Sets the max cluster size.");
-        if (size != old){
+        if (size != old) {
             setClusterSize(size);
         }
     }

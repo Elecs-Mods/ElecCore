@@ -15,7 +15,7 @@ public class EntityHelper {
     /**
      * Creates an entity by a {@link ResourceLocation}
      *
-     * @param name The entity name in the registry
+     * @param name  The entity name in the registry
      * @param world The world in which the entity has to be created
      * @return The new entity, created from the provided name
      */

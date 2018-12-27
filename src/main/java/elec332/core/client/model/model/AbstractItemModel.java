@@ -57,7 +57,7 @@ public abstract class AbstractItemModel implements IBakedModel {
         return ItemOverrideList.NONE;
     }
 
-    public boolean isItemTESR(){
+    public boolean isItemTESR() {
         return false;
     }
 
@@ -80,7 +80,7 @@ public abstract class AbstractItemModel implements IBakedModel {
         EMPTY_LIST = ImmutableList.of();
     }
 
-    protected static Vector3f applyTranslationScale(Vector3f vec){
+    protected static Vector3f applyTranslationScale(Vector3f vec) {
         vec.scale(0.0625F);
         return vec;
     }

@@ -39,7 +39,7 @@ enum APIHandler implements IASMDataProcessor, IAPIHandler {
 
     INSTANCE;
 
-    APIHandler(){
+    APIHandler() {
         callBacks = HashMultimap.create();
         injectedHandlers = Maps.newHashMap();
     }
@@ -59,16 +59,16 @@ enum APIHandler implements IASMDataProcessor, IAPIHandler {
     }
 
     @SuppressWarnings("all")
-    private void collect(IASMDataHelper asmData, Class<? extends Annotation> annotationClass, String weightField){
-        for (IAdvancedASMData data : getWeightedAdvancedAnnotationList(asmData, annotationClass, weightField)){
+    private void collect(IASMDataHelper asmData, Class<? extends Annotation> annotationClass, String weightField) {
+        for (IAdvancedASMData data : getWeightedAdvancedAnnotationList(asmData, annotationClass, weightField)) {
 
             Consumer<?> ret;
             Class<?> type;
 
-            if (data.isMethod()){
+            if (data.isMethod()) {
                 Class[] params = data.getMethodParameters();
-                if (params.length > 1 || params.length < 0){
-                    ElecCore.logger.error("Skipping invalid API method: "+data.getClassName() + " "+ data.getMethodName());
+                if (params.length > 1 || params.length < 0) {
+                    ElecCore.logger.error("Skipping invalid API method: " + data.getClassName() + " " + data.getMethodName());
                 }
                 type = params[0];
                 ret = (Consumer<Object>) o -> {
@@ -92,14 +92,14 @@ enum APIHandler implements IASMDataProcessor, IAPIHandler {
                 ret = (Consumer<Object>) o -> {
                     Field field = data.getField();
                     List<Object> clsz = tryGetFieldOwner(field);
-                    if (clsz == null){
-                        ElecCore.logger.error("Field "+data.getClassName() + "."+ data.getFieldName()+" is not accessible! it will be skipped...");
+                    if (clsz == null) {
+                        ElecCore.logger.error("Field " + data.getClassName() + "." + data.getFieldName() + " is not accessible! it will be skipped...");
                         return;
                     }
                     clsz.forEach(obj -> {
                         try {
                             EnumHelper.setFailsafeFieldValue(field, obj, o);
-                        } catch (Exception e){
+                        } catch (Exception e) {
                             throw new RuntimeException(e);
                         }
                     });
@@ -113,12 +113,12 @@ enum APIHandler implements IASMDataProcessor, IAPIHandler {
 
     @SuppressWarnings("unchecked")
     @Override
-    public void inject(Object o, Class<?>... classes){
-        for (Class<?> clazz : classes){
-            if (!clazz.isAssignableFrom(o.getClass())){
+    public void inject(Object o, Class<?>... classes) {
+        for (Class<?> clazz : classes) {
+            if (!clazz.isAssignableFrom(o.getClass())) {
                 throw new IllegalArgumentException();
             }
-            for (Consumer consumer : callBacks.removeAll(clazz)){
+            for (Consumer consumer : callBacks.removeAll(clazz)) {
                 consumer.accept(o);
             }
             injectedHandlers.put(clazz, o);
@@ -133,10 +133,10 @@ enum APIHandler implements IASMDataProcessor, IAPIHandler {
     }
 
     @SuppressWarnings("all")
-    private Collection<IAdvancedASMData> getWeightedAdvancedAnnotationList(IASMDataHelper asmData, Class<? extends Annotation> annotationClass, String weightField){
+    private Collection<IAdvancedASMData> getWeightedAdvancedAnnotationList(IASMDataHelper asmData, Class<? extends Annotation> annotationClass, String weightField) {
         return asmData.getAdvancedAnnotationList(annotationClass).stream().sorted((o1, o2) -> {
             int ic = Strings.isNullOrEmpty(weightField) ? 0 : Comparator.comparingInt((ToIntFunction<IAdvancedASMData>) value -> Math.abs((int) ObjectUtils.firstNonNull(value.getAnnotationInfo().get(weightField), (int) Byte.MAX_VALUE))).compare(o1, o2);
-            if (ic == 0){
+            if (ic == 0) {
                 return Integer.compare(o1.hashCode(), o2.hashCode());
             }
             return ic;
@@ -144,22 +144,22 @@ enum APIHandler implements IASMDataProcessor, IAPIHandler {
     }
 
     // :(
-    private List<Object> tryGetFieldOwner(Member field){
-        if (ReflectionHelper.isStatic(field)){
+    private List<Object> tryGetFieldOwner(Member field) {
+        if (ReflectionHelper.isStatic(field)) {
             return Lists.newArrayList((Object) null);
         }
         Class owner = field.getDeclaringClass();
-        if (owner.isEnum()){
+        if (owner.isEnum()) {
             return Arrays.asList(owner.getEnumConstants());
         }
         ModContainer mc = FMLUtil.getOwner(owner);
-        if (mc != null && mc.getMod().getClass() == owner){
+        if (mc != null && mc.getMod().getClass() == owner) {
             return Lists.newArrayList(mc.getMod());
         }
         Field inst = null;
         try {
             inst = owner.getDeclaredField("instance");
-        } catch (Exception e){
+        } catch (Exception e) {
             //nup
         }
         if (inst == null) {
@@ -169,11 +169,11 @@ enum APIHandler implements IASMDataProcessor, IAPIHandler {
                 //nup
             }
         }
-        if (inst != null && ReflectionHelper.isStatic(inst)){
+        if (inst != null && ReflectionHelper.isStatic(inst)) {
             inst.setAccessible(true);
             try {
                 return Lists.newArrayList(inst.get(null));
-            } catch (Exception e){
+            } catch (Exception e) {
                 //???
             }
         }

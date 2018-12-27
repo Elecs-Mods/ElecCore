@@ -7,7 +7,7 @@ import java.util.List;
 
 /**
  * Created by Elec332 on 18-10-2016.
- *
+ * <p>
  * A wrapper for Forge's {@link Configuration} with some more features
  */
 public interface IConfigWrapper {
@@ -23,7 +23,7 @@ public interface IConfigWrapper {
     /**
      * Registers a class or object to this {@link IConfigWrapper},
      * all fields/methods annotated with {@link Configurable} will be handled.
-     *
+     * <p>
      * All inner classes will be registered aswell
      *
      * @param obj The top-level instance/class of your configuration
@@ -40,9 +40,8 @@ public interface IConfigWrapper {
     /**
      * Used to set a description for the provided configuration category
      *
-     * @param category The category for which the description will be set
+     * @param category    The category for which the description will be set
      * @param description The description for the provided {@param category}
-     *
      * @return The instance of this {@link IConfigWrapper}, so this can be chained.
      */
     @Nonnull

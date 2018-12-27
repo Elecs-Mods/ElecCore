@@ -59,14 +59,14 @@ public class ItemTextured extends AbstractItem implements INoJsonItem {
         }
     }
 
-    protected ResourceLocation[] getTextureLocations(){
+    protected ResourceLocation[] getTextureLocations() {
         return new ResourceLocation[]{
-            getTextureLocation()
+                getTextureLocation()
         };
     }
 
-    protected ResourceLocation getTextureLocation(){
-        return new ResourceLocation(getRegistryName().getResourceDomain(), "items/"+getRegistryName().getResourcePath());
+    protected ResourceLocation getTextureLocation() {
+        return new ResourceLocation(getRegistryName().getResourceDomain(), "items/" + getRegistryName().getResourcePath());
     }
 
 }

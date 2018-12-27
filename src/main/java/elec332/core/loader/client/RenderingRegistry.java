@@ -13,6 +13,7 @@ import elec332.core.client.RenderHelper;
 import elec332.core.util.ReflectionHelper;
 import elec332.core.util.RegistryHelper;
 import net.minecraft.block.Block;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.block.model.ModelBakery;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
@@ -46,13 +47,13 @@ import java.util.Set;
 @SideOnly(Side.CLIENT)
 public final class RenderingRegistry implements IElecRenderingRegistry {
 
-    public static RenderingRegistry instance(){
+    public static RenderingRegistry instance() {
         return instance;
     }
 
     private static final RenderingRegistry instance;
 
-    private RenderingRegistry(){
+    private RenderingRegistry() {
         modelLoaders = Sets.newHashSet();
         textureLoaders = Sets.newHashSet();
         extraItems = Lists.newArrayList();
@@ -77,40 +78,40 @@ public final class RenderingRegistry implements IElecRenderingRegistry {
     private IElecTemplateBakery templateBakery = null;
 
     @Override
-    public void registerLoadableModel(ModelResourceLocation mrl){
+    public void registerLoadableModel(ModelResourceLocation mrl) {
         extraModels.add(mrl);
     }
 
     @Override
-    public Item registerFakeItem(Item item){
+    public Item registerFakeItem(Item item) {
         extraItems.add(item);
         return item;
     }
 
     @Override
-    public Block registerFakeBlock(Block block){
+    public Block registerFakeBlock(Block block) {
         extraBlocks.add(block);
         return block;
     }
 
     @Override
-    public void registerLoader(IModelLoader modelLoader){
+    public void registerLoader(IModelLoader modelLoader) {
         registerLoader((Object) modelLoader);
     }
 
     @Override
-    public void registerLoader(ITextureLoader textureLoader){
+    public void registerLoader(ITextureLoader textureLoader) {
         registerLoader((Object) textureLoader);
     }
 
     @Override
-    public void registerLoader(IModelAndTextureLoader loader){
+    public void registerLoader(IModelAndTextureLoader loader) {
         registerLoader((Object) loader);
     }
 
     @Nonnull
     @Override
-    public Iterable<Block> getAllValidBlocks(){
+    public Iterable<Block> getAllValidBlocks() {
         List<Block> list = Lists.newArrayList(RegistryHelper.getBlockRegistry());
         list.addAll(extraBlocks);
         return list;
@@ -118,59 +119,59 @@ public final class RenderingRegistry implements IElecRenderingRegistry {
 
     @Nonnull
     @Override
-    public Iterable<Item> getAllValidItems(){
+    public Iterable<Item> getAllValidItems() {
         List<Item> list = Lists.newArrayList(RegistryHelper.getItemRegistry());
         list.addAll(extraItems);
         return list;
     }
 
-    private void registerLoader(Object obj){
-        if (obj instanceof IModelLoader){
+    private void registerLoader(Object obj) {
+        if (obj instanceof IModelLoader) {
             this.modelLoaders.add((IModelLoader) obj);
         }
-        if (obj instanceof ITextureLoader){
+        if (obj instanceof ITextureLoader) {
             this.textureLoaders.add((ITextureLoader) obj);
         }
     }
 
     @SubscribeEvent(priority = EventPriority.HIGH)
-    public void onTextureStitch(TextureStitchEvent event){
+    public void onTextureStitch(TextureStitchEvent event) {
         IIconRegistrar iconRegistrar = new IconRegistrar(event);
-        for (ITextureLoader loader : textureLoaders){
+        for (ITextureLoader loader : textureLoaders) {
             loader.registerTextures(iconRegistrar);
         }
     }
 
     @SubscribeEvent(priority = EventPriority.HIGH)
-    public void onJsonModelLoad(ModelLoadEvent event){
-        for (ModelResourceLocation mrl : extraModels){
+    public void onJsonModelLoad(ModelLoadEvent event) {
+        for (ModelResourceLocation mrl : extraModels) {
             IBakedModel model;
             try {
                 IModel model_ = ModelLoaderRegistry.getModel(new ResourceLocation(mrl.getResourceDomain(), mrl.getResourcePath()));
                 model = model_.bake(model_.getDefaultState(), DefaultVertexFormats.ITEM, ModelLoader.defaultTextureGetter());
-            } catch (Exception e){
+            } catch (Exception e) {
                 model = RenderHelper.getMissingModel();
                 FMLLog.log.error("Exception loading blockstate for the variant {}: ", new ResourceLocation(mrl.getResourceDomain(), mrl.getResourcePath()), e);
             }
             event.registerModel(mrl, model);
         }
-        for (IModelLoader loader : modelLoaders){
+        for (IModelLoader loader : modelLoaders) {
             loader.registerModels(event.getQuadBakery(), event.getModelBakery(), event.getTemplateBakery());
         }
     }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
-    public void afterAllModelsBaked(ModelBakeEvent event){
+    public void afterAllModelsBaked(ModelBakeEvent event) {
         removeJsonErrors(event.getModelLoader());
     }
 
     @APIHandlerInject
-    public void injectRenderingRegistry(IAPIHandler apiHandler){
+    public void injectRenderingRegistry(IAPIHandler apiHandler) {
         apiHandler.inject(instance(), IElecRenderingRegistry.class);
     }
 
     @SuppressWarnings("all")
-    void removeJsonErrors(ModelLoader modelLoader){
+    void removeJsonErrors(ModelLoader modelLoader) {
         ElecCore.logger.info("Cleaning up internal Json stuff...");
         try {
             Set<ModelResourceLocation> set = (Set<ModelResourceLocation>) ReflectionHelper.makeFinalFieldModifiable(ModelLoader.class.getDeclaredField("missingVariants")).get(modelLoader);
@@ -178,25 +179,25 @@ public final class RenderingRegistry implements IElecRenderingRegistry {
             //if (ElecCore.removeJSONErrors){
             //    exceptionMap.clear();
             //}
-            for (ModelResourceLocation rl : getValidLocations(modelLoader)){
+            for (ModelResourceLocation rl : getValidLocations(modelLoader)) {
                 set.remove(rl);
                 exceptionMap.remove(rl);
             }
             ElecModelManager.INSTANCE.cleanModelLoadingExceptions(exceptionMap);
-        } catch (Exception e1){
+        } catch (Exception e1) {
             e1.printStackTrace();
         }
         ElecCore.logger.info("Finished cleaning up internal Json stuff.");
     }
 
-    private Set<ModelResourceLocation> getValidLocations(ModelBakery modelLoader){
-        IRegistry<ModelResourceLocation, IBakedModel> registry = modelLoader.blockModelShapes.modelManager.modelRegistry;
+    private Set<ModelResourceLocation> getValidLocations(ModelBakery modelLoader) {
+        IRegistry<ModelResourceLocation, IBakedModel> registry = Minecraft.getMinecraft().modelManager.modelRegistry;
         return ElecModelManager.INSTANCE.registerBakedModels(registry);
     }
 
     private class IconRegistrar implements IIconRegistrar {
 
-        private IconRegistrar(TextureStitchEvent event){
+        private IconRegistrar(TextureStitchEvent event) {
             this.textureMap = event.getMap();
         }
 
@@ -248,11 +249,11 @@ public final class RenderingRegistry implements IElecRenderingRegistry {
             }
 
         });
-        MinecraftForge.EVENT_BUS.register(new Object(){
+        MinecraftForge.EVENT_BUS.register(new Object() {
 
             @SubscribeEvent(priority = EventPriority.HIGH)
             @SideOnly(Side.CLIENT)
-            public void bakeModels(ModelBakeEvent event){
+            public void bakeModels(ModelBakeEvent event) {
                 MinecraftForge.EVENT_BUS.post(new ModelLoadEventImpl(instance().quadBakery, instance().modelBakery, instance.templateBakery, event.getModelRegistry()));
             }
 

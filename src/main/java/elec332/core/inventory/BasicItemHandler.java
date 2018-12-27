@@ -13,7 +13,7 @@ import javax.annotation.Nonnull;
 
 /**
  * Created by Elec332 on 3-12-2016.
- *
+ * <p>
  * Simple (serializable) implementation of {@link IItemHandlerModifiable}
  */
 public class BasicItemHandler implements IItemHandlerModifiable, INBTSerializable<NBTTagCompound> {
@@ -80,25 +80,25 @@ public class BasicItemHandler implements IItemHandlerModifiable, INBTSerializabl
                 return stack;
             }
 
-            limit -= existing.stackSize;
+            limit -= existing.getCount();
         }
 
         if (limit <= 0) {
             return stack;
         }
 
-        boolean reachedLimit = stack.stackSize > limit;
+        boolean reachedLimit = stack.getCount() > limit;
 
         if (!simulate) {
             if (!ItemStackHelper.isStackValid(existing)) {
                 this.stacks.set(slot, reachedLimit ? ItemHandlerHelper.copyStackWithSize(stack, limit) : stack);
             } else {
-                existing.stackSize += (reachedLimit ? limit : stack.stackSize);
+                existing.grow(reachedLimit ? limit : stack.getCount());
             }
             onContentsChanged(slot);
         }
 
-        return reachedLimit ? ItemHandlerHelper.copyStackWithSize(stack, stack.stackSize - limit) : ItemStackHelper.NULL_STACK;
+        return reachedLimit ? ItemHandlerHelper.copyStackWithSize(stack, stack.getCount() - limit) : ItemStackHelper.NULL_STACK;
     }
 
     @Nonnull
@@ -117,7 +117,7 @@ public class BasicItemHandler implements IItemHandlerModifiable, INBTSerializabl
 
         int toExtract = Math.min(amount, existing.getMaxStackSize());
 
-        if (existing.stackSize <= toExtract) {
+        if (existing.getCount() <= toExtract) {
             if (!simulate) {
                 this.stacks.set(slot, ItemStackHelper.NULL_STACK);
                 onContentsChanged(slot);
@@ -125,7 +125,7 @@ public class BasicItemHandler implements IItemHandlerModifiable, INBTSerializabl
             return existing;
         } else {
             if (!simulate) {
-                this.stacks.set(slot, ItemHandlerHelper.copyStackWithSize(existing, existing.stackSize - toExtract));
+                this.stacks.set(slot, ItemHandlerHelper.copyStackWithSize(existing, existing.getCount() - toExtract));
                 onContentsChanged(slot);
             }
 

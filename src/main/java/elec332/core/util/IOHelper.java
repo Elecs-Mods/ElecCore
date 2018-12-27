@@ -42,8 +42,8 @@ public class IOHelper {
      *
      * @param folder The folder to be checked
      */
-    public static void ensureExists(File folder){
-        if (!folder.exists() && !folder.mkdir()){
+    public static void ensureExists(File folder) {
+        if (!folder.exists() && !folder.mkdir()) {
             throw new RuntimeException();
         }
     }
@@ -54,7 +54,7 @@ public class IOHelper {
      *
      * @param file The file to be deleted
      */
-    public static void deleteIfExists(File file){
+    public static void deleteIfExists(File file) {
         if (file.exists() && !file.delete()) {
             throw new RuntimeException();
         }
@@ -65,7 +65,7 @@ public class IOHelper {
      * or doesn't exist at all, it tries to read from a backup file
      *
      * @param file The file ro be read
-     * @param io The IO implementation
+     * @param io   The IO implementation
      * @return The object read from the specified file
      */
     public static <T> T readWithPossibleBackup(@Nonnull File file, @Nonnull IObjectIO<T> io) {
@@ -73,8 +73,8 @@ public class IOHelper {
         boolean b = false;
         try {
             backup = getBackupFile(file);
-            if (!file.exists()){
-                if (!backup.exists()){
+            if (!file.exists()) {
+                if (!backup.exists()) {
                     return io.returnOnReadFail();
                 }
                 b = true;
@@ -89,7 +89,7 @@ public class IOHelper {
                 File newFile = new File(file.getCanonicalPath() + "_errored_" + date);
                 FileUtils.moveFile(file, newFile);
                 deleteIfExists(file);
-                if (b){
+                if (b) {
                     return io.returnOnReadFail();
                 }
                 return io.read(backup);
@@ -105,8 +105,8 @@ public class IOHelper {
      * uses the old save file as a backup in case the write fails, of the program is suddenly stopped
      *
      * @param file The file to write to
-     * @param obj The object to be written to the specified file
-     * @param io The IO implementation
+     * @param obj  The object to be written to the specified file
+     * @param io   The IO implementation
      */
     @SuppressWarnings("ResultOfMethodCallIgnored")
     public static <T> void writeWithBackup(@Nonnull File file, @Nonnull T obj, @Nonnull IObjectIO<T> io) {
@@ -115,7 +115,7 @@ public class IOHelper {
             fileBack = getBackupFile(file);
             fileNew = new File(file.getCanonicalPath() + "_new");
             io.write(fileNew, obj);
-        } catch (Exception e){
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
         if (file.exists()) {
@@ -134,7 +134,7 @@ public class IOHelper {
      * @return The backup filename of the specified file
      */
     public static File getBackupFile(@Nonnull File file) throws IOException {
-        return new File(file.getCanonicalPath()+"_back");
+        return new File(file.getCanonicalPath() + "_back");
     }
 
     /**
@@ -146,7 +146,7 @@ public class IOHelper {
          * Attempts to write an object to a file
          *
          * @param file The file
-         * @param obj The object to be written to the specified file
+         * @param obj  The object to be written to the specified file
          * @throws IOException When the operation has failed
          */
         default public void write(File file, T obj) throws IOException {
@@ -167,7 +167,7 @@ public class IOHelper {
         /**
          * @return A default value, gets called when the read has failed
          */
-        default public T returnOnReadFail(){
+        default public T returnOnReadFail() {
             throw new RuntimeException();
         }
 

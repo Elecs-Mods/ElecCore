@@ -19,7 +19,7 @@ import javax.annotation.Nullable;
  */
 class WrappedWidgetSlot extends WidgetSlot {
 
-    WrappedWidgetSlot(Slot slot){
+    WrappedWidgetSlot(Slot slot) {
         super(null, slot.getSlotIndex(), slot.xPos, slot.yPos);
         this.slot = slot;
     }

@@ -18,53 +18,54 @@ import javax.annotation.Nonnull;
 public final class ElecTemplateBakery implements IElecTemplateBakery {
 
     private static final ElecTemplateBakery instance = new ElecTemplateBakery();
-    private ElecTemplateBakery(){
+
+    private ElecTemplateBakery() {
     }
 
     @Nonnull
     @Override
-    public IMutableModelTemplate newDefaultItemTemplate(){
+    public IMutableModelTemplate newDefaultItemTemplate() {
         return MutableModelTemplate.newDefaultItemTemplate();
     }
 
     @Nonnull
     @Override
-    public IMutableModelTemplate newDefaultBlockTemplate(TextureAtlasSprite... textures){
+    public IMutableModelTemplate newDefaultBlockTemplate(TextureAtlasSprite... textures) {
         return newDefaultBlockTemplate().setSidedQuads(newQuadSidedMap(textures));
     }
 
     @Nonnull
     @Override
-    public IMutableModelTemplate newDefaultBlockTemplate(TextureAtlasSprite texture){
+    public IMutableModelTemplate newDefaultBlockTemplate(TextureAtlasSprite texture) {
         return newDefaultBlockTemplate().setTexture(texture).setSidedQuads(newQuadSidedMap(texture));
     }
 
     @Nonnull
     @Override
-    public IMutableModelTemplate newDefaultBlockTemplate(){
+    public IMutableModelTemplate newDefaultBlockTemplate() {
         return MutableModelTemplate.newDefaultBlockTemplate();
     }
 
     @Nonnull
     @Override
-    public IMutableModelTemplate newModelTemplate(){
+    public IMutableModelTemplate newModelTemplate() {
         return MutableModelTemplate.newTemplate();
     }
 
     @Nonnull
     @Override
-    public IMutableModelTemplate copyOf(IModelTemplate template){
+    public IMutableModelTemplate copyOf(IModelTemplate template) {
         return MutableModelTemplate.copyOf(template);
     }
 
     @Nonnull
-    public IMutableQuadTemplate templateQuadForTexture(EnumFacing side, TextureAtlasSprite texture){
+    public IMutableQuadTemplate templateQuadForTexture(EnumFacing side, TextureAtlasSprite texture) {
         return MutableQuadTemplate.templateForTexture(side, texture);
     }
 
     @Nonnull
     @Override
-    public IMutableQuadTemplate newQuadTemplate(EnumFacing side){
+    public IMutableQuadTemplate newQuadTemplate(EnumFacing side) {
         return MutableQuadTemplate.newTemplate(side);
     }
 
@@ -82,27 +83,27 @@ public final class ElecTemplateBakery implements IElecTemplateBakery {
 
     @Nonnull
     @Override
-    public IQuadTemplate.IMutableUVData forUV(float uMin, float vMin, float uMax, float vMax){
+    public IQuadTemplate.IMutableUVData forUV(float uMin, float vMin, float uMax, float vMax) {
         return MutableQuadTemplate.forUV(uMin, vMin, uMax, vMax);
     }
 
     @Nonnull
     @Override
-    public IQuadTemplate.IUVData makeImmutable(@Nonnull IQuadTemplate.IUVData data){
+    public IQuadTemplate.IUVData makeImmutable(@Nonnull IQuadTemplate.IUVData data) {
         return MutableQuadTemplate.makeImmutable(data);
     }
 
     @Nonnull
     @Override
-    public IQuadTemplateSidedMap newQuadSidedMap(){
+    public IQuadTemplateSidedMap newQuadSidedMap() {
         return MutableQuadSidedMap.newQuadSidedMap();
     }
 
     @Nonnull
     @Override
-    public IQuadTemplateSidedMap newQuadSidedMap(TextureAtlasSprite texture){
+    public IQuadTemplateSidedMap newQuadSidedMap(TextureAtlasSprite texture) {
         IQuadTemplateSidedMap ret = newQuadSidedMap();
-        for (EnumFacing facing : EnumFacing.VALUES){
+        for (EnumFacing facing : EnumFacing.VALUES) {
             ret.addQuadForSide(facing, templateQuadForTexture(facing, texture));
         }
         return ret;
@@ -110,7 +111,7 @@ public final class ElecTemplateBakery implements IElecTemplateBakery {
 
     @Nonnull
     @Override
-    public IQuadTemplateSidedMap newQuadSidedMap(TextureAtlasSprite... textures){
+    public IQuadTemplateSidedMap newQuadSidedMap(TextureAtlasSprite... textures) {
         if (textures.length != EnumFacing.values().length)
             throw new IllegalArgumentException();
         IQuadTemplateSidedMap ret = newQuadSidedMap();
@@ -121,7 +122,7 @@ public final class ElecTemplateBakery implements IElecTemplateBakery {
     }
 
     @APIHandlerInject
-    public void injectTemplateBakery(IAPIHandler apiHandler){
+    public void injectTemplateBakery(IAPIHandler apiHandler) {
         apiHandler.inject(instance, IElecTemplateBakery.class);
     }
 

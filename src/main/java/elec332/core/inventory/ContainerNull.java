@@ -7,7 +7,7 @@ import javax.annotation.Nonnull;
 
 /**
  * Created by Elec332 on 11-10-2015.
- *
+ * <p>
  * Null/fake container
  */
 public final class ContainerNull extends Container {

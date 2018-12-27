@@ -38,7 +38,7 @@ enum ElecModHandler implements IElecCoreModHandler {
 
     INSTANCE;
 
-    ElecModHandler(){
+    ElecModHandler() {
         reg = Maps.newHashMap();
         handlers = Sets.newHashSet();
     }
@@ -49,21 +49,21 @@ enum ElecModHandler implements IElecCoreModHandler {
     private Set<BiConsumer<ModContainer, IElecCoreMod>> handlers;
     private List<Pair<ModContainer, IElecCoreMod>> mods;
 
-    void latePreInit(){
+    void latePreInit() {
         identifyMods();
         initAnnotations(asmData.getASMDataTable());
         init();
     }
 
-    private void identifyMods(){
+    private void identifyMods() {
         mods = FMLUtil.getLoader().getActiveModList().stream()
                 .filter(o -> o.getMod() instanceof IElecCoreMod)
-                .sorted((o1, o2) -> o1.getMod() instanceof ElecCore ? 1 :(o2.getMod() instanceof ElecCore ? -1 : Integer.compare(o1.hashCode(), o2.hashCode())))
+                .sorted((o1, o2) -> o1.getMod() instanceof ElecCore ? 1 : (o2.getMod() instanceof ElecCore ? -1 : Integer.compare(o1.hashCode(), o2.hashCode())))
                 .map(modContainer -> Pair.of(modContainer, (IElecCoreMod) modContainer.getMod()))
                 .collect(Collectors.toList());
     }
 
-    private void init(){
+    private void init() {
         init(mods);
         init(ModuleManager.INSTANCE.getActiveModules().stream()
                 .filter(mc -> mc.getModule() instanceof IElecCoreMod)
@@ -71,24 +71,24 @@ enum ElecModHandler implements IElecCoreModHandler {
                 .collect(Collectors.toList()));
     }
 
-    private void init(List<Pair<ModContainer, IElecCoreMod>> mods){
+    private void init(List<Pair<ModContainer, IElecCoreMod>> mods) {
         mods.forEach(mod -> handlers.forEach(handler -> handler.accept(mod.getLeft(), mod.getRight())));
     }
 
-    private void initAnnotations(ASMDataTable dataTable){
-        for (Map.Entry<Class<? extends Annotation>, Function<ModContainer, Object>> entry : reg.entrySet()){
-            for (ModContainer mc: FMLUtil.getLoader().getActiveModList()){
+    private void initAnnotations(ASMDataTable dataTable) {
+        for (Map.Entry<Class<? extends Annotation>, Function<ModContainer, Object>> entry : reg.entrySet()) {
+            for (ModContainer mc : FMLUtil.getLoader().getActiveModList()) {
                 parseSimpleFieldAnnotation(mc, dataTable.getAnnotationsFor(mc), entry.getKey().getName(), entry.getValue());
             }
         }
     }
 
-    private void parseSimpleFieldAnnotation(ModContainer mc_, SetMultimap<String, ASMDataTable.ASMData> annotations, String annotationClassName, Function<ModContainer, Object> retriever){
+    private void parseSimpleFieldAnnotation(ModContainer mc_, SetMultimap<String, ASMDataTable.ASMData> annotations, String annotationClassName, Function<ModContainer, Object> retriever) {
         try {
             String[] annName = annotationClassName.split("\\.");
             String annotationName = annName[annName.length - 1];
             for (ASMDataTable.ASMData targets : annotations.get(annotationClassName)) {
-                String targetMod = (String)targets.getAnnotationInfo().get("value");
+                String targetMod = (String) targets.getAnnotationInfo().get("value");
                 Field f = null;
                 Object injectedMod = null;
                 ModContainer mc = mc_;
@@ -127,7 +127,7 @@ enum ElecModHandler implements IElecCoreModHandler {
                     f.set(target, injectedMod);
                 }
             }
-        } catch (Exception e){
+        } catch (Exception e) {
             //
         }
     }
@@ -143,7 +143,7 @@ enum ElecModHandler implements IElecCoreModHandler {
     }
 
     @APIHandlerInject()
-    public void injectModHandler(IAPIHandler apiHandler){
+    public void injectModHandler(IAPIHandler apiHandler) {
         apiHandler.inject(INSTANCE, IElecCoreModHandler.class);
     }
 

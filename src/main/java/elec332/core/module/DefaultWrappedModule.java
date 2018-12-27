@@ -2,7 +2,10 @@ package elec332.core.module;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
-import elec332.core.api.module.*;
+import elec332.core.api.module.ElecModule;
+import elec332.core.api.module.IModuleContainer;
+import elec332.core.api.module.IModuleController;
+import elec332.core.api.module.IModuleInfo;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;

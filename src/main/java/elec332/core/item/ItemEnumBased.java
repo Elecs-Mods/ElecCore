@@ -42,11 +42,11 @@ public class ItemEnumBased<E extends Enum<E> & IEnumItem> extends AbstractItem i
     @SideOnly(Side.CLIENT)
     private IBakedModel[] models;
 
-    public ItemStack getStackFromType(E type){
+    public ItemStack getStackFromType(E type) {
         return getStackFromType(type, 1);
     }
 
-    public ItemStack getStackFromType(E type, int amount){
+    public ItemStack getStackFromType(E type, int amount) {
         return new ItemStack(this, amount, type.ordinal());
     }
 
@@ -58,11 +58,11 @@ public class ItemEnumBased<E extends Enum<E> & IEnumItem> extends AbstractItem i
 
     @Override
     public void getSubItems(@Nonnull CreativeTabs creativeTab, @Nonnull NonNullList<ItemStack> subItems) {
-        if (!isInCreativeTab(creativeTab)){
+        if (!isInCreativeTab(creativeTab)) {
             return;
         }
-        for (E e : values){
-            if (e.shouldShow()){
+        for (E e : values) {
+            if (e.shouldShow()) {
                 subItems.add(getStackFromType(e));
             }
         }
@@ -72,7 +72,7 @@ public class ItemEnumBased<E extends Enum<E> & IEnumItem> extends AbstractItem i
     @Nonnull
     public String getUnlocalizedName(ItemStack stack) {
         E e = stack == null ? null : get(stack.getItemDamage());
-        if (e == null){
+        if (e == null) {
             return super.getUnlocalizedName(stack);
         }
         return e.getUnlocalizedName(stack);
@@ -83,7 +83,7 @@ public class ItemEnumBased<E extends Enum<E> & IEnumItem> extends AbstractItem i
         textures = new TextureAtlasSprite[values.length][];
         for (E e : values) {
             if (nji) {
-                ((INoJsonItem)e).registerTextures(iconRegistrar);
+                ((INoJsonItem) e).registerTextures(iconRegistrar);
             } else {
                 ResourceLocation[] rls = e.getTextures();
                 textures[e.ordinal()] = new TextureAtlasSprite[rls.length];
@@ -98,11 +98,11 @@ public class ItemEnumBased<E extends Enum<E> & IEnumItem> extends AbstractItem i
     public IBakedModel getItemModel(ItemStack stack, World world, EntityLivingBase entity) {
         int i = stack.getItemDamage();
         E e = get(i);
-        if (e == null){
+        if (e == null) {
             return RenderHelper.getMissingModel();
         } else {
-            if (nji){
-                return ((INoJsonItem)e).getItemModel(stack, world, entity);
+            if (nji) {
+                return ((INoJsonItem) e).getItemModel(stack, world, entity);
             } else {
                 return models[i];
             }
@@ -114,7 +114,7 @@ public class ItemEnumBased<E extends Enum<E> & IEnumItem> extends AbstractItem i
         models = new IBakedModel[values.length];
         for (E e : values) {
             if (nji) {
-                ((INoJsonItem)e).registerModels(quadBakery, modelBakery, templateBakery);
+                ((INoJsonItem) e).registerModels(quadBakery, modelBakery, templateBakery);
             } else {
                 models[e.ordinal()] = modelBakery.itemModelForTextures(textures[e.ordinal()]);
             }
@@ -130,7 +130,7 @@ public class ItemEnumBased<E extends Enum<E> & IEnumItem> extends AbstractItem i
     }
 
 
-    private E get(int i){
+    private E get(int i) {
         return i >= values.length ? null : values[i];
     }
 

@@ -4,9 +4,9 @@ import net.minecraft.world.World;
 
 /**
  * Created by Elec332 on 23-8-2016.
- *
+ * <p>
  * The moon phases in Minecraft
- *
+ * <p>
  * Taken from MagicBees, original code can be found here:
  * https://github.com/MagicBees/MagicBees/blob/master/src/main/java/magicbees/main/utils/MoonPhase.java
  */

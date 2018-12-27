@@ -6,7 +6,7 @@ import javax.annotation.Nonnull;
 
 /**
  * Created by Elec332 on 25-9-2016.
- *
+ * <p>
  * Container for a module, somewhat like {@link ModContainer}
  */
 public interface IModuleContainer extends IModuleInfo {
@@ -22,7 +22,7 @@ public interface IModuleContainer extends IModuleInfo {
      *
      * @param event The event
      * @throws Exception If the container failed to dispatch the event to the module,
-     *          or if the module itself threw an exception processing this event
+     *                   or if the module itself threw an exception processing this event
      */
     public void invokeEvent(Object event) throws Exception;
 

@@ -28,7 +28,7 @@ import java.util.function.Function;
 @ModelHandler
 public class BlockModelHandler implements IModelHandler {
 
-    public BlockModelHandler(){
+    public BlockModelHandler() {
         blockModelHandlers = Lists.newArrayList();
         blockResourceLocations = Maps.newHashMap();
         handledBlocks = Sets.newHashSet();
@@ -40,8 +40,8 @@ public class BlockModelHandler implements IModelHandler {
 
     @Override
     public void getModelHandlers(List<?> list) {
-        for (Object o : list){
-            if (o instanceof IBlockModelHandler){
+        for (Object o : list) {
+            if (o instanceof IBlockModelHandler) {
                 blockModelHandlers.add((IBlockModelHandler) o);
             }
         }
@@ -50,7 +50,7 @@ public class BlockModelHandler implements IModelHandler {
     @Override
     public void preHandleModels() {
         ElecCore.logger.info("Prehandling Block Models");
-        for (Block block : RenderingRegistry.instance().getAllValidBlocks()){
+        for (Block block : RenderingRegistry.instance().getAllValidBlocks()) {
             for (final IBlockModelHandler handler : blockModelHandlers) {
                 if (handler.handleBlock(block)) {
                     handledBlocks.add(block.getRegistryName());
@@ -75,10 +75,10 @@ public class BlockModelHandler implements IModelHandler {
     @Nonnull
     public Map<ModelResourceLocation, IBakedModel> registerBakedModels(Function<ModelResourceLocation, IBakedModel> modelGetter) {
         Map<ModelResourceLocation, IBakedModel> ret = Maps.newHashMap();
-        for (Map.Entry<IBlockState, ModelResourceLocation> entry : blockResourceLocations.entrySet()){
+        for (Map.Entry<IBlockState, ModelResourceLocation> entry : blockResourceLocations.entrySet()) {
             ModelResourceLocation mrl = entry.getValue();
-            for (IBlockModelHandler handler : blockModelHandlers){
-                if (handler.handleBlock(entry.getKey().getBlock())){
+            for (IBlockModelHandler handler : blockModelHandlers) {
+                if (handler.handleBlock(entry.getKey().getBlock())) {
                     ret.put(mrl, handler.getModelFor(entry.getKey(), mrl.getVariant(), mrl));
                     break;
                 }

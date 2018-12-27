@@ -18,12 +18,12 @@ import static java.util.Objects.requireNonNull;
  */
 public class DefaultModuleInfo implements IModuleInfo {
 
-    public DefaultModuleInfo(IModuleInfo info){
+    public DefaultModuleInfo(IModuleInfo info) {
         this(info.getOwner(), info.getName(), info.getModDependencies(), info.getModuleDependencies(), info.autoDisableIfRequirementsNotMet(), info.alwaysEnabled(), info.getModuleClass(), info.getModuleController(), info.getCombinedName());
     }
 
     public DefaultModuleInfo(String owner, String name, String modDeps, String moduleDeps, boolean ADRIM, boolean alwaysOn, String mainClazz, IModuleController moduleController) {
-        this(owner, name, IModuleInfo.parseDependencyInfo(modDeps), Strings.isNullOrEmpty(moduleDeps) ? ImmutableList.of() : ImmutableList.copyOf(Lists.newArrayList(moduleDeps.split(";"))),  ADRIM, alwaysOn, mainClazz, moduleController, new ResourceLocation(owner, name.toLowerCase()));
+        this(owner, name, IModuleInfo.parseDependencyInfo(modDeps), Strings.isNullOrEmpty(moduleDeps) ? ImmutableList.of() : ImmutableList.copyOf(Lists.newArrayList(moduleDeps.split(";"))), ADRIM, alwaysOn, mainClazz, moduleController, new ResourceLocation(owner, name.toLowerCase()));
     }
 
     public DefaultModuleInfo(String owner, String name, List<ArtifactVersion> modDeps, List<String> moduleDeps, boolean ADRIM, boolean alwaysOn, String mainClazz, IModuleController moduleController, ResourceLocation combinedName) {

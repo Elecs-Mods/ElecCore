@@ -22,21 +22,21 @@ public interface INoBlockStateJsonBlock extends IBlockModelItemLink {
     @SideOnly(Side.CLIENT)
     public VariantList getVariantsFor(IBlockState state);
 
-    default public boolean hasTextureOverrideJson(IBlockState state){
+    default public boolean hasTextureOverrideJson(IBlockState state) {
         return true;
     }
 
-    default public ResourceLocation getTextureOverridesJson(IBlockState state, Variant variant){
-        return new ResourceLocation(variant.getModelLocation().toString()+"_overrides");
+    default public ResourceLocation getTextureOverridesJson(IBlockState state, Variant variant) {
+        return new ResourceLocation(variant.getModelLocation().toString() + "_overrides");
     }
 
-    public default void addAdditionalData(IBlockState state, Map<String, String> dataMap){
+    public default void addAdditionalData(IBlockState state, Map<String, String> dataMap) {
     }
 
     public interface RotationImpl extends INoBlockStateJsonBlock {
 
         @SideOnly(Side.CLIENT)
-        default VariantList getVariantsFor(IBlockState state){
+        default VariantList getVariantsFor(IBlockState state) {
             Block b = state.getBlock();
             ModelRotation mr = RenderHelper.getDefaultRotationFromFacing(state.getValue(IBlockStateHelper.FACING_NORMAL.getProperty()));
             Variant variant = new Variant(b.getRegistryName(), mr, false, 1);
@@ -48,7 +48,7 @@ public interface INoBlockStateJsonBlock extends IBlockModelItemLink {
     public interface DefaultImpl extends INoBlockStateJsonBlock {
 
         @Override
-        default VariantList getVariantsFor(IBlockState state){
+        default VariantList getVariantsFor(IBlockState state) {
             return new VariantList(Lists.newArrayList(new Variant(state.getBlock().getRegistryName(), ModelRotation.X0_Y0, false, 0)));
         }
 

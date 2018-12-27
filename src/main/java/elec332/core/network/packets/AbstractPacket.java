@@ -17,7 +17,7 @@ public abstract class AbstractPacket extends AbstractMessage implements IMessage
         super((NBTTagCompound) null);
     }
 
-    public AbstractPacket(Supplier<NBTTagCompound> dataSupplier){
+    public AbstractPacket(Supplier<NBTTagCompound> dataSupplier) {
         super(dataSupplier);
     }
 

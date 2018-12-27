@@ -2,7 +2,7 @@ package elec332.core.api.network;
 
 /**
  * Created by Elec332 on 23-10-2016.
- *
+ * <p>
  * A container that can register packets to an {@link IPacketRegistry}
  */
 public interface IPacketRegistryContainer {

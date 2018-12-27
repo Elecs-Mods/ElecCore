@@ -9,7 +9,7 @@ import java.util.Random;
 
 /**
  * Created by Elec332 on 16-10-2016.
- *
+ * <p>
  * Wraps an {@link IFeatureGenerator} to an {@link IAdvancedChunkPopulator},
  * which allows for some extra features.
  */

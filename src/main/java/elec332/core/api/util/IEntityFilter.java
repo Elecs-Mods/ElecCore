@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 
 /**
  * Created by Elec332 on 25-10-2016.
- *
+ * <p>
  * Entity filter
  */
 public interface IEntityFilter<P extends Entity> {

@@ -43,7 +43,7 @@ public enum Alignment {
 
     };
 
-    public <D> void renderHudPart(IDrawer<D> drawer, D toDraw, int x, int y, Object... data){
+    public <D> void renderHudPart(IDrawer<D> drawer, D toDraw, int x, int y, Object... data) {
         this.renderHudPart(drawer, toDraw, null, x, y, data);
     }
 

@@ -180,7 +180,7 @@ public class Window implements IWidgetContainer {
                     WidgetSlot slot1 = windowContainer.getSlot(i);
                     if (slot1.isItemValid(itemstack1)) {
                         if (!this.mergeItemStack(itemstack1, i, i + 1, false)) {
-                            if (itemstack1.stackSize < 1)
+                            if (itemstack1.getCount() < 1)
                                 putStackInSlot(slotID, ItemStackHelper.NULL_STACK);  //Workaround for ghost itemstacks
                             return ItemStackHelper.NULL_STACK;
                         }
@@ -188,12 +188,12 @@ public class Window implements IWidgetContainer {
                 }
                 if (slotID >= playerInvIndexStart && slotID < playerInvIndexStop - 9) {
                     if (!this.mergeItemStack(itemstack1, playerInvIndexStop - 9, playerInvIndexStop, false)) {
-                        if (itemstack1.stackSize < 1)
+                        if (itemstack1.getCount() < 1)
                             putStackInSlot(slotID, ItemStackHelper.NULL_STACK);  //Workaround for ghost itemstacks
                         return ItemStackHelper.NULL_STACK;
                     }
                 } else if (slotID >= playerInvIndexStop - 9 && slotID < playerInvIndexStop && !this.mergeItemStack(itemstack1, playerInvIndexStart, playerInvIndexStop - 9, false)) {
-                    if (itemstack1.stackSize < 1)
+                    if (itemstack1.getCount() < 1)
                         putStackInSlot(slotID, ItemStackHelper.NULL_STACK);  //Workaround for ghost itemstacks
                     return ItemStackHelper.NULL_STACK;
                 }
@@ -201,13 +201,13 @@ public class Window implements IWidgetContainer {
                 return ItemStackHelper.NULL_STACK;
             }
 
-            if (itemstack1.stackSize == 0) {
+            if (itemstack1.getCount() == 0) {
                 slot.putStack(ItemStackHelper.NULL_STACK);
             } else {
                 slot.onSlotChanged();
             }
 
-            if (itemstack1.stackSize == itemstack.stackSize) {
+            if (itemstack1.getCount() == itemstack.getCount()) {
                 return ItemStackHelper.NULL_STACK;
             }
 

@@ -7,7 +7,7 @@ import java.lang.annotation.Target;
 
 /**
  * Created by Elec332 on 29-9-2016.
- *
+ * <p>
  * Used to annotate callback classes
  */
 @Retention(RetentionPolicy.RUNTIME)

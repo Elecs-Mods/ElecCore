@@ -38,7 +38,7 @@ public interface IModuleManager {
      * A field annotated with {@param annotation} will be set with the value supplied by the {@param function}
      *
      * @param annotation The field annotation
-     * @param function The function that will provide the value for the annotated field
+     * @param function   The function that will provide the value for the annotated field
      */
     public void registerFieldProcessor(Class<? extends Annotation> annotation, Function<IModuleContainer, Object> function);
 
@@ -46,7 +46,7 @@ public interface IModuleManager {
      * This function allows other mods to implement their own way of marking/annotating/... modules.
      * The function gives the discoverer an {@link IASMDataHelper} for finding the modules and a function
      * to get the {@link IModuleController} from the supplied mod-id.
-     *
+     * <p>
      * The function has to return a non-null list of the {@link IModuleInfo}'s it found
      * (an empty list if no modules were found)
      *

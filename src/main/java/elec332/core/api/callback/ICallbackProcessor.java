@@ -4,7 +4,7 @@ import java.util.List;
 
 /**
  * Created by Elec332 on 29-9-2016.
- *
+ * <p>
  * A callback processor, every class annotated with {@link RegisteredCallback} will be instantiated and available to the
  * callback processor, which can filter out his callbacks and process them.
  */

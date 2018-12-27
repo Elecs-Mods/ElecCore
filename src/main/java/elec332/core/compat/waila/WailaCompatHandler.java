@@ -43,11 +43,11 @@ public class WailaCompatHandler implements IWailaDataProvider {
     private static WailaCompatHandler instance;
 
     @ElecModule.EventHandler
-    public void init(FMLInitializationEvent event){
-        FMLInterModComms.sendMessage(ModNames.WAILA, "register", getClass().getCanonicalName()+".register");
+    public void init(FMLInitializationEvent event) {
+        FMLInterModComms.sendMessage(ModNames.WAILA, "register", getClass().getCanonicalName() + ".register");
     }
 
-    public static void register(IWailaRegistrar registrar){
+    public static void register(IWailaRegistrar registrar) {
         registrar.registerBodyProvider(instance, Block.class);
         registrar.registerNBTProvider(instance, Block.class);
     }
@@ -160,12 +160,12 @@ public class WailaCompatHandler implements IWailaDataProvider {
     @Nonnull
     @Override
     public NBTTagCompound getNBTData(EntityPlayerMP player, TileEntity te, NBTTagCompound tag, World world, BlockPos pos) {
-        if (tag == null){
+        if (tag == null) {
             tag = new NBTTagCompound();
         }
         final NBTTagCompound fTag = tag;
         RayTraceResult rtr = RayTraceHelper.retraceBlock(world, player, pos);
-        if (rtr == null){
+        if (rtr == null) {
             fTag.setBoolean("_nope_", true);
             return fTag;
         }
@@ -212,7 +212,7 @@ public class WailaCompatHandler implements IWailaDataProvider {
             @Nonnull
             @Override
             public IBlockState getBlockState() {
-                if (ibs == null){
+                if (ibs == null) {
                     ibs = WorldHelper.getBlockState(getWorld(), getPos());
                 }
                 return ibs;

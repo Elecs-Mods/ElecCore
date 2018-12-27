@@ -22,22 +22,22 @@ public class CommandHelper {
     /**
      * @return A registry for all server commands, removes the need to regster it everytime a server starts up
      */
-    public static ISingleObjectRegistry<ICommand> getServerCommandRegistry(){
+    public static ISingleObjectRegistry<ICommand> getServerCommandRegistry() {
         return serverCommandRegistry;
     }
 
     /**
      * @return A registry for all client commands
      */
-    public static ISingleObjectRegistry<ICommand> getClientCommandRegistry(){
+    public static ISingleObjectRegistry<ICommand> getClientCommandRegistry() {
         return clientCommandRegistry;
     }
 
     /**
      * INTERNAL USE ONLY!
      */
-    public static void registerCommands(FMLServerStartingEvent event){
-        for (ICommand command : commands){
+    public static void registerCommands(FMLServerStartingEvent event) {
+        for (ICommand command : commands) {
             event.registerServerCommand(command);
         }
     }
@@ -46,7 +46,7 @@ public class CommandHelper {
     private static final List<ICommand> commands = Lists.newArrayList();
 
     static {
-        if (FMLCommonHandler.instance().getSide().isClient()){
+        if (FMLCommonHandler.instance().getSide().isClient()) {
             clientCommandRegistry = new ISingleObjectRegistry<ICommand>() {
 
                 @Override

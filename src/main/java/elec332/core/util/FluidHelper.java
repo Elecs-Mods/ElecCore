@@ -23,15 +23,15 @@ public class FluidHelper {
     /**
      * Gets the {@link IFluidHandler} at the specified location, if it exists
      *
-     * @param iba The world
-     * @param pos The position to check
+     * @param iba    The world
+     * @param pos    The position to check
      * @param facing The side to check
      * @return The {@link IFluidHandler} at the specified location, if it exists
      */
     @Nullable
-    public static IFluidHandler getFluidHandler(IBlockAccess iba, BlockPos pos, EnumFacing facing){
+    public static IFluidHandler getFluidHandler(IBlockAccess iba, BlockPos pos, EnumFacing facing) {
         TileEntity tile = WorldHelper.getTileAt(iba, pos);
-        if (tile.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, facing)){
+        if (tile.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, facing)) {
             return tile.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, facing);
         }
         return null;
@@ -41,8 +41,8 @@ public class FluidHelper {
      * Handles when a player right-clicks the specified tank
      *
      * @param player The player that clicked the tank
-     * @param hand The hand the player used
-     * @param tank The tank being clicked
+     * @param hand   The hand the player used
+     * @param tank   The tank being clicked
      * @return Whether something happened
      */
     public static boolean onTankActivated(EntityPlayer player, EnumHand hand, IFluidTank tank) {
@@ -53,8 +53,8 @@ public class FluidHelper {
     /**
      * Handles when a player right-clicks the specified {@link IFluidHandler}
      *
-     * @param player The player that clicked the tank
-     * @param hand The hand the player used
+     * @param player       The player that clicked the tank
+     * @param hand         The hand the player used
      * @param fluidHandler The fluid handler being clicked
      * @param tankCapacity The internal capacity of the {@link IFluidHandler}
      * @return Whether something happened
@@ -67,8 +67,8 @@ public class FluidHelper {
      * Attempts to drain the item the player holds into the tank
      *
      * @param player The player that right-clicked the tank
-     * @param hand The hand the player clicked with
-     * @param tank the tank to be filled
+     * @param hand   The hand the player clicked with
+     * @param tank   the tank to be filled
      * @return Whether something happened
      */
     public static boolean tryDrainItem(EntityPlayer player, EnumHand hand, IFluidTank tank) {
@@ -78,10 +78,10 @@ public class FluidHelper {
     /**
      * Attempts to drain the item the player holds into the tank
      *
-     * @param player The player that right-clicked the tank
-     * @param hand The hand the player clicked with
+     * @param player       The player that right-clicked the tank
+     * @param hand         The hand the player clicked with
      * @param fluidHandler The fluid handler to be filled
-     * @param capacity The internal capacity of the {@link IFluidHandler}
+     * @param capacity     The internal capacity of the {@link IFluidHandler}
      * @return Whether something happened
      */
     public static boolean tryDrainItem(EntityPlayer player, EnumHand hand, IFluidHandler fluidHandler, int capacity) {
@@ -93,15 +93,15 @@ public class FluidHelper {
             return false;
         }
         ///////Start
-        if (stack.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, null)){
+        if (stack.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, null)) {
             IFluidHandler item = stack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, null);
             FluidStack stack1 = item.drain(capacity, false);
-            if (stack1 == null){
+            if (stack1 == null) {
                 return false;
             }
             int i = fluidHandler.fill(stack1, false);
             if (i > 0) {
-                if (player.getEntityWorld().isRemote){
+                if (player.getEntityWorld().isRemote) {
                     return true;
                 }
                 fluidHandler.fill(item.drain(i, !PlayerHelper.isPlayerInCreative(player)), true);
@@ -115,8 +115,8 @@ public class FluidHelper {
      * Attempts to fill the item the player holds with contents from the tank
      *
      * @param player The player that right-clicked the tank
-     * @param hand The hand the player clicked with
-     * @param tank the tank to be drained
+     * @param hand   The hand the player clicked with
+     * @param tank   the tank to be drained
      * @return Whether something happened
      */
     public static boolean tryFillItem(EntityPlayer player, EnumHand hand, IFluidTank tank) {
@@ -126,10 +126,10 @@ public class FluidHelper {
     /**
      * Attempts to fill the item the player holds with contents from the tank
      *
-     * @param player The player that right-clicked the tank
-     * @param hand The hand the player clicked with
+     * @param player       The player that right-clicked the tank
+     * @param hand         The hand the player clicked with
      * @param fluidHandler The fluid handler to be drained
-     * @param capacity The internal capacity of the {@link IFluidHandler}
+     * @param capacity     The internal capacity of the {@link IFluidHandler}
      * @return Whether something happened
      */
     public static boolean tryFillItem(EntityPlayer player, EnumHand hand, IFluidHandler fluidHandler, int capacity) {
@@ -141,15 +141,15 @@ public class FluidHelper {
             return false;
         }
         ///////Start
-        if (stack.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, null)){
+        if (stack.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, null)) {
             IFluidHandler item = stack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, null);
             FluidStack fluid = fluidHandler.drain(capacity, false);
-            if (fluid == null){
+            if (fluid == null) {
                 return false;
             }
             int i = item.fill(fluid, false);
-            if (i > 0){
-                if (player.getEntityWorld().isRemote){
+            if (i > 0) {
+                if (player.getEntityWorld().isRemote) {
                     return true;
                 }
                 item.fill(fluidHandler.drain(capacity, !PlayerHelper.isPlayerInCreative(player)), true);

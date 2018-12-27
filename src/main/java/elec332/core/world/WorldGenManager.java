@@ -33,7 +33,7 @@ enum WorldGenManager implements ISingleObjectRegistry<IWorldGenHook>, IWorldGenM
 
     INSTANCE;
 
-    WorldGenManager(){
+    WorldGenManager() {
         this.set = Sets.newHashSet();
         this.set_ = Collections.unmodifiableSet(set);
         this.absentGen = input -> HashMultimap.create();
@@ -47,34 +47,34 @@ enum WorldGenManager implements ISingleObjectRegistry<IWorldGenHook>, IWorldGenM
 
     @SubscribeEvent
     public void populateChunk(PopulateChunkEvent.Post event) {
-        for (IWorldGenHook wgh : set_){
+        for (IWorldGenHook wgh : set_) {
             wgh.populateChunk(event.getGenerator(), event.getWorld(), event.getRand(), event.getChunkX(), event.getChunkZ(), event.isHasVillageGenerated());
         }
     }
 
     @SubscribeEvent
-    public void chunkLoadFromDisk(ChunkDataEvent.Load event){
+    public void chunkLoadFromDisk(ChunkDataEvent.Load event) {
         Chunk chunk = event.getChunk();
         NBTTagCompound tag = event.getData().getCompoundTag(KEY);
-        for (IWorldGenHook wgh : set_){
+        for (IWorldGenHook wgh : set_) {
             wgh.chunkLoadedFromDisk(chunk, tag, this);
         }
     }
 
     @SubscribeEvent
-    public void chunkSaveToDisk(ChunkDataEvent.Save event){
+    public void chunkSaveToDisk(ChunkDataEvent.Save event) {
         Chunk chunk = event.getChunk();
         NBTTagCompound tag = new NBTTagCompound();
-        for (IWorldGenHook wgh : set_){
+        for (IWorldGenHook wgh : set_) {
             wgh.chunkSavedToDisk(chunk, tag, this);
         }
         event.getData().setTag(KEY, tag);
     }
 
     @SubscribeEvent
-    public void onWorldTick(TickEvent.WorldTickEvent event){
+    public void onWorldTick(TickEvent.WorldTickEvent event) {
         SetMultimap<ChunkPos, IFeatureGenerator> map = retroGenChunks.computeIfAbsent(WorldHelper.getDimID(event.world), absentGen);
-        if (!map.isEmpty()){
+        if (!map.isEmpty()) {
             ChunkPos pos = map.keySet().iterator().next();
             Set<IFeatureGenerator> s = map.removeAll(pos);
             if (s != null && !s.isEmpty()) {
@@ -93,7 +93,7 @@ enum WorldGenManager implements ISingleObjectRegistry<IWorldGenHook>, IWorldGenM
 
     private class ChunkPopulatorWrapper implements IWorldGenHook, IFeatureGenerator {
 
-        private ChunkPopulatorWrapper(IAdvancedChunkPopulator chunkPopulator, String owner){
+        private ChunkPopulatorWrapper(IAdvancedChunkPopulator chunkPopulator, String owner) {
             this.chunkPopulator = chunkPopulator;
             this.owner = owner.toLowerCase();
         }
@@ -108,7 +108,7 @@ enum WorldGenManager implements ISingleObjectRegistry<IWorldGenHook>, IWorldGenM
         }
 
         @Override
-        public void populateChunk(IChunkGenerator chunkGenerator, World world, Random rand, int chunkX, int chunkZ, boolean hasVillageGenerated){
+        public void populateChunk(IChunkGenerator chunkGenerator, World world, Random rand, int chunkX, int chunkZ, boolean hasVillageGenerated) {
             chunkPopulator.populateChunk(chunkGenerator, world, rand, chunkX, chunkZ, hasVillageGenerated);
             this.lastKey = chunkPopulator.getGenKey();
         }
@@ -117,7 +117,7 @@ enum WorldGenManager implements ISingleObjectRegistry<IWorldGenHook>, IWorldGenM
         public void chunkLoadedFromDisk(Chunk chunk, NBTTagCompound data, IWorldGenManager worldGenManager) {
             NBTTagCompound tag = data.getCompoundTag(owner);
             boolean b = tag.hasKey(chunkPopulator.getName());
-            if((!b || !chunkPopulator.getGenKey().equals(tag.getString(chunkPopulator.getName()))) && chunkPopulator.shouldRegen(b)){
+            if ((!b || !chunkPopulator.getGenKey().equals(tag.getString(chunkPopulator.getName()))) && chunkPopulator.shouldRegen(b)) {
                 worldGenManager.registerForRetroGen(chunk.getWorld(), chunk.getPos(), this);
             } else {
                 this.lastKey = chunkPopulator.getGenKey();
@@ -144,14 +144,14 @@ enum WorldGenManager implements ISingleObjectRegistry<IWorldGenHook>, IWorldGenM
 
     @Override
     public boolean register(IAdvancedChunkPopulator chunkPopulator) {
-        if (!FMLUtil.isInModInitialisation()){
+        if (!FMLUtil.isInModInitialisation()) {
             return false;
         }
         ModContainer mc = FMLUtil.getLoader().activeModContainer();
-        if (mc == null){
+        if (mc == null) {
             throw new IllegalArgumentException();
         }
-        return register((IWorldGenHook)new ChunkPopulatorWrapper(chunkPopulator, mc.getModId()));
+        return register((IWorldGenHook) new ChunkPopulatorWrapper(chunkPopulator, mc.getModId()));
     }
 
     @Override
@@ -161,7 +161,7 @@ enum WorldGenManager implements ISingleObjectRegistry<IWorldGenHook>, IWorldGenM
 
     @Override
     public void registerForRetroGen(@Nonnull World world, @Nonnull ChunkPos chunk, IFeatureGenerator... featureGenerators) {
-        if (featureGenerators == null || featureGenerators.length == 0){
+        if (featureGenerators == null || featureGenerators.length == 0) {
             return;
         }
         registerForRetroGen(world, chunk, Lists.newArrayList());
@@ -169,7 +169,7 @@ enum WorldGenManager implements ISingleObjectRegistry<IWorldGenHook>, IWorldGenM
 
     @Override
     public void registerForRetroGen(@Nonnull World world, @Nonnull ChunkPos chunk, Collection<IFeatureGenerator> featureGenerators) {
-        if (featureGenerators == null || featureGenerators.size() == 0){
+        if (featureGenerators == null || featureGenerators.size() == 0) {
             return;
         }
         retroGenChunks.computeIfAbsent(WorldHelper.getDimID(world), absentGen).putAll(chunk, featureGenerators);
@@ -186,7 +186,7 @@ enum WorldGenManager implements ISingleObjectRegistry<IWorldGenHook>, IWorldGenM
     }
 
     @APIHandlerInject
-    public void injectWorldGenManager(IAPIHandler apiHandler){
+    public void injectWorldGenManager(IAPIHandler apiHandler) {
         apiHandler.inject(INSTANCE, IWorldGenManager.class);
     }
 

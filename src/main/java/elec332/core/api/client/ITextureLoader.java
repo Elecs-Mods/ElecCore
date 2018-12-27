@@ -6,7 +6,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 /**
  * Created by Elec332 on 9-12-2015.
- *
+ * <p>
  * Can be used by objects that need to register textures.
  * Needs to be registered by calling
  * {@link IElecRenderingRegistry#registerLoader(ITextureLoader)}

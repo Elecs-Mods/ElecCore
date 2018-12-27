@@ -43,11 +43,11 @@ public enum SchematicHelper {
      * @param file The file
      * @return The schematic loaded from the specified file
      */
-    public Schematic loadSchematic(File file){
+    public Schematic loadSchematic(File file) {
         try {
             return loadSchematic(new FileInputStream(file));
-        } catch (IOException e){
-            ElecCore.logger.fatal("Error loading schematic at: "+file);
+        } catch (IOException e) {
+            ElecCore.logger.fatal("Error loading schematic at: " + file);
             ElecCore.logger.fatal(e);
             return null;
         }
@@ -59,11 +59,11 @@ public enum SchematicHelper {
      * @param rl The Resource location
      * @return The schematic loaded from the specified {@link ResourceLocation}
      */
-    public Schematic loadSchematic(ResourceLocation rl){
+    public Schematic loadSchematic(ResourceLocation rl) {
         try {
             return loadSchematic(IOHelper.getFromResource(rl));
-        } catch (IOException e){
-            ElecCore.logger.fatal("Error loading schematic at: "+rl);
+        } catch (IOException e) {
+            ElecCore.logger.fatal("Error loading schematic at: " + rl);
             ElecCore.logger.fatal(e);
             return null;
         }
@@ -75,12 +75,12 @@ public enum SchematicHelper {
      * @param is The inputstream
      * @return The schematic loaded from the specified {@link InputStream}
      */
-    public Schematic loadSchematic(InputStream is){
+    public Schematic loadSchematic(InputStream is) {
         try {
             NBTTagCompound tag = CompressedStreamTools.readCompressed(is);
             is.close();
             return loadModSchematic(tag);
-        } catch (Exception e){
+        } catch (Exception e) {
             ElecCore.logger.fatal("Error loading schematic.");
             ElecCore.logger.fatal(e);
             return null;
@@ -93,7 +93,7 @@ public enum SchematicHelper {
      * @param nbt The NBT data
      * @return The loaded ModSchematic.
      */
-    public Schematic loadModSchematic(NBTTagCompound nbt){
+    public Schematic loadModSchematic(NBTTagCompound nbt) {
         try {
             NBTTagList tileEntities = nbt.getTagList("TileEntities", NBTTypes.COMPOUND.getID());
             short width = nbt.getShort("Width");
@@ -145,7 +145,7 @@ public enum SchematicHelper {
             if (block != Blocks.AIR) {
                 if (!map.containsKey(block)) {
                     ResourceLocation rl = RegistryHelper.getBlockRegistry().getKey(block);
-                    if (rl == null){
+                    if (rl == null) {
                         blocks[i] = -1;
                         continue;
                     }
@@ -170,8 +170,8 @@ public enum SchematicHelper {
     /**
      * Creates a Schematic from the specified area.
      *
-     * @param world The world
-     * @param area The area in the World from which a schematic will be created.
+     * @param world   The world
+     * @param area    The area in the World from which a schematic will be created.
      * @param horizon The horizon, AKA offset down
      */
     public Schematic createModSchematic(IBlockAccess world, Area area, short horizon) {
@@ -217,8 +217,8 @@ public enum SchematicHelper {
      * Inefficient, usage of the default implementation is recommended
      */
     @SuppressWarnings("all")
-    public Schematic wrap(ISchematic schematic){
-        if (schematic instanceof Schematic){
+    public Schematic wrap(ISchematic schematic) {
+        if (schematic instanceof Schematic) {
             return (Schematic) schematic;
         }
         return createModSchematic(new IBlockAccess() {
@@ -227,7 +227,7 @@ public enum SchematicHelper {
             @Override
             public TileEntity getTileEntity(BlockPos pos) {
                 NBTTagCompound tag = schematic.getTileData(pos.getX(), pos.getY(), pos.getZ());
-                if (tag != null){
+                if (tag != null) {
                     TileEntity.create(null, tag);
                 }
                 return null;

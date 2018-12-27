@@ -4,11 +4,10 @@ import elec332.core.api.network.IPacketDispatcher;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 
 /**
  * Created by Elec332 on 23-10-2016.
- *
+ * <p>
  * Packet manager for simple packets
  */
 public interface ISimpleNetworkPacketManager {
@@ -76,7 +75,6 @@ public interface ISimpleNetworkPacketManager {
      * @param player        The player to send it to
      */
     public void sendTo(ByteBuf data, ISimplePacketHandler packetHandler, EntityPlayerMP player);
-
 
 
     /**
@@ -151,7 +149,7 @@ public interface ISimpleNetworkPacketManager {
      * Send this message to the server.
      * Uses the {@link ISimplePacketHandler} defined by {@param packetHandler}.
      *
-     * @param message The message to send
+     * @param message       The message to send
      * @param packetHandler The packet-handler the client has to use
      */
     public void sendToServer(ISimplePacket message, ISimplePacketHandler packetHandler);

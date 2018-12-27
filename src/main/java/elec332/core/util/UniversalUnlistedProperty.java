@@ -6,7 +6,7 @@ import java.util.function.Predicate;
 
 /**
  * Created by Elec332 on 4-3-2016.
- *
+ * <p>
  * Universal implementation of {@link IUnlistedProperty}
  */
 public class UniversalUnlistedProperty<T> implements IUnlistedProperty<T> {

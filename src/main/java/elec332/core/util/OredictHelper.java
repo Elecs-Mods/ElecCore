@@ -17,7 +17,7 @@ public class OredictHelper {
     private static List<String> allOres = Lists.newArrayList(), allIngots = Lists.newArrayList(), allDusts = Lists.newArrayList();
     private static List<String> allOres_ = Collections.unmodifiableList(allOres), allIngots_ = Collections.unmodifiableList(allIngots), allDusts_ = Collections.unmodifiableList(allDusts);
 
-    public static void initLists(){
+    public static void initLists() {
         allDusts.clear();
         allIngots.clear();
         allOres.clear();
@@ -44,39 +44,39 @@ public class OredictHelper {
         return allIngots_;
     }
 
-    public static List<String> getAllDusts(){
+    public static List<String> getAllDusts() {
         return allDusts_;
     }
 
-    public static String concatOreName(String oreName){
+    public static String concatOreName(String oreName) {
         return oreName.replace("ore", "");
     }
 
-    public static String concatIngotName(String ingotName){
+    public static String concatIngotName(String ingotName) {
         return ingotName.replace("ingot", "");
     }
 
-    public static boolean isOre(ItemStack stack){
+    public static boolean isOre(ItemStack stack) {
         return getOreIDs(stack).length > 0;
     }
 
-    public static List<String> getOreNames(ItemStack stack){
+    public static List<String> getOreNames(ItemStack stack) {
         List<String> ret = Lists.newArrayList();
-        for (int i : getOreIDs(stack)){
+        for (int i : getOreIDs(stack)) {
             ret.add(OreDictionary.getOreName(i));
         }
         return ret;
     }
 
-    public static int[] getOreIDs(ItemStack stack){
+    public static int[] getOreIDs(ItemStack stack) {
         return OreDictionary.getOreIDs(stack);
     }
 
-    public static List<ItemStack> getOres(String name){
+    public static List<ItemStack> getOres(String name) {
         return getOres(name, false);
     }
 
-    public static List<ItemStack> getOres(String name, boolean alwaysCreateEntry){
+    public static List<ItemStack> getOres(String name, boolean alwaysCreateEntry) {
         return OreDictionary.getOres(name, alwaysCreateEntry);
     }
 

@@ -21,7 +21,7 @@ public class TickHandler {
         serverCallbacks = new ArrayDeque<Runnable>();
         clientTickables = new ArrayDeque<Runnable>();
         serverTickables = new ArrayDeque<Runnable>();
-        MinecraftForge.EVENT_BUS.register(new Object(){
+        MinecraftForge.EVENT_BUS.register(new Object() {
 
             @SubscribeEvent
             public void onTick(TickEvent.ServerTickEvent event) {

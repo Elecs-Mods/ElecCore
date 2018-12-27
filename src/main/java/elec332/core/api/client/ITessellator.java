@@ -6,7 +6,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 /**
  * Created by Elec332 on 25-11-2015.
- *
+ * <p>
  * A tessellator that works like 1.7.10, meaning that
  * it remembers the brightness, opaque and color settings, and that
  * {@link ITessellator#addVertexWithUV(double, double, double, double, double)}

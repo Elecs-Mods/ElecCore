@@ -5,7 +5,7 @@ import net.minecraftforge.registries.IForgeRegistryEntry;
 
 /**
  * Created by Elec332 on 12-10-2017.
- *
+ * <p>
  * Can be used to register objects to an {@link IForgeRegistry},
  * this uses the normal forge events
  */

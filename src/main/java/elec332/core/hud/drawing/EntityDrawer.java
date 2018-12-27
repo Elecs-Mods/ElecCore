@@ -17,7 +17,7 @@ public class EntityDrawer implements IDrawer<Entity> {
 
     public static final IDrawer<Entity> INSTANCE = new EntityDrawer(0, 0, 30);
 
-    public EntityDrawer(float xOffset, float yOffset, float scale){
+    public EntityDrawer(float xOffset, float yOffset, float scale) {
         this.xOffset = xOffset;
         this.yOffset = yOffset;
         this.scale = scale;
@@ -32,12 +32,12 @@ public class EntityDrawer implements IDrawer<Entity> {
         y += yOffset;
         GlStateManager.enableColorMaterial();
         GlStateManager.pushMatrix();
-        GlStateManager.translate((float)x, (float)y, 50.0F);
+        GlStateManager.translate((float) x, (float) y, 50.0F);
 
         float scale = this.scale;
 
-        if (data != null){
-            if (data.length > 0){
+        if (data != null) {
+            if (data.length > 0) {
                 GlStateManager.rotate((float) data[0], 0, 1, 0);
             }
             if (data.length > 1) {

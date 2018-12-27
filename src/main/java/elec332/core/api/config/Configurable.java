@@ -9,7 +9,7 @@ import java.lang.annotation.Target;
 
 /**
  * Created by Elec332 on 9-4-2015.
- *
+ * <p>
  * Used to annotate configurable fields (or methods) in your configuration class
  */
 @Retention(RetentionPolicy.RUNTIME)
@@ -49,7 +49,7 @@ public @interface Configurable {
     /**
      * Used to annotate config classes, can be used to set a category for all fields in the annotated class,
      * and can also be used to create comments for this category.
-     *
+     * <p>
      * If {@param inherit} is true, this category will be a sub-category of the superclass (if it is annotated with {@link Configurable.Class})
      */
     @Retention(RetentionPolicy.RUNTIME)

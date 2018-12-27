@@ -28,28 +28,28 @@ public class InventoryHelper {
     /**
      * Gets the tooltip for an {@link ItemStack}
      *
-     * @param stack The {@link ItemStack} you want get the tooltip from
+     * @param stack    The {@link ItemStack} you want get the tooltip from
      * @param playerIn The player holding the stack
      * @param advanced Whether to display extra data
      * @return The tooltip for the provided {@link ItemStack}
      */
     @SideOnly(Side.CLIENT)
-    public static List<String> getTooltip(ItemStack stack, @Nullable EntityPlayer playerIn, boolean advanced){
+    public static List<String> getTooltip(ItemStack stack, @Nullable EntityPlayer playerIn, boolean advanced) {
         return stack.getTooltip(playerIn, advanced ? ITooltipFlag.TooltipFlags.ADVANCED : ITooltipFlag.TooltipFlags.NORMAL);
     }
 
     /**
      * Gets the tooltip for an {@link Item}
      *
-     * @param item The {@link Item} you want get the tooltip from
-     * @param stack The {@link ItemStack} of the item
-     * @param world The world
-     * @param tooltip The tooltip list, data will be added to this list
+     * @param item     The {@link Item} you want get the tooltip from
+     * @param stack    The {@link ItemStack} of the item
+     * @param world    The world
+     * @param tooltip  The tooltip list, data will be added to this list
      * @param advanced Whether to display extra data
      * @return The tooltip for the provided {@link Item}
      */
     @SideOnly(Side.CLIENT)
-    public static void addInformation(Item item, ItemStack stack, World world, List<String> tooltip, boolean advanced){
+    public static void addInformation(Item item, ItemStack stack, World world, List<String> tooltip, boolean advanced) {
         item.addInformation(stack, world, tooltip, advanced ? ITooltipFlag.TooltipFlags.ADVANCED : ITooltipFlag.TooltipFlags.NORMAL);
     }
 
@@ -57,10 +57,10 @@ public class InventoryHelper {
      * Reads an inventory from NBT.
      * The list is first cleared, and then the contents will be read from NBT and added to the list
      *
-     * @param data The NBT data
+     * @param data  The NBT data
      * @param items Inventory representation
      */
-    public static void readItemsFromNBT(@Nonnull NBTTagCompound data, @Nonnull List<ItemStack> items){
+    public static void readItemsFromNBT(@Nonnull NBTTagCompound data, @Nonnull List<ItemStack> items) {
         items.clear();
         NBTTagList nbttaglist = data.getTagList("Items", 10);
 
@@ -80,25 +80,25 @@ public class InventoryHelper {
      * @param items Inventory representation
      * @return The NBT tag with the inventory data
      */
-    public static NBTTagCompound writeItemsToNBT(@Nonnull List<ItemStack> items){
+    public static NBTTagCompound writeItemsToNBT(@Nonnull List<ItemStack> items) {
         return writeItemsToNBT(new NBTTagCompound(), items);
     }
 
     /**
      * Writes an inventory to NBT
      *
-     * @param tag The base NBT tag, to which the inventory data will be written
+     * @param tag   The base NBT tag, to which the inventory data will be written
      * @param items Inventory representation
      * @return The original NBT tag with the inventory data added
      */
-    public static NBTTagCompound writeItemsToNBT(@Nonnull NBTTagCompound tag, @Nonnull List<ItemStack> items){
+    public static NBTTagCompound writeItemsToNBT(@Nonnull NBTTagCompound tag, @Nonnull List<ItemStack> items) {
         NBTTagList nbttaglist = new NBTTagList();
 
         for (int i = 0; i < items.size(); ++i) {
             ItemStack itemstack = items.get(i);
             if (ItemStackHelper.isStackValid(itemstack)) {
                 NBTTagCompound nbttagcompound = new NBTTagCompound();
-                nbttagcompound.setByte("Slot", (byte)i);
+                nbttagcompound.setByte("Slot", (byte) i);
                 itemstack.writeToNBT(nbttagcompound);
                 nbttaglist.appendTag(nbttagcompound);
             }
@@ -115,7 +115,7 @@ public class InventoryHelper {
      */
     @Nonnull
     @Deprecated
-    public static ItemStack copyItemStack(@Nullable ItemStack stack){
+    public static ItemStack copyItemStack(@Nullable ItemStack stack) {
         return ItemStackHelper.copyItemStack(stack);
     }
 
@@ -124,7 +124,7 @@ public class InventoryHelper {
      *
      * @param inventory The inventory
      * @param itemstack The stack
-     * @param simulate Whether to simulate the insertion
+     * @param simulate  Whether to simulate the insertion
      * @return Whether the entire stack was added to the inventory
      */
     public static boolean addItemToInventory(IItemHandler inventory, ItemStack itemstack, boolean simulate) {
@@ -147,9 +147,9 @@ public class InventoryHelper {
      *
      * @param inventory The inventory
      * @param itemstack The stack
-     * @param start Starting index
-     * @param end Stop index (exclusive)
-     * @param simulate Whether to simulate the insertion
+     * @param start     Starting index
+     * @param end       Stop index (exclusive)
+     * @param simulate  Whether to simulate the insertion
      * @return Whether the entire stack was added to the inventory
      */
     public static boolean addItemToInventory(IItemHandler inventory, ItemStack itemstack, int start, int end, boolean simulate) {
@@ -159,7 +159,7 @@ public class InventoryHelper {
     /**
      * Checks if the NBT data on both stacks is the same
      *
-     * @param first ItemStack 1
+     * @param first  ItemStack 1
      * @param second ItemStack 2
      * @return Whether the NBT data on both stacks is the same
      */
@@ -170,7 +170,7 @@ public class InventoryHelper {
     /**
      * Checks if the stacks are the same, ignoring NBT data and stack size
      *
-     * @param first ItemStack 1
+     * @param first  ItemStack 1
      * @param second ItemStack 2
      * @return Whether the stacks are the same, ignoring NBT data and stack size
      */
@@ -190,7 +190,7 @@ public class InventoryHelper {
     /**
      * Checks if the stacks are the same, ignoring stack size
      *
-     * @param first ItemStack 1
+     * @param first  ItemStack 1
      * @param second ItemStack 2
      * @return Whether the stacks are the same, ignoring stack size
      */
@@ -202,8 +202,8 @@ public class InventoryHelper {
      * Gets the first empty slot in the inventory between the provided bounds
      *
      * @param inventory The inventory to be checked
-     * @param start Starting index
-     * @param end Stop index (exclusive)
+     * @param start     Starting index
+     * @param end       Stop index (exclusive)
      * @return The first empty slot in the inventory between the provided bounds
      */
     public static int getEmptySlot(IItemHandler inventory, int start, int end) {
@@ -233,10 +233,10 @@ public class InventoryHelper {
         return copy;
     }
 
-    public static int amountOfOreDictItemsInventoryHas(IItemHandler inventory, String s, int i){
+    public static int amountOfOreDictItemsInventoryHas(IItemHandler inventory, String s, int i) {
         int total = 0;
-        if (doesInventoryHaveOreDictItem(inventory, s)){
-            for (ItemStack oreStack : OreDictionary.getOres(s)){
+        if (doesInventoryHaveOreDictItem(inventory, s)) {
+            for (ItemStack oreStack : OreDictionary.getOres(s)) {
                 for (int p = 0; p < amountOfItemsInventoryHas(inventory, oreStack); p++) {
                     total++;
                 }
@@ -245,8 +245,8 @@ public class InventoryHelper {
         return total;
     }
 
-    public static boolean doesInventoryHaveOreDictItem(IItemHandler inventory, String s){
-        for (ItemStack stack : OreDictionary.getOres(s)){
+    public static boolean doesInventoryHaveOreDictItem(IItemHandler inventory, String s) {
+        for (ItemStack stack : OreDictionary.getOres(s)) {
             if (getFirstSlotWithItemStackNoNBT(inventory, stack) != -1) {
                 return true;
             }
@@ -254,12 +254,12 @@ public class InventoryHelper {
         return false;
     }
 
-    public static int amountOfItemsInventoryHas(IItemHandler inventory, ItemStack stack){
+    public static int amountOfItemsInventoryHas(IItemHandler inventory, ItemStack stack) {
         int total = 0;
-        if (getFirstSlotWithItemStackNoNBT(inventory, stack) != -1){
-            for (int q : getSlotsWithItemStackNoNBT(inventory, stack)){
+        if (getFirstSlotWithItemStackNoNBT(inventory, stack) != -1) {
+            for (int q : getSlotsWithItemStackNoNBT(inventory, stack)) {
                 ItemStack inSlot = inventory.getStackInSlot(q);
-                for (int p = 0; p < inSlot.stackSize; p++) {
+                for (int p = 0; p < inSlot.getCount(); p++) {
                     total++;
                 }
             }
@@ -267,11 +267,11 @@ public class InventoryHelper {
         return total;
     }
 
-    public static Integer[] getSlotsWithItemStackNoNBT(IItemHandler inventory, ItemStack stack){
+    public static Integer[] getSlotsWithItemStackNoNBT(IItemHandler inventory, ItemStack stack) {
         ArrayList<Integer> ret = new ArrayList<Integer>();
-        for(int i = 0; i < inventory.getSlots(); i++) {
+        for (int i = 0; i < inventory.getSlots(); i++) {
             ItemStack stackInSlot = inventory.getStackInSlot(i);
-            if(ItemStackHelper.isStackValid(stackInSlot) && stack != null && stackInSlot.getItem() == stack.getItem()) {
+            if (ItemStackHelper.isStackValid(stackInSlot) && stack != null && stackInSlot.getItem() == stack.getItem()) {
                 if (stackInSlot.getItemDamage() == stack.getItemDamage() || stack.getItemDamage() == OreDictionary.WILDCARD_VALUE) {
                     ret.add(i);
                 }
@@ -286,14 +286,14 @@ public class InventoryHelper {
         return null;
     }
 
-    public static int getFirstSlotWithItemStackNoNBT(IItemHandler inventory, ItemStack stack){
-        for(int i = 0; i < inventory.getSlots(); ++i) {
+    public static int getFirstSlotWithItemStackNoNBT(IItemHandler inventory, ItemStack stack) {
+        for (int i = 0; i < inventory.getSlots(); ++i) {
             ItemStack stackInSlot = inventory.getStackInSlot(i);
-            if(ItemStackHelper.isStackValid(stackInSlot) && stack != null && stackInSlot.getItem() == stack.getItem()) {
-                if(stackInSlot.getItemDamage() == stack.getItemDamage() || stack.getItemDamage() == OreDictionary.WILDCARD_VALUE) {
+            if (ItemStackHelper.isStackValid(stackInSlot) && stack != null && stackInSlot.getItem() == stack.getItem()) {
+                if (stackInSlot.getItemDamage() == stack.getItemDamage() || stack.getItemDamage() == OreDictionary.WILDCARD_VALUE) {
                     return i;
                 }
-                if(!stackInSlot.getItem().getHasSubtypes() && !stack.getItem().getHasSubtypes()) {
+                if (!stackInSlot.getItem().getHasSubtypes() && !stack.getItem().getHasSubtypes()) {
                     return i;
                 }
             }

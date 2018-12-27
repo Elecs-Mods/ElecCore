@@ -9,7 +9,7 @@ import java.util.function.Consumer;
 
 /**
  * Created by Elec332 on 20-10-2016.
- *
+ * <p>
  * Can be implemented in main mod or module classes,
  * provides some extra features/helpers
  */

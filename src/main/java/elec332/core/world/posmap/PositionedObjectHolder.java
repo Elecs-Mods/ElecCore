@@ -16,7 +16,7 @@ import java.util.Set;
 
 /**
  * Created by Elec332 on 4-2-2016.
- *
+ * <p>
  * A fast way to store objects in a 3D coordinate based map
  */
 public class PositionedObjectHolder<T> implements IClearable {
@@ -96,7 +96,7 @@ public class PositionedObjectHolder<T> implements IClearable {
     /**
      * Puts an object at the specified position
      *
-     * @param t The object to be stored
+     * @param t   The object to be stored
      * @param pos The position
      */
     public void put(T t, BlockPos pos) {
@@ -205,8 +205,8 @@ public class PositionedObjectHolder<T> implements IClearable {
          * Gets called when the contents at the specified location have changed
          *
          * @param object The new object in case of an addition, the old object in case of a removal
-         * @param pos The position that has changed
-         * @param add True if the object was added, false if the object was removed
+         * @param pos    The position that has changed
+         * @param add    True if the object was added, false if the object was removed
          */
         public void onChange(T object, BlockPos pos, boolean add);
 

@@ -12,7 +12,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
  */
 public class ItemStackDrawer implements IDrawer<ItemStack> {
 
-    private ItemStackDrawer(){
+    private ItemStackDrawer() {
     }
 
     public static final IDrawer<ItemStack> INSTANCE;
@@ -21,7 +21,7 @@ public class ItemStackDrawer implements IDrawer<ItemStack> {
     @SideOnly(Side.CLIENT)
     public int draw(ItemStack drawable, Minecraft mc, Alignment alignment, int x, int y, Object... data) {
         RenderHelper.enableGUIStandardItemLighting();
-        mc.renderItem.renderItemIntoGUI(drawable, x, y);
+        mc.getRenderItem().renderItemIntoGUI(drawable, x, y);
         RenderHelper.disableStandardItemLighting();
         return 18;
     }

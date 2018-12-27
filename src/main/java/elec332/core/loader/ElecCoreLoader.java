@@ -20,7 +20,7 @@ public class ElecCoreLoader {
     private ASMDataHandler asmDataHandler;
 
     @Mod.EventHandler
-    public void construct(FMLConstructionEvent event){
+    public void construct(FMLConstructionEvent event) {
         asmDataHandler = ASMDataHandler.INSTANCE; //Static load
     }
 

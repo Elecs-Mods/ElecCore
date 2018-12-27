@@ -57,8 +57,8 @@ public interface IElecPacketRegistry extends IPacketRegistry {
      * Registers a packet to this packet registry
      *
      * @param messageHandler The message handler
-     * @param messageType The message class
-     * @param side the side for the packet handler
+     * @param messageType    The message class
+     * @param side           the side for the packet handler
      */
     @Override
     public <M extends IMessage, R extends IMessage> void registerPacket(IMessageHandler<M, R> messageHandler, Class<M> messageType, Side side);

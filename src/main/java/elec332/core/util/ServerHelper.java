@@ -21,12 +21,12 @@ import java.util.stream.Collectors;
 /**
  * Created by Elec332 on 28-5-2015.
  */
-public class ServerHelper  {
+public class ServerHelper {
 
     /**
      * @return All online players
      */
-    public static List<EntityPlayerMP> getOnlinePlayers(){
+    public static List<EntityPlayerMP> getOnlinePlayers() {
         return getMinecraftServer().getPlayerList().getPlayers();
     }
 
@@ -36,7 +36,7 @@ public class ServerHelper  {
      * @param uuid The player UUID to be checked
      * @return Whether the specified player is online
      */
-    public static boolean isPlayerOnline(UUID uuid){
+    public static boolean isPlayerOnline(UUID uuid) {
         return getOnlinePlayers().stream().anyMatch((Predicate<EntityPlayerMP>) player -> PlayerHelper.getPlayerUUID(player).equals(uuid));
     }
 
@@ -47,7 +47,7 @@ public class ServerHelper  {
      * @return The player whose UUID matches the one provided, can be null
      */
     @Nullable
-    public static EntityPlayerMP getPlayer(UUID uuid){
+    public static EntityPlayerMP getPlayer(UUID uuid) {
         return getOnlinePlayers().stream()
                 .filter((Predicate<EntityPlayerMP>) player -> PlayerHelper.getPlayerUUID(player).equals(uuid))
                 .findFirst() //The returned stream is lazy, so this is perfectly fine
@@ -59,10 +59,10 @@ public class ServerHelper  {
      * and need to be notified of changes to it
      *
      * @param world The world in which the position is located
-     * @param pos The position
+     * @param pos   The position
      * @return All players who need to be notified of chenges to the specified location
      */
-    public static List<EntityPlayerMP> getAllPlayersWatchingBlock(World world, BlockPos pos){
+    public static List<EntityPlayerMP> getAllPlayersWatchingBlock(World world, BlockPos pos) {
         return getAllPlayersWatchingBlock(world, pos.getX(), pos.getZ());
     }
 
@@ -71,11 +71,11 @@ public class ServerHelper  {
      * and need to be notified of changes to it
      *
      * @param world The world in which the position is located
-     * @param x The x coordinate
-     * @param z The z coordinate
+     * @param x     The x coordinate
+     * @param z     The z coordinate
      * @return All players who need to be notified of chenges to the specified location
      */
-    public static List<EntityPlayerMP> getAllPlayersWatchingBlock(World world, int x, int z){
+    public static List<EntityPlayerMP> getAllPlayersWatchingBlock(World world, int x, int z) {
         if (world instanceof WorldServer) {
             PlayerChunkMap playerManager = ((WorldServer) world).getPlayerChunkMap();
             return getOnlinePlayers().stream()
@@ -89,12 +89,12 @@ public class ServerHelper  {
      * Sends a message to all players who have the provided position loaded,
      * and need to be notified of changes to it
      *
-     * @param world The world in which the position is located
-     * @param pos The position
-     * @param message The message to be sent
+     * @param world          The world in which the position is located
+     * @param pos            The position
+     * @param message        The message to be sent
      * @param networkHandler The network-handler who has to send the messages
      */
-    public static void sendMessageToAllPlayersWatchingBlock(World world, BlockPos pos, IMessage message, INetworkHandler networkHandler){
+    public static void sendMessageToAllPlayersWatchingBlock(World world, BlockPos pos, IMessage message, INetworkHandler networkHandler) {
         getAllPlayersWatchingBlock(world, pos).forEach(player -> networkHandler.sendTo(message, player));
     }
 
@@ -104,7 +104,7 @@ public class ServerHelper  {
      * @param dimension The dimension ID
      * @return All players in the provided dimension
      */
-    public static List<EntityPlayerMP> getAllPlayersInDimension(final int dimension){
+    public static List<EntityPlayerMP> getAllPlayersInDimension(final int dimension) {
         return getOnlinePlayers().stream()
                 .filter((Predicate<EntityPlayerMP>) player -> WorldHelper.getDimID(player.getEntityWorld()) == dimension)
                 .collect(Collectors.toList());
@@ -113,15 +113,15 @@ public class ServerHelper  {
     /**
      * FSends a message to all players in the world, by dimension ID
      *
-     * @param dimension The dimension ID
-     * @param message The message to be sent
+     * @param dimension      The dimension ID
+     * @param message        The message to be sent
      * @param networkHandler The network-handler who has to send the messages
      */
-    public static void sendMessageToAllPlayersInDimension(int dimension, IMessage message, INetworkHandler networkHandler){
+    public static void sendMessageToAllPlayersInDimension(int dimension, IMessage message, INetworkHandler networkHandler) {
         getAllPlayersInDimension(dimension).forEach(playerMP -> networkHandler.sendTo(message, playerMP));
     }
 
-    public static MinecraftServer getMinecraftServer(){
+    public static MinecraftServer getMinecraftServer() {
         return FMLCommonHandler.instance().getMinecraftServerInstance();
     }
 

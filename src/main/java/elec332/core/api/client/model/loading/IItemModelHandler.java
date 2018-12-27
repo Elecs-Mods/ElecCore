@@ -6,7 +6,7 @@ import net.minecraft.item.Item;
 
 /**
  * Created by Elec332 on 11-3-2016.
- *
+ * <p>
  * Model handler for items
  */
 public interface IItemModelHandler {
@@ -31,8 +31,8 @@ public interface IItemModelHandler {
     /**
      * Used to create/fetch the model for this {@param item}
      *
-     * @param item The item
-     * @param identifier The identifier of this item
+     * @param item                 The item
+     * @param identifier           The identifier of this item
      * @param fullResourceLocation The full ModelResourceLocation for this model
      * @return The model for this {@param item}
      */

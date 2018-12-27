@@ -3,7 +3,6 @@ package elec332.core.world.posmap;
 import com.google.common.collect.Lists;
 import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
-import net.minecraft.world.World;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -16,7 +15,7 @@ import java.util.function.Supplier;
 
 /**
  * Created by Elec332 on 8-11-2017.
- *
+ * <p>
  * Default implementation of {@link IMultiWorldPositionedObjectHolder}
  */
 public class DefaultMultiWorldPositionedObjectHolder<T> implements IMultiWorldPositionedObjectHolder<T>, Supplier<IMultiWorldPositionedObjectHolder<T>> {

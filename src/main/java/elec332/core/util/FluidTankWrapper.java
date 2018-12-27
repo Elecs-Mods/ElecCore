@@ -14,7 +14,7 @@ import java.util.function.Supplier;
 
 /**
  * Created by Elec332 on 11-8-2016.
- *
+ * <p>
  * An {@link IFluidHandler} wrapper for an {@link IFluidTank}
  */
 public abstract class FluidTankWrapper implements IFluidHandler, IFluidTank, INBTSerializable<NBTTagCompound> {
@@ -22,11 +22,11 @@ public abstract class FluidTankWrapper implements IFluidHandler, IFluidTank, INB
     /**
      * Creates a new fluid handler with the specified capacity
      */
-    public static FluidTankWrapper withCapacity(int capacity){
+    public static FluidTankWrapper withCapacity(int capacity) {
         return of(new FluidTank(capacity));
     }
 
-    public static FluidTankWrapper of(final Supplier<IFluidTank> tank){
+    public static FluidTankWrapper of(final Supplier<IFluidTank> tank) {
         return new FluidTankWrapper() {
 
             @Override
@@ -37,7 +37,7 @@ public abstract class FluidTankWrapper implements IFluidHandler, IFluidTank, INB
         };
     }
 
-    public static FluidTankWrapper of(final IFluidTank tank){
+    public static FluidTankWrapper of(final IFluidTank tank) {
         return new FluidTankWrapper() {
 
             @Override
@@ -48,7 +48,7 @@ public abstract class FluidTankWrapper implements IFluidHandler, IFluidTank, INB
         };
     }
 
-    public FluidTankWrapper(){
+    public FluidTankWrapper() {
         final IFluidTankProperties prop = new Properties(this);
         this.properties = new IFluidTankProperties[]{
                 prop
@@ -66,14 +66,14 @@ public abstract class FluidTankWrapper implements IFluidHandler, IFluidTank, INB
 
     @Override
     public int fill(FluidStack resource, boolean doFill) {
-        if (resource == null){
+        if (resource == null) {
             return 0;
         }
         FluidStack f = getTank().getFluid();
-        if (!(f == null || f.isFluidEqual(resource))){
+        if (!(f == null || f.isFluidEqual(resource))) {
             return 0;
         }
-        if (canFillFluidType(resource)){
+        if (canFillFluidType(resource)) {
             return getTank().fill(resource, doFill);
         }
         return 0;
@@ -138,9 +138,9 @@ public abstract class FluidTankWrapper implements IFluidHandler, IFluidTank, INB
 
     @Override
     public NBTTagCompound serializeNBT() {
-        if (getTank() instanceof FluidTankWrapper){
+        if (getTank() instanceof FluidTankWrapper) {
             return ((FluidTankWrapper) getTank()).serializeNBT();
-        } else if (getTank() instanceof FluidTank){
+        } else if (getTank() instanceof FluidTank) {
             return ((FluidTank) getTank()).writeToNBT(new NBTTagCompound());
         } else {
             throw new UnsupportedOperationException();
@@ -149,9 +149,9 @@ public abstract class FluidTankWrapper implements IFluidHandler, IFluidTank, INB
 
     @Override
     public void deserializeNBT(NBTTagCompound nbt) {
-        if (getTank() instanceof FluidTankWrapper){
+        if (getTank() instanceof FluidTankWrapper) {
             ((FluidTankWrapper) getTank()).deserializeNBT(nbt);
-        } else if (getTank() instanceof FluidTank){
+        } else if (getTank() instanceof FluidTank) {
             ((FluidTank) getTank()).readFromNBT(nbt);
         } else {
             throw new UnsupportedOperationException();
@@ -160,7 +160,7 @@ public abstract class FluidTankWrapper implements IFluidHandler, IFluidTank, INB
 
     private class Properties implements IFluidTankProperties {
 
-        private Properties(FluidTankWrapper tank){
+        private Properties(FluidTankWrapper tank) {
             this.tank = tank;
         }
 

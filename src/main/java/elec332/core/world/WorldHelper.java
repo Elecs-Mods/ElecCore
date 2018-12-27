@@ -57,7 +57,7 @@ public class WorldHelper {
      * Gets the biome at the specified location
      *
      * @param world The world in which the position is located
-     * @param pos The position
+     * @param pos   The position
      * @return The biome at the specified location
      */
     public static Biome getBiome(World world, BlockPos pos) {
@@ -67,7 +67,7 @@ public class WorldHelper {
     /**
      * Spawns an entity in the specified world
      *
-     * @param world The world in which to spawn the entity
+     * @param world  The world in which to spawn the entity
      * @param entity The entity to be spawned
      * @return Whether the entity has been spawned in the world
      */
@@ -78,12 +78,12 @@ public class WorldHelper {
     /**
      * Whether the provided block can be placed at the specified location
      *
-     * @param world The world
-     * @param block The block to be placed
-     * @param pos The position that has been clicked (pos + facing offset = block location)
+     * @param world              The world
+     * @param block              The block to be placed
+     * @param pos                The position that has been clicked (pos + facing offset = block location)
      * @param skipCollisionCheck Whether to skip collision checking
-     * @param facing The facing the block will be placed at
-     * @param entity The entity placing the block
+     * @param facing             The facing the block will be placed at
+     * @param entity             The entity placing the block
      * @return Whether the block can actually be placed at the specified location
      */
     public static boolean canBlockBePlaced(World world, Block block, BlockPos pos, boolean skipCollisionCheck, EnumFacing facing, @Nullable Entity entity) {
@@ -94,7 +94,7 @@ public class WorldHelper {
      * Notifies neighboring blocks & observers of a state change at the specified location
      *
      * @param world The world in which the position is located
-     * @param pos The position
+     * @param pos   The position
      * @param block The block that has been changed
      */
     public static void notifyNeighborsOfStateChange(World world, BlockPos pos, Block block) {
@@ -136,7 +136,7 @@ public class WorldHelper {
      * in the provided world
      *
      * @param world The world in which to chenge the {@link IBlockState}
-     * @param pos The pos at which to change the {@link IBlockState}
+     * @param pos   The pos at which to change the {@link IBlockState}
      * @param state The new {@link IBlockState}
      * @param flags Placement flags, can be {@link WorldHelper#PLACEBLOCK_NOTHING} or any combination of
      *              {@link WorldHelper#PLACEBLOCK_UPDATE}, {@link WorldHelper#PLACEBLOCK_SENDCHANGE}, {@link WorldHelper#PLACEBLOCK_NO_RERENDER}, {@link WorldHelper#PLACEBLOCK_RENDERMAIN}, {@link WorldHelper#PLACEBLOCK_NO_OBSERVER}
@@ -150,7 +150,7 @@ public class WorldHelper {
      * Marks the specified location for a block update.
      *
      * @param world The world in which the position is located
-     * @param pos The position
+     * @param pos   The position
      */
     public static void markBlockForUpdate(World world, BlockPos pos) {
         if (!world.isRemote) {
@@ -164,7 +164,7 @@ public class WorldHelper {
      * Checks whether the chunk in which the provided coordinate is located is loaded
      *
      * @param world The world in which the position is located
-     * @param pos The position to be checked
+     * @param pos   The position to be checked
      * @return Whether the chunk in which the provided coordinate is located is loaded
      */
     public static boolean chunkLoaded(World world, BlockPos pos) {
@@ -177,7 +177,7 @@ public class WorldHelper {
      * (The whole chunk in which the position is located will be re-drawn)
      *
      * @param world The world in which the position is located
-     * @param pos The position
+     * @param pos   The position
      */
     public static void markBlockForRenderUpdate(World world, BlockPos pos) {
         world.markBlockRangeForRenderUpdate(pos, pos);
@@ -187,10 +187,10 @@ public class WorldHelper {
      * Spawns an explosion at the provided coordinates
      *
      * @param worldObj The world in which to spawn the explosion
-     * @param xCoord The X coordinate
-     * @param yCoord The Y coordinate
-     * @param zCoord The Z coordinate
-     * @param force The force of the explosion
+     * @param xCoord   The X coordinate
+     * @param yCoord   The Y coordinate
+     * @param zCoord   The Z coordinate
+     * @param force    The force of the explosion
      */
     public static void spawnExplosion(World worldObj, double xCoord, double yCoord, double zCoord, float force) {
         worldObj.createExplosion(null, xCoord, yCoord, zCoord, force * 4, true);
@@ -199,10 +199,9 @@ public class WorldHelper {
     /**
      * Requests a {@link ForgeChunkManager.Ticket} for the specified location
      *
-     * @param world The world in which the position is located
-     * @param loc The position (normal world x,y,z) to be loaded
+     * @param world       The world in which the position is located
+     * @param loc         The position (normal world x,y,z) to be loaded
      * @param modInstance The mod requesting the ticket
-     *
      * @return A ticket with which to register chunks for loading, or null if no further tickets are available
      */
     @Nullable
@@ -241,8 +240,8 @@ public class WorldHelper {
      * Adheres to the {@link net.minecraft.world.GameRules}
      * Does _NOT_ clear the inventory!
      *
-     * @param world The world
-     * @param pos The drop location
+     * @param world     The world
+     * @param pos       The drop location
      * @param inventory The inventory to be dropped
      */
     public static void dropInventoryItems(World world, BlockPos pos, IItemHandler inventory) {
@@ -258,9 +257,9 @@ public class WorldHelper {
      * Drops the provided {@link ItemStack} at the specified coordinates, with a bit of randomness.
      * Adheres to the {@link net.minecraft.world.GameRules}
      *
-     * @param world The world in which to drop the item(s)
+     * @param world    The world in which to drop the item(s)
      * @param blockLoc The position at which to drop the item(s)
-     * @param stack The {@link ItemStack} to be dropped
+     * @param stack    The {@link ItemStack} to be dropped
      */
     public static void dropStack(World world, BlockPos blockLoc, ItemStack stack) {
         dropStack(world, blockLoc.getX(), blockLoc.getY(), blockLoc.getZ(), stack);
@@ -270,10 +269,10 @@ public class WorldHelper {
      * Drops the provided {@link ItemStack} at the specified coordinates, with a bit of randomness.
      * Adheres to the {@link net.minecraft.world.GameRules}
      *
-     * @param world The world in which to drop the item(s)
-     * @param x The X coordinate
-     * @param y The Y coordinate
-     * @param z The Z coordinate
+     * @param world     The world in which to drop the item(s)
+     * @param x         The X coordinate
+     * @param y         The Y coordinate
+     * @param z         The Z coordinate
      * @param itemStack The {@link ItemStack} to be dropped
      */
     public static void dropStack(World world, int x, int y, int z, ItemStack itemStack) {
@@ -291,7 +290,7 @@ public class WorldHelper {
     /**
      * Schedules a block update at the specified location for the next tick.
      *
-     * @param world The world
+     * @param world    The world
      * @param blockLoc The position to be updated
      */
     public static void scheduleBlockUpdate(World world, BlockPos blockLoc) {
@@ -301,9 +300,9 @@ public class WorldHelper {
     /**
      * Schedules a block update at the specified location in {@param delay} ticks
      *
-     * @param world The world
+     * @param world    The world
      * @param blockLoc The position to be updated
-     * @param delay The delay in ticks
+     * @param delay    The delay in ticks
      */
     public static void scheduleBlockUpdate(World world, BlockPos blockLoc, int delay) {
         world.scheduleUpdate(blockLoc, getBlockAt(world, blockLoc), delay);
@@ -336,7 +335,7 @@ public class WorldHelper {
     /**
      * Gets the metadata of the block at the specified location
      *
-     * @param world The world
+     * @param world    The world
      * @param blockLoc The position
      * @return The metadata of the block at the specified location
      */
@@ -358,7 +357,7 @@ public class WorldHelper {
      * Gets the {@link TileEntity} at the specified location
      *
      * @param world The world
-     * @param loc The position
+     * @param loc   The position
      * @return The {@link TileEntity} at the specified location
      */
     public static TileEntity getTileAt(IBlockAccess world, BlockPos loc) {
@@ -369,7 +368,7 @@ public class WorldHelper {
      * Gets the {@link Block} at the specified location
      *
      * @param world The world
-     * @param loc The position
+     * @param loc   The position
      * @return The {@link Block} at the specified location
      */
     public static Block getBlockAt(IBlockAccess world, BlockPos loc) {
@@ -380,7 +379,7 @@ public class WorldHelper {
      * Gets the {@link IBlockState} at the specified location
      *
      * @param world The world
-     * @param pos The position
+     * @param pos   The position
      * @return The {@link IBlockState} at the specified location
      */
     public static IBlockState getBlockState(IBlockAccess world, BlockPos pos) {
@@ -391,7 +390,7 @@ public class WorldHelper {
      * Spawns a lightning bolt at the location the player is looking at.
      *
      * @param player The player
-     * @param range The maximum raytracing range
+     * @param range  The maximum raytracing range
      */
     public static void spawnLightningAtLookVec(EntityPlayer player, Double range) {
         RayTraceResult position = PlayerHelper.getPosPlayerIsLookingAt(player, range);
@@ -401,7 +400,7 @@ public class WorldHelper {
     /**
      * Spawns a lightning bolt at the specified location.
      *
-     * @param world The world
+     * @param world    The world
      * @param blockPos The position
      */
     public static void spawnLightningAt(World world, BlockPos blockPos) {
@@ -412,9 +411,9 @@ public class WorldHelper {
      * Spawns a lightning bolt at the specified x,y,z coordinates.
      *
      * @param world The world
-     * @param x X coordinate
-     * @param y Y coordinate
-     * @param z Z coordinate
+     * @param x     X coordinate
+     * @param y     Y coordinate
+     * @param z     Z coordinate
      */
     public static void spawnLightningAt(World world, double x, double y, double z) {
         //world.playSoundEffect(x, y, z,"ambient.weather.thunder", 10000.0F, 0.8F);

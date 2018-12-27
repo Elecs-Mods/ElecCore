@@ -23,20 +23,20 @@ public interface IEnumItem extends IColoredItem {
         return -1;
     }
 
-    default public boolean shouldShow(){
+    default public boolean shouldShow() {
         return true;
     }
 
-    default public ResourceLocation[] getTextures(){
+    default public ResourceLocation[] getTextures() {
         return new ResourceLocation[]{
-            getTextureLocation()
+                getTextureLocation()
         };
     }
 
     public ResourceLocation getTextureLocation();
 
-    default public String getUnlocalizedName(ItemStack stack){
-        return stack.getItem().getUnlocalizedName(null)+"."+((Enum) this).name().toLowerCase();
+    default public String getUnlocalizedName(ItemStack stack) {
+        return stack.getItem().getUnlocalizedName(null) + "." + ((Enum) this).name().toLowerCase();
     }
 
 }

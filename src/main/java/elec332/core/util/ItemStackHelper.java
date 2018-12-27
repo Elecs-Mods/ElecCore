@@ -19,8 +19,8 @@ public class ItemStackHelper {
      * @param stack The {@link ItemStack} to be checked
      * @return Whether the provided stack is "valid" and non-empty
      */
-    public static boolean isStackValid(ItemStack stack){
-        return stack != null && stack != NULL_STACK && !stack.isEmpty && !stack.isEmpty();
+    public static boolean isStackValid(ItemStack stack) {
+        return stack != null && stack != NULL_STACK && /*!stack.isEmpty &&*/ !stack.isEmpty();
     }
 
     /**
@@ -30,7 +30,7 @@ public class ItemStackHelper {
      * @return A copy of the provided {@link ItemStack}
      */
     @Nonnull
-    public static ItemStack copyItemStack(@Nullable ItemStack stack){
+    public static ItemStack copyItemStack(@Nullable ItemStack stack) {
         return stack == null || stack == NULL_STACK ? NULL_STACK : stack.copy();
     }
 
@@ -40,7 +40,7 @@ public class ItemStackHelper {
      * @param tag The NBT data
      * @return The {@link ItemStack} loaded from the provided {@link NBTTagCompound}
      */
-    public static ItemStack loadItemStackFromNBT(NBTTagCompound tag){
+    public static ItemStack loadItemStackFromNBT(NBTTagCompound tag) {
         return new ItemStack(tag);
     }
 
@@ -52,7 +52,7 @@ public class ItemStackHelper {
         return net.minecraft.inventory.ItemStackHelper.getAndRemove(stacks, index);
     }
 
-    private static ItemStack getNullStack(){
+    private static ItemStack getNullStack() {
         return ItemStack.EMPTY;
     }
 

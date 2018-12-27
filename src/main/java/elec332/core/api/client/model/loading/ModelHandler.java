@@ -7,7 +7,7 @@ import java.lang.annotation.Target;
 
 /**
  * Created by Elec332 on 11-3-2016.
- *
+ * <p>
  * Used to annotate any type of model handler
  */
 @Retention(RetentionPolicy.RUNTIME)

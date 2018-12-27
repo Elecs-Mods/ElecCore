@@ -45,7 +45,7 @@ public class WidgetSlot extends Widget {
     }
 
     public void onSlotChange(ItemStack newStack, ItemStack oldStack) {
-        int i = oldStack.stackSize - newStack.stackSize;
+        int i = oldStack.getCount() - newStack.getCount();
         if (i > 0) {
             this.onCrafting(oldStack, i);
         }
@@ -98,7 +98,7 @@ public class WidgetSlot extends Widget {
         } else {
             remainder = handler.insertItem(getSlotIndex(), stack, true);
         }
-        return !ItemStackHelper.isStackValid(remainder) || remainder.stackSize < stack.stackSize;
+        return !ItemStackHelper.isStackValid(remainder) || remainder.getCount() < stack.getCount();
     }
 
     /**
@@ -142,7 +142,7 @@ public class WidgetSlot extends Widget {
     public int getItemStackLimit(ItemStack stack) {
         ItemStack maxAdd = stack.copy();
         int maxInput = stack.getMaxStackSize();
-        maxAdd.stackSize = maxInput;
+        maxAdd.setCount(maxInput);
         IItemHandler handler = this.getInventory();
         ItemStack currentStack = handler.getStackInSlot(getSlotIndex());
         if (handler instanceof IItemHandlerModifiable) {
@@ -150,11 +150,11 @@ public class WidgetSlot extends Widget {
             handlerModifiable.setStackInSlot(getSlotIndex(), ItemStackHelper.NULL_STACK);
             ItemStack remainder = handlerModifiable.insertItem(getSlotIndex(), maxAdd, true);
             handlerModifiable.setStackInSlot(getSlotIndex(), currentStack);
-            return maxInput - (ItemStackHelper.isStackValid(remainder) ? remainder.stackSize : 0);
+            return maxInput - (ItemStackHelper.isStackValid(remainder) ? remainder.getCount() : 0);
         } else {
             ItemStack remainder = handler.insertItem(getSlotIndex(), maxAdd, true);
-            int current = !ItemStackHelper.isStackValid(currentStack) ? 0 : currentStack.stackSize;
-            int added = maxInput - (ItemStackHelper.isStackValid(remainder) ? remainder.stackSize : 0);
+            int current = !ItemStackHelper.isStackValid(currentStack) ? 0 : currentStack.getCount();
+            int added = maxInput - (ItemStackHelper.isStackValid(remainder) ? remainder.getCount() : 0);
             return current + added;
         }
     }

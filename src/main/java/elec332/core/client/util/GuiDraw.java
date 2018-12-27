@@ -24,27 +24,27 @@ public class GuiDraw {
     private static final GuiDrawGui gui;
     public static final Minecraft mc;
 
-    public static void drawRect(int left, int top, int right, int bottom, int color){
+    public static void drawRect(int left, int top, int right, int bottom, int color) {
         Gui.drawRect(left, top, right, bottom, color);
     }
 
-    public static void drawModalRectWithCustomSizedTexture(int x, int y, float u, float v, int width, int height, float textureWidth, float textureHeight){
+    public static void drawModalRectWithCustomSizedTexture(int x, int y, float u, float v, int width, int height, float textureWidth, float textureHeight) {
         Gui.drawModalRectWithCustomSizedTexture(x, y, u, v, width, height, textureWidth, textureHeight);
     }
 
-    public static void drawScaledCustomSizeModalRect(int x, int y, float u, float v, int uWidth, int vHeight, int width, int height, float tileWidth, float tileHeight){
+    public static void drawScaledCustomSizeModalRect(int x, int y, float u, float v, int uWidth, int vHeight, int width, int height, float tileWidth, float tileHeight) {
         Gui.drawScaledCustomSizeModalRect(x, y, u, v, uWidth, vHeight, width, height, tileWidth, tileHeight);
     }
 
-    public static void drawTexturedModalRect(int x, int y, int textureX, int textureY, int width, int height){
+    public static void drawTexturedModalRect(int x, int y, int textureX, int textureY, int width, int height) {
         gui.drawTexturedModalRect(x, y, textureX, textureY, width, height);
     }
 
-    public static void drawTexturedModalRect(float xCoord, float yCoord, int minU, int minV, int maxU, int maxV){
+    public static void drawTexturedModalRect(float xCoord, float yCoord, int minU, int minV, int maxU, int maxV) {
         gui.drawTexturedModalRect(xCoord, yCoord, minU, minV, maxU, maxV);
     }
 
-    public static void drawTexturedModalRect(int xCoord, int yCoord, TextureAtlasSprite textureSprite, int widthIn, int heightIn){
+    public static void drawTexturedModalRect(int xCoord, int yCoord, TextureAtlasSprite textureSprite, int widthIn, int heightIn) {
         gui.drawTexturedModalRect(xCoord, yCoord, textureSprite, widthIn, heightIn);
     }
 
@@ -60,11 +60,11 @@ public class GuiDraw {
         gui.drawString(fontRenderer, text, x, y, color);
     }
 
-    public static void drawHoveringText(List<String> textLines, int x, int y){
+    public static void drawHoveringText(List<String> textLines, int x, int y) {
         gui.drawHoveringText(textLines, x, y, RenderHelper.getMCFontrenderer());
     }
 
-    public static void drawHoveringText(List<String> textLines, int x, int y, @Nullable FontRenderer fontrenderer){
+    public static void drawHoveringText(List<String> textLines, int x, int y, @Nullable FontRenderer fontrenderer) {
         gui.drawHoveringText(textLines, x, y, fontrenderer == null ? RenderHelper.getMCFontrenderer() : fontrenderer);
     }
 
@@ -72,12 +72,12 @@ public class GuiDraw {
         gui.drawHoveringText(text, x, y);
     }
 
-    public static List<String> getItemToolTip(ItemStack stack){
+    public static List<String> getItemToolTip(ItemStack stack) {
         return gui.getItemToolTip(stack);
     }
 
-    public static void drawDefaultBackground(){
-        if (mc.currentScreen != null){
+    public static void drawDefaultBackground() {
+        if (mc.currentScreen != null) {
             mc.currentScreen.drawDefaultBackground();
         } else {
             ScaledResolution scaledresolution = new ScaledResolution(mc);
@@ -87,7 +87,7 @@ public class GuiDraw {
         }
     }
 
-    public static void renderToolTip(ItemStack stack, int x, int y){
+    public static void renderToolTip(ItemStack stack, int x, int y) {
         gui.renderToolTip(stack, x, y);
     }
 
@@ -102,7 +102,7 @@ public class GuiDraw {
 
     private static class GuiDrawGui extends GuiScreen {
 
-        private GuiDrawGui(){
+        private GuiDrawGui() {
             zLevel = 0.0F;
             mc = Minecraft.getMinecraft();
         }

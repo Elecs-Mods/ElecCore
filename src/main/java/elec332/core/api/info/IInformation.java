@@ -4,7 +4,7 @@ import javax.annotation.Nonnull;
 
 /**
  * Created by Elec332 on 16-10-2016.
- *
+ * <p>
  * Represents the information that will be given to the player
  */
 public interface IInformation {
