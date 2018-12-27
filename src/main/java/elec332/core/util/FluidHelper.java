@@ -20,6 +20,14 @@ import javax.annotation.Nullable;
  */
 public class FluidHelper {
 
+    /**
+     * Gets the {@link IFluidHandler} at the specified location, if it exists
+     *
+     * @param iba The world
+     * @param pos The position to check
+     * @param facing The side to check
+     * @return The {@link IFluidHandler} at the specified location, if it exists
+     */
     @Nullable
     public static IFluidHandler getFluidHandler(IBlockAccess iba, BlockPos pos, EnumFacing facing){
         TileEntity tile = WorldHelper.getTileAt(iba, pos);
@@ -29,19 +37,53 @@ public class FluidHelper {
         return null;
     }
 
+    /**
+     * Handles when a player right-clicks the specified tank
+     *
+     * @param player The player that clicked the tank
+     * @param hand The hand the player used
+     * @param tank The tank being clicked
+     * @return Whether something happened
+     */
     public static boolean onTankActivated(EntityPlayer player, EnumHand hand, IFluidTank tank) {
         IFluidHandler fluidHandler = FluidTankWrapper.of(tank);
         return tryDrainItem(player, hand, fluidHandler, tank.getCapacity()) || tryFillItem(player, hand, fluidHandler, tank.getCapacity());
     }
 
+    /**
+     * Handles when a player right-clicks the specified {@link IFluidHandler}
+     *
+     * @param player The player that clicked the tank
+     * @param hand The hand the player used
+     * @param fluidHandler The fluid handler being clicked
+     * @param tankCapacity The internal capacity of the {@link IFluidHandler}
+     * @return Whether something happened
+     */
     public static boolean onTankActivated(EntityPlayer player, EnumHand hand, IFluidHandler fluidHandler, int tankCapacity) {
         return tryDrainItem(player, hand, fluidHandler, tankCapacity) || tryFillItem(player, hand, fluidHandler, tankCapacity);
     }
 
+    /**
+     * Attempts to drain the item the player holds into the tank
+     *
+     * @param player The player that right-clicked the tank
+     * @param hand The hand the player clicked with
+     * @param tank the tank to be filled
+     * @return Whether something happened
+     */
     public static boolean tryDrainItem(EntityPlayer player, EnumHand hand, IFluidTank tank) {
         return tryDrainItem(player, hand, tank instanceof IFluidHandler ? (IFluidHandler) tank : FluidTankWrapper.of(tank), tank.getCapacity());
     }
 
+    /**
+     * Attempts to drain the item the player holds into the tank
+     *
+     * @param player The player that right-clicked the tank
+     * @param hand The hand the player clicked with
+     * @param fluidHandler The fluid handler to be filled
+     * @param capacity The internal capacity of the {@link IFluidHandler}
+     * @return Whether something happened
+     */
     public static boolean tryDrainItem(EntityPlayer player, EnumHand hand, IFluidHandler fluidHandler, int capacity) {
         if (fluidHandler == null) {
             return false;
@@ -69,10 +111,27 @@ public class FluidHelper {
         return false;
     }
 
+    /**
+     * Attempts to fill the item the player holds with contents from the tank
+     *
+     * @param player The player that right-clicked the tank
+     * @param hand The hand the player clicked with
+     * @param tank the tank to be drained
+     * @return Whether something happened
+     */
     public static boolean tryFillItem(EntityPlayer player, EnumHand hand, IFluidTank tank) {
         return tryFillItem(player, hand, tank instanceof IFluidHandler ? (IFluidHandler) tank : FluidTankWrapper.of(tank), tank.getCapacity());
     }
 
+    /**
+     * Attempts to fill the item the player holds with contents from the tank
+     *
+     * @param player The player that right-clicked the tank
+     * @param hand The hand the player clicked with
+     * @param fluidHandler The fluid handler to be drained
+     * @param capacity The internal capacity of the {@link IFluidHandler}
+     * @return Whether something happened
+     */
     public static boolean tryFillItem(EntityPlayer player, EnumHand hand, IFluidHandler fluidHandler, int capacity) {
         if (fluidHandler == null) {
             return false;

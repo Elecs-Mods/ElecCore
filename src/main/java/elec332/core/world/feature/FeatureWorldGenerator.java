@@ -11,6 +11,8 @@ import java.util.Random;
 
 /**
  * Created by Elec332 on 17-10-2016.
+ *
+ * An {@link IFeatureGenerator} wrapper of a {@link WorldGenerator}, highly configurable
  */
 @SuppressWarnings("all")
 public class FeatureWorldGenerator implements IFeatureGenerator, IConfigurableElement {
@@ -19,8 +21,8 @@ public class FeatureWorldGenerator implements IFeatureGenerator, IConfigurableEl
         return new FeatureWorldGenerator(name, 1, worldGenerator);
     }
 
-    public FeatureWorldGenerator(String name, int times, WorldGenerator worldGenMinable){
-        this.worldGenMinable = worldGenMinable;
+    public FeatureWorldGenerator(String name, int times, WorldGenerator worldGenerator){
+        this.worldGenerator = worldGenerator;
         this.name = name;
         this.maxY = 64;
         this.times = times;
@@ -30,7 +32,7 @@ public class FeatureWorldGenerator implements IFeatureGenerator, IConfigurableEl
 
     protected final String name;
     protected int times;
-    protected WorldGenerator worldGenMinable;
+    protected WorldGenerator worldGenerator;
     protected int maxY;
     protected boolean generate;
     protected float multiplier;
@@ -51,11 +53,11 @@ public class FeatureWorldGenerator implements IFeatureGenerator, IConfigurableEl
             BlockPos pos = new BlockPos(chunkX * 16 + random.nextInt(16), random.nextInt(maxY), chunkZ * 16 + random.nextInt(16));
             if (times <= 1){
                 if (random.nextFloat() < multiplier){
-                    ret = worldGenMinable.generate(world, random, pos);
+                    ret = worldGenerator.generate(world, random, pos);
                 }
             } else {
                 for (int i = 0; i < times * multiplier; i++) {
-                    ret |= worldGenMinable.generate(world, random, pos);
+                    ret |= worldGenerator.generate(world, random, pos);
                 }
             }
         }

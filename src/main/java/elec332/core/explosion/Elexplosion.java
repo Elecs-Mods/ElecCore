@@ -9,6 +9,8 @@ import net.minecraft.world.World;
 
 /**
  * Created by Elec332 on 13-8-2015.
+ *
+ * Default implementation of {@link AbstractExplosion}
  */
 public class Elexplosion extends AbstractExplosion {
 

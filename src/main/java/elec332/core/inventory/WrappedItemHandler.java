@@ -10,6 +10,8 @@ import java.util.function.Supplier;
 
 /**
  * Created by Elec332 on 15-2-2017.
+ *
+ * Wraps an {@link IItemHandler}
  */
 public abstract class WrappedItemHandler implements IItemHandlerModifiable {
 

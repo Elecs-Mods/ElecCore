@@ -13,6 +13,8 @@ import javax.annotation.Nonnull;
 
 /**
  * Created by Elec332 on 3-12-2016.
+ *
+ * Simple (serializable) implementation of {@link IItemHandlerModifiable}
  */
 public class BasicItemHandler implements IItemHandlerModifiable, INBTSerializable<NBTTagCompound> {
 

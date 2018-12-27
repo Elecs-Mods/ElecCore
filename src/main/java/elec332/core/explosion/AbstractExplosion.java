@@ -17,6 +17,8 @@ import java.util.List;
 
 /**
  * Created by Elec332 on 13-8-2015.
+ *
+ * Less-laggy implementation of an explosion
  */
 public abstract class AbstractExplosion extends Explosion {
 
@@ -29,6 +31,9 @@ public abstract class AbstractExplosion extends Explosion {
     private final World world;
     private final BlockPos location;
 
+    /**
+     * Go boom
+     */
     public void explode() {
         ExplosionEvent event = new ExplosionEvent.Start(world, this);
         MinecraftForge.EVENT_BUS.post(event);
@@ -39,12 +44,28 @@ public abstract class AbstractExplosion extends Explosion {
         }
     }
 
+    /**
+     * Prepare the explosion
+     */
     protected abstract void preExplode();
 
+    /**
+     * Explode
+     */
     protected abstract void doExplode();
 
+    /**
+     * Do something afterwards
+     */
     protected abstract void postExplode();
 
+    /**
+     * Damages all entities in a certain radius from the center
+     * Damage done depends on the power and distance from the center
+     *
+     * @param radius The radius in which to damage entities
+     * @param power The blast power
+     */
     protected void damageEntities(float radius, float power) {
         if (!world.isRemote) {
             radius *= 2.0f;

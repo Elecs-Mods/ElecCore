@@ -18,6 +18,8 @@ import java.lang.ref.WeakReference;
 
 /**
  * Created by Elec332 on 22-7-2016.
+ *
+ * A position which includes the dimension it is located in
  */
 public final class DimensionCoordinate implements INBTSerializable<NBTTagCompound> {
 

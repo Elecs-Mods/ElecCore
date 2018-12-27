@@ -11,7 +11,7 @@ import java.util.function.Supplier;
  * Created by Elec332 on 27-7-2018
  *
  * Builder for {@link NBTTagCompound}
- * Can be used to chain writes
+ * Can be used to chain writes to a {@link NBTTagCompound}
  */
 public class NBTBuilder implements INBTSerializable<NBTTagCompound>, Supplier<NBTTagCompound> {
 

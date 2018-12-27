@@ -1,5 +1,6 @@
 package elec332.core.inventory;
 
+import elec332.core.api.util.IClearable;
 import elec332.core.util.ItemStackHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.items.IItemHandlerModifiable;
@@ -8,8 +9,11 @@ import javax.annotation.Nonnull;
 
 /**
  * Created by Elec332 on 15-5-2016.
+ *
+ * Wrapper for an {@link IItemHandlerModifiable},
+ * can be used as a safe wrapper for ItemHandlers that can become null
  */
-public class SafeWrappedIItemHandler implements IItemHandlerModifiable {
+public class SafeWrappedIItemHandler implements IItemHandlerModifiable, IClearable {
 
     public static SafeWrappedIItemHandler of(IItemHandlerModifiable i){
         return new SafeWrappedIItemHandler(i);
@@ -21,6 +25,7 @@ public class SafeWrappedIItemHandler implements IItemHandlerModifiable {
 
     private IItemHandlerModifiable itemHandler;
 
+    @Override
     public void clear(){
         itemHandler = null;
     }

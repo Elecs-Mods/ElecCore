@@ -8,6 +8,8 @@ import javax.annotation.Nonnull;
 
 /**
  * Created by Elec332 on 2-1-2017.
+ *
+ * Wraps two {@link IItemHandlerModifiable}'s into one inventory
  */
 public class DoubleItemHandler<I1 extends IItemHandlerModifiable, I2 extends IItemHandlerModifiable> implements IItemHandlerModifiable {
 

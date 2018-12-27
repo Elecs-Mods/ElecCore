@@ -2,6 +2,7 @@ package elec332.core.world.posmap;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import elec332.core.api.util.IClearable;
 import elec332.core.world.WorldHelper;
 import it.unimi.dsi.fastutil.longs.Long2ObjectLinkedOpenHashMap;
 import net.minecraft.util.math.BlockPos;
@@ -15,8 +16,10 @@ import java.util.Set;
 
 /**
  * Created by Elec332 on 4-2-2016.
+ *
+ * A fast way to store objects in a 3D coordinate based map
  */
-public class PositionedObjectHolder<T> {
+public class PositionedObjectHolder<T> implements IClearable {
 
     public PositionedObjectHolder() {
         this(256);
@@ -37,12 +40,21 @@ public class PositionedObjectHolder<T> {
     private final Set<ChangeCallback<T>> callbacks;
     private boolean hasCallbacks;
 
+    /**
+     * Clears the entire map, including callbacks!
+     */
+    @Override
     public void clear() {
         positionedMap.values().forEach(PositionChunk::clear);
         positionedMap.clear();
         callbacks.clear();
     }
 
+    /**
+     * Registers a callback to this map
+     *
+     * @param callback The callback to be registered
+     */
     public void registerCallback(ChangeCallback<T> callback) {
         if (callback == null) {
             return;
@@ -53,6 +65,12 @@ public class PositionedObjectHolder<T> {
         }
     }
 
+    /**
+     * Gets the object at the specified coordinates.
+     *
+     * @param pos The position to check
+     * @return The object at the specified coordinates, can be null.
+     */
     @Nullable
     public T get(BlockPos pos) {
         return getChunkForPos(pos).get(pos);
@@ -75,10 +93,21 @@ public class PositionedObjectHolder<T> {
         return positionChunk;
     }
 
+    /**
+     * Puts an object at the specified position
+     *
+     * @param t The object to be stored
+     * @param pos The position
+     */
     public void put(T t, BlockPos pos) {
         getChunkForPos(pos).put(t, pos);
     }
 
+    /**
+     * Removes the object at the specified coordinated
+     *
+     * @param pos The position to be cleared
+     */
     public void remove(BlockPos pos) {
         PositionChunk chunk = getChunkForPos(pos);
         chunk.remove(pos);
@@ -87,6 +116,9 @@ public class PositionedObjectHolder<T> {
         }
     }
 
+    /**
+     * @return Gets all chunk positions that are in this map
+     */
     public Set<ChunkPos> getChunks() {
         Set<ChunkPos> ret = Sets.newHashSet();
         for (PositionChunk chunk : positionedMap.values()) {
@@ -100,12 +132,24 @@ public class PositionedObjectHolder<T> {
         return getChunkForPos(chunk).publicVisibleMap;
     }
 
-    public boolean chunkExists(ChunkPos chunk) {
-        return positionedMap.containsKey(WorldHelper.longFromChunkPos(chunk));
+    /**
+     * Whether data about the specified {@link ChunkPos} chunk exists
+     *
+     * @param chunkPos The chunk position
+     * @return Whether data about the specified {@link ChunkPos} exists
+     */
+    public boolean chunkExists(ChunkPos chunkPos) {
+        return positionedMap.containsKey(WorldHelper.longFromChunkPos(chunkPos));
     }
 
+    /**
+     * Whether there is an object at the provided position
+     *
+     * @param pos The position to be checked
+     * @return Whether there is an object at the provided position
+     */
     public boolean hasObject(BlockPos pos) {
-        long l = WorldHelper.longFromBlockPos(pos);
+        long l = WorldHelper.chunkLongFromBlockPos(pos);
         return positionedMap.containsKey(l) && getChunkForPos(new ChunkPos(pos)).get(pos) != null;
     }
 
@@ -146,14 +190,24 @@ public class PositionedObjectHolder<T> {
             }
         }
 
-        public void clear() {
+        private void clear() {
             posMap.clear();
         }
 
     }
 
+    /**
+     * An callback for when the {@link PositionedObjectHolder} has changed
+     */
     public interface ChangeCallback<T> {
 
+        /**
+         * Gets called when the contents at the specified location have changed
+         *
+         * @param object The new object in case of an addition, the old object in case of a removal
+         * @param pos The position that has changed
+         * @param add True if the object was added, false if the object was removed
+         */
         public void onChange(T object, BlockPos pos, boolean add);
 
     }
@@ -169,6 +223,11 @@ public class PositionedObjectHolder<T> {
 
             @Override
             public void remove(BlockPos pos) {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public void clear() {
                 throw new UnsupportedOperationException();
             }
 

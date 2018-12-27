@@ -14,9 +14,14 @@ import java.util.function.Supplier;
 
 /**
  * Created by Elec332 on 11-8-2016.
+ *
+ * An {@link IFluidHandler} wrapper for an {@link IFluidTank}
  */
 public abstract class FluidTankWrapper implements IFluidHandler, IFluidTank, INBTSerializable<NBTTagCompound> {
 
+    /**
+     * Creates a new fluid handler with the specified capacity
+     */
     public static FluidTankWrapper withCapacity(int capacity){
         return of(new FluidTank(capacity));
     }

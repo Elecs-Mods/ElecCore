@@ -1,14 +1,18 @@
 package elec332.core.world.feature;
 
 import com.google.common.base.Predicate;
+import elec332.core.api.world.IFeatureGenerator;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.block.state.pattern.BlockMatcher;
 import net.minecraft.init.Blocks;
 import net.minecraft.world.gen.feature.WorldGenMinable;
+import net.minecraft.world.gen.feature.WorldGenerator;
 import net.minecraftforge.common.config.Configuration;
 
 /**
  * Created by Elec332 on 17-10-2016.
+ *
+ * An {@link IFeatureGenerator} wrapper of a {@link WorldGenMinable}, highly configurable
  */
 @SuppressWarnings("all")
 public class FeatureWorldGenMinable extends FeatureWorldGenerator {
@@ -30,7 +34,7 @@ public class FeatureWorldGenMinable extends FeatureWorldGenerator {
     }
 
     public FeatureWorldGenMinable setClusterSize(int newSize){
-        this.worldGenMinable = new WorldGenMinable(((WorldGenMinable)worldGenMinable).oreBlock, Math.min(newSize, getMaxClusterSize()), ((WorldGenMinable) worldGenMinable).predicate);
+        this.worldGenerator = new WorldGenMinable(((WorldGenMinable) worldGenerator).oreBlock, Math.min(newSize, getMaxClusterSize()), ((WorldGenMinable) worldGenerator).predicate);
         return this;
     }
 
@@ -61,7 +65,7 @@ public class FeatureWorldGenMinable extends FeatureWorldGenerator {
     @Override
     public void reconfigure(Configuration config) {
         super.reconfigure(config);
-        int old = ((WorldGenMinable)worldGenMinable).numberOfBlocks;
+        int old = ((WorldGenMinable) worldGenerator).numberOfBlocks;
         int size = config.getInt("clusterSize", getConfigCategoryName(), old, 0, getMaxClusterSize(), "Sets the max cluster size.");
         if (size != old){
             setClusterSize(size);

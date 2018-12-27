@@ -20,6 +20,9 @@ import java.util.function.Supplier;
 
 /**
  * Created by Elec332 on 1-8-2016.
+ *
+ * An abstract implementation of {@link IStructureWorldEventHandler} that can be used for
+ * dynamic grids (that span multiple worlds)
  */
 public abstract class AbstractGridHandler<T extends IPositionable> implements IStructureWorldEventHandler {
 
@@ -182,6 +185,12 @@ public abstract class AbstractGridHandler<T extends IPositionable> implements IS
         }
     }
 
+    /**
+     * Gets called when an object is about to be removed
+     *
+     * @param o The object being removed
+     * @param allUpdates All other objects being removed
+     */
     protected abstract void onObjectRemoved(T o, Set<DimensionCoordinate> allUpdates);
 
     @Override
@@ -210,14 +219,35 @@ public abstract class AbstractGridHandler<T extends IPositionable> implements IS
         changeCheck.clear();
     }
 
+    /**
+     * Gets called when a object has been added
+     *
+     * @param o The object being added
+     */
     protected abstract void internalAdd(T o);
 
+    /**
+     * Ticks this handler
+     */
     @Override
     public abstract void tick();
 
+    /**
+     * Checks whether the provided tile is a valid object for grid(s) handled by this handler
+     * (Or: Whether this grid want to know about changes happening to it)
+     *
+     * @param tile The {@link TileEntity} being checked
+     * @return Whether the provided tile is important to the structure
+     */
     @Override
     public abstract boolean isValidObject(TileEntity tile);
 
+    /**
+     * Wraps a tile into a predefined type
+     *
+     * @param tile The tile being wrapped
+     * @return The wrapped tile
+     */
     protected abstract T createNewObject(TileEntity tile);
 
     protected void removeObject(DimensionCoordinate dimensionCoordinate) {
