@@ -1,26 +1,30 @@
 package elec332.core.item;
 
 import net.minecraft.item.Item;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.item.ItemStack;
+
+import javax.annotation.Nonnull;
 
 /**
  * Created by Elec332 on 21-8-2016.
  */
-public abstract class AbstractItem extends Item {
+public abstract class AbstractItem extends Item implements IAbstractItem {
 
-    public AbstractItem() {
-        this(null);
-    }
+    private String unlocalizedName;
 
-    public AbstractItem(ResourceLocation rl) {
-        if (rl != null) {
-            setRegistryName(rl);
-            setUnlocalizedNameFromName();
+    @Nonnull
+    @Override
+    public String getUnlocalizedName() {
+        if (this.unlocalizedName == null) {
+            unlocalizedName = ItemMethods.createUnlocalizedName(this);
         }
+        return unlocalizedName;
     }
 
-    public void setUnlocalizedNameFromName() {
-        setUnlocalizedName(getRegistryName().toString().replace(":", ".").toLowerCase());
+    @Nonnull
+    @Override
+    public String getUnlocalizedName(ItemStack stack) {
+        return ItemMethods.getUnlocalizedName(stack, this);
     }
 
 }

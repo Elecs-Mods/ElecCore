@@ -25,8 +25,7 @@ import javax.annotation.Nonnull;
  */
 public class ItemEnumBased<E extends Enum<E> & IEnumItem> extends AbstractItem implements INoJsonItem, IColoredItem {
 
-    public ItemEnumBased(ResourceLocation rl, Class<E> clazz) {
-        super(rl);
+    public ItemEnumBased(Class<E> clazz) {
         this.clazz = clazz;
         this.values = clazz.getEnumConstants();
         this.nji = this.values[0] instanceof INoJsonItem;

@@ -9,7 +9,6 @@ import net.minecraft.client.gui.ScaledResolution;
 public enum HorizontalStartingPoint implements IStartingPoint {
 
     LEFT {
-
         @Override
         public int getStartingPoint(Minecraft mc, ScaledResolution sr, int hudHeight) {
             return 5;
@@ -17,7 +16,6 @@ public enum HorizontalStartingPoint implements IStartingPoint {
 
     },
     RIGHT {
-
         @Override
         public int getStartingPoint(Minecraft mc, ScaledResolution sr, int hudHeight) {
             return sr.getScaledWidth() - 5;

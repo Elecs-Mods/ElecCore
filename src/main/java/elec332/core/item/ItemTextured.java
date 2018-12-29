@@ -20,7 +20,8 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public class ItemTextured extends AbstractItem implements INoJsonItem {
 
     public ItemTextured(ResourceLocation rl) {
-        super(rl);
+        super();
+        setRegistryName(rl);
     }
 
     @SideOnly(Side.CLIENT)

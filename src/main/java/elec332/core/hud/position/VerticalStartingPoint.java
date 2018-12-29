@@ -9,7 +9,6 @@ import net.minecraft.client.gui.ScaledResolution;
 public enum VerticalStartingPoint implements IStartingPoint {
 
     TOP {
-
         @Override
         public int getStartingPoint(Minecraft mc, ScaledResolution sr, int hudHeight) {
             return 9;
@@ -17,7 +16,6 @@ public enum VerticalStartingPoint implements IStartingPoint {
 
     },
     MIDDLE {
-
         @Override
         public int getStartingPoint(Minecraft mc, ScaledResolution sr, int hudHeight) {
             return sr.getScaledHeight() / 2 - hudHeight / 2;
@@ -25,7 +23,6 @@ public enum VerticalStartingPoint implements IStartingPoint {
 
     },
     BOTTOM {
-
         @Override
         public int getStartingPoint(Minecraft mc, ScaledResolution sr, int hudHeight) {
             return sr.getScaledHeight() - hudHeight - 9;

@@ -16,7 +16,6 @@ import java.awt.*;
 public enum Alignment {
 
     LEFT {
-
         @Override
         public <D> void renderHudPart(IDrawer<D> drawer, D toDraw, @Nullable String display, int x, int y, Object... data) {
             GlStateManager.pushMatrix();
@@ -29,7 +28,6 @@ public enum Alignment {
 
     },
     RIGHT {
-
         @Override
         public <D> void renderHudPart(IDrawer<D> drawer, D toDraw, @Nullable String display, int x, int y, Object... data) {
             GlStateManager.pushMatrix();
