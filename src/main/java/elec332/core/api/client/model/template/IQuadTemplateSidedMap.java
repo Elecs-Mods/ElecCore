@@ -1,8 +1,8 @@
 package elec332.core.api.client.model.template;
 
 import net.minecraft.util.EnumFacing;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -10,7 +10,7 @@ import java.util.List;
 /**
  * Created by Elec332 on 6-12-2015.
  */
-@SideOnly(Side.CLIENT)
+@OnlyIn(Dist.CLIENT)
 public interface IQuadTemplateSidedMap {
 
     public void setQuadsForSide(EnumFacing side, @Nonnull List<IQuadTemplate> newQuads);

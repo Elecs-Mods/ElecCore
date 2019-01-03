@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import elec332.core.client.model.ElecModelBakery;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.Vector3f;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
@@ -11,26 +12,27 @@ import net.minecraft.client.renderer.block.model.ItemOverrideList;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
-import org.lwjgl.util.vector.Vector3f;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.List;
+import java.util.Random;
 
 /**
  * Created by Elec332 on 21-11-2015.
  */
 @SuppressWarnings("deprecation")
-@SideOnly(Side.CLIENT)
+@OnlyIn(Dist.CLIENT)
 public abstract class AbstractItemModel implements IBakedModel {
 
     protected static final ItemCameraTransforms DEFAULT_ITEM_TRANSFORM;
     protected static final ImmutableList<BakedQuad> EMPTY_LIST;
 
-    @Override
     @Nonnull
-    public List<BakedQuad> getQuads(IBlockState state, EnumFacing side, long rand) {
+    @Override
+    public List<BakedQuad> getQuads(@Nullable IBlockState state, @Nullable EnumFacing side, Random rand) {
         return side == null ? getGeneralQuads() : EMPTY_LIST;
     }
 
@@ -54,7 +56,7 @@ public abstract class AbstractItemModel implements IBakedModel {
     @Override
     @Nonnull
     public ItemOverrideList getOverrides() {
-        return ItemOverrideList.NONE;
+        return ItemOverrideList.EMPTY;
     }
 
     public boolean isItemTESR() {
@@ -64,7 +66,7 @@ public abstract class AbstractItemModel implements IBakedModel {
     @Override
     @Nonnull
     public TextureAtlasSprite getParticleTexture() {
-        return Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite(getTextureLocation().toString());
+        return Minecraft.getInstance().getTextureMap().getAtlasSprite(getTextureLocation().toString());
     }
 
     public abstract ResourceLocation getTextureLocation();
@@ -81,7 +83,7 @@ public abstract class AbstractItemModel implements IBakedModel {
     }
 
     protected static Vector3f applyTranslationScale(Vector3f vec) {
-        vec.scale(0.0625F);
+        vec.mul(0.0625F);
         return vec;
     }
 

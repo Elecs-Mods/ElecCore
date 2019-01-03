@@ -9,26 +9,27 @@ import elec332.core.api.client.model.model.IQuadProvider;
 import elec332.core.api.client.model.template.IQuadTemplate;
 import elec332.core.api.client.model.template.IQuadTemplateSidedMap;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.renderer.Vector3f;
 import net.minecraft.client.renderer.block.model.*;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.EnumFacing;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.model.ItemLayerModel;
 import net.minecraftforge.common.model.ITransformation;
 import net.minecraftforge.common.model.TRSRTransformation;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
-import org.lwjgl.util.vector.Vector3f;
 
 import javax.annotation.Nullable;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 
 /**
  * Created by Elec332 on 15-11-2015.
  */
-@SideOnly(Side.CLIENT)
+@OnlyIn(Dist.CLIENT)
 @SuppressWarnings({"WeakerAccess", "unused"})
 public class ElecQuadBakery implements IElecQuadBakery {
 
@@ -62,7 +63,7 @@ public class ElecQuadBakery implements IElecQuadBakery {
     @Override
     public IQuadProvider bakeQuads(IQuadTemplateSidedMap from, ITransformation rotation) {
         SidedMap ret = new SidedMap();
-        for (EnumFacing facing : EnumFacing.VALUES) {
+        for (EnumFacing facing : EnumFacing.values()) {
             ret.setQuadsForSide(rotation == null ? facing : rotation.rotate(facing), bakeQuads(from.getForSide(facing), rotation));
         }
         return ret;
@@ -171,7 +172,7 @@ public class ElecQuadBakery implements IElecQuadBakery {
         }
 
         @Override
-        public List<BakedQuad> getBakedQuads(@Nullable IBlockState state, EnumFacing side, long random) {
+        public List<BakedQuad> getBakedQuads(@Nullable IBlockState state, EnumFacing side, Random random) {
             List<BakedQuad> ret = quads.get(side);
             if (ret == null) {
                 ret = EMPTY_LIST;

@@ -3,6 +3,7 @@ package elec332.core.world.schematic;
 import com.google.common.collect.Maps;
 import elec332.core.api.structure.ISchematic;
 import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.math.BlockPos;
@@ -19,17 +20,15 @@ public class Schematic implements ISchematic {
 
     protected final NBTTagList tileDataList;
     private short width, height, length, horizon; //Horizon sets the "ground" or how far down to translate this.
-    protected byte[] data;
-    protected Block[] blocks;
+    protected IBlockState[] blocks;
     private Map<BlockPos, NBTTagCompound> tiles;
 
-    protected Schematic(NBTTagList tileEntities, short width, short height, short length, short horizon, byte[] data, Block[] blocks) {
+    protected Schematic(NBTTagList tileEntities, short width, short height, short length, short horizon, IBlockState[] blocks) {
         this.tileDataList = tileEntities;
         this.width = width;
         this.height = height;
         this.length = length;
         this.horizon = horizon;
-        this.data = data;
         this.blocks = blocks;
         tiles = Maps.newHashMap();
         reloadTileMap();
@@ -40,9 +39,9 @@ public class Schematic implements ISchematic {
      */
     private void reloadTileMap() {
         tiles.clear();
-        for (int i = 0; i < tileDataList.tagCount(); i++) {
-            NBTTagCompound tag = tileDataList.getCompoundTagAt(i).copy();
-            BlockPos pos = new BlockPos(tag.getInteger("x"), tag.getInteger("y"), tag.getInteger("z"));
+        for (int i = 0; i < tileDataList.size(); i++) {
+            NBTTagCompound tag = tileDataList.getCompound(i).copy();
+            BlockPos pos = new BlockPos(tag.getInt("x"), tag.getInt("y"), tag.getInt("z"));
             tiles.put(pos, tag);
         }
     }
@@ -58,7 +57,7 @@ public class Schematic implements ISchematic {
      */
     @Override
     public Block getBlock(int x, int y, int z) {
-        return blocks[getIndexFromCoordinates(x, y, z)];
+        return blocks[getIndexFromCoordinates(x, y, z)].getBlock();
     }
 
     /**
@@ -74,9 +73,9 @@ public class Schematic implements ISchematic {
     public NBTTagCompound getTileData(int x, int y, int z, int worldX, int worldY, int worldZ) {
         NBTTagCompound tag = getTileData(x, y, z);
         if (tag != null) {
-            tag.setInteger("x", worldX);
-            tag.setInteger("y", worldY);
-            tag.setInteger("z", worldZ);
+            tag.putInt("x", worldX);
+            tag.putInt("y", worldY);
+            tag.putInt("z", worldZ);
             return tag;
         }
         return null;
@@ -110,8 +109,8 @@ public class Schematic implements ISchematic {
      * @return The metadata for the block at the specified local schematic coordinates.
      */
     @Override
-    public byte getMetadata(int x, int y, int z) {
-        return data[getIndexFromCoordinates(x, y, z)];
+    public IBlockState getBlockState(int x, int y, int z) {
+        return blocks[getIndexFromCoordinates(x, y, z)];
     }
 
     @Override

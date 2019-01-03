@@ -1,15 +1,14 @@
 package elec332.core.network.packets;
 
 import elec332.core.ElecCore;
+import elec332.core.api.network.IExtendedMessageContext;
 import elec332.core.inventory.widget.Widget;
 import elec332.core.inventory.window.IWidgetContainer;
 import elec332.core.inventory.window.Window;
 import elec332.core.util.NBTBuilder;
 import net.minecraft.inventory.Container;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
-import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.LogicalSide;
 
 /**
  * Created by Elec332 on 31-7-2015.
@@ -25,14 +24,13 @@ public class PacketSyncWidget extends AbstractPacket {
     }
 
     @Override
-    public IMessage onMessageThreadSafe(AbstractPacket message, MessageContext ctx) {
-        NBTTagCompound data = message.networkPackageObject.getCompoundTag("data");
-        NBTTagCompound containerData = message.networkPackageObject.getCompoundTag("containerData");
+    public void onMessageThreadSafe(AbstractPacket message, IExtendedMessageContext ctx) {
+        NBTTagCompound data = message.networkPackageObject.getCompound("data");
+        NBTTagCompound containerData = message.networkPackageObject.getCompound("containerData");
         Container openContainer = ElecCore.proxy.getClientPlayer().openContainer;
-        if (openContainer.windowId == containerData.getInteger("window")) {
-            ((IWidgetContainer) openContainer).getWidgets().get(containerData.getInteger("widget")).readNBTChangesFromPacket(data, Side.CLIENT);
+        if (openContainer.windowId == containerData.getInt("window")) {
+            ((IWidgetContainer) openContainer).getWidgets().get(containerData.getInt("widget")).readNBTChangesFromPacket(data, LogicalSide.CLIENT);
         }
-        return null;
     }
 
 }

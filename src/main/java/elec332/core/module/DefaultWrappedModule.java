@@ -6,11 +6,12 @@ import elec332.core.api.module.ElecModule;
 import elec332.core.api.module.IModuleContainer;
 import elec332.core.api.module.IModuleController;
 import elec332.core.api.module.IModuleInfo;
+import elec332.core.util.FMLHelper;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.common.Loader;
+import net.minecraftforge.fml.ModContainer;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.ModContainer;
-import net.minecraftforge.fml.common.versioning.ArtifactVersion;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.maven.artifact.versioning.VersionRange;
 
 import javax.annotation.Nonnull;
 import java.lang.reflect.Method;
@@ -33,7 +34,7 @@ public class DefaultWrappedModule implements IModuleContainer {
         this.alwaysEnabled = moduleInfo.alwaysEnabled();
         this.moduleController = moduleInfo.getModuleController();
         ModContainer mc = null;
-        for (ModContainer m : Loader.instance().getActiveModList()) {
+        for (ModContainer m : FMLHelper.getMods()) {
             if (m.getModId().equals(owner)) {
                 mc = m;
                 break;
@@ -47,7 +48,7 @@ public class DefaultWrappedModule implements IModuleContainer {
     private final boolean depB, alwaysEnabled;
     private final Object module;
     private final List<String> moduleDependencies;
-    private final List<ArtifactVersion> modDependencies;
+    private final List<Pair<String, VersionRange>> modDependencies;
     private final IModuleController moduleController;
     private final ModContainer mod;
 
@@ -105,8 +106,8 @@ public class DefaultWrappedModule implements IModuleContainer {
 
     @Nonnull
     @Override
-    public List<ArtifactVersion> getModDependencies() {
-        return this.modDependencies;
+    public List<Pair<String, VersionRange>> getModDependencies() {
+        return modDependencies;
     }
 
     @Nonnull

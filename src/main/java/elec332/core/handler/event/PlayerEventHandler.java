@@ -2,10 +2,11 @@ package elec332.core.handler.event;
 
 import elec332.core.api.util.IRightClickCancel;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.ItemUseContext;
 import net.minecraft.util.EnumHand;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
-import net.minecraftforge.fml.common.eventhandler.EventPriority;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.eventbus.api.EventPriority;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 /**
  * Created by Elec332 on 13-8-2018.
@@ -26,7 +27,8 @@ public class PlayerEventHandler {
         stack = event.getItemStack();
         if (stack != null && stack.getItem() instanceof IRightClickCancel && ((IRightClickCancel) stack.getItem()).cancelInteraction(stack)) {
             event.setCanceled(true);
-            stack.getItem().onItemUse(event.getEntityPlayer(), event.getWorld(), event.getPos(), event.getHand(), event.getFace(), (float) event.getHitVec().x, (float) event.getHitVec().y, (float) event.getHitVec().z);
+            ItemUseContext iuc = new ItemUseContext(event.getEntityPlayer(), event.getItemStack(), event.getPos(), event.getFace(), (float) event.getHitVec().x, (float) event.getHitVec().y, (float) event.getHitVec().z);
+            stack.getItem().onItemUse(iuc);
         }
     }
 

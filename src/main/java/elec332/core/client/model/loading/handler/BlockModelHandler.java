@@ -10,11 +10,10 @@ import elec332.core.api.client.model.loading.ModelHandler;
 import elec332.core.loader.client.RenderingRegistry;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.renderer.BlockModelShapes;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
-import net.minecraft.client.renderer.block.statemap.StateMapperBase;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.client.model.ModelLoader;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -54,16 +53,10 @@ public class BlockModelHandler implements IModelHandler {
             for (final IBlockModelHandler handler : blockModelHandlers) {
                 if (handler.handleBlock(block)) {
                     handledBlocks.add(block.getRegistryName());
-                    ModelLoader.setCustomStateMapper(block, new StateMapperBase() {
-
-                        @Override
-                        @Nonnull
-                        protected ModelResourceLocation getModelResourceLocation(@Nonnull IBlockState state) {
-                            ModelResourceLocation mrl = new ModelResourceLocation(state.getBlock().getRegistryName().toString() + "#" + handler.getIdentifier(state));
-                            blockResourceLocations.put(state, mrl);
-                            return mrl;
-                        }
-
+                    block.getStateContainer().getValidStates().forEach(ibs -> {
+                        ModelResourceLocation mrl = BlockModelShapes.getModelLocation(ibs);
+                        handler.notifyModelLocation(ibs, mrl);
+                        blockResourceLocations.put(ibs, mrl);
                     });
                     break;
                 }

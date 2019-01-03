@@ -2,15 +2,15 @@ package elec332.core.client.model.loading;
 
 import com.google.common.collect.Lists;
 import elec332.core.client.RenderHelper;
-import elec332.core.util.IBlockStateHelper;
+import elec332.core.util.BlockProperties;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.model.ModelRotation;
 import net.minecraft.client.renderer.block.model.Variant;
 import net.minecraft.client.renderer.block.model.VariantList;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import java.util.Map;
 
@@ -19,7 +19,7 @@ import java.util.Map;
  */
 public interface INoBlockStateJsonBlock extends IBlockModelItemLink {
 
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public VariantList getVariantsFor(IBlockState state);
 
     default public boolean hasTextureOverrideJson(IBlockState state) {
@@ -35,10 +35,10 @@ public interface INoBlockStateJsonBlock extends IBlockModelItemLink {
 
     public interface RotationImpl extends INoBlockStateJsonBlock {
 
-        @SideOnly(Side.CLIENT)
+        @OnlyIn(Dist.CLIENT)
         default VariantList getVariantsFor(IBlockState state) {
             Block b = state.getBlock();
-            ModelRotation mr = RenderHelper.getDefaultRotationFromFacing(state.getValue(IBlockStateHelper.FACING_NORMAL.getProperty()));
+            ModelRotation mr = RenderHelper.getDefaultRotationFromFacing(state.get(BlockProperties.FACING_NORMAL));
             Variant variant = new Variant(b.getRegistryName(), mr, false, 1);
             return new VariantList(Lists.newArrayList(variant));
         }

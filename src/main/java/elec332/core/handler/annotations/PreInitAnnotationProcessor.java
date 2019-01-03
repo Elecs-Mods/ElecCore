@@ -1,13 +1,13 @@
 package elec332.core.handler.annotations;
 
-import elec332.core.api.discovery.ASMDataProcessor;
-import net.minecraftforge.fml.common.LoaderState;
+import elec332.core.api.discovery.AnnotationDataProcessor;
+import net.minecraftforge.fml.ModLoadingStage;
 
 /**
  * Created by Elec332 on 24-9-2016.
  */
 @SuppressWarnings("unused")
-@ASMDataProcessor(LoaderState.PREINITIALIZATION)
+@AnnotationDataProcessor(ModLoadingStage.PREINIT)
 public class PreInitAnnotationProcessor extends AbstractAnnotationProcessor {
 
     @Override

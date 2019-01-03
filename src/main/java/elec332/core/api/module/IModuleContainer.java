@@ -1,6 +1,6 @@
 package elec332.core.api.module;
 
-import net.minecraftforge.fml.common.ModContainer;
+import net.minecraftforge.fml.ModContainer;
 
 import javax.annotation.Nonnull;
 

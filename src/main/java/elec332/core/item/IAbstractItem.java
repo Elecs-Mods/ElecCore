@@ -8,7 +8,7 @@ import net.minecraft.item.ItemStack;
 public interface IAbstractItem {
 
     default public String getVariantName(ItemStack stack) {
-        return Integer.toString(stack.getItemDamage());
+        return "<unknown>";
     }
 
 }

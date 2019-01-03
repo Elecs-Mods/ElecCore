@@ -12,8 +12,9 @@ import elec332.core.network.packets.PacketWidgetDataToServer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.fml.LogicalSide;
 
 import javax.annotation.Nullable;
 
@@ -86,8 +87,8 @@ public class Widget implements IWidget {
     }
 
     @Override
-    public final void readNBTChangesFromPacket(NBTTagCompound tagCompound, Side receiver) {
-        if (receiver == Side.CLIENT) {
+    public final void readNBTChangesFromPacket(NBTTagCompound tagCompound, LogicalSide receiver) {
+        if (receiver == LogicalSide.CLIENT) {
             readNBTChangesFromPacket(tagCompound);
         } else {
             readNBTChangesFromPacketServerSide(tagCompound);
@@ -101,16 +102,16 @@ public class Widget implements IWidget {
     }
 
     @Override
-    public final boolean isMouseOver(int mouseX, int mouseY) {
+    public final boolean isMouseOver(double mouseX, double mouseY) {
         return isMouseOver(mouseX, mouseY, x, y, width, height);
     }
 
-    protected final boolean isMouseOver(int mouseX, int mouseY, int x, int y, int width, int height) {
+    protected final boolean isMouseOver(double mouseX, double mouseY, int x, int y, int width, int height) {
         return mouseX >= x && mouseX < x + width && mouseY >= y && mouseY < y + height;
     }
 
     @Override
-    public boolean mouseClicked(int mouseX, int mouseY, int button) {
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
         return false;
     }
 
@@ -120,21 +121,21 @@ public class Widget implements IWidget {
     }
 
     @Override
-    @SideOnly(Side.CLIENT)
-    public boolean handleMouseWheel(int wheel, int translatedMouseX, int translatedMouseY) {
+    @OnlyIn(Dist.CLIENT)
+    public boolean handleMouseWheel(double wheel, double translatedMouseX, double translatedMouseY) {
         return false;
     }
 
     @Override
-    @SideOnly(Side.CLIENT)
-    public void draw(Window window, int guiX, int guiY, int mouseX, int mouseY) {
+    @OnlyIn(Dist.CLIENT)
+    public void draw(Window window, int guiX, int guiY, double mouseX, double mouseY) {
         if (background != null) {
             RenderHelper.bindTexture(background);
         }
         GuiDraw.drawTexturedModalRect(guiX + x, guiY + y, u, v, width, height);
     }
 
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     protected final void bindTexture(ResourceLocation resourceLocation) {
         RenderHelper.bindTexture(resourceLocation);
     }
@@ -151,8 +152,8 @@ public class Widget implements IWidget {
 
     @Nullable
     @Override
-    @SideOnly(Side.CLIENT)
-    public ToolTip getToolTip(int mouseX, int mouseY) {
+    @OnlyIn(Dist.CLIENT)
+    public ToolTip getToolTip(double mouseX, double mouseY) {
         return null;
     }
 

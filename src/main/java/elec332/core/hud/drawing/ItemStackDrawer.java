@@ -4,8 +4,8 @@ import elec332.core.hud.position.Alignment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 /**
  * Created by Elec332 on 8-1-2017.
@@ -18,10 +18,10 @@ public class ItemStackDrawer implements IDrawer<ItemStack> {
     public static final IDrawer<ItemStack> INSTANCE;
 
     @Override
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public int draw(ItemStack drawable, Minecraft mc, Alignment alignment, int x, int y, Object... data) {
         RenderHelper.enableGUIStandardItemLighting();
-        mc.getRenderItem().renderItemIntoGUI(drawable, x, y);
+        mc.getItemRenderer().renderItemIntoGUI(drawable, x, y);
         RenderHelper.disableStandardItemLighting();
         return 18;
     }

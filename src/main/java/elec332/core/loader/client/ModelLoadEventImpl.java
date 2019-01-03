@@ -8,8 +8,8 @@ import elec332.core.client.RenderHelper;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.util.registry.IRegistry;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -17,7 +17,7 @@ import javax.annotation.Nullable;
 /**
  * Created by Elec332 on 21-11-2015.
  */
-@SideOnly(Side.CLIENT)
+@OnlyIn(Dist.CLIENT)
 class ModelLoadEventImpl extends ModelLoadEvent {
 
     ModelLoadEventImpl(IElecQuadBakery quadBakery, IElecModelBakery modelBakery, IElecTemplateBakery templateBakery, IRegistry<ModelResourceLocation, IBakedModel> registry) {
@@ -52,13 +52,13 @@ class ModelLoadEventImpl extends ModelLoadEvent {
 
     @Override
     public void registerModel(ModelResourceLocation mrl, IBakedModel model) {
-        registry.putObject(mrl, model);
+        registry.put(mrl, model);
     }
 
     @Override
     @Nullable
     public IBakedModel getModel(ModelResourceLocation mrl) {
-        return registry.getObject(mrl);
+        return registry.getOrDefault(mrl);
     }
 
     @Override

@@ -1,12 +1,13 @@
 package elec332.core.network.impl;
 
 import com.google.common.collect.Lists;
+import elec332.core.api.network.IExtendedMessageContext;
+import elec332.core.api.network.IMessage;
 import elec332.core.api.network.IPacketRegistry;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
-import net.minecraftforge.fml.relauncher.Side;
 
 import java.util.List;
+import java.util.function.BiConsumer;
+import java.util.function.Supplier;
 
 /**
  * Created by Elec332 on 23-10-2016.
@@ -17,32 +18,31 @@ class DefaultPacketRegistry implements IPacketRegistry {
         this.registeredPackets = Lists.newArrayList();
     }
 
-    private final List<Wrapper<?, ?>> registeredPackets;
+    private final List<Wrapper<?>> registeredPackets;
 
     @Override
     @SuppressWarnings("unchecked")
-    public <M extends IMessage, R extends IMessage> void registerPacket(IMessageHandler<M, R> messageHandler, Class<M> messageType, Side side) {
-        registeredPackets.add(new Wrapper(messageHandler, messageType, side));
+    public <M extends IMessage> void registerPacket(BiConsumer<M, Supplier<IExtendedMessageContext>> messageHandler, Class<M> messageType) {
+        registeredPackets.add(new Wrapper(messageHandler, messageType));
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public void registerPacketsTo(IPacketRegistry packetRegistry) {
         for (Wrapper wrapper : registeredPackets) {
-            packetRegistry.registerPacket(wrapper.messageHandler, wrapper.messageType, wrapper.side);
+            packetRegistry.registerPacket(wrapper.messageHandler, wrapper.messageType);
         }
     }
 
-    private class Wrapper<M extends IMessage, R extends IMessage> {
+    private class Wrapper<M extends IMessage> {
 
-        private Wrapper(IMessageHandler<M, R> messageHandler, Class<M> messageType, Side side) {
+        private Wrapper(BiConsumer<M, Supplier<IExtendedMessageContext>> messageHandler, Class<M> messageType) {
             this.messageHandler = messageHandler;
             this.messageType = messageType;
-            this.side = side;
         }
 
-        private final IMessageHandler<M, R> messageHandler;
+        private final BiConsumer<M, Supplier<IExtendedMessageContext>> messageHandler;
         private final Class<M> messageType;
-        private final Side side;
 
     }
 

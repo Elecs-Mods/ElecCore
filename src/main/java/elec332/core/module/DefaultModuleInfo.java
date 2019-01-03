@@ -6,9 +6,11 @@ import com.google.common.collect.Lists;
 import elec332.core.api.module.IModuleController;
 import elec332.core.api.module.IModuleInfo;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.common.versioning.ArtifactVersion;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.maven.artifact.versioning.VersionRange;
 
 import javax.annotation.Nonnull;
+import java.util.Collections;
 import java.util.List;
 
 import static java.util.Objects.requireNonNull;
@@ -26,11 +28,11 @@ public class DefaultModuleInfo implements IModuleInfo {
         this(owner, name, IModuleInfo.parseDependencyInfo(modDeps), Strings.isNullOrEmpty(moduleDeps) ? ImmutableList.of() : ImmutableList.copyOf(Lists.newArrayList(moduleDeps.split(";"))), ADRIM, alwaysOn, mainClazz, moduleController, new ResourceLocation(owner, name.toLowerCase()));
     }
 
-    public DefaultModuleInfo(String owner, String name, List<ArtifactVersion> modDeps, List<String> moduleDeps, boolean ADRIM, boolean alwaysOn, String mainClazz, IModuleController moduleController, ResourceLocation combinedName) {
+    public DefaultModuleInfo(String owner, String name, List<Pair<String, VersionRange>> modDeps, List<String> moduleDeps, boolean ADRIM, boolean alwaysOn, String mainClazz, IModuleController moduleController, ResourceLocation combinedName) {
         this.owner = requireNonNull(owner);
         this.name = requireNonNull(name);
-        this.modDeps = requireNonNull(modDeps);
-        this.moduleDeps = requireNonNull(moduleDeps);
+        this.modDeps = Collections.unmodifiableList(requireNonNull(modDeps));
+        this.moduleDeps = Collections.unmodifiableList(requireNonNull(moduleDeps));
         this.autoDIRNM = ADRIM;
         this.alwaysEnabled = alwaysOn;
         this.clazz = requireNonNull(mainClazz);
@@ -41,7 +43,7 @@ public class DefaultModuleInfo implements IModuleInfo {
     private final String owner, name, clazz;
     private final ResourceLocation combinedName;
     private final boolean autoDIRNM, alwaysEnabled;
-    private final List<ArtifactVersion> modDeps;
+    private final List<Pair<String, VersionRange>> modDeps;
     private final List<String> moduleDeps;
     private final IModuleController moduleController;
 
@@ -70,7 +72,7 @@ public class DefaultModuleInfo implements IModuleInfo {
 
     @Nonnull
     @Override
-    public List<ArtifactVersion> getModDependencies() {
+    public List<Pair<String, VersionRange>> getModDependencies() {
         return modDeps;
     }
 

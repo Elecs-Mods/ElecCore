@@ -2,6 +2,8 @@ package elec332.core.network.impl;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
+import elec332.core.api.network.IExtendedMessageContext;
+import elec332.core.api.network.IMessage;
 import elec332.core.api.network.IPacketDispatcher;
 import elec332.core.api.network.IPacketRegistry;
 import elec332.core.api.network.object.*;
@@ -9,55 +11,61 @@ import elec332.core.api.network.simple.ISimpleNetworkPacketManager;
 import elec332.core.api.network.simple.ISimplePacket;
 import elec332.core.api.network.simple.ISimplePacketHandler;
 import elec332.core.network.IElecNetworkHandler;
-import gnu.trove.map.hash.TByteObjectHashMap;
+import elec332.core.util.FieldPointer;
+import elec332.core.util.ServerHelper;
 import io.netty.buffer.ByteBuf;
+import it.unimi.dsi.fastutil.shorts.Short2ObjectArrayMap;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraftforge.fml.common.network.FMLEmbeddedChannel;
-import net.minecraftforge.fml.common.network.FMLIndexedMessageToMessageCodec;
-import net.minecraftforge.fml.common.network.NetworkRegistry;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
-import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
-import net.minecraftforge.fml.relauncher.Side;
+import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.network.NetworkDirection;
+import net.minecraftforge.fml.network.NetworkInstance;
+import net.minecraftforge.fml.network.NetworkRegistry;
+import net.minecraftforge.fml.network.simple.IndexedMessageCodec;
+import net.minecraftforge.fml.network.simple.SimpleChannel;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.lang.reflect.Field;
-import java.util.EnumMap;
 import java.util.Map;
+import java.util.function.BiConsumer;
+import java.util.function.BiPredicate;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 /**
  * Created by Elec332 on 23-2-2015.
  */
 class DefaultNetworkHandler implements IElecNetworkHandler, DefaultByteBufFactory {
 
-    DefaultNetworkHandler(SimpleNetworkWrapper networkWrapper) {
-        this.networkWrapper = networkWrapper;
-        this.channelName = getCurrentNameFrom(networkWrapper);
-        this.i = getCurrentIndexFrom(networkWrapper);
-        this.networkObjectManager = new DefaultNetworkObjectManager(this);
-        this.simpleNetworkPacketManager = new DefaultSimpleNetworkHandler(this, channelName);
-        this.packetManagers = Maps.newHashMap();
+    DefaultNetworkHandler(ResourceLocation channelName, Supplier<String> networkProtocolVersion, Predicate<String> clientAcceptedVersions, Predicate<String> serverAcceptedVersions) {
+        this(NetworkRegistry.newSimpleChannel(channelName, networkProtocolVersion, clientAcceptedVersions, serverAcceptedVersions), channelName);
     }
 
-    DefaultNetworkHandler(String channelName) {
-        this.channelName = channelName.toLowerCase();
-        this.networkWrapper = new SimpleNetworkWrapper(this.channelName);
+    DefaultNetworkHandler(ResourceLocation channelName) {
+        this(NetworkRegistry.newSimpleChannel(channelName, () -> "0", s -> true, s -> true), channelName);
+    }
+
+    DefaultNetworkHandler(SimpleChannel networkWrapper) {
+        this(networkWrapper, nameGetter.get(networkWrapper).getChannelName());
+    }
+
+    private DefaultNetworkHandler(SimpleChannel networkWrapper, ResourceLocation name) {
+        this.networkWrapper = networkWrapper;
+        this.channelName = name;
         this.i = 0;
         this.networkObjectManager = new DefaultNetworkObjectManager(this);
         this.simpleNetworkPacketManager = new DefaultSimpleNetworkHandler(this, channelName);
         this.packetManagers = Maps.newHashMap();
     }
 
-    private final SimpleNetworkWrapper networkWrapper;
+    private final SimpleChannel networkWrapper;
     private final INetworkObjectManager networkObjectManager;
     private final ISimpleNetworkPacketManager simpleNetworkPacketManager;
-    private final Map<String, ISimpleNetworkPacketManager> packetManagers;
-    private final String channelName;
+    private final Map<ResourceLocation, ISimpleNetworkPacketManager> packetManagers;
+    private final ResourceLocation channelName;
     private int i;
 
     @Nonnull
-    ISimpleNetworkPacketManager getSimpleNetworkManager(String s) {
+    ISimpleNetworkPacketManager getSimpleNetworkManager(ResourceLocation s) {
         if (s.equals(channelName)) {
             return simpleNetworkPacketManager;
         }
@@ -69,9 +77,21 @@ class DefaultNetworkHandler implements IElecNetworkHandler, DefaultByteBufFactor
     }
 
     @Override
-    public <M extends IMessage, R extends IMessage> void registerPacket(IMessageHandler<M, R> messageHandler, Class<M> messageType, Side side) {
-        networkWrapper.registerMessage(messageHandler, messageType, i, side);
-        ++i;
+    public <M extends IMessage> void registerPacket(BiConsumer<M, Supplier<IExtendedMessageContext>> messageHandler, Class<M> messageType) {
+        try {
+            messageType.newInstance();
+        } catch (Exception e) {
+            throw new IllegalArgumentException();
+        }
+        networkWrapper.registerMessage(getNextIndex(), messageType, IMessage::toBytes, packetBuffer -> {
+            try {
+                M m = messageType.newInstance();
+                m.fromBytes(packetBuffer);
+                return m;
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }, (m, contextSupplier) -> messageHandler.accept(m, () -> NetworkManager.INSTANCE.wrapMessageContext(contextSupplier.get())));
     }
 
     @Override
@@ -95,92 +115,39 @@ class DefaultNetworkHandler implements IElecNetworkHandler, DefaultByteBufFactor
     }
 
     @Override
-    public String getChannelName() {
+    public ResourceLocation getChannelName() {
         return channelName;
     }
 
     @Override
-    public void sendToAll(IMessage message) {
-        networkWrapper.sendToAll(message);
-    }
-
-    @Override
-    public void sendTo(IMessage message, EntityPlayerMP player) {
-        networkWrapper.sendTo(message, player);
-    }
-
-    @Override
-    public void sendToAllAround(IMessage message, NetworkRegistry.TargetPoint point) {
-        networkWrapper.sendToAllAround(message, point);
+    public void sendToAllAround(IMessage message, TargetPoint point) {
+        sendTo(message, ServerHelper.getAllPlayersInDimension(point.dimension).stream()
+                .filter(player -> {
+                    double d4 = point.x - player.posX;
+                    double d5 = point.y - player.posY;
+                    double d6 = point.z - player.posZ;
+                    return d4 * d4 + d5 * d5 + d6 * d6 < point.range * point.range;
+                }));
     }
 
     @Override
     public void sendToDimension(IMessage message, int dimensionId) {
-        networkWrapper.sendToDimension(message, dimensionId);
+        sendTo(message, ServerHelper.getAllPlayersInDimension(dimensionId));
+    }
+
+    @Override
+    public void sendToAll(IMessage message) {
+        sendTo(message, ServerHelper.getOnlinePlayers());
+    }
+
+    @Override
+    public void sendTo(IMessage message, EntityPlayerMP player) {
+        networkWrapper.sendTo(message, player.connection.netManager, NetworkDirection.PLAY_TO_CLIENT);
     }
 
     @Override
     public void sendToServer(IMessage message) {
         networkWrapper.sendToServer(message);
-    }
-
-    //Unfortunately I had to write this...
-
-    @SuppressWarnings("unchecked")
-    private static int getCurrentIndexFrom(SimpleNetworkWrapper networkWrapper) {
-        try {
-            FMLIndexedMessageToMessageCodec c = (FMLIndexedMessageToMessageCodec) codec.get(networkWrapper);
-            byte[] ids = ((TByteObjectHashMap) discriminators.get(c)).keys();
-            int ret = 0;
-            for (byte b : ids) {
-                ret = Math.max(ret, b);
-            }
-            return ret;
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private static String getCurrentNameFrom(SimpleNetworkWrapper networkWrapper) {
-        FMLEmbeddedChannel ch = getNetworkChannels(networkWrapper).get(Side.SERVER);
-        Map<String, FMLEmbeddedChannel> map = getRegistryChannels().get(Side.SERVER);
-        for (Map.Entry<String, FMLEmbeddedChannel> entry : map.entrySet()) {
-            if (entry.getValue() == ch) {
-                return entry.getKey();
-            }
-        }
-        throw new RuntimeException("Error finding name! Channel not found!");
-    }
-
-    @SuppressWarnings("unchecked")
-    static EnumMap<Side, Map<String, FMLEmbeddedChannel>> getRegistryChannels() {
-        try {
-            return (EnumMap<Side, Map<String, FMLEmbeddedChannel>>) registryChannels.get(NetworkRegistry.INSTANCE);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    static EnumMap<Side, FMLEmbeddedChannel> getNetworkChannels(SimpleNetworkWrapper wrapper) {
-        try {
-            return (EnumMap<Side, FMLEmbeddedChannel>) wrapperChannels.get(wrapper);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private static final Field codec, discriminators, wrapperChannels, registryChannels;
-
-    static {
-        try {
-            codec = SimpleNetworkWrapper.class.getDeclaredField("packetCodec");
-            discriminators = FMLIndexedMessageToMessageCodec.class.getDeclaredField("discriminators");
-            wrapperChannels = SimpleNetworkWrapper.class.getDeclaredField("channels");
-            registryChannels = NetworkRegistry.class.getDeclaredField("channels");
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
     }
 
     @Override
@@ -194,7 +161,7 @@ class DefaultNetworkHandler implements IElecNetworkHandler, DefaultByteBufFactor
     }
 
     @Override
-    public void sendToAllAround(ISimplePacket message, NetworkRegistry.TargetPoint point) {
+    public void sendToAllAround(ISimplePacket message, TargetPoint point) {
         simpleNetworkPacketManager.sendToAllAround(message, point);
     }
 
@@ -219,7 +186,7 @@ class DefaultNetworkHandler implements IElecNetworkHandler, DefaultByteBufFactor
     }
 
     @Override
-    public void sendToAllAround(ISimplePacket message, ISimplePacketHandler packetHandler, NetworkRegistry.TargetPoint point) {
+    public void sendToAllAround(ISimplePacket message, ISimplePacketHandler packetHandler, TargetPoint point) {
         simpleNetworkPacketManager.sendToAllAround(message, packetHandler, point);
     }
 
@@ -244,7 +211,7 @@ class DefaultNetworkHandler implements IElecNetworkHandler, DefaultByteBufFactor
     }
 
     @Override
-    public void sendToAllAround(ByteBuf data, ISimplePacketHandler packetHandler, NetworkRegistry.TargetPoint point) {
+    public void sendToAllAround(ByteBuf data, ISimplePacketHandler packetHandler, TargetPoint point) {
         simpleNetworkPacketManager.sendToAllAround(data, packetHandler, point);
     }
 
@@ -259,33 +226,55 @@ class DefaultNetworkHandler implements IElecNetworkHandler, DefaultByteBufFactor
     }
 
     @Override
-    public void registerPacket(Class<? extends ISimplePacket> packetType) {
-        simpleNetworkPacketManager.registerPacket(packetType);
+    public void registerSimplePacket(Class<? extends ISimplePacket> packetType) {
+        simpleNetworkPacketManager.registerSimplePacket(packetType);
     }
 
     @Override
-    public void registerPacket(ISimplePacket packet) {
-        simpleNetworkPacketManager.registerPacket(packet);
+    public void registerSimplePacket(ISimplePacket packet) {
+        simpleNetworkPacketManager.registerSimplePacket(packet);
     }
 
     @Override
-    public void registerPacketHandler(ISimplePacketHandler packetHandler) {
-        simpleNetworkPacketManager.registerPacketHandler(packetHandler);
+    public void registerSimplePacketHandler(ISimplePacketHandler packetHandler) {
+        simpleNetworkPacketManager.registerSimplePacketHandler(packetHandler);
     }
 
     @Override
-    public void registerPacket(Class<? extends ISimplePacket> packetType, ISimplePacketHandler packetHandler) {
-        simpleNetworkPacketManager.registerPacket(packetType, packetHandler);
+    public void registerSimplePacket(Class<? extends ISimplePacket> packetType, ISimplePacketHandler packetHandler) {
+        simpleNetworkPacketManager.registerSimplePacket(packetType, packetHandler);
     }
 
     @Override
-    public void registerPacket(ISimplePacket packet, ISimplePacketHandler packetHandler) {
-        simpleNetworkPacketManager.registerPacket(packet, packetHandler);
+    public void registerSimplePacket(ISimplePacket packet, ISimplePacketHandler packetHandler) {
+        simpleNetworkPacketManager.registerSimplePacket(packet, packetHandler);
     }
 
     @Override
     public IPacketDispatcher getPacketDispatcher() {
         return this;
+    }
+
+    @SuppressWarnings("unchecked")
+    private int getNextIndex() {
+        while (messageIndexUsed.test(networkWrapper, i)) {
+            i++;
+        }
+        int ret = i;
+        i++;
+        return ret;
+    }
+
+    private static final BiPredicate<SimpleChannel, Integer> messageIndexUsed;
+    private static final FieldPointer<SimpleChannel, IndexedMessageCodec> indexer;
+    private static final FieldPointer<IndexedMessageCodec, Short2ObjectArrayMap> indexer2;
+    private static final FieldPointer<SimpleChannel, NetworkInstance> nameGetter;
+
+    static {
+        indexer = new FieldPointer<>(SimpleChannel.class, "indexedCodec");
+        indexer2 = new FieldPointer<>(IndexedMessageCodec.class, " indices");
+        messageIndexUsed = (c, i) -> indexer2.get(indexer.get(c)).containsKey(i);
+        nameGetter = new FieldPointer<>(SimpleChannel.class, " instance");
     }
 
 }

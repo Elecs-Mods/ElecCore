@@ -2,6 +2,7 @@ package elec332.core.tile;
 
 import com.google.common.collect.Maps;
 import elec332.core.ElecCore;
+import elec332.core.MC113ToDoReference;
 import elec332.core.inventory.window.IWindowHandler;
 import elec332.core.inventory.window.WindowManager;
 import elec332.core.network.IElecCoreNetworkTile;
@@ -9,7 +10,6 @@ import elec332.core.network.packets.PacketTileDataToServer;
 import elec332.core.util.NBTTypes;
 import elec332.core.util.ServerHelper;
 import elec332.core.world.WorldHelper;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
@@ -17,10 +17,9 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraft.tileentity.TileEntityType;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nonnull;
 import java.util.Map;
@@ -33,14 +32,21 @@ public class AbstractTileEntity extends TileEntity implements IElecCoreNetworkTi
     private boolean isGatheringPackets;
     private Map<Integer, NBTTagCompound> gatherData;
 
+    public AbstractTileEntity(TileEntityType<?> p_i48289_1_) {
+        super(p_i48289_1_);
+        MC113ToDoReference.update();
+    }
+
+    /*
     @Override
     public boolean shouldRefresh(World world, BlockPos pos, @Nonnull IBlockState oldState, @Nonnull IBlockState newSate) {
         return oldState.getBlock() != newSate.getBlock();
-    }
+    }*/
 
     @Deprecated
     public boolean openGui(EntityPlayer player, Object mod, int guiID) {
-        player.openGui(mod, guiID, getWorld(), getPos().getX(), getPos().getY(), getPos().getZ());
+        MC113ToDoReference.update();
+        //player.openGui(mod, guiID, getWorld(), getPos().getX(), getPos().getY(), getPos().getZ());
         return true;
     }
 
@@ -54,7 +60,7 @@ public class AbstractTileEntity extends TileEntity implements IElecCoreNetworkTi
     }
 
     public void notifyNeighborsOfChange() {
-        WorldHelper.notifyNeighborsOfStateChange(getWorld(), pos, blockType);
+        WorldHelper.notifyNeighborsOfStateChange(getWorld(), pos, getBlockState().getBlock());
     }
 
     //NETWORK///////////////////////
@@ -63,7 +69,7 @@ public class AbstractTileEntity extends TileEntity implements IElecCoreNetworkTi
         WorldHelper.markBlockForUpdate(getWorld(), pos);
     }
 
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public void sendPacketToServer(int ID, NBTTagCompound data) {
         ElecCore.networkHandler.sendToServer(new PacketTileDataToServer(this, ID, data));
     }
@@ -106,17 +112,17 @@ public class AbstractTileEntity extends TileEntity implements IElecCoreNetworkTi
             NBTTagList list = new NBTTagList();
             gatherData.forEach((key, value) -> {
                 NBTTagCompound tag1 = new NBTTagCompound();
-                tag1.setInteger("pid", key);
-                tag1.setTag("pda", value);
-                list.appendTag(tag1);
+                tag1.putInt("pid", key);
+                tag1.put("pda", value);
+                list.add(tag1);
             });
-            tag.setTag("morePackets_eD", list);
+            tag.put("morePackets_eD", list);
         }
         return tag;
     }
 
     public NBTTagCompound getInitialData() {
-        return writeToNBT(new NBTTagCompound());
+        return write(new NBTTagCompound());
     }
 
     public NBTTagCompound getDefaultUpdateTag() {
@@ -131,20 +137,20 @@ public class AbstractTileEntity extends TileEntity implements IElecCoreNetworkTi
 
     @Override
     public void handleUpdateTag(@Nonnull NBTTagCompound tag) {
-        NBTTagList p = tag.getTagList("morePackets_eD", NBTTypes.COMPOUND.getID());
-        tag.removeTag("morePackets_eD");
-        readFromNBT(tag);
+        NBTTagList p = tag.getList("morePackets_eD", NBTTypes.COMPOUND.getID());
+        tag.remove("morePackets_eD");
+        read(tag);
         onDataPacket(0, tag);
-        for (int i = 0; i < p.tagCount(); i++) {
-            NBTTagCompound tag_ = p.getCompoundTagAt(i);
-            onDataPacket(tag_.getInteger("pid"), tag_.getCompoundTag("pda"));
+        for (int i = 0; i < p.size(); i++) {
+            NBTTagCompound tag_ = p.getCompound(i);
+            onDataPacket(tag_.getInt("pid"), tag_.getCompound("pda"));
         }
     }
 
     @Override
     public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity packet) {
         if (packet.getTileEntityType() == 0) {
-            readFromNBT(packet.getNbtCompound());
+            read(packet.getNbtCompound());
             onDataPacket(0, packet.getNbtCompound());
         } else {
             onDataPacket(packet.getTileEntityType(), packet.getNbtCompound());

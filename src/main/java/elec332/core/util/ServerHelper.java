@@ -2,6 +2,7 @@ package elec332.core.util;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableList;
+import elec332.core.api.network.IMessage;
 import elec332.core.api.network.INetworkHandler;
 import elec332.core.world.WorldHelper;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -10,8 +11,7 @@ import net.minecraft.server.management.PlayerChunkMap;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
-import net.minecraftforge.fml.common.FMLCommonHandler;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
+import net.minecraftforge.fml.server.ServerLifecycleHooks;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -122,7 +122,7 @@ public class ServerHelper {
     }
 
     public static MinecraftServer getMinecraftServer() {
-        return FMLCommonHandler.instance().getMinecraftServerInstance();
+        return ServerLifecycleHooks.getCurrentServer();
     }
 
 }

@@ -1,13 +1,12 @@
 package elec332.core.network.packets;
 
+import elec332.core.api.network.IExtendedMessageContext;
 import elec332.core.network.IElecCoreNetworkTile;
 import elec332.core.util.NBTBuilder;
 import elec332.core.world.WorldHelper;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
 /**
  * Created by Elec332 on 15-8-2015.
@@ -23,14 +22,13 @@ public class PacketTileDataToServer extends AbstractPacket {
     }
 
     @Override
-    public IMessage onMessageThreadSafe(AbstractPacket message, MessageContext ctx) {
+    public void onMessageThreadSafe(AbstractPacket message, IExtendedMessageContext ctx) {
         NBTBuilder data = new NBTBuilder(message.networkPackageObject);
         int ID = data.getInteger("PacketId");
-        EntityPlayerMP sender = ctx.getServerHandler().player;
+        EntityPlayerMP sender = (EntityPlayerMP) ctx.getSender();
         IElecCoreNetworkTile tile = (IElecCoreNetworkTile) WorldHelper.getTileAt(sender.getEntityWorld(), data.getBlockPos());
         if (tile != null) {
-            tile.onPacketReceivedFromClient(sender, ID, message.networkPackageObject.getCompoundTag("data"));
+            tile.onPacketReceivedFromClient(sender, ID, message.networkPackageObject.getCompound("data"));
         }
-        return null;
     }
 }

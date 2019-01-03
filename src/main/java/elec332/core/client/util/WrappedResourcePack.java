@@ -1,23 +1,23 @@
 package elec332.core.client.util;
 
-import net.minecraft.client.resources.IResourcePack;
-import net.minecraft.client.resources.data.IMetadataSection;
-import net.minecraft.client.resources.data.MetadataSerializer;
+import net.minecraft.resources.IResourcePack;
+import net.minecraft.resources.ResourcePackType;
+import net.minecraft.resources.data.IMetadataSectionSerializer;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.common.FMLContainerHolder;
-import net.minecraftforge.fml.common.ModContainer;
+import net.minecraftforge.fml.ModContainer;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collection;
 import java.util.Set;
+import java.util.function.Predicate;
 
 /**
  * Created by Elec332 on 25-11-2016.
  */
-public class WrappedResourcePack implements IResourcePack, FMLContainerHolder {
+public class WrappedResourcePack implements IResourcePack {
 
     public WrappedResourcePack(@Nonnull IResourcePack parent, @Nonnull ModContainer owner) {
         this.parent = parent;
@@ -28,42 +28,47 @@ public class WrappedResourcePack implements IResourcePack, FMLContainerHolder {
     private final ModContainer owner;
 
     @Override
-    @Nonnull
-    public InputStream getInputStream(@Nonnull ResourceLocation location) throws IOException {
-        return parent.getInputStream(location);
+    public InputStream getResourceStream(ResourcePackType resourcePackType, ResourceLocation resourceLocation) throws IOException {
+        return parent.getResourceStream(resourcePackType, resourceLocation);
     }
 
     @Override
-    public boolean resourceExists(@Nonnull ResourceLocation location) {
-        return parent.resourceExists(location);
+    public InputStream getRootResourceStream(String s) throws IOException {
+        return parent.getRootResourceStream(s);
     }
 
     @Override
-    @Nonnull
-    public Set<String> getResourceDomains() {
-        return parent.getResourceDomains();
+    public Collection<ResourceLocation> getAllResourceLocations(ResourcePackType resourcePackType, String s, int i, Predicate<String> predicate) {
+        return parent.getAllResourceLocations(resourcePackType, s, i, predicate);
+    }
+
+    @Override
+    public boolean resourceExists(ResourcePackType resourcePackType, ResourceLocation resourceLocation) {
+        return parent.resourceExists(resourcePackType, resourceLocation);
+    }
+
+    @Override
+    public Set<String> getResourceNamespaces(ResourcePackType resourcePackType) {
+        return parent.getResourceNamespaces(resourcePackType);
     }
 
     @Nullable
     @Override
-    public <T extends IMetadataSection> T getPackMetadata(@Nonnull MetadataSerializer metadataSerializer, @Nonnull String metadataSectionName) throws IOException {
-        return parent.getPackMetadata(metadataSerializer, metadataSectionName);
+    public <T> T getMetadata(IMetadataSectionSerializer<T> iMetadataSectionSerializer) throws IOException {
+        return parent.getMetadata(iMetadataSectionSerializer);
     }
 
     @Override
-    @Nonnull
-    public BufferedImage getPackImage() throws IOException {
-        return parent.getPackImage();
+    public String getName() {
+        return parent.getName();
     }
 
     @Override
-    @Nonnull
-    public String getPackName() {
-        return parent.getPackName();
+    public void close() throws IOException {
+        parent.close();
     }
 
-    @Override
-    public ModContainer getFMLContainer() {
+    public ModContainer getContainer() {
         return owner;
     }
 

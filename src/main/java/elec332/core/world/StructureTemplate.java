@@ -13,6 +13,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
+import net.minecraft.world.gen.Heightmap;
 
 import java.util.Set;
 
@@ -54,7 +55,7 @@ public class StructureTemplate {
                     yCoord = 16;
                     break;
                 case SURFACE:
-                    yCoord = world.getTopSolidOrLiquidBlock(location).getY();
+                    yCoord = world.getHeight(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, location).getY();
                     break;
                 case NONE:
                     break;
@@ -89,7 +90,7 @@ public class StructureTemplate {
                                     if (block.hasTileEntity(state)) {
                                         NBTTagCompound tileData = schematic.getTileData(x, y, z, worldX, worldY, worldZ);
                                         if (tileData != null) {
-                                            WorldHelper.getTileAt(world, worldPos).readFromNBT(tileData);
+                                            WorldHelper.getTileAt(world, worldPos).read(tileData);
                                             WorldHelper.markBlockForUpdate(world, worldPos);
                                         }
                                     }
@@ -100,7 +101,7 @@ public class StructureTemplate {
                 }
                 for (int i = chunkX; i < chunkX + (schematicArea.getBlockWidth() >> 4); i++) {
                     for (int j = chunkZ; j < chunkZ + (schematicArea.getBlockLength() >> 4); j++) {
-                        Chunk chunk = world.getChunkFromChunkCoords(chunkX, chunkZ);
+                        Chunk chunk = world.getChunk(chunkX, chunkZ);
                         chunk.setModified(true);
                         chunk.enqueueRelightChecks();
                     }

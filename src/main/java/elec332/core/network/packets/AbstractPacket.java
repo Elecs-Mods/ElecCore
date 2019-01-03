@@ -1,17 +1,16 @@
 package elec332.core.network.packets;
 
 import elec332.core.ElecCore;
+import elec332.core.api.network.IExtendedMessageContext;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
+import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
 /**
  * Created by Elec332 on 23-2-2015.
  */
-public abstract class AbstractPacket extends AbstractMessage implements IMessageHandler<AbstractPacket, IMessage> {
+public abstract class AbstractPacket extends AbstractMessage implements BiConsumer<AbstractPacket, Supplier<IExtendedMessageContext>> {
 
     public AbstractPacket() {
         super((NBTTagCompound) null);
@@ -26,20 +25,11 @@ public abstract class AbstractPacket extends AbstractMessage implements IMessage
     }
 
     @Override
-    @Deprecated //Warning, not thread safe!
-    public IMessage onMessage(final AbstractPacket message, final MessageContext ctx) {
-        ElecCore.tickHandler.registerCall(new Runnable() {
-            @Override
-            public void run() {
-                Object o = onMessageThreadSafe(message, ctx);
-                if (o != null) {
-                    throw new RuntimeException();
-                }
-            }
-        }, ctx.side);
-        return null;
+    public void accept(AbstractPacket abstractPacket, Supplier<IExtendedMessageContext> extendedMessageContext) {
+        IExtendedMessageContext messageContext = extendedMessageContext.get();
+        ElecCore.tickHandler.registerCall(() -> onMessageThreadSafe(abstractPacket, messageContext), messageContext.getSide());
     }
 
-    public abstract IMessage onMessageThreadSafe(AbstractPacket message, MessageContext ctx);
+    public abstract void onMessageThreadSafe(AbstractPacket message, IExtendedMessageContext ctx);
 
 }

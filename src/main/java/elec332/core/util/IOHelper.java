@@ -4,10 +4,12 @@ import elec332.core.ElecCore;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.loading.FMLPaths;
 import org.apache.commons.io.FileUtils;
 
 import javax.annotation.Nonnull;
 import java.io.*;
+import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -16,11 +18,29 @@ import java.util.Date;
  */
 public class IOHelper {
 
+    /**
+     * Gets the configuration file with the specified name
+     * in the config directory
+     *
+     * @param fileName The config file name
+     * @return The config file
+     */
+    public static File getConfigFile(String fileName) {
+        return new File(getConfigDir().toFile(), fileName);
+    }
+
+    /**
+     * @return The configuration directory
+     */
+    public static Path getConfigDir() {
+        return FMLPaths.CONFIGDIR.get();
+    }
+
     public static final IObjectIO<NBTTagCompound> NBT_IO, NBT_COMPRESSED_IO;
 
     /**
      * Gets the {@link InputStream} from the provided {@link ResourceLocation},
-     * also works on the {@link net.minecraftforge.fml.relauncher.Side#SERVER}
+     * also works on the {@link net.minecraftforge.api.distmarker.Dist#DEDICATED_SERVER}
      * (MC's method doesn't)
      *
      * @param resourceLocation The location of the resource
@@ -28,7 +48,7 @@ public class IOHelper {
      */
     @Nonnull
     public static InputStream getFromResource(@Nonnull ResourceLocation resourceLocation) throws IOException {
-        String location = "/assets/" + resourceLocation.getResourceDomain() + "/" + resourceLocation.getResourcePath();
+        String location = "/assets/" + resourceLocation.getNamespace() + "/" + resourceLocation.getPath();
         InputStream ret = ElecCore.class.getResourceAsStream(location);
         if (ret != null) {
             return ret;

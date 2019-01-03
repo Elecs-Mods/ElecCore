@@ -59,7 +59,7 @@ public class WidgetButton extends Widget {
     }
 
     @Override
-    public final boolean mouseClicked(int mouseX, int mouseY, int button) {
+    public final boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (isMouseOver(mouseX, mouseY) && active) {
             onButtonClicked(button);
             sendNBTChangesToServer(new NBTBuilder().setInteger("id", 1).setInteger("mbi", button).serializeNBT());
@@ -70,8 +70,8 @@ public class WidgetButton extends Widget {
 
     @Override
     public void readNBTChangesFromPacketServerSide(NBTTagCompound tagCompound) {
-        if (tagCompound.getInteger("id") == 1) {
-            onButtonClicked(tagCompound.getInteger("mbi"));
+        if (tagCompound.getInt("id") == 1) {
+            onButtonClicked(tagCompound.getInt("mbi"));
         }
     }
 
@@ -80,7 +80,7 @@ public class WidgetButton extends Widget {
     }
 
     @Override
-    public void draw(Window gui, int guiX, int guiY, int mouseX, int mouseY) {
+    public void draw(Window gui, int guiX, int guiY, double mouseX, double mouseY) {
         if (!isHidden()) {
             GlStateManager.pushMatrix();
             FontRenderer fontrenderer = RenderHelper.getMCFontrenderer();
@@ -89,7 +89,7 @@ public class WidgetButton extends Widget {
             boolean hovering = isMouseOver(mouseX, mouseY);
             int k = this.getHoverState(hovering);
             GL11.glEnable(GL11.GL_BLEND);
-            OpenGlHelper.glBlendFunc(770, 771, 1, 0);
+            OpenGlHelper.glBlendFuncSeparate(770, 771, 1, 0);
             GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
             //Left half
             GuiDraw.drawTexturedModalRect(guiX + this.x, guiY + this.y, 0, 46 + k * 20, this.width / 2, this.height / 2);
@@ -107,7 +107,7 @@ public class WidgetButton extends Widget {
                 l = 16777120;
             }
             GuiDraw.drawCenteredString(fontrenderer, this.displayString, guiX + this.x + this.width / 2, guiY + this.y + (this.height - 8) / 2, l);
-            GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
+            GlStateManager.color4f(1.0f, 1.0f, 1.0f, 1.0f);
             GlStateManager.popMatrix();
         }
     }

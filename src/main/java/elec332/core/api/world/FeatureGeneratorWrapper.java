@@ -1,7 +1,7 @@
 package elec332.core.api.world;
 
 import elec332.core.api.config.IConfigurableElement;
-import net.minecraft.world.World;
+import net.minecraft.world.IWorld;
 import net.minecraft.world.gen.IChunkGenerator;
 import net.minecraftforge.common.config.Configuration;
 
@@ -15,12 +15,12 @@ import java.util.Random;
  */
 public class FeatureGeneratorWrapper implements IAdvancedChunkPopulator, IConfigurableElement {
 
-    public FeatureGeneratorWrapper(IFeatureGenerator generator) {
+    public FeatureGeneratorWrapper(ILegacyFeatureGenerator generator) {
         this.generator = generator;
         this.name = generator.getName();
     }
 
-    private final IFeatureGenerator generator;
+    private final ILegacyFeatureGenerator generator;
     private final String name;
     private String genkey = "initial";
 
@@ -35,13 +35,13 @@ public class FeatureGeneratorWrapper implements IAdvancedChunkPopulator, IConfig
     }
 
     @Override
-    public void populateChunk(IChunkGenerator chunkGenerator, World world, Random random, int chunkX, int chunkZ, boolean hasVillageGenerated) {
-        generator.generateFeature(random, chunkX, chunkZ, world);
+    public boolean populateChunk(IChunkGenerator chunkGenerator, IWorld world, Random random, int chunkX, int chunkZ) {
+        return generator.generateFeature(world, chunkX, chunkZ, random, false);
     }
 
     @Override
-    public boolean retroGen(Random random, int chunkX, int chunkZ, World world) {
-        return generator.generateFeature(random, chunkX, chunkZ, world);
+    public boolean retroGen(Random random, int chunkX, int chunkZ, IWorld world) {
+        return generator.generateFeature(world, chunkX, chunkZ, random, true);
     }
 
     @Override

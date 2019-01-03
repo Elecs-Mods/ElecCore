@@ -1,9 +1,12 @@
 package elec332.core.api.mod;
 
+import com.mojang.brigadier.CommandDispatcher;
 import elec332.core.api.data.IExternalSaveHandler;
 import elec332.core.api.registration.IObjectRegister;
+import elec332.core.api.registration.IWorldGenRegister;
 import elec332.core.api.registry.ISingleRegister;
-import net.minecraft.command.ICommand;
+import net.minecraft.command.CommandSource;
+import net.minecraft.command.ISuggestionProvider;
 
 import java.util.function.Consumer;
 
@@ -15,13 +18,13 @@ import java.util.function.Consumer;
  */
 public interface IElecCoreMod {
 
-    default public void registerRegisters(Consumer<IObjectRegister<?>> handler) {
+    default public void registerRegisters(Consumer<IObjectRegister<?>> objectHandler, Consumer<IWorldGenRegister> worldHandler) {
     }
 
-    default public void registerServerCommands(ISingleRegister<ICommand> commandRegistry) {
+    default public void registerCommands(CommandDispatcher<CommandSource> commandRegistry) {
     }
 
-    default public void registerClientCommands(ISingleRegister<ICommand> commandRegistry) {
+    default public void registerClientCommands(CommandDispatcher<ISuggestionProvider> commandRegistry) {
     }
 
     default public void registerSaveHandlers(ISingleRegister<IExternalSaveHandler> saveHandlerRegistry) {

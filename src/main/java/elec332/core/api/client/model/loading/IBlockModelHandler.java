@@ -21,13 +21,14 @@ public interface IBlockModelHandler {
     public boolean handleBlock(Block block);
 
     /**
-     * Used to create an identifier for this IBlockState
-     * (This will also be the variant in the ModelResourceLocation)
+     * Notifies this {@link IBlockModelHandler} of the
+     * {@link ModelResourceLocation} of the provided {@link IBlockState}
      *
-     * @param state The block state
-     * @return The identifier for this IBlockState
+     * @param state         The {@link IBlockState}
+     * @param modelLocation The location of the provided {@link IBlockState}
      */
-    public String getIdentifier(IBlockState state);
+    default public void notifyModelLocation(IBlockState state, ModelResourceLocation modelLocation) {
+    }
 
     /**
      * Used to create/fetch the model for this {@param block}

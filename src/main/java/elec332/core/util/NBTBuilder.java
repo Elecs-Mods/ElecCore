@@ -32,17 +32,17 @@ public class NBTBuilder implements INBTSerializable<NBTTagCompound>, Supplier<NB
     /////////////////////////////
 
     public NBTBuilder setBlockPos(BlockPos pos) {
-        this.tag.setLong("position", pos.toLong());
+        this.tag.putLong("position", pos.toLong());
         return this;
     }
 
     public NBTBuilder setTag(String name, NBTTagCompound tag) {
-        this.tag.setTag(name, tag);
+        this.tag.put(name, tag);
         return this;
     }
 
     public NBTBuilder setInteger(String name, int i) {
-        this.tag.setInteger(name, i);
+        this.tag.putInt(name, i);
         return this;
     }
 
@@ -53,11 +53,11 @@ public class NBTBuilder implements INBTSerializable<NBTTagCompound>, Supplier<NB
     }
 
     public NBTTagCompound getTag(String name) {
-        return this.tag.getCompoundTag(name);
+        return this.tag.getCompound(name);
     }
 
     public int getInteger(String name) {
-        return this.tag.getInteger(name);
+        return this.tag.getInt(name);
     }
 
     /////////////////////////////
@@ -69,7 +69,7 @@ public class NBTBuilder implements INBTSerializable<NBTTagCompound>, Supplier<NB
 
     @Override
     public void deserializeNBT(NBTTagCompound nbt) {
-        if (tag.hasNoTags()) {
+        if (tag.isEmpty()) {
             this.tag = nbt;
         } else {
             throw new UnsupportedOperationException();

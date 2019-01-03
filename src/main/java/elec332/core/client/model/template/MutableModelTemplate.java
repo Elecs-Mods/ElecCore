@@ -9,8 +9,8 @@ import elec332.core.client.model.ElecModelBakery;
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.util.EnumFacing;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -19,7 +19,7 @@ import java.util.List;
  * Created by Elec332 on 5-12-2015.
  */
 @SuppressWarnings({"deprecation", "unused"})
-@SideOnly(Side.CLIENT)
+@OnlyIn(Dist.CLIENT)
 public class MutableModelTemplate implements IMutableModelTemplate {
 
     @Nonnull
@@ -50,7 +50,7 @@ public class MutableModelTemplate implements IMutableModelTemplate {
             ret.generalQuads.add(MutableQuadTemplate.copyOf(quadTemplate));
         }
         ret.sidedQuads = MutableQuadSidedMap.newQuadSidedMap();
-        for (EnumFacing facing : EnumFacing.VALUES) {
+        for (EnumFacing facing : EnumFacing.values()) {
             List<IQuadTemplate> toAdd = Lists.newArrayList();
             for (IQuadTemplate quadTemplate : template.getSidedQuads().getForSide(facing)) {
                 toAdd.add(MutableQuadTemplate.copyOf(quadTemplate));

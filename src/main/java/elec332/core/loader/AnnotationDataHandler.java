@@ -3,86 +3,91 @@ package elec332.core.loader;
 import com.google.common.collect.*;
 import elec332.core.api.APIHandlerInject;
 import elec332.core.api.IAPIHandler;
-import elec332.core.api.discovery.ASMDataProcessor;
-import elec332.core.api.discovery.IASMDataHelper;
-import elec332.core.api.discovery.IASMDataProcessor;
-import elec332.core.api.discovery.IAdvancedASMData;
-import elec332.core.util.FMLUtil;
-import net.minecraftforge.fml.common.LoaderState;
-import net.minecraftforge.fml.common.discovery.ASMDataTable;
-import net.minecraftforge.fml.common.discovery.ModCandidate;
+import elec332.core.api.discovery.AnnotationDataProcessor;
+import elec332.core.api.discovery.IAnnotationData;
+import elec332.core.api.discovery.IAnnotationDataHandler;
+import elec332.core.api.discovery.IAnnotationDataProcessor;
+import elec332.core.util.FMLHelper;
+import net.minecraftforge.fml.ModContainer;
+import net.minecraftforge.fml.ModList;
+import net.minecraftforge.fml.ModLoadingStage;
+import net.minecraftforge.fml.language.ModFileScanData;
+import net.minecraftforge.fml.loading.moddiscovery.ModFile;
+import net.minecraftforge.fml.loading.moddiscovery.ModFileInfo;
 import org.apache.commons.lang3.tuple.Pair;
 import org.objectweb.asm.Type;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.nio.file.Path;
 import java.util.*;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * Created by Elec332 on 29-10-2016.
  */
-enum ASMDataHandler {
+enum AnnotationDataHandler {
 
     INSTANCE;
 
-    ASMDataHandler() {
+    AnnotationDataHandler() {
         asmLoaderMap = Maps.newHashMap();
-        validStates = ImmutableList.of(LoaderState.PREINITIALIZATION, LoaderState.INITIALIZATION, LoaderState.POSTINITIALIZATION, LoaderState.AVAILABLE);
+        validStates = ImmutableList.of(ModLoadingStage.CONSTRUCT, ModLoadingStage.PREINIT, ModLoadingStage.INIT, ModLoadingStage.POSTINIT, ModLoadingStage.COMPLETE);
     }
 
+    private final Map<ModLoadingStage, List<IAnnotationDataProcessor>> asmLoaderMap;
+    private final List<ModLoadingStage> validStates;
+    private IAnnotationDataHandler asmDataHelper;
 
-    private static final boolean useCache = false;
-    private final Map<LoaderState, List<IASMDataProcessor>> asmLoaderMap;
-    private final List<LoaderState> validStates;
-    private IASMDataHelper asmDataHelper;
-
-    void identify(ASMDataTable dataTable) {
-        for (LoaderState state : validStates) {
+    void identify(ModList modList) {
+        for (ModLoadingStage state : validStates) {
             asmLoaderMap.put(state, Lists.newArrayList());
         }
-        this.asmDataHelper = new IASMDataHelper() {
-
-            private final Map<String, Set<IAdvancedASMData>> annotationData = Maps.newHashMap();
+        final SetMultimap<Type, IAnnotationData> annotationData = HashMultimap.create();
+        final Map<Path, SetMultimap<Type, IAnnotationData>> annotationDataF = modList.getModFiles().stream()
+                .map(ModFileInfo::getFile)
+                .collect(Collectors.toMap(ModFile::getFilePath, mf -> {
+                    SetMultimap<Type, IAnnotationData> ret = HashMultimap.create();
+                    mf.getScanResult().getAnnotations().forEach(
+                            ad -> annotationData.put(ad.getAnnotationType(), new AnnotationData(ad, mf))
+                    );
+                    return ret;
+                }));
+        annotationDataF.values().forEach(annotationData::putAll);
+        this.asmDataHelper = new IAnnotationDataHandler() {
 
             @Override
-            public ASMDataTable getASMDataTable() {
-                return dataTable;
+            public Set<IAnnotationData> getAnnotationList(Type annotationType) {
+                Set<IAnnotationData> ret = annotationData.get(annotationType);
+                return ret == null ? ImmutableSet.of() : Collections.unmodifiableSet(ret);
             }
 
             @Override
-            public Set<ASMDataTable.ASMData> getAnnotationList(Class<? extends Annotation> annotationClass) {
-                return getASMDataTable().getAll(annotationClass.getName());
+            public Function<Type, Set<IAnnotationData>> getAnnotationsFor(ModContainer mc) {
+                return getAnnotationsFor(((ModFileInfo) mc.getModInfo().getOwningFile()).getFile().getFilePath());
             }
 
             @Override
-            public Set<IAdvancedASMData> getAdvancedAnnotationList(Class<? extends Annotation> annotationClass) {
-                String s = annotationClass.getName();
-                if (!useCache) {
-                    return createNew(s);
-                }
-                Set<IAdvancedASMData> ret = annotationData.get(s);
-                if (ret == null) {
-                    annotationData.put(s, ret = createNew(s));
-                }
-                return ret;
+            public Function<Type, Set<IAnnotationData>> getAnnotationsFor(Path file) {
+                return type -> Optional.of(annotationDataF.get(file).get(type)).orElse(ImmutableSet.of());
             }
 
-            private Set<IAdvancedASMData> createNew(String s) {
-                Set<IAdvancedASMData> ret = Sets.newHashSet();
-                for (ASMDataTable.ASMData data : getASMDataTable().getAll(s)) {
-                    ret.add(new AdvancedASMData(data));
+            @Override
+            public String deepSearchOwner(IAnnotationData annotationData) {
+                //Todo: advanced search
+                ModFile owner = annotationData.getFile();
+                if (owner.getModInfos().size() == 1) {
+                    return owner.getModInfos().get(0).getModId();
                 }
-                return ImmutableSet.copyOf(ret);
+                return null;
             }
-
 
         };
 
-        Map<Pair<Integer, IASMDataProcessor>, LoaderState[]> dataMap = Maps.newTreeMap(Comparator.comparing((Function<Pair<Integer, IASMDataProcessor>, Integer>) Pair::getKey).reversed().thenComparing(Object::hashCode));
+        Map<Pair<Integer, IAnnotationDataProcessor>, ModLoadingStage[]> dataMap = Maps.newTreeMap(Comparator.comparing((Function<Pair<Integer, IAnnotationDataProcessor>, Integer>) Pair::getKey).reversed().thenComparing(Object::hashCode));
 
-        for (ASMDataTable.ASMData data : asmDataHelper.getAnnotationList(elec332.core.api.discovery.ASMDataProcessor.class)) {
+        for (IAnnotationData data : asmDataHelper.getAnnotationList(AnnotationDataProcessor.class)) {
             boolean eb = false;
             Class<?> clazz;
             try {
@@ -94,14 +99,14 @@ enum ASMDataHandler {
             if (clazz == null) {
                 continue;
             }
-            if (clazz.isAnnotationPresent(elec332.core.api.discovery.ASMDataProcessor.class)) {
-                ASMDataProcessor annData = clazz.getAnnotation(elec332.core.api.discovery.ASMDataProcessor.class);
-                LoaderState[] ls = annData.value();
+            if (clazz.isAnnotationPresent(AnnotationDataProcessor.class)) {
+                AnnotationDataProcessor annData = clazz.getAnnotation(AnnotationDataProcessor.class);
+                ModLoadingStage[] ls = annData.value();
                 int importance = annData.importance();
                 if (clazz.isEnum()) {
                     for (Object e : clazz.getEnumConstants()) {
-                        if (e instanceof IASMDataProcessor) {
-                            dataMap.put(Pair.of(importance, (IASMDataProcessor) e), ls);
+                        if (e instanceof IAnnotationDataProcessor) {
+                            dataMap.put(Pair.of(importance, (IAnnotationDataProcessor) e), ls);
                         }
                     }
                     eb = true;
@@ -112,24 +117,24 @@ enum ASMDataHandler {
                     } catch (Exception e) {
                         throw new RuntimeException("Error invocating annotated IASMData class: " + data.getClassName(), e);
                     }
-                    if (o instanceof IASMDataProcessor) {
-                        dataMap.put(Pair.of(importance, (IASMDataProcessor) o), ls);
+                    if (o instanceof IAnnotationDataProcessor) {
+                        dataMap.put(Pair.of(importance, (IAnnotationDataProcessor) o), ls);
                     }
                 }
             }
 
             if (!eb) {
                 for (Field field : clazz.getDeclaredFields()) {
-                    if (field.isAnnotationPresent(elec332.core.api.discovery.ASMDataProcessor.class)) {
+                    if (field.isAnnotationPresent(AnnotationDataProcessor.class)) {
                         Object obj;
                         try {
                             obj = field.get(null);
                         } catch (Exception e) {
                             continue; //Not static
                         }
-                        if (obj instanceof IASMDataProcessor) {
-                            ASMDataProcessor annData = field.getAnnotation(elec332.core.api.discovery.ASMDataProcessor.class);
-                            dataMap.put(Pair.of(annData.importance(), (IASMDataProcessor) obj), annData.value());
+                        if (obj instanceof IAnnotationDataProcessor) {
+                            AnnotationDataProcessor annData = field.getAnnotation(AnnotationDataProcessor.class);
+                            dataMap.put(Pair.of(annData.importance(), (IAnnotationDataProcessor) obj), annData.value());
                         }
                     }
                 }
@@ -137,24 +142,24 @@ enum ASMDataHandler {
 
         }
 
-        for (Map.Entry<Pair<Integer, IASMDataProcessor>, LoaderState[]> entry : dataMap.entrySet()) {
-            LoaderState[] hS = entry.getValue();
+        for (Map.Entry<Pair<Integer, IAnnotationDataProcessor>, ModLoadingStage[]> entry : dataMap.entrySet()) {
+            ModLoadingStage[] hS = entry.getValue();
             if (hS == null || hS.length == 0) {
-                throw new IllegalArgumentException("Invalid LoaderState parameters: Null or empty array; For " + entry.getKey().getValue().getClass());
+                throw new IllegalArgumentException("Invalid ModLoadingStage parameters: Null or empty array; For " + entry.getKey().getValue().getClass());
             }
-            for (LoaderState state : hS) {
+            for (ModLoadingStage state : hS) {
                 if (!validStates.contains(state)) {
-                    throw new IllegalArgumentException("Invalid LoaderState parameter: " + state + "; For " + entry.getKey().getValue().getClass());
+                    throw new IllegalArgumentException("Invalid ModLoadingStage parameter: " + state + "; For " + entry.getKey().getValue().getClass());
                 }
                 asmLoaderMap.get(state).add(entry.getKey().getValue());
             }
         }
     }
 
-    void process(LoaderState state) {
+    void process(ModLoadingStage state) {
         if (validStates.contains(state)) {
-            List<IASMDataProcessor> dataProcessors = asmLoaderMap.get(state);
-            for (IASMDataProcessor dataProcessor : dataProcessors) {
+            List<IAnnotationDataProcessor> dataProcessors = asmLoaderMap.get(state);
+            for (IAnnotationDataProcessor dataProcessor : dataProcessors) {
                 dataProcessor.processASMData(asmDataHelper, state);
             }
             asmLoaderMap.remove(state);
@@ -165,19 +170,21 @@ enum ASMDataHandler {
 
     @APIHandlerInject(weight = 1)
     public void injectASMHelper(IAPIHandler apiHandler) {
-        apiHandler.inject(this.asmDataHelper, IASMDataHelper.class);
+        apiHandler.inject(this.asmDataHelper, IAnnotationDataHandler.class);
     }
 
-    private static class AdvancedASMData implements IAdvancedASMData {
+    private static class AnnotationData implements IAnnotationData {
 
-        private AdvancedASMData(ASMDataTable.ASMData asmData) {
+        private AnnotationData(ModFileScanData.AnnotationData asmData, ModFile file) {
             this.asmData = asmData;
-            this.isField = asmData.getObjectName().indexOf('(') == -1;
-            this.isClass = asmData.getObjectName().indexOf('.') != -1;
-            this.annotationInfo = Collections.unmodifiableMap(asmData.getAnnotationInfo());
+            this.modFile = file;
+            this.isField = asmData.getMemberName().indexOf('(') == -1;
+            this.isClass = asmData.getMemberName().indexOf('.') != -1;
+            this.annotationInfo = Collections.unmodifiableMap(asmData.getAnnotationData());
         }
 
-        private final ASMDataTable.ASMData asmData;
+        private final ModFile modFile;
+        private final ModFileScanData.AnnotationData asmData;
         private final Map<String, Object> annotationInfo;
         private final boolean isField, isClass;
         private Class<?> clazz;
@@ -188,13 +195,13 @@ enum ASMDataHandler {
         private Class[] params;
 
         @Override
-        public ModCandidate getContainer() {
-            return asmData.getCandidate();
+        public ModFile getFile() {
+            return modFile;
         }
 
         @Override
-        public String getAnnotationName() {
-            return asmData.getAnnotationName();
+        public Type getAnnotationType() {
+            return asmData.getAnnotationType();
         }
 
         @Override
@@ -203,20 +210,25 @@ enum ASMDataHandler {
         }
 
         @Override
-        public String getClassName() {
-            return asmData.getClassName();
-        }
-
-        @Override
         public Class<?> loadClass() {
             if (clazz != null) {
                 return clazz;
             }
             try {
-                return clazz = FMLUtil.loadClass(asmData.getClassName());
+                return clazz = FMLHelper.loadClass(getClassName());
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
+        }
+
+        @Override
+        public Type getClassType() {
+            return asmData.getClassType();
+        }
+
+        @Override
+        public String getMemberName() {
+            return asmData.getMemberName();
         }
 
         @Override
@@ -229,7 +241,7 @@ enum ASMDataHandler {
             if (!isField()) {
                 throw new IllegalAccessError();
             }
-            return asmData.getObjectName();
+            return asmData.getMemberName();
         }
 
         @Override
@@ -265,7 +277,7 @@ enum ASMDataHandler {
                 throw new IllegalAccessError();
             }
             if (methodName == null) {
-                String targetName = asmData.getObjectName();
+                String targetName = asmData.getMemberName();
                 int i = targetName.indexOf('('), i2 = targetName.indexOf(')');
                 methodName = targetName.substring(0, i);
                 if (i2 - i == 1) {
@@ -288,6 +300,11 @@ enum ASMDataHandler {
                 throw new IllegalAccessError();
             }
             try {
+                //todo: sort out why existing methods don't exist
+                System.out.println(Lists.newArrayList(loadClass().getDeclaredMethods()));
+                Arrays.stream(loadClass().getDeclaredMethods()).forEach(m -> {
+                    System.out.println(m.getName() + "  " + Lists.newArrayList(m.getParameterTypes()));
+                });
                 method = loadClass().getDeclaredMethod(getMethodName(), getMethodParameters());
                 method.setAccessible(true);
                 return method;

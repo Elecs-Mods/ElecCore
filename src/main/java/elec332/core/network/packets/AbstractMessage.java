@@ -1,9 +1,8 @@
 package elec332.core.network.packets;
 
-import io.netty.buffer.ByteBuf;
+import elec332.core.api.network.IMessage;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraftforge.fml.common.network.ByteBufUtils;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
+import net.minecraft.network.PacketBuffer;
 
 import java.util.function.Supplier;
 
@@ -23,13 +22,13 @@ public abstract class AbstractMessage implements IMessage {
     protected NBTTagCompound networkPackageObject;
 
     @Override
-    public void fromBytes(ByteBuf buf) {
-        this.networkPackageObject = ByteBufUtils.readTag(buf);
+    public void fromBytes(PacketBuffer buf) {
+        this.networkPackageObject = buf.readCompoundTag();
     }
 
     @Override
-    public void toBytes(ByteBuf buf) {
-        ByteBufUtils.writeTag(buf, this.networkPackageObject);
+    public void toBytes(PacketBuffer buf) {
+        buf.writeCompoundTag(this.networkPackageObject);
     }
 
 }

@@ -10,8 +10,8 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
 
@@ -31,7 +31,7 @@ public class WidgetSlot extends Widget {
     }
 
     @Override
-    public void draw(Window window, int guiX, int guiY, int mouseX, int mouseY) {
+    public void draw(Window window, int guiX, int guiY, double mouseX, double mouseY) {
         RenderHelper.bindTexture(Window.DEFAULT_BACKGROUND);
         GuiDraw.drawTexturedModalRect(guiX + x - 1, guiY + y - 1, 180, 0, 18, 18);
     }
@@ -160,7 +160,7 @@ public class WidgetSlot extends Widget {
     }
 
     @Nullable
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public String getSlotTexture() {
         return backgroundName;
     }
@@ -192,7 +192,7 @@ public class WidgetSlot extends Widget {
      * Actualy only call when we want to render the white square effect over the slots. Return always True, except for
      * the armor slot of the Donkey/Mule (we can't interact with the Undead and Skeleton horses)
      */
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public boolean canBeHovered() {
         return !isHidden();
     }
@@ -206,7 +206,7 @@ public class WidgetSlot extends Widget {
      *
      * @return The resource location for the background image
      */
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     @Nonnull
     public ResourceLocation getBackgroundLocation() {
         return (backgroundLocation == null ? net.minecraft.client.renderer.texture.TextureMap.LOCATION_BLOCKS_TEXTURE : backgroundLocation);
@@ -217,7 +217,7 @@ public class WidgetSlot extends Widget {
      *
      * @param texture the resourcelocation for the texture
      */
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public void setBackgroundLocation(@Nonnull ResourceLocation texture) {
         this.backgroundLocation = texture;
     }
@@ -227,21 +227,21 @@ public class WidgetSlot extends Widget {
      *
      * @param name The icon to use, null for none
      */
-    public void setBackgroundName(@Nonnull String name) {
+    public void setBackgroundName(@Nullable String name) {
         this.backgroundName = name;
     }
 
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public net.minecraft.client.renderer.texture.TextureAtlasSprite getBackgroundSprite() {
         String name = getSlotTexture();
         return name == null ? null : getBackgroundMap().getAtlasSprite(name);
     }
 
     @Nonnull
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public net.minecraft.client.renderer.texture.TextureMap getBackgroundMap() {
         if (backgroundMap == null) {
-            backgroundMap = net.minecraft.client.Minecraft.getMinecraft().getTextureMapBlocks();
+            backgroundMap = net.minecraft.client.Minecraft.getInstance().getTextureMap();
         }
         return (net.minecraft.client.renderer.texture.TextureMap) backgroundMap;
     }
@@ -272,8 +272,8 @@ public class WidgetSlot extends Widget {
 
     @Nullable
     @Override
-    @SideOnly(Side.CLIENT)
-    public ToolTip getToolTip(int mouseX, int mouseY) {
+    @OnlyIn(Dist.CLIENT)
+    public ToolTip getToolTip(double mouseX, double mouseY) {
         ItemStack stack = getStack();
         if (ItemStackHelper.isStackValid(stack)) {
             return new ToolTip(GuiDraw.getItemToolTip(stack));

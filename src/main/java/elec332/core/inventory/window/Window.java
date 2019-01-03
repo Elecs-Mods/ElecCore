@@ -13,7 +13,6 @@ import elec332.core.inventory.widget.slot.WidgetSlot;
 import elec332.core.inventory.widget.slot.WidgetSlotOutput;
 import elec332.core.proxies.CommonProxy;
 import elec332.core.util.ItemStackHelper;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.ClickType;
@@ -22,15 +21,14 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.wrapper.PlayerMainInvWrapper;
-import org.lwjgl.input.Mouse;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.io.IOException;
 import java.util.*;
 
 /**
@@ -107,22 +105,22 @@ public class Window implements IWidgetContainer {
     /**
      * The width of the screen object.
      */
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     protected int width;
     /**
      * The height of the screen object.
      */
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     protected int height;
     /**
      * Starting X position for the Gui. Inconsistent use for Gui backgrounds.
      */
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public int guiLeft;
     /**
      * Starting Y position for the Gui. Inconsistent use for Gui backgrounds.
      */
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public int guiTop;
 
     @Override
@@ -268,7 +266,7 @@ public class Window implements IWidgetContainer {
         return this;
     }
 
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public void updateProgressBar(int id, int data) {
         widgets.get(id).updateProgressbar(data);
     }
@@ -331,7 +329,7 @@ public class Window implements IWidgetContainer {
         windowContainer.getSlot(slotID).putStack(stack);
     }
 
-    public void onPacket(NBTTagCompound tag, Side receiver) {
+    public void onPacket(NBTTagCompound tag, LogicalSide receiver) {
     }
 
     public void modifyTooltip(List<String> tooltip, WidgetSlot slot, ItemStack stack, int x, int y) {
@@ -342,13 +340,13 @@ public class Window implements IWidgetContainer {
         widget.modifyTooltip(tooltip, mouseX, mouseY);
     }
 
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     protected void handleMouseClick(@Nullable WidgetSlot slotIn, int slotId, int mouseButton, @Nonnull ClickType type) {
         windowContainer.handleMouseClickDefault(slotIn, slotId, mouseButton, type);
     }
 
-    @SideOnly(Side.CLIENT)
-    protected boolean mouseClicked(int mouseX, int mouseY, int button) throws IOException {
+    @OnlyIn(Dist.CLIENT)
+    protected boolean mouseClicked(double mouseX, double mouseY, int button) {
         for (IWidget widget : getWidgets()) {
             if (!widget.isHidden() && widget.isMouseOver(translatedMouseX(mouseX), translatedMouseY(mouseY)) && widget.mouseClicked(translatedMouseX(mouseX), translatedMouseY(mouseY), button)) {
                 return true;
@@ -357,7 +355,7 @@ public class Window implements IWidgetContainer {
         return false;
     }
 
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     protected boolean keyTyped(char typedChar, int keyCode) {
         for (IWidget widget : getWidgets()) {
             if (!widget.isHidden() && widget.keyTyped(typedChar, keyCode)) {
@@ -367,18 +365,8 @@ public class Window implements IWidgetContainer {
         return false;
     }
 
-    @SideOnly(Side.CLIENT)
-    public void handleMouseInput() throws IOException {
-        int wheel = Mouse.getEventDWheel();
-        if (wheel != 0) {
-            int mouseX = Mouse.getEventX() * width / Minecraft.getMinecraft().displayWidth;
-            int mouseY = height - Mouse.getEventY() * height / Minecraft.getMinecraft().displayHeight - 1;
-            handleMouseWheel(wheel, translatedMouseX(mouseX), translatedMouseY(mouseY));
-        }
-    }
-
-    @SideOnly(Side.CLIENT)
-    protected boolean handleMouseWheel(int wheel, int translatedMouseX, int translatedMouseY) {
+    @OnlyIn(Dist.CLIENT)
+    protected boolean handleMouseWheel(double wheel, double translatedMouseX, double translatedMouseY) {
         for (IWidget widget : widgets) {
             if (widget.handleMouseWheel(wheel, translatedMouseX, translatedMouseY)) {
                 return true;
@@ -387,22 +375,22 @@ public class Window implements IWidgetContainer {
         return false;
     }
 
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
 
     }
 
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     protected void drawScreenPre(int mouseX, int mouseY, float partialTicks) {
         GuiDraw.drawDefaultBackground();
     }
 
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     protected void drawScreenPost(int mouseX, int mouseY, float partialTicks) {
         GlStateManager.disableLighting();
-        GlStateManager.disableDepth();
+        GlStateManager.disableDepthTest();
         GlStateManager.pushMatrix();
-        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+        GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
         net.minecraft.client.renderer.RenderHelper.disableStandardItemLighting();
         for (IWidget widget : getWidgets()) {
             if (widget.isHidden()) {
@@ -421,15 +409,15 @@ public class Window implements IWidgetContainer {
             }
         }
         GlStateManager.popMatrix();
-        GlStateManager.enableDepth();
+        GlStateManager.enableDepthTest();
     }
 
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
         GlStateManager.pushMatrix();
         int k = (width - xSize) / 2;
         int l = (height - ySize) / 2;
-        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+        GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
         ResourceLocation background = getBackgroundImageLocation();
         if (background != null) {
             RenderHelper.bindTexture(background);
@@ -457,7 +445,7 @@ public class Window implements IWidgetContainer {
 
     protected void drawWidgets(int k, int l, int mouseX, int mouseY) {
         GlStateManager.pushMatrix();
-        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+        GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
         for (IWidget widget : getWidgets()) {
             if (!widget.isHidden()) {
                 widget.draw(this, k, l, translatedMouseX(mouseX), translatedMouseY(mouseY));
@@ -466,7 +454,7 @@ public class Window implements IWidgetContainer {
         GlStateManager.popMatrix();
     }
 
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public boolean doesWindowPauseGame() {
         return false;
     }
@@ -506,11 +494,11 @@ public class Window implements IWidgetContainer {
         windowContainer.sendPacket(tag);
     }
 
-    protected int translatedMouseX(int mouseX) {
+    protected double translatedMouseX(double mouseX) {
         return mouseX - this.guiLeft;
     }
 
-    protected int translatedMouseY(int mouseY) {
+    protected double translatedMouseY(double mouseY) {
         return mouseY - this.guiTop;
     }
 

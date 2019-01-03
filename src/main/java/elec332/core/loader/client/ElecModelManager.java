@@ -9,21 +9,21 @@ import elec332.core.ElecCore;
 import elec332.core.api.annotations.StaticLoad;
 import elec332.core.api.client.model.loading.IModelHandler;
 import elec332.core.api.client.model.loading.ModelHandler;
-import elec332.core.api.discovery.ASMDataProcessor;
-import elec332.core.api.discovery.IASMDataHelper;
-import elec332.core.api.discovery.IASMDataProcessor;
+import elec332.core.api.discovery.AnnotationDataProcessor;
+import elec332.core.api.discovery.IAnnotationData;
+import elec332.core.api.discovery.IAnnotationDataHandler;
+import elec332.core.api.discovery.IAnnotationDataProcessor;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.block.model.ModelBakery;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.registry.IRegistry;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.common.LoaderState;
-import net.minecraftforge.fml.common.discovery.ASMDataTable;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.eventbus.api.EventPriority;
+import net.minecraftforge.fml.ModLoadingStage;
 
 import java.util.List;
 import java.util.Map;
@@ -33,23 +33,23 @@ import java.util.Set;
  * Created by Elec332 on 11-3-2016.
  */
 @StaticLoad
-@SideOnly(Side.CLIENT)
-@ASMDataProcessor(LoaderState.PREINITIALIZATION)
-enum ElecModelManager implements IASMDataProcessor {
+@OnlyIn(Dist.CLIENT)
+@AnnotationDataProcessor(ModLoadingStage.PREINIT)
+enum ElecModelManager implements IAnnotationDataProcessor {
 
     INSTANCE;
 
     ElecModelManager() {
         this.modelHandlers = Lists.newArrayList();
-        MinecraftForge.EVENT_BUS.register(this);
+        MinecraftForge.EVENT_BUS.addListener(EventPriority.NORMAL, this::registerModels);
     }
 
     private List<IModelHandler> modelHandlers;
 
     @Override
-    public void processASMData(IASMDataHelper asmData, LoaderState state) {
+    public void processASMData(IAnnotationDataHandler asmData, ModLoadingStage state) {
         List<Object> list = Lists.newArrayList();
-        for (ASMDataTable.ASMData data : asmData.getAnnotationList(ModelHandler.class)) {
+        for (IAnnotationData data : asmData.getAnnotationList(ModelHandler.class)) {
             String s = data.getClassName();
             try {
                 list.add(Class.forName(s).newInstance());
@@ -69,7 +69,6 @@ enum ElecModelManager implements IASMDataProcessor {
         }
     }
 
-    @SubscribeEvent
     public void registerModels(ModelRegistryEvent event) {
         ElecCore.logger.info("Registering models");
         for (IModelHandler modelHandler : modelHandlers) {
@@ -80,16 +79,16 @@ enum ElecModelManager implements IASMDataProcessor {
     Set<ModelResourceLocation> registerBakedModels(IRegistry<ModelResourceLocation, IBakedModel> registry) {
         ElecCore.logger.info("Handling models");
         Set<ModelResourceLocation> ret = Sets.newHashSet();
-        IBakedModel missingModel = registry.getObject(ModelBakery.MODEL_MISSING);
+        IBakedModel missingModel = registry.getOrDefault(ModelBakery.MODEL_MISSING);
 
         Map<ModelResourceLocation, IBakedModel> models = Maps.newHashMap();
 
         for (IModelHandler modelHandler : modelHandlers) {
-            models.putAll(modelHandler.registerBakedModels(registry::getObject));
+            models.putAll(modelHandler.registerBakedModels(registry::getOrDefault));
         }
 
         for (Map.Entry<ModelResourceLocation, IBakedModel> entry : models.entrySet()) {
-            registry.putObject(entry.getKey(), MoreObjects.firstNonNull(entry.getValue(), missingModel));
+            registry.put(entry.getKey(), MoreObjects.firstNonNull(entry.getValue(), missingModel));
             ret.add(entry.getKey());
         }
 

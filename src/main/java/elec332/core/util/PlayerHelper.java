@@ -1,6 +1,6 @@
 package elec332.core.util;
 
-import net.minecraft.command.ICommandSender;
+import net.minecraft.command.ICommandSource;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -25,7 +25,7 @@ public class PlayerHelper {
      * @return The player's current block reach distance
      */
     public static double getBlockReachDistance(EntityPlayer player) {
-        return player.getEntityAttribute(EntityPlayer.REACH_DISTANCE).getAttributeValue();
+        return player.getAttribute(EntityPlayer.REACH_DISTANCE).getValue();
     }
 
     /**
@@ -63,7 +63,7 @@ public class PlayerHelper {
      * @param player The player
      * @param s      The message
      */
-    public static void sendMessageToPlayer(@Nonnull ICommandSender player, String s) {
+    public static void sendMessageToPlayer(@Nonnull ICommandSource player, String s) {
         sendMessageToPlayer(player, new TextComponentString(s));
     }
 
@@ -73,7 +73,7 @@ public class PlayerHelper {
      * @param player The player
      * @param s      The message
      */
-    public static void sendMessageToPlayer(@Nonnull ICommandSender player, ITextComponent s) {
+    public static void sendMessageToPlayer(@Nonnull ICommandSource player, ITextComponent s) {
         player.sendMessage(s);
     }
 
@@ -83,7 +83,7 @@ public class PlayerHelper {
      * @param player The player
      */
     public static void activateFlight(EntityPlayer player) {
-        player.capabilities.allowFlying = true;
+        player.abilities.allowFlying = true;
         player.sendPlayerAbilities();
     }
 
@@ -93,9 +93,9 @@ public class PlayerHelper {
      * @param player The player
      */
     public static void deactivateFlight(EntityPlayer player) {
-        player.capabilities.allowFlying = false;
-        if (player.capabilities.isFlying) {
-            player.capabilities.isFlying = false;
+        player.abilities.allowFlying = false;
+        if (player.abilities.isFlying) {
+            player.abilities.isFlying = false;
         }
         player.sendPlayerAbilities();
     }
@@ -117,7 +117,7 @@ public class PlayerHelper {
      * @return Whether the specified player is in creative
      */
     public static boolean isPlayerInCreative(EntityPlayer player) {
-        return player.capabilities.isCreativeMode;
+        return player.abilities.isCreativeMode;
     }
 
     /**

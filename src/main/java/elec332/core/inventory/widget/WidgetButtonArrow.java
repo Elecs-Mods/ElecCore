@@ -21,7 +21,7 @@ public class WidgetButtonArrow extends WidgetButton {
     }
 
     @Override
-    public void draw(Window gui, int guiX, int guiY, int mouseX, int mouseY) {
+    public void draw(Window gui, int guiX, int guiY, double mouseX, double mouseY) {
         bindTexture(new ResourceLocation("eleccore", "buttons.png"));
         int u = this.u;
         int v = this.v;

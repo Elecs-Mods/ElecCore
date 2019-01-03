@@ -1,8 +1,8 @@
 package elec332.core.api.client;
 
 import elec332.core.api.client.model.IElecRenderingRegistry;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 /**
  * Created by Elec332 on 9-12-2015.
@@ -18,7 +18,7 @@ public interface ITextureLoader {
      *
      * @param iconRegistrar The IIconRegistrar.
      */
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public void registerTextures(IIconRegistrar iconRegistrar);
 
 }

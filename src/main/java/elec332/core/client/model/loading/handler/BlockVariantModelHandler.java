@@ -1,6 +1,7 @@
 package elec332.core.client.model.loading.handler;
 
 import com.google.common.base.Charsets;
+import com.google.common.base.Preconditions;
 import com.google.common.collect.*;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -10,15 +11,15 @@ import elec332.core.client.model.loading.INoBlockStateJsonBlock;
 import elec332.core.client.model.loading.INoJsonBlock;
 import elec332.core.loader.client.RenderingRegistry;
 import net.minecraft.block.Block;
-import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.BlockModelShapes;
 import net.minecraft.client.renderer.block.model.*;
-import net.minecraft.client.renderer.block.statemap.StateMapperBase;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.vertex.VertexFormat;
-import net.minecraft.client.resources.IResource;
-import net.minecraft.client.resources.IResourceManager;
+import net.minecraft.resources.IResource;
+import net.minecraft.resources.IResourceManager;
+import net.minecraft.state.IProperty;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.model.*;
@@ -67,17 +68,11 @@ public class BlockVariantModelHandler implements IModelHandler {
                 ResourceLocation baseName = new ResourceLocation("varianthandled", block.getRegistryName().toString().replace(":", "_"));
                 uniqueNames.add(baseName);
 
-                net.minecraftforge.client.model.ModelLoader.setCustomStateMapper(block, new StateMapperBase() {
-
-                    @Override
-                    @Nonnull
-                    protected ModelResourceLocation getModelResourceLocation(@Nonnull IBlockState state) {
-                        ModelResourceLocation mrl = new ModelResourceLocation(baseName, getPropertyString(state.getProperties()));
-                        blockResourceLocations.put(mrl, state);
-                        return mrl;
-                    }
-
+                block.getStateContainer().getValidStates().forEach(ibs -> {
+                    ModelResourceLocation mrl = BlockModelShapes.getModelLocation(ibs);
+                    blockResourceLocations.put(mrl, ibs);
                 });
+
             }
         }
     }
@@ -110,7 +105,7 @@ public class BlockVariantModelHandler implements IModelHandler {
     }
 
     private ResourceLocation getFixedLocation(ResourceLocation rl) {
-        return new ResourceLocation(rl.getResourcePath().replace("_", ":"));
+        return new ResourceLocation(rl.getPath().replace("_", ":"));
     }
 
     private class ModelLoader implements ICustomModelLoader {
@@ -122,7 +117,7 @@ public class BlockVariantModelHandler implements IModelHandler {
 
         @Nonnull
         @Override
-        public IModel loadModel(@Nonnull ResourceLocation modelLocation) throws Exception {
+        public IUnbakedModel loadModel(@Nonnull ResourceLocation modelLocation) throws Exception {
             if (!(modelLocation instanceof ModelResourceLocation)) {
                 throw new RuntimeException();
             }
@@ -146,7 +141,7 @@ public class BlockVariantModelHandler implements IModelHandler {
                     return nullRet;
                 }
                 try {
-                    IResource iresource = Minecraft.getMinecraft().getResourceManager().getResource(new ResourceLocation(location.getResourceDomain(), "models/" + location.getResourcePath() + ".json"));
+                    IResource iresource = Minecraft.getInstance().getResourceManager().getResource(new ResourceLocation(location.getNamespace(), "models/" + location.getPath() + ".json"));
                     Reader reader = new InputStreamReader(iresource.getInputStream(), Charsets.UTF_8);
                     Pair<Variant, TextureOverrideData> ret = Pair.of(variant, gson.fromJson(reader, TextureOverrideData.class));
                     reader.close();
@@ -160,6 +155,8 @@ public class BlockVariantModelHandler implements IModelHandler {
                 }
 
             }).collect(Collectors.toList());
+
+
             List<ResourceLocation> locations = Lists.newArrayList();
             Set<ResourceLocation> textures = Sets.newHashSet();
             List<IModel> models = Lists.newArrayList();
@@ -172,7 +169,7 @@ public class BlockVariantModelHandler implements IModelHandler {
                 ResourceLocation loc = v.getModelLocation();
                 locations.add(loc);
 
-                IModel model;
+                IUnbakedModel model;
                 if (loc.equals(net.minecraftforge.client.model.ModelLoader.MODEL_MISSING)) {
                     model = ModelLoaderRegistry.getMissingModel();
                 } else {
@@ -180,14 +177,16 @@ public class BlockVariantModelHandler implements IModelHandler {
                 }
 
                 model = v.process(model);
-                for (ResourceLocation location : model.getDependencies()) {
+                for (ResourceLocation location : model.getOverrideLocations()) {
                     ModelLoaderRegistry.getModelOrMissing(location);
                 }
-                textures.addAll(model.getTextures());
+                textures.addAll(model.getTextures(net.minecraftforge.client.model.ModelLoader.defaultModelGetter(), new HashSet<>()));
                 if (t != null) {
                     textures.addAll(t.getAllTextures());
                 }
 
+                IModelState modelDefaultState = model.getDefaultState();
+                Preconditions.checkNotNull(modelDefaultState, "Model %s returned null as default state", loc);
                 models.add(model);
                 builder.add(Pair.of(model, v.getState()));
             }
@@ -200,23 +199,22 @@ public class BlockVariantModelHandler implements IModelHandler {
 
             defaultState = new MultiModelState(builder.build());
 
-            return new IModel() {
+            return new IUnbakedModel() {
 
-                @Nonnull
                 @Override
-                public Collection<ResourceLocation> getDependencies() {
+                public Collection<ResourceLocation> getOverrideLocations() {
                     return ImmutableList.copyOf(locations);
                 }
 
-                @Nonnull
+
                 @Override
-                public Collection<ResourceLocation> getTextures() {
+                public Collection<ResourceLocation> getTextures(Function<ResourceLocation, IUnbakedModel> modelGetter, Set<String> missingTextureErrors) {
                     return ImmutableSet.copyOf(textures);
                 }
 
+                @Nullable
                 @Override
-                @SuppressWarnings("all")
-                public IBakedModel bake(IModelState state, VertexFormat format, Function<ResourceLocation, TextureAtlasSprite> bakedTextureGetter) {
+                public IBakedModel bake(@Nonnull Function<ResourceLocation, IUnbakedModel> modelGetter, @Nonnull Function<ResourceLocation, TextureAtlasSprite> spriteGetter, @Nonnull IModelState state, boolean uvlock, @Nonnull VertexFormat format) {
                     if (!Attributes.moreSpecific(format, Attributes.DEFAULT_BAKED_FORMAT)) {
                         throw new IllegalArgumentException("Can't bake vanilla weighted models to the format that doesn't fit into the default one: " + format);
                     }
@@ -224,18 +222,18 @@ public class BlockVariantModelHandler implements IModelHandler {
                         IModel model = models.get(0);
                         TextureOverrideData texOv = data.get(0).getRight();
                         if (texOv != null && texOv.containsProperty(props.keySet())) {
-                            bakedTextureGetter = new TextureOverride(texOv.process(props), bakedTextureGetter);
+                            spriteGetter = new TextureOverride(texOv.process(props), spriteGetter);
                         }
-                        return bakeModel(model, MultiModelState.getPartState(state, model, 0), format, bakedTextureGetter, texOv);
+                        return bakeModel(model, modelGetter, spriteGetter, MultiModelState.getPartState(state, model, 0), uvlock, format, texOv);
                     }
                     WeightedBakedModel.Builder builder = new WeightedBakedModel.Builder();
                     for (int i = 0; i < variants.size(); i++) {
                         IModel model = models.get(i);
                         TextureOverrideData texOv = data.get(i).getRight();
                         if (texOv != null && texOv.containsProperty(props.keySet())) {
-                            bakedTextureGetter = new TextureOverride(texOv.process(props), bakedTextureGetter);
+                            spriteGetter = new TextureOverride(texOv.process(props), spriteGetter);
                         }
-                        IBakedModel bModel = bakeModel(model, MultiModelState.getPartState(state, model, i), format, bakedTextureGetter, texOv);
+                        IBakedModel bModel = bakeModel(model, modelGetter, spriteGetter, MultiModelState.getPartState(state, model, i), uvlock, format, texOv);
                         builder.add(bModel, variants.get(i).getWeight());
                     }
                     return builder.build();
@@ -252,13 +250,12 @@ public class BlockVariantModelHandler implements IModelHandler {
 
         @Override
         public void onResourceManagerReload(@Nonnull IResourceManager resourceManager) {
-            //
         }
 
         @SuppressWarnings("all")
-        private IBakedModel bakeModel(IModel model, IModelState state, VertexFormat format, Function<ResourceLocation, TextureAtlasSprite> bakedTextureGetter, @Nullable TextureOverrideData tovd) {
+        private IBakedModel bakeModel(IModel model, @Nonnull Function<ResourceLocation, IUnbakedModel> modelGetter, @Nonnull Function<ResourceLocation, TextureAtlasSprite> spriteGetter, @Nonnull IModelState state, boolean uvlock, @Nonnull VertexFormat format, @Nullable TextureOverrideData tovd) {
 
-            IBakedModel base = model.bake(state, format, bakedTextureGetter);
+            IBakedModel base = model.bake(modelGetter, spriteGetter, state, uvlock, format);
             if (tovd == null) {
                 return base;
             }
@@ -267,8 +264,7 @@ public class BlockVariantModelHandler implements IModelHandler {
                 Map<IBlockState, IBakedModel> cache = new WeakHashMap<>();
 
                 @Override
-                @Nonnull
-                public List<BakedQuad> getQuads(@Nullable IBlockState blockState, @Nullable EnumFacing side, long rand) {
+                public List<BakedQuad> getQuads(@Nullable IBlockState blockState, @Nullable EnumFacing side, Random rand) {
                     if (blockState == null) {
                         return base.getQuads(null, side, rand);
                     }
@@ -281,7 +277,7 @@ public class BlockVariantModelHandler implements IModelHandler {
                         cache.put(blockState, base);
                     }
                     IBakedModel ret;
-                    cache.put(blockState, ret = model.bake(state, format, new TextureOverride(tovd.process(data), bakedTextureGetter)));
+                    cache.put(blockState, ret = model.bake(modelGetter, new TextureOverride(tovd.process(data), spriteGetter), state, uvlock, format));
                     return ret.getQuads(blockState, side, rand);
                 }
 
@@ -327,8 +323,8 @@ public class BlockVariantModelHandler implements IModelHandler {
 
     @SuppressWarnings("all")
     private Map<String, String> addNormalProperties(IBlockState state, Map<String, String> data) {
-        for (IProperty prop : state.getPropertyKeys()) {
-            data.put(prop.getName(), prop.getName(state.getValue(prop)));
+        for (IProperty prop : state.getProperties()) {
+            data.put(prop.getName(), prop.getName(state.get(prop)));
         }
         return data;
     }

@@ -7,19 +7,20 @@ import com.google.common.collect.Sets;
 import elec332.core.ElecCore;
 import elec332.core.api.APIHandlerInject;
 import elec332.core.api.IAPIHandler;
-import elec332.core.api.discovery.IASMDataHelper;
+import elec332.core.api.discovery.IAnnotationDataHandler;
 import elec332.core.api.module.IModuleContainer;
 import elec332.core.api.module.IModuleController;
 import elec332.core.api.module.IModuleInfo;
 import elec332.core.api.module.IModuleManager;
 import elec332.core.module.DefaultWrappedModule;
-import elec332.core.util.FMLUtil;
+import elec332.core.util.FMLHelper;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.common.FMLModContainer;
-import net.minecraftforge.fml.common.Loader;
-import net.minecraftforge.fml.common.MissingModsException;
-import net.minecraftforge.fml.common.ModContainer;
-import net.minecraftforge.fml.common.versioning.ArtifactVersion;
+import net.minecraftforge.fml.ModContainer;
+import net.minecraftforge.fml.javafmlmod.FMLModContainer;
+import net.minecraftforge.fml.loading.moddiscovery.ModInfo;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.maven.artifact.versioning.ArtifactVersion;
+import org.apache.maven.artifact.versioning.VersionRange;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -55,15 +56,15 @@ enum ModuleManager implements IModuleManager {
     private Map<ResourceLocation, IModuleContainer> activeModuleNames;
     private Map<String, IModuleController> moduleControllers;
     private Map<Class<? extends Annotation>, Function<IModuleContainer, Object>> fieldProcessors;
-    private Set<BiFunction<IASMDataHelper, Function<String, IModuleController>, List<IModuleInfo>>> moduleDiscoverers;
+    private Set<BiFunction<IAnnotationDataHandler, Function<String, IModuleController>, List<IModuleInfo>>> moduleDiscoverers;
     private Set<String> erroredMods;
     private boolean locked, loaded;
 
     @APIHandlerInject
-    private IASMDataHelper asmData = null;
+    private IAnnotationDataHandler asmData = null;
 
     void init() {
-        moduleControllers = FMLUtil.getLoader().getActiveModList().stream()
+        moduleControllers = FMLHelper.getMods().stream()
                 .filter(mc -> mc.getMod() instanceof IModuleController)
                 .collect(Collectors.toMap(ModContainer::getModId, mc -> (IModuleController) mc.getMod()));
         moduleControllers.values().forEach(moduleController -> moduleController.registerAdditionalModules(ModuleManager.INSTANCE::registerAdditionalModule));
@@ -108,28 +109,27 @@ enum ModuleManager implements IModuleManager {
 
     private List<IModuleInfo> checkModDependencies() {
         Map<String, ArtifactVersion> names = Maps.newHashMap();
-        for (ModContainer mod : Loader.instance().getActiveModList()) {
-            names.put(mod.getModId(), mod.getProcessedVersion());
+        for (ModInfo modInfo : FMLHelper.getModList().getMods()) {
+            names.put(modInfo.getModId(), modInfo.getVersion());
         }
 
         List<IModuleInfo> list = Lists.newArrayList();
 
         for (IModuleInfo module : registeredModules) {
             boolean add = true;
-            Set<ArtifactVersion> missingMods = Sets.newHashSet();
-            List<ArtifactVersion> requirements = module.getModDependencies();
-            for (ArtifactVersion dep : requirements) {
-                ArtifactVersion ver = names.get(dep.getLabel());
-                if (ver == null || !dep.containsVersion(ver)) {
+            Set<String> missingMods = Sets.newHashSet();
+            List<Pair<String, VersionRange>> requirements = module.getModDependencies();
+            for (Pair<String, VersionRange> dep : requirements) {
+                ArtifactVersion ver = names.get(dep.getLeft());
+                if (ver == null || !dep.getRight().containsVersion(ver)) {
                     if (!module.autoDisableIfRequirementsNotMet()) {
-                        missingMods.add(dep);
+                        missingMods.add(dep.getKey() + "@" + dep.getRight().toString());
                     }
                     add = false;
                 }
             }
             if (!missingMods.isEmpty()) {
-                String s = "Module: " + module.getCombinedName().toString();
-                throw new MissingModsException(missingMods, s, s);
+                throw new RuntimeException(String.format("Module %s is missing the required " + (missingMods.size() == 1 ? "dependency" : "dependencies") + " : {}", module.getCombinedName().toString(), missingMods));
             }
             if (add) {
                 list.add(module);
@@ -168,7 +168,7 @@ enum ModuleManager implements IModuleManager {
                 throw new RuntimeException("Found duplicate module name: " + module.getCombinedName());
             }
             try {
-                ModContainer owner = FMLUtil.findMod(module.getOwner());
+                ModContainer owner = FMLHelper.findMod(module.getOwner());
                 if (owner == null) {
                     throw new IllegalStateException("Error finding owner mod for module: " + module.getCombinedName());
                 }
@@ -190,26 +190,17 @@ enum ModuleManager implements IModuleManager {
     private void registerModulesToModBus() {
         for (IModuleContainer module : activeModules) {
             ModContainer mc = module.getOwnerMod();
-            if (!FMLUtil.hasFMLModContainer(mc)) {
+            if (!FMLHelper.hasFMLModContainer(mc)) {
                 throw new UnsupportedOperationException();
             }
-            try {
-                ((com.google.common.eventbus.EventBus) eventBus.get(mc)).register(new Object() {
-
-                    @com.google.common.eventbus.Subscribe
-                    public void onEvent(Object event) {
-                        try {
-                            System.out.println("invoke " + event + " on " + module);
-                            module.invokeEvent(event);
-                        } catch (Exception e) {
-                            throw new RuntimeException("Error invoking event on module " + module.getModule() + ", owned by: " + module.getOwnerMod(), e.getCause());
-                        }
-                    }
-
-                });
-            } catch (IllegalAccessException e) {
-                throw new RuntimeException(e);
-            }
+            ((FMLModContainer) mc).getEventBus().addListener(event -> {
+                try {
+                    System.out.println("invoke " + event + " on " + module);
+                    module.invokeEvent(event);
+                } catch (Exception e) {
+                    throw new RuntimeException("Error invoking event on module " + module.getModule() + ", owned by: " + module.getOwnerMod(), e.getCause());
+                }
+            });
         }
     }
 
@@ -242,7 +233,7 @@ enum ModuleManager implements IModuleManager {
     @SuppressWarnings("all")
     private void registerAdditionalModule(IModuleInfo module) {
         if (locked) {
-            throw new IllegalStateException("Mod " + Loader.instance().activeModContainer().getModId() + " attempted to register a module too late!");
+            throw new IllegalStateException("Mod " + FMLHelper.getActiveModContainer() + " attempted to register a module too late!");
         }
         if (module == null) {
             return;
@@ -268,7 +259,7 @@ enum ModuleManager implements IModuleManager {
     }
 
     @Override
-    public void registerModuleDiscoverer(BiFunction<IASMDataHelper, Function<String, IModuleController>, List<IModuleInfo>> discoverer) {
+    public void registerModuleDiscoverer(BiFunction<IAnnotationDataHandler, Function<String, IModuleController>, List<IModuleInfo>> discoverer) {
         this.moduleDiscoverers.add(discoverer);
     }
 
@@ -303,17 +294,9 @@ enum ModuleManager implements IModuleManager {
         return ret;
     }
 
-    private static Field eventBus;
-
     static {
         DEFAULT_CONTROLLER = moduleName -> true;
         defaultImpl = DefaultWrappedModule::new;
-        try {
-            eventBus = FMLModContainer.class.getDeclaredField("eventBus");
-            eventBus.setAccessible(true);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
     }
 
 }

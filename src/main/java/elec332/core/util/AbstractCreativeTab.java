@@ -1,10 +1,9 @@
 package elec332.core.util;
 
-import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.fml.common.FMLCommonHandler;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nonnull;
 import java.util.function.Supplier;
@@ -12,14 +11,14 @@ import java.util.function.Supplier;
 /**
  * Created by Elec332 on 26-11-2016.
  */
-public abstract class AbstractCreativeTab extends CreativeTabs {
+public abstract class AbstractCreativeTab extends ItemGroup {
 
     public static AbstractCreativeTab create(String label, ItemStack icon) {
-        return create(getNextID(), label, icon);
+        return create(GROUPS.length, label, icon);
     }
 
     public static AbstractCreativeTab create(String label, Supplier<ItemStack> icon) {
-        return create(getNextID(), label, icon);
+        return create(GROUPS.length, label, icon);
     }
 
     @Nonnull
@@ -33,13 +32,13 @@ public abstract class AbstractCreativeTab extends CreativeTabs {
     }
 
     @Nonnull
-    private static CreativeTabs createTab(int index, String label, Supplier<ItemStack> icon) {
+    private static ItemGroup createTab(int index, String label, Supplier<ItemStack> icon) {
         return new AbstractCreativeTab(index, label, icon) {
         };
     }
 
     public AbstractCreativeTab(String label, Supplier<ItemStack> icon) {
-        this(getNextID(), label, icon);
+        this(GROUPS.length, label, icon);
     }
 
     public AbstractCreativeTab(int index, String label, Supplier<ItemStack> icon) {
@@ -48,20 +47,20 @@ public abstract class AbstractCreativeTab extends CreativeTabs {
         initStack();
     }
 
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     private ItemStack clientStack;
     private final Supplier<ItemStack> icon;
 
     private void initStack() {
-        if (FMLCommonHandler.instance().getSide().isClient()) {
+        if (FMLHelper.getDist() == Dist.CLIENT) {
             clientStack = icon.get();
         }
     }
 
     @Nonnull
     @Override
-    @SideOnly(Side.CLIENT)
-    public ItemStack getTabIconItem() {
+    @OnlyIn(Dist.CLIENT)
+    public ItemStack createIcon() {
         return this.clientStack;
     }
 

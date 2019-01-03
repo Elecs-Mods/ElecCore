@@ -1,11 +1,10 @@
 package elec332.core.util;
 
-import com.google.common.collect.BiMap;
 import net.minecraft.block.Block;
 import net.minecraft.enchantment.Enchantment;
+import net.minecraft.entity.EntityType;
 import net.minecraft.item.Item;
-import net.minecraft.item.crafting.IRecipe;
-import net.minecraft.nbt.NBTBase;
+import net.minecraft.nbt.INBTBase;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionType;
 import net.minecraft.util.EnumFacing;
@@ -14,10 +13,10 @@ import net.minecraft.util.SoundEvent;
 import net.minecraft.world.biome.Biome;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityManager;
-import net.minecraftforge.fml.common.registry.EntityEntry;
-import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.fml.common.registry.VillagerRegistry;
 import net.minecraftforge.registries.*;
+
+import java.util.Map;
 
 /**
  * Created by Elec332 on 5-4-2016.
@@ -33,12 +32,12 @@ public class RegistryHelper {
         CapabilityManager.INSTANCE.register(clazz, new Capability.IStorage<T>() {
 
             @Override
-            public NBTBase writeNBT(Capability capability, Object instance, EnumFacing side) {
+            public INBTBase writeNBT(Capability capability, Object instance, EnumFacing side) {
                 throw new UnsupportedOperationException();
             }
 
             @Override
-            public void readNBT(Capability capability, Object instance, EnumFacing side, NBTBase nbt) {
+            public void readNBT(Capability capability, Object instance, EnumFacing side, INBTBase nbt) {
                 throw new UnsupportedOperationException();
             }
 
@@ -87,16 +86,16 @@ public class RegistryHelper {
     public static ForgeRegistry<VillagerRegistry.VillagerProfession> getVillagerRegistry() {
         return (ForgeRegistry<VillagerRegistry.VillagerProfession>) ForgeRegistries.VILLAGER_PROFESSIONS;
     }
-
+/*  //TODO: Wait until forge re-adds this
     public static ForgeRegistry<IRecipe> getRecipes() {
         return (ForgeRegistry<IRecipe>) ForgeRegistries.RECIPES;
+    }*/
+
+    public static ForgeRegistry<EntityType<?>> getEntities() {
+        return (ForgeRegistry<EntityType<?>>) ForgeRegistries.ENTITIES;
     }
 
-    public static ForgeRegistry<EntityEntry> getEntities() {
-        return (ForgeRegistry<EntityEntry>) ForgeRegistries.ENTITIES;
-    }
-
-    public static BiMap<Block, Item> getBlockItemMap() {
+    public static Map<Block, Item> getBlockItemMap() {
         return GameData.getBlockItemMap();
     }
 

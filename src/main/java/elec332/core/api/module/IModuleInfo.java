@@ -4,8 +4,8 @@ import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.common.versioning.ArtifactVersion;
-import net.minecraftforge.fml.common.versioning.VersionParser;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.maven.artifact.versioning.VersionRange;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -54,7 +54,7 @@ public interface IModuleInfo {
      * @return The mod dependencies
      */
     @Nonnull
-    public List<ArtifactVersion> getModDependencies();
+    public List<Pair<String, VersionRange>> getModDependencies();
 
     /**
      * Returns an array of module names this module depends on.
@@ -88,16 +88,28 @@ public interface IModuleInfo {
     @Nonnull
     public IModuleController getModuleController();
 
-    public static List<ArtifactVersion> parseDependencyInfo(String modDependencies) {
-        List<ArtifactVersion> ret = Lists.newArrayList();
-        if (Strings.isNullOrEmpty(modDependencies)) {
-            return ImmutableList.of();
+    public static List<Pair<String, VersionRange>> parseDependencyInfo(String modDependencies) {
+        try {
+            List<Pair<String, VersionRange>> ret = Lists.newArrayList();
+            if (Strings.isNullOrEmpty(modDependencies)) {
+                return ImmutableList.of();
+            }
+            String[] parts = modDependencies.split(";");
+            for (String s : parts) {
+                String[] split = s.split("@");
+                if (split.length > 2) {
+                    throw new IllegalArgumentException(s);
+                }
+                VersionRange version = null;
+                if (split.length == 2) {
+                    version = VersionRange.createFromVersionSpec(split[1]);
+                }
+                ret.add(Pair.of(split[0], version));
+            }
+            return ImmutableList.copyOf(ret);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to parse dependency info!", e);
         }
-        String[] parts = modDependencies.split(";");
-        for (String s : parts) {
-            ret.add(VersionParser.parseVersionReference(s));
-        }
-        return ImmutableList.copyOf(ret);
     }
 
 }

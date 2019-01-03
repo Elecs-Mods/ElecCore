@@ -1,16 +1,15 @@
 package elec332.core.api.network;
 
-import com.google.common.base.Preconditions;
 import elec332.core.api.util.IEntityFilter;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.network.NetworkRegistry;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 /**
  * Created by Elec332 on 15-10-2016.
@@ -22,11 +21,11 @@ public interface IPacketDispatcher extends ElecByteBuf.Factory {
      *
      * @return The name of this channel
      */
-    public String getChannelName();
+    public ResourceLocation getChannelName();
 
     /**
      * Send this message to everyone.
-     * The {@link IMessageHandler} for this message type should be on the CLIENT side.
+     * The message handler for this message type should be on the CLIENT side.
      *
      * @param message The message to send
      */
@@ -34,7 +33,7 @@ public interface IPacketDispatcher extends ElecByteBuf.Factory {
 
     /**
      * Send this message to the specified players.
-     * The {@link IMessageHandler} for this message type should be on the CLIENT side.
+     * The message handler for this message type should be on the CLIENT side.
      *
      * @param message      The message to send
      * @param playerFilter The selector that determines what players to send the message to.
@@ -47,20 +46,29 @@ public interface IPacketDispatcher extends ElecByteBuf.Factory {
 
     /**
      * Send this message to the specified players.
-     * The {@link IMessageHandler} for this message type should be on the CLIENT side.
+     * The message handler for this message type should be on the CLIENT side.
      *
      * @param message The message to send
      * @param players The players to send it to
      */
     default public void sendTo(IMessage message, List<EntityPlayerMP> players) {
-        for (EntityPlayerMP player : players) {
-            sendTo(message, player);
-        }
+        players.forEach(p -> sendTo(message, p));
+    }
+
+    /**
+     * Send this message to the specified players.
+     * The message handler for this message type should be on the CLIENT side.
+     *
+     * @param message The message to send
+     * @param players The players to send it to
+     */
+    default public void sendTo(IMessage message, Stream<EntityPlayerMP> players) {
+        players.forEach(p -> sendTo(message, p));
     }
 
     /**
      * Send this message to the specified player.
-     * The {@link IMessageHandler} for this message type should be on the CLIENT side.
+     * The message handler for this message type should be on the CLIENT side.
      *
      * @param message The message to send
      * @param player  The player to send it to
@@ -69,7 +77,7 @@ public interface IPacketDispatcher extends ElecByteBuf.Factory {
 
     /**
      * Send this message to everyone within a certain range of a point defined in the packet.
-     * The {@link IMessageHandler} for this message type should be on the CLIENT side.
+     * The message handler for this message type should be on the CLIENT side.
      *
      * @param message The message to send
      * @param world   The world in which the point is located
@@ -81,29 +89,29 @@ public interface IPacketDispatcher extends ElecByteBuf.Factory {
 
     /**
      * Send this message to everyone within a certain range of a point.
-     * The {@link IMessageHandler} for this message type should be on the CLIENT side.
+     * The message handler for this message type should be on the CLIENT side.
      *
      * @param message The message to send
      * @param world   The world to which to send
      * @param pos     The position around which to send
      * @param range   The range around the position
      */
-    default public void sendToAllAround(IMessage message, World world, BlockPos pos, double range) {
-        sendToAllAround(message, new NetworkRegistry.TargetPoint(Preconditions.checkNotNull(world.provider).getDimension(), pos.getX(), pos.getY(), pos.getZ(), range));
+    default public void sendToAllAround(IMessage message, IWorld world, BlockPos pos, double range) {
+        sendToAllAround(message, new TargetPoint(world.getDimension().getId(), pos.getX(), pos.getY(), pos.getZ(), range));
     }
 
     /**
      * Send this message to everyone within a certain range of a point.
-     * The {@link IMessageHandler} for this message type should be on the CLIENT side.
+     * The message handler for this message type should be on the CLIENT side.
      *
      * @param message The message to send
-     * @param point   The {@link NetworkRegistry.TargetPoint} around which to send
+     * @param point   The {@link TargetPoint} around which to send
      */
-    public void sendToAllAround(IMessage message, NetworkRegistry.TargetPoint point);
+    public void sendToAllAround(IMessage message, TargetPoint point);
 
     /**
      * Send this message to everyone within the supplied dimension.
-     * The {@link IMessageHandler} for this message type should be on the CLIENT side.
+     * The message handler for this message type should be on the CLIENT side.
      *
      * @param message     The message to send
      * @param dimensionId The dimension id to target
@@ -112,10 +120,37 @@ public interface IPacketDispatcher extends ElecByteBuf.Factory {
 
     /**
      * Send this message to the server.
-     * The {@link IMessageHandler} for this message type should be on the SERVER side.
+     * The message handler for this message type should be on the SERVER side.
      *
      * @param message The message to send
      */
     public void sendToServer(IMessage message);
+
+    public static class TargetPoint {
+
+        /**
+         * A target point
+         *
+         * @param dimension The dimension to target
+         * @param x         The X coordinate
+         * @param y         The Y coordinate
+         * @param z         The Z coordinate
+         * @param range     The range
+         */
+        public TargetPoint(int dimension, double x, double y, double z, double range) {
+            this.x = x;
+            this.y = y;
+            this.z = z;
+            this.range = range;
+            this.dimension = dimension;
+        }
+
+        public final double x;
+        public final double y;
+        public final double z;
+        public final double range;
+        public final int dimension;
+
+    }
 
 }

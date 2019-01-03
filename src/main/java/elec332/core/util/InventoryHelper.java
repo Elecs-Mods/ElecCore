@@ -6,18 +6,19 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.ItemHandlerHelper;
-import net.minecraftforge.oredict.OreDictionary;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by Elec332 on 27-3-2015.
@@ -33,9 +34,11 @@ public class InventoryHelper {
      * @param advanced Whether to display extra data
      * @return The tooltip for the provided {@link ItemStack}
      */
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public static List<String> getTooltip(ItemStack stack, @Nullable EntityPlayer playerIn, boolean advanced) {
-        return stack.getTooltip(playerIn, advanced ? ITooltipFlag.TooltipFlags.ADVANCED : ITooltipFlag.TooltipFlags.NORMAL);
+        return stack.getTooltip(playerIn, advanced ? ITooltipFlag.TooltipFlags.ADVANCED : ITooltipFlag.TooltipFlags.NORMAL).stream()
+                .map(ITextComponent::getFormattedText)
+                .collect(Collectors.toList());
     }
 
     /**
@@ -46,10 +49,9 @@ public class InventoryHelper {
      * @param world    The world
      * @param tooltip  The tooltip list, data will be added to this list
      * @param advanced Whether to display extra data
-     * @return The tooltip for the provided {@link Item}
      */
-    @SideOnly(Side.CLIENT)
-    public static void addInformation(Item item, ItemStack stack, World world, List<String> tooltip, boolean advanced) {
+    @OnlyIn(Dist.CLIENT)
+    public static void addInformation(Item item, ItemStack stack, World world, List<ITextComponent> tooltip, boolean advanced) {
         item.addInformation(stack, world, tooltip, advanced ? ITooltipFlag.TooltipFlags.ADVANCED : ITooltipFlag.TooltipFlags.NORMAL);
     }
 
@@ -62,10 +64,10 @@ public class InventoryHelper {
      */
     public static void readItemsFromNBT(@Nonnull NBTTagCompound data, @Nonnull List<ItemStack> items) {
         items.clear();
-        NBTTagList nbttaglist = data.getTagList("Items", 10);
+        NBTTagList nbttaglist = data.getList("Items", 10);
 
-        for (int i = 0; i < nbttaglist.tagCount(); ++i) {
-            NBTTagCompound nbttagcompound = nbttaglist.getCompoundTagAt(i);
+        for (int i = 0; i < nbttaglist.size(); ++i) {
+            NBTTagCompound nbttagcompound = nbttaglist.getCompound(i);
             int j = nbttagcompound.getByte("Slot") & 255;
 
             if (j >= 0 && j < items.size()) {
@@ -98,12 +100,12 @@ public class InventoryHelper {
             ItemStack itemstack = items.get(i);
             if (ItemStackHelper.isStackValid(itemstack)) {
                 NBTTagCompound nbttagcompound = new NBTTagCompound();
-                nbttagcompound.setByte("Slot", (byte) i);
-                itemstack.writeToNBT(nbttagcompound);
-                nbttaglist.appendTag(nbttagcompound);
+                nbttagcompound.putByte("Slot", (byte) i);
+                itemstack.write(nbttagcompound);
+                nbttaglist.add(nbttagcompound);
             }
         }
-        tag.setTag("Items", nbttaglist);
+        tag.put("Items", nbttaglist);
         return tag;
     }
 
@@ -174,14 +176,14 @@ public class InventoryHelper {
      * @param second ItemStack 2
      * @return Whether the stacks are the same, ignoring NBT data and stack size
      */
-    public static boolean areEqualNoSizeNoNBT(ItemStack first, ItemStack second) {
+    private static boolean areEqualNoSizeNoNBT(ItemStack first, ItemStack second) {
         if (first == null || second == null) {
             return first == second;
         }
         if (first.getItem() != second.getItem()) {
             return false;
         }
-        if (first.getHasSubtypes() && first.getItemDamage() != second.getItemDamage()) {
+        if (first.getDamage() != second.getDamage()) {
             return false;
         }
         return true;
@@ -232,7 +234,8 @@ public class InventoryHelper {
         }
         return copy;
     }
-
+/*
+TODO: Re-add when the oredict works again
     public static int amountOfOreDictItemsInventoryHas(IItemHandler inventory, String s, int i) {
         int total = 0;
         if (doesInventoryHaveOreDictItem(inventory, s)) {
@@ -252,7 +255,7 @@ public class InventoryHelper {
             }
         }
         return false;
-    }
+    }*/
 
     public static int amountOfItemsInventoryHas(IItemHandler inventory, ItemStack stack) {
         int total = 0;
@@ -272,12 +275,12 @@ public class InventoryHelper {
         for (int i = 0; i < inventory.getSlots(); i++) {
             ItemStack stackInSlot = inventory.getStackInSlot(i);
             if (ItemStackHelper.isStackValid(stackInSlot) && stack != null && stackInSlot.getItem() == stack.getItem()) {
-                if (stackInSlot.getItemDamage() == stack.getItemDamage() || stack.getItemDamage() == OreDictionary.WILDCARD_VALUE) {
+                if (stackInSlot.getDamage() == stack.getDamage()) {
                     ret.add(i);
                 }
-                if (!stackInSlot.getItem().getHasSubtypes() && !stack.getItem().getHasSubtypes()) {
-                    ret.add(i);
-                }
+                //if (!stackInSlot.getItem().getHasSubtypes() && !stack.getItem().getHasSubtypes()) {
+                //    ret.add(i);
+                //}
             }
         }
         if (!ret.isEmpty()) {
@@ -290,12 +293,12 @@ public class InventoryHelper {
         for (int i = 0; i < inventory.getSlots(); ++i) {
             ItemStack stackInSlot = inventory.getStackInSlot(i);
             if (ItemStackHelper.isStackValid(stackInSlot) && stack != null && stackInSlot.getItem() == stack.getItem()) {
-                if (stackInSlot.getItemDamage() == stack.getItemDamage() || stack.getItemDamage() == OreDictionary.WILDCARD_VALUE) {
+                if (stackInSlot.getDamage() == stack.getDamage()) {
                     return i;
                 }
-                if (!stackInSlot.getItem().getHasSubtypes() && !stack.getItem().getHasSubtypes()) {
-                    return i;
-                }
+                //if (!stackInSlot.getItem().getHasSubtypes() && !stack.getItem().getHasSubtypes()) {
+                //    return i;
+                //}
             }
         }
         return -1;

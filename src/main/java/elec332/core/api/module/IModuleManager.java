@@ -1,6 +1,6 @@
 package elec332.core.api.module;
 
-import elec332.core.api.discovery.IASMDataHelper;
+import elec332.core.api.discovery.IAnnotationDataHandler;
 import net.minecraft.util.ResourceLocation;
 
 import javax.annotation.Nonnull;
@@ -44,7 +44,7 @@ public interface IModuleManager {
 
     /**
      * This function allows other mods to implement their own way of marking/annotating/... modules.
-     * The function gives the discoverer an {@link IASMDataHelper} for finding the modules and a function
+     * The function gives the discoverer an {@link IAnnotationDataHandler} for finding the modules and a function
      * to get the {@link IModuleController} from the supplied mod-id.
      * <p>
      * The function has to return a non-null list of the {@link IModuleInfo}'s it found
@@ -52,7 +52,7 @@ public interface IModuleManager {
      *
      * @param discoverer The module discoverer.
      */
-    public void registerModuleDiscoverer(BiFunction<IASMDataHelper, Function<String, IModuleController>, List<IModuleInfo>> discoverer);
+    public void registerModuleDiscoverer(BiFunction<IAnnotationDataHandler, Function<String, IModuleController>, List<IModuleInfo>> discoverer);
 
     /**
      * Invokes an event on all modules currently active

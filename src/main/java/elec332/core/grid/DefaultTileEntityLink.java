@@ -1,12 +1,17 @@
 package elec332.core.grid;
 
+import com.google.common.base.Preconditions;
+import com.google.common.collect.Maps;
 import elec332.core.world.DimensionCoordinate;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.OptionalCapabilityInstance;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.EnumMap;
+import java.util.Map;
 
 /**
  * Created by Elec332 on 1-8-2016.
@@ -18,10 +23,12 @@ public class DefaultTileEntityLink implements ITileEntityLink {
     protected DefaultTileEntityLink(TileEntity tile) {
         this.tile = tile;
         this.coord = DimensionCoordinate.fromTileEntity(tile);
+        this.capCache = Maps.newIdentityHashMap();
     }
 
     protected final TileEntity tile;
     protected final DimensionCoordinate coord;
+    protected final Map<Capability<?>, EnumMap<EnumFacing, OptionalCapabilityInstance<?>>> capCache;
 
     @Nullable
     @Override
@@ -35,33 +42,24 @@ public class DefaultTileEntityLink implements ITileEntityLink {
         return coord;
     }
 
-    //Capability tile link-through
-
+    @Nonnull
     @Override
-    public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing) {
-        return hasCachedCapability(capability, facing) || coord.isLoaded() && tile != null && tile.hasCapability(capability, facing);
-    }
-
-    protected boolean hasCachedCapability(Capability<?> capability, @Nullable EnumFacing facing) {
-        return false;
-    }
-
-    @Nullable
-    @Override
-    public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing facing) {
-        T t = getCachedCapability(capability, facing);
-        if (t != null) {
-            return t;
+    public <T> OptionalCapabilityInstance<T> getCapability(@Nonnull Capability<T> cap, @Nullable EnumFacing side) {
+        Map<EnumFacing, OptionalCapabilityInstance<?>> capC1 = capCache.computeIfAbsent(cap, c -> Maps.newEnumMap(EnumFacing.class));
+        if (capC1.containsKey(side)) {
+            OptionalCapabilityInstance<?> cret = capC1.get(side);
+            if (cret.isPresent()) {
+                return cret.cast();
+            }
         }
-        if (tile == null) {
-            return null;
+        OptionalCapabilityInstance<?> ret;
+        if (coord.isLoaded() && tile != null) {
+            ret = Preconditions.checkNotNull(tile.getCapability(cap, side));
+        } else {
+            ret = OptionalCapabilityInstance.empty();
         }
-        return tile.getCapability(capability, facing);
-    }
-
-    @Nullable
-    public <T> T getCachedCapability(Capability<T> capability, @Nullable EnumFacing facing) {
-        return null;
+        capC1.put(side, ret);
+        return ret.cast();
     }
 
 }

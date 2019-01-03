@@ -1,8 +1,7 @@
 package elec332.core.api.network;
 
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
-import net.minecraftforge.fml.relauncher.Side;
+import java.util.function.BiConsumer;
+import java.util.function.Supplier;
 
 /**
  * Created by Elec332 on 15-10-2016.
@@ -15,21 +14,19 @@ public interface IPacketRegistry extends IPacketRegistryContainer {
      * Registers a packet to this packet registry
      *
      * @param packetClass The packet class
-     * @param side        the side for the packet handler
      */
-    default public <T extends IMessage & IMessageHandler<T, M>, M extends IMessage> void registerPacket(Class<T> packetClass, Side side) {
-        registerPacket(packetClass, packetClass, side);
+    default public <T extends IMessage & BiConsumer<T, Supplier<IExtendedMessageContext>>> void registerPacket(Class<T> packetClass) {
+        registerPacket(packetClass, packetClass);
     }
 
     /**
      * Registers a packet to this packet registry
      *
      * @param type The packet type
-     * @param side the side for the packet handler
      */
     @SuppressWarnings("unchecked")
-    default public <T extends IMessage & IMessageHandler<T, M>, M extends IMessage> void registerPacket(T type, Side side) {
-        registerPacket(type, (Class<T>) type.getClass(), side);
+    default public <T extends IMessage & BiConsumer<T, Supplier<IExtendedMessageContext>>> void registerPacket(T type) {
+        registerPacket(type, (Class<T>) type.getClass());
     }
 
     /**
@@ -37,11 +34,10 @@ public interface IPacketRegistry extends IPacketRegistryContainer {
      *
      * @param messageHandler The class of the message handler
      * @param messageType    The message class
-     * @param side           the side for the packet handler
      */
-    default public <M extends IMessage, R extends IMessage> void registerPacket(Class<? extends IMessageHandler<M, R>> messageHandler, Class<M> messageType, Side side) {
+    default public <M extends IMessage> void registerPacket(Class<? extends BiConsumer<M, Supplier<IExtendedMessageContext>>> messageHandler, Class<M> messageType) {
         try {
-            registerPacket(messageHandler.newInstance(), messageType, side);
+            registerPacket(messageHandler.newInstance(), messageType);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -52,9 +48,8 @@ public interface IPacketRegistry extends IPacketRegistryContainer {
      *
      * @param messageHandler The message handler
      * @param messageType    The message class
-     * @param side           the side for the packet handler
      */
-    public <M extends IMessage, R extends IMessage> void registerPacket(IMessageHandler<M, R> messageHandler, Class<M> messageType, Side side);
+    public <M extends IMessage> void registerPacket(BiConsumer<M, Supplier<IExtendedMessageContext>> messageHandler, Class<M> messageType);
 
     /**
      * Gets called when this container is supposed to register

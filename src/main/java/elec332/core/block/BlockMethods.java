@@ -1,14 +1,16 @@
 package elec332.core.block;
 
 import com.google.common.collect.Lists;
+import elec332.core.MC113ToDoReference;
 import elec332.core.util.IndexedAABB;
+import elec332.core.util.PlayerHelper;
 import elec332.core.util.RayTraceHelper;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
+import net.minecraft.fluid.IFluidState;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -16,8 +18,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -56,12 +58,12 @@ public final class BlockMethods {
     }
 
     @Nonnull
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public static <B extends Block & IAbstractBlock> AxisAlignedBB getSelectedBoundingBox(IBlockState state, @Nonnull World world, @Nonnull BlockPos pos, B block) {
-        return getSelectedBoundingBox(state, world, pos, RayTraceHelper.retraceBlock(state, world, pos, Minecraft.getMinecraft().player), block).offset(pos);
+        return getSelectedBoundingBox(state, world, pos, RayTraceHelper.retraceBlock(state, world, pos, Minecraft.getInstance().player), block).offset(pos);
     }
 
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public static <B extends Block & IAbstractBlock> AxisAlignedBB getSelectedBoundingBox(IBlockState state, World world, BlockPos pos, RayTraceResult hit, B block) {
         List<AxisAlignedBB> list = Lists.newArrayList();
         block.addSelectionBoxes(state, world, pos, list);
@@ -76,23 +78,23 @@ public final class BlockMethods {
             }
             return aabb;
         }
-        return state.getBoundingBox(world, pos);
+        return MC113ToDoReference.update(world, pos);//state.getBoundingBox(world, pos);
     }
 
-    public static <B extends Block & IAbstractBlock> boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ, B block) {
+    public static <B extends Block & IAbstractBlock> boolean onBlockActivated(IBlockState state, World world, BlockPos pos, EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ, B block) {
         RayTraceResult hit = RayTraceHelper.retraceBlock(state, world, pos, player);
         return hit != null && block.onBlockActivated(world, pos, state, player, hand, hit);
     }
 
-    public static <B extends Block & IAbstractBlock> boolean removedByPlayer(@Nonnull IBlockState state, World world, @Nonnull BlockPos pos, @Nonnull EntityPlayer player, boolean willHarvest, B block) {
+    public static <B extends Block & IAbstractBlock> boolean removedByPlayer(@Nonnull IBlockState state, World world, @Nonnull BlockPos pos, @Nonnull EntityPlayer player, boolean willHarvest, IFluidState fluid, B block) {
         if (!block.canBreak(world, pos, player)) {
-            if (player.capabilities.isCreativeMode) {
-                block.onBlockClicked(world, pos, player);
+            if (PlayerHelper.isPlayerInCreative(player)) {
+                block.onBlockClicked(state, world, pos, player);
             }
             return false;
         }
         block.onBlockHarvested(world, pos, state, player);
-        return world.setBlockState(pos, Blocks.AIR.getDefaultState(), world.isRemote ? 11 : 3);
+        return world.setBlockState(pos, fluid.getBlockState(), world.isRemote ? 11 : 3);
     }
 
 }

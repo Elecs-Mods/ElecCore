@@ -11,21 +11,22 @@ import elec332.core.api.client.model.template.IModelTemplate;
 import elec332.core.api.client.model.template.IQuadTemplate;
 import elec332.core.api.client.model.template.IQuadTemplateSidedMap;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.renderer.Vector3f;
 import net.minecraft.client.renderer.block.model.*;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.util.EnumFacing;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
-import org.lwjgl.util.vector.Vector3f;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.Random;
 
 /**
  * Created by Elec332 on 5-12-2015.
  */
-@SideOnly(Side.CLIENT)
+@OnlyIn(Dist.CLIENT)
 @SuppressWarnings("all")
 public class ElecModelBakery implements IElecModelBakery {
 
@@ -81,7 +82,7 @@ public class ElecModelBakery implements IElecModelBakery {
 
             @Nonnull
             @Override
-            public List<BakedQuad> getQuads(IBlockState state, EnumFacing facing, long rand) {
+            public List<BakedQuad> getQuads(IBlockState state, EnumFacing facing, Random rand) {
                 return quadProvider.getBakedQuads(state, facing, rand);
             }
 
@@ -94,7 +95,7 @@ public class ElecModelBakery implements IElecModelBakery {
 
             @Nonnull
             @Override
-            public List<BakedQuad> getQuads(IBlockState state, EnumFacing facing, long rand) {
+            public List<BakedQuad> getQuads(IBlockState state, EnumFacing facing, Random rand) {
                 return quadProvider.getBakedQuads(state, facing, rand);
             }
 
@@ -173,7 +174,7 @@ public class ElecModelBakery implements IElecModelBakery {
 
         @Override
         @Nonnull
-        public List<BakedQuad> getQuads(IBlockState state, EnumFacing facing, long rand) {
+        public List<BakedQuad> getQuads(IBlockState state, EnumFacing facing, Random rand) {
             return facing == null ? generalQuads : sidedQuads == null ? EMPTY_LIST : sidedQuads.getBakedQuads(state, facing, rand);
         }
 
@@ -206,7 +207,7 @@ public class ElecModelBakery implements IElecModelBakery {
         @Override
         @Nonnull
         public ItemOverrideList getOverrides() {
-            return ItemOverrideList.NONE;
+            return ItemOverrideList.EMPTY;
         }
 
     }
@@ -226,7 +227,7 @@ public class ElecModelBakery implements IElecModelBakery {
     }
 
     private static Vector3f applyTranslationScale(Vector3f vec) {
-        vec.scale(0.0625F);
+        vec.mul(0.0625F);
         return vec;
     }
 

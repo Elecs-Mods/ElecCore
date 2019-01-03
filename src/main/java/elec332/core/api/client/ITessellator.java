@@ -1,8 +1,8 @@
 package elec332.core.api.client;
 
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 /**
  * Created by Elec332 on 25-11-2015.
@@ -12,7 +12,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
  * {@link ITessellator#addVertexWithUV(double, double, double, double, double)}
  * can be called for creating vertices
  */
-@SideOnly(Side.CLIENT)
+@OnlyIn(Dist.CLIENT)
 public interface ITessellator {
 
     public void setBrightness(int brightness);

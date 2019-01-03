@@ -31,7 +31,7 @@ public class SaveHandlerWrapper implements IExternalSaveHandler {
     @Override
     public void load(ISaveHandler saveHandler, WorldInfo info, NBTTagCompound tag) {
         for (IExternalSaveHandler saveHandler1 : saveHandlers) {
-            saveHandler1.load(saveHandler, info, tag.getCompoundTag(saveHandler1.getName()));
+            saveHandler1.load(saveHandler, info, tag.getCompound(saveHandler1.getName()));
         }
     }
 
@@ -42,7 +42,7 @@ public class SaveHandlerWrapper implements IExternalSaveHandler {
         for (IExternalSaveHandler saveHandler1 : saveHandlers) {
             NBTTagCompound tag = saveHandler1.save(saveHandler, info);
             if (tag != null) {
-                ret.setTag(saveHandler1.getName(), tag);
+                ret.put(saveHandler1.getName(), tag);
             }
         }
         return ret;

@@ -2,21 +2,20 @@ package elec332.core.handler.annotations;
 
 import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
+import elec332.core.MC113ToDoReference;
 import elec332.core.api.callback.CallbackProcessor;
 import elec332.core.api.callback.ICallbackProcessor;
 import elec332.core.api.callback.RegisteredCallback;
-import elec332.core.api.discovery.ASMDataProcessor;
+import elec332.core.api.discovery.AnnotationDataProcessor;
+import elec332.core.api.discovery.IAnnotationData;
 import elec332.core.api.registration.HasSpecialRenderer;
 import elec332.core.api.registration.RegisteredTileEntity;
-import elec332.core.util.FMLUtil;
-import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
+import elec332.core.util.FMLHelper;
+import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.fml.ModLoadingStage;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
-import net.minecraftforge.fml.common.FMLCommonHandler;
-import net.minecraftforge.fml.common.LoaderState;
-import net.minecraftforge.fml.common.discovery.ASMDataTable;
-import net.minecraftforge.fml.common.registry.GameRegistry;
 import org.objectweb.asm.Type;
 
 import java.util.Collections;
@@ -27,7 +26,7 @@ import java.util.function.Consumer;
  * Created by Elec332 on 7-3-2016.
  */
 
-@ASMDataProcessor(LoaderState.INITIALIZATION)
+@AnnotationDataProcessor(ModLoadingStage.INIT)
 public class InitAnnotationProcessor extends AbstractAnnotationProcessor {
 
     @Override
@@ -35,29 +34,24 @@ public class InitAnnotationProcessor extends AbstractAnnotationProcessor {
 
         List<Object> callbacks = Lists.newArrayList(), callbacks_ = Collections.unmodifiableList(callbacks);
 
-        registerDataProcessor(RegisteredCallback.class, new Consumer<ASMDataTable.ASMData>() {
-
-            @Override
-            public void accept(ASMDataTable.ASMData asmData) {
-                Class<?> clazz = loadClass(asmData, false);
-                if (clazz == null) {
-                    return;
-                }
-                @SuppressWarnings("all") //Compile errors
-                        Object instance = instantiate(clazz, false, new Object[0]);
-                if (instance == null) {
-                    return;
-                }
-                callbacks.add(instance);
+        registerDataProcessor(RegisteredCallback.class, asmData -> {
+            Class<?> clazz = loadClass(asmData, false);
+            if (clazz == null) {
+                return;
             }
-
+            @SuppressWarnings("all") //Compile errors
+                    Object instance = instantiate(clazz, false, new Object[0]);
+            if (instance == null) {
+                return;
+            }
+            callbacks.add(instance);
         });
 
-        registerDataProcessor(CallbackProcessor.class, new Consumer<ASMDataTable.ASMData>() {
+        registerDataProcessor(CallbackProcessor.class, new Consumer<IAnnotationData>() {
 
             @Override
-            public void accept(ASMDataTable.ASMData asmData) {
-                Object instance = instantiate(loadClass(asmData));
+            public void accept(IAnnotationData asmData) {
+                Object instance = instantiate(asmData.loadClass());
                 if (instance instanceof ICallbackProcessor) {
                     ((ICallbackProcessor) instance).getCallbacks(callbacks_);
                 }
@@ -66,19 +60,19 @@ public class InitAnnotationProcessor extends AbstractAnnotationProcessor {
         });
 
 
-        registerDataProcessor(HasSpecialRenderer.class, new Consumer<ASMDataTable.ASMData>() {
+        registerDataProcessor(HasSpecialRenderer.class, new Consumer<IAnnotationData>() {
 
             @Override
             @SuppressWarnings("all")
-            public void accept(ASMDataTable.ASMData asmData) {
+            public void accept(IAnnotationData asmData) {
                 try {
-                    ClientRegistry.bindTileEntitySpecialRenderer((Class<TileEntity>) Class.forName(asmData.getClassName()), (TileEntitySpecialRenderer<TileEntity>) Class.forName(((Type) asmData.getAnnotationInfo().get("value")).getClassName()).newInstance());
+                    ClientRegistry.bindTileEntitySpecialRenderer((Class<TileEntity>) Class.forName(asmData.getClassName()), (TileEntityRenderer<TileEntity>) Class.forName(((Type) asmData.getAnnotationInfo().get("value")).getClassName()).newInstance());
                 } catch (Exception ex) {
                     throw Throwables.propagate(ex);
                 }
             }
 
-        }, FMLCommonHandler.instance().getSide().isClient());
+        }, FMLHelper.getDist() == Dist.CLIENT);
 
 /*
         registerDataProcessor(RegisteredMultiPart.class, new Consumer<ASMDataTable.ASMData>() {
@@ -95,19 +89,20 @@ public class InitAnnotationProcessor extends AbstractAnnotationProcessor {
 
         }, Loader.isModLoaded("mcmultipart"));
 */
-        registerDataProcessor(RegisteredTileEntity.class, new Consumer<ASMDataTable.ASMData>() {
+        registerDataProcessor(RegisteredTileEntity.class, new Consumer<IAnnotationData>() {
 
             @Override
             @SuppressWarnings("unchecked")
-            public void accept(ASMDataTable.ASMData data) {
+            public void accept(IAnnotationData data) {
                 try {
                     String name = (String) data.getAnnotationInfo().get("value");
                     Class<? extends TileEntity> clazz = (Class<? extends TileEntity>) Class.forName(data.getClassName());
                     if (!name.contains(":")) {
-                        String mod = FMLUtil.getOwnerName(clazz);
+                        String mod = FMLHelper.getOwnerName(clazz);
                         name = mod + ":" + name;
                     }
-                    GameRegistry.registerTileEntity(clazz, new ResourceLocation(name));
+                    //GameRegistry.registerTileEntity(clazz, new ResourceLocation(name));
+                    MC113ToDoReference.update();
                 } catch (Exception e) {
                     logger.error("Error registering tile: " + data.getClassName());
                 }

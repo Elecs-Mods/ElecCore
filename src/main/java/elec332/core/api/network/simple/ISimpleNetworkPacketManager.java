@@ -3,7 +3,7 @@ package elec332.core.api.network.simple;
 import elec332.core.api.network.IPacketDispatcher;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraftforge.fml.common.network.NetworkRegistry;
+import net.minecraft.util.ResourceLocation;
 
 /**
  * Created by Elec332 on 23-10-2016.
@@ -17,7 +17,7 @@ public interface ISimpleNetworkPacketManager {
      *
      * @return The name of this channel
      */
-    public String getChannelName();
+    public ResourceLocation getChannelName();
 
 
     /**
@@ -82,9 +82,9 @@ public interface ISimpleNetworkPacketManager {
      * Uses the {@link ISimplePacketHandler} defined by {@link ISimplePacket#getPacketHandler()}.
      *
      * @param message The message to send
-     * @param point   The {@link NetworkRegistry.TargetPoint} around which to send
+     * @param point   The {@link IPacketDispatcher.TargetPoint} around which to send
      */
-    public void sendToAllAround(ISimplePacket message, NetworkRegistry.TargetPoint point);
+    public void sendToAllAround(ISimplePacket message, IPacketDispatcher.TargetPoint point);
 
     /**
      * Send this message to everyone within a certain range of a point defined in the packet.
@@ -92,9 +92,9 @@ public interface ISimpleNetworkPacketManager {
      *
      * @param message       The message to send
      * @param packetHandler The packet-handler the client has to use
-     * @param point         The {@link NetworkRegistry.TargetPoint} around which to send
+     * @param point         The {@link IPacketDispatcher.TargetPoint} around which to send
      */
-    public void sendToAllAround(ISimplePacket message, ISimplePacketHandler packetHandler, NetworkRegistry.TargetPoint point);
+    public void sendToAllAround(ISimplePacket message, ISimplePacketHandler packetHandler, IPacketDispatcher.TargetPoint point);
 
     /**
      * Send the data provided in the provided {@link ByteBuf} to everyone within a certain range of a point defined in the packet.
@@ -102,9 +102,9 @@ public interface ISimpleNetworkPacketManager {
      *
      * @param data          The data to send
      * @param packetHandler The packet-handler the client has to use
-     * @param point         The {@link NetworkRegistry.TargetPoint} around which to send
+     * @param point         The {@link IPacketDispatcher.TargetPoint} around which to send
      */
-    public void sendToAllAround(ByteBuf data, ISimplePacketHandler packetHandler, NetworkRegistry.TargetPoint point);
+    public void sendToAllAround(ByteBuf data, ISimplePacketHandler packetHandler, IPacketDispatcher.TargetPoint point);
 
 
     /**
@@ -166,15 +166,15 @@ public interface ISimpleNetworkPacketManager {
 
     /////Packet registering
 
-    public void registerPacket(Class<? extends ISimplePacket> packetType);
+    public void registerSimplePacket(Class<? extends ISimplePacket> packetType);
 
-    public void registerPacket(ISimplePacket packet);
+    public void registerSimplePacket(ISimplePacket packet);
 
-    public void registerPacketHandler(ISimplePacketHandler packetHandler);
+    public void registerSimplePacketHandler(ISimplePacketHandler packetHandler);
 
-    public void registerPacket(Class<? extends ISimplePacket> packetType, ISimplePacketHandler packetHandler);
+    public void registerSimplePacket(Class<? extends ISimplePacket> packetType, ISimplePacketHandler packetHandler);
 
-    public void registerPacket(ISimplePacket packet, ISimplePacketHandler packetHandler);
+    public void registerSimplePacket(ISimplePacket packet, ISimplePacketHandler packetHandler);
 
     /**
      * Used to get the {@link IPacketDispatcher} used by this {@link ISimpleNetworkPacketManager}

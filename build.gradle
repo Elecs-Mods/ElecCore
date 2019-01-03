@@ -1,14 +1,10 @@
-import sun.misc.IOUtils
-
-import java.util.zip.ZipEntry
-import java.util.zip.ZipException
-import java.util.zip.ZipFile
-import java.util.zip.ZipOutputStream
+import joptsimple.internal.Strings
 
 buildscript {
     repositories {
+        mavenLocal()
+        jcenter()
         mavenCentral()
-		jcenter()
         maven {
             name = "forge"
             url = "http://files.minecraftforge.net/maven"
@@ -18,42 +14,26 @@ buildscript {
             url = "https://oss.sonatype.org/content/repositories/snapshots/"
         }
     }
+    configurations { //Todo: remove when FG is stable
+        classpath.resolutionStrategy {
+            cacheDynamicVersionsFor 10, 'seconds'
+            cacheChangingModulesFor 0, 'seconds'
+        }
+    }
     dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
+        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '3.+', changing: true
     }
 }
 
-apply plugin: 'net.minecraftforge.gradle.forge'
+apply plugin: 'net.minecraftforge.gradle'
+apply plugin: 'eclipse'
 
 repositories {
-	maven {
-        name "Mobius Repo"
-        url "http://mobiusstrip.eu/maven"
-    }
-    maven {
-        name 'CB Maven FS'
-        url "http://chickenbones.net/maven/"
-    }
-    maven {
-        name 'ForgeFS'
-        url 'http://files.minecraftforge.net/maven'
-    }
-	maven {
-		url "http://dvs1.progwml6.com/files/maven"
-    } 
-	maven {
-		url "http://maven.amadornes.com/"
-	}
-	maven {
-        name = "forestry"
-        url = "http://maven.ic2.player.to/"
-    }
+
 	maven {
 		url "http://tehnut.info/maven"
 	}
-	maven {
-        url = "https://minecraft.curseforge.com/api/maven/"
-    }
+	
 }
 
 ext.configFile = file "build.properties"
@@ -62,16 +42,19 @@ configFile.withReader {
     def prop = new Properties()
     prop.load(it)
     project.ext.config = new ConfigSlurper().parse prop
-    project.ext.mcVersion = config.minecraft_version
     String build = System.getenv("BUILD_NUMBER")
-    project.ext.localBuild = build == null || build == ""
-    project.ext.modFileVersion = "${config.mod_version}." + (ext.localBuild ? "localBuild" : build)
-	project.ext.modVersion = "${config.mod_version}." + (ext.localBuild ? "9999.custom" : build)
-    project.ext.compatVer = config.compat_versions
-	project.ext.modFileVersion = "${config.minecraft_version}-${config.mod_version}." + (ext.localBuild ? "localBuild" : build)
+    project.ext.localBuild = Strings.isNullOrEmpty(build)
+
+    String temp = config.mod_version
+    String classifier = config.mod_classifier
+    classifier = Strings.isNullOrEmpty(classifier) ? "" : "-" + classifier
+	project.ext.modVersion = temp + "." + (ext.localBuild ? "9999.custom" : build)
+    config.mod_version = "${config.minecraft_version}-" + temp + "." + (ext.localBuild ? "localBuild" : build) + classifier
+    temp = config.forge_branch
+    config.forge_branch = Strings.isNullOrEmpty(temp) ? "" : "-" + temp
 }
 
-version = modFileVersion
+version = config.mod_version
 group= "elec332.core" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "ElecCore"
 
@@ -79,63 +62,91 @@ sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 minecraft {
-    version = config.minecraft_version + "-" + config.forge_version
-    runDir = "run"
-	
-	replaceIn "main/ElecCore.java"
-    replace "#ELECCORE_VER#", modVersion
-	
-	replaceIn "effects/api/ElecCoreAbilitiesAPIVersion.java"
-    replace "#API_VER#", (config.abilityAPI_version)
-	
-	mappings = config.mappings
-	
-	useDepAts = true
+
+	accessTransformer = file 'src/main/resources/META-INF/accesstransformer.cfg'
+
+    setMappings config.mappings
+
+	runConfig {
+        name= "Minecraft Client"
+        main= "net.minecraftforge.userdev.UserdevLauncher"
+        ideaModuleName = "${project.name}_main"
+        workingDirectory = project.file("run").canonicalPath
+        environment "target", "fmldevclient"
+        environment "assetDirectory", downloadAssets.output.absolutePath
+    }
+
+    runConfig {
+        name= "Minecraft Server"
+        main= "net.minecraftforge.userdev.UserdevLauncher"
+        ideaModuleName = "${project.name}_main"
+        workingDirectory = project.file("run").canonicalPath
+        environment "target", "fmldevserver"
+        environment "assetDirectory", downloadAssets.output.absolutePath
+    }
+
 }
 
 dependencies {
 
+	minecraft 'net.minecraftforge.test:forge:' + config.minecraft_version + "-" + config.forge_version + config.forge_branch
+
 	//WAILA
-	deobfCompile "mcp.mobius.waila:Hwyla:${config.WAILA_version}"
+    compile "mcp.mobius.waila:Hwyla:${config.WAILA_version}"
+	//deobfCompile "mcp.mobius.waila:Hwyla:${config.WAILA_version}"
 	
 	//JEI
-	//deobfCompile "mezz.jei:jei_${config.jei_version}"
+	///deobfCompile "mezz.jei:jei_${config.jei_version}"
 	
 	//MCMP
-	deobfCompile "MCMultiPart2:MCMultiPart:${config.mcmp_version}:deobf"
+	//deobfCompile "MCMultiPart2:MCMultiPart:${config.mcmp_version}:deobf"
 	
 	//Forestry
 	//deobfCompile "net.sengir.forestry:forestry_${config.minecraft_version}:${config.forestry_version}"
-	deobfCompile "net.sengir.forestry:forestry_${config.forestry_version}"
+	//deobfCompile "net.sengir.forestry:forestry_${config.forestry_version}"
 	//deobfCompile "cofhcore:CoFHCore-1.10.2:release:universal"
 	//deobfCompile "eleccore-rendering-library:ElecCore:1.10.2:1.7.425"
 }
 
 processResources {
+
     // this will ensure that this task is redone when the versions change.
     inputs.property "version", modVersion
     inputs.property "mcversion", config.minecraft_version
 
     // replace stuff in mcmod.info, nothing else
     from(sourceSets.main.resources.srcDirs) {
-        include 'mcmod.info'
+        include 'META_INF/mods.toml'
                 
         // replace version and mcversion
-        expand 'version':modVersion, 'mcversion':config.minecraft_version
+        expand 'version': modVersion, 'mcversion': config.minecraft_version, 'loaderversion': config.minecraft_version.replace('1.', '')
+        expand 'forgeversion':config.forge_version
     }
         
     // copy everything else, thats not the mcmod.info
     from(sourceSets.main.resources.srcDirs) {
-        exclude 'mcmod.info'
+        exclude 'META_INF/mods.toml'
     }
+
 }
 
 jar {
     manifest {
-			//'FMLCorePlugin': 'elec332.core.loader.ElecCoreLoader',
-			//'FMLCorePluginContainsFMLMod': 'true',
-		attributes	'FMLAT': 'eleccore_at.cfg'
-	}
+		//attributes	'FMLAT': 'eleccore_at.cfg' All AT's are now named "accesstransformer.cfg", and will be found automatically by FML
+
+        attributes([
+                'Specification-Title': 'ElecCoreAPI',
+                'Specification-Version': '2.0'
+        ] as LinkedHashMap, 'elec332.core.api')
+
+        attributes([
+                'Specification-Title': archivesBaseName,
+                'Specification-Version': modVersion,
+                'Implementation-Title': archivesBaseName,
+                'Implementation-Version': modVersion
+        ] as LinkedHashMap, 'elec332.core')
+
+    }
 }
 
 tasks.build.dependsOn('deobfJar')
@@ -144,70 +155,4 @@ task deobfJar(type: Jar) { // Generate deobfuscated
 	//version = "Newest"
     from sourceSets.main.output
     classifier = 'deobf'
-}
-
-task buildAbstraction(type: MergeAbstraction) {
-    dependsOn 'build'
-    versions project.compatVer
-    location project.localBuild ? "%p/libs/AbstractionLayer-%v.jar" : "%p/abstraction/AbstractionLayer-%v.jar"
-}
-
-
-
-class MergeAbstraction extends DefaultTask {
-
-    String versions, location
-
-    @TaskAction
-    public void process() {
-        if(versions == null || versions == ""){
-            return
-        }
-        String[] q = versions.split(",");
-        String projDir = project.buildFile.path.replace("build.gradle", "")
-        String loc = location.replace("%p", projDir);
-        String neen = projDir.substring(0, projDir.length() - 1);
-        String[] slt = neen.split(new String(File.separatorChar, File.separatorChar))
-        for(int i = 0; i < 5; i++){
-            String fle = slt[0]+File.separator
-            if (slt.length - i < 1){
-                break
-            }
-            for (int j = 1; j < slt.length - i; j++) {
-                fle += slt[j]+File.separator
-            }
-            loc.replace("%u"+i, fle)
-        }
-        for (String s in q) {
-            println "Generating ElecCore for MC version: " + s
-            String fL = loc.replace("%v", s);
-            merge(new File(projDir, "build/libs/ElecCore-" + project.modFileVersion + "-deobf.jar"), new File(fL.replace(".jar", "-deobf.jar")), new File(projDir, "build/libs/ElecCore-" + s + "-" + project.modFileVersion + "-deobf.jar"))
-            merge(new File(projDir, "build/libs/ElecCore-" + project.modFileVersion + ".jar"), new File(fL), new File(projDir, "build/libs/ElecCore-" + s + "-" + project.modFileVersion + ".jar"))
-        }
-    }
-
-    private static void merge(File f1, File f2, File out){
-        ZipFile abstracted = new ZipFile(f2)
-        ZipFile deobf = new ZipFile(f1);
-        if(out.exists()){
-            out.delete()
-        }
-        ZipOutputStream abs = new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(out)))
-        for (ZipEntry ze in deobf.entries()){
-            abs.putNextEntry ze
-            abs.write(IOUtils.readFully(deobf.getInputStream(ze), -1, true))
-        }
-        for (ZipEntry ze in abstracted.entries()){
-            try {
-                abs.putNextEntry ze
-                abs.write IOUtils.readFully(abstracted.getInputStream(ze), -1, true)
-            } catch (ZipException e){
-                if (!(ze.name.contains("META-INF") || ze.isDirectory())){
-                    throw new RuntimeException(e);
-                }
-            }
-        }
-        abs.close()
-    }
-
 }

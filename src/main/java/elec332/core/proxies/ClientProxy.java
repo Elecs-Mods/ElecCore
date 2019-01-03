@@ -20,7 +20,7 @@ import net.minecraft.world.World;
 public class ClientProxy extends CommonProxy {
 
     public ClientProxy() {
-        this.minecraft = Minecraft.getMinecraft();
+        this.minecraft = Minecraft.getInstance();
     }
 
     private final Minecraft minecraft;
@@ -40,20 +40,20 @@ public class ClientProxy extends CommonProxy {
     public void postInitRendering() {
         for (Item item : RegistryHelper.getItemRegistry()) {
             if (item instanceof IColoredItem) {
-                minecraft.itemColors.registerItemColorHandler(COLORED_ITEM, item);
+                minecraft.itemColors.register(COLORED_ITEM, item);
             }
             if (item instanceof ItemBlock) {
                 Block block = ((ItemBlock) item).getBlock();
                 if (block instanceof IColoredItem) {
-                    minecraft.itemColors.registerItemColorHandler(COLORED_ITEM, block);
+                    minecraft.itemColors.register(COLORED_ITEM, block);
                 } else if (block instanceof IColoredBlock) {
-                    minecraft.itemColors.registerItemColorHandler(COLORED_ITEMBLOCK, item);
+                    minecraft.itemColors.register(COLORED_ITEMBLOCK, item);
                 }
             }
         }
         for (Block block : RegistryHelper.getBlockRegistry()) {
             if (block instanceof IColoredBlock) {
-                minecraft.blockColors.registerBlockColorHandler(COLORED_BLOCK, block);
+                minecraft.blockColors.register(COLORED_BLOCK, block);
             }
         }
     }
@@ -65,12 +65,12 @@ public class ClientProxy extends CommonProxy {
 
     @Override
     public World getClientWorld() {
-        return Minecraft.getMinecraft().world;
+        return Minecraft.getInstance().world;
     }
 
     @Override
     public EntityPlayer getClientPlayer() {
-        return Minecraft.getMinecraft().player;
+        return Minecraft.getInstance().player;
     }
 
     @Override
@@ -84,7 +84,7 @@ public class ClientProxy extends CommonProxy {
 
         COLORED_ITEMBLOCK = (stack, tintIndex) -> {
             Block block = ((ItemBlock) stack.getItem()).getBlock();
-            return ((IColoredBlock) block).colorMultiplier(block.getStateFromMeta(stack.getItemDamage()), null, null, tintIndex);
+            return ((IColoredBlock) block).colorMultiplier(block.getDefaultState(), null, null, tintIndex);
         };
 
         COLORED_BLOCK = (state, worldIn, pos, tintIndex) -> ((IColoredBlock) state.getBlock()).colorMultiplier(state, worldIn, pos, tintIndex);

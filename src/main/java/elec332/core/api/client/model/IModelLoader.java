@@ -1,7 +1,7 @@
 package elec332.core.api.client.model;
 
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 /**
  * Created by Elec332 on 9-12-2015.
@@ -18,7 +18,7 @@ public interface IModelLoader {
      *
      * @param quadBakery The QuadBakery.
      */
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public void registerModels(IElecQuadBakery quadBakery, IElecModelBakery modelBakery, IElecTemplateBakery templateBakery);
 
 }

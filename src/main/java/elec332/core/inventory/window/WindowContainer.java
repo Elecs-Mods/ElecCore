@@ -15,8 +15,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -135,11 +136,11 @@ public final class WindowContainer extends Container {
     }
 
     @Override
-    protected Slot addSlotToContainer(Slot slotIn) {
+    protected Slot addSlot(Slot slotIn) {
         if (!(slotIn instanceof WidgetLinkedSlot)) {
             externalSlots.put(slotIn, new WrappedWidgetSlot(slotIn));
         }
-        return super.addSlotToContainer(slotIn);
+        return super.addSlot(slotIn);
     }
 
     private class WindowListener implements IWindowListener {
@@ -257,7 +258,7 @@ public final class WindowContainer extends Container {
         }
 
         @Nullable
-        @SideOnly(Side.CLIENT)
+        @OnlyIn(Dist.CLIENT)
         @Override
         public String getSlotTexture() {
             return widget.getSlotTexture();
@@ -279,31 +280,31 @@ public final class WindowContainer extends Container {
             return widget.canTakeStack(playerIn);
         }
 
-        @SideOnly(Side.CLIENT)
+        @OnlyIn(Dist.CLIENT)
         @Override
         public boolean isEnabled() {
             return widget.canBeHovered();
         }
 
         @Nonnull
-        @SideOnly(Side.CLIENT)
+        @OnlyIn(Dist.CLIENT)
         @Override
         public ResourceLocation getBackgroundLocation() {
             return widget.getBackgroundLocation();
         }
 
-        @SideOnly(Side.CLIENT)
+        @OnlyIn(Dist.CLIENT)
         @Override
         public void setBackgroundLocation(@Nonnull ResourceLocation texture) {
             widget.setBackgroundLocation(texture);
         }
 
         @Override
-        public void setBackgroundName(@Nonnull String name) {
+        public void setBackgroundName(@Nullable String name) {
             widget.setBackgroundName(name);
         }
 
-        @SideOnly(Side.CLIENT)
+        @OnlyIn(Dist.CLIENT)
         @Override
         //@Nonnull
         @SuppressWarnings("all")
@@ -312,7 +313,7 @@ public final class WindowContainer extends Container {
         }
 
         @Nonnull
-        @SideOnly(Side.CLIENT)
+        @OnlyIn(Dist.CLIENT)
         @Override
         protected TextureMap getBackgroundMap() {
             return widget.getBackgroundMap();
@@ -332,7 +333,7 @@ public final class WindowContainer extends Container {
 
     class WindowContainerHandler implements IWindowContainer {
 
-        @SideOnly(Side.CLIENT)
+        @OnlyIn(Dist.CLIENT)
         WindowGui windowGui;
 
         @Override
@@ -354,7 +355,7 @@ public final class WindowContainer extends Container {
         @Override
         public <T extends WidgetSlot> T addSlotToWindow(@Nonnull T widget) {
             Slot slot = new WidgetLinkedSlot(widget);
-            addSlotToContainer(slot);
+            addSlot(slot);
             slotStuff.put(widget, slot);
             return widget;
         }
@@ -375,7 +376,7 @@ public final class WindowContainer extends Container {
         }
 
         @Override
-        @SideOnly(Side.CLIENT)
+        @OnlyIn(Dist.CLIENT)
         public void handleMouseClickDefault(WidgetSlot slotIn, int slotId, int mouseButton, @Nonnull ClickType type) {
             Slot slot = slotIn == null ? null : slotStuff.get(slotIn);
             if (slotIn != null && slot == null) {
@@ -412,7 +413,7 @@ public final class WindowContainer extends Container {
     }
 
     static {
-        NULL_INVENTORY = new InventoryBasic("NULL", false, 0);
+        NULL_INVENTORY = new InventoryBasic(new TextComponentString("NULL"), 0);
     }
 
 }

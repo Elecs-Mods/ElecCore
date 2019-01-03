@@ -35,7 +35,7 @@ public class WidgetProgressArrow extends Widget {
     }
 
     @Override
-    public void draw(Window gui, int guiX, int guiY, int mouseX, int mouseY) {
+    public void draw(Window gui, int guiX, int guiY, double mouseX, double mouseY) {
         float progress = iHasProgressBar.getProgressScaled(lastProgress);
         if (progress > 1) {
             progress = 1;

@@ -3,11 +3,13 @@ package elec332.core.grid.internal;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.particles.IParticleData;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IBlockReader;
+import net.minecraft.world.IWorld;
 import net.minecraft.world.IWorldEventListener;
-import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
 
@@ -20,8 +22,11 @@ public enum WorldEventHandler implements IWorldEventListener {
     INSTANCE;
 
     @Override
-    public void notifyBlockUpdate(World worldIn, BlockPos pos, IBlockState oldState, IBlockState newState, int flags) {
-        GridEventInputHandler.INSTANCE.worldBlockUpdate(worldIn, pos, oldState, newState);
+    public void notifyBlockUpdate(IBlockReader worldIn, BlockPos pos, IBlockState oldState, IBlockState newState, int flags) {
+        if (!(worldIn instanceof IWorld)) {
+            throw new RuntimeException();
+        }
+        GridEventInputHandler.INSTANCE.worldBlockUpdate((IWorld) worldIn, pos, oldState, newState);
     }
 
     @Override
@@ -38,10 +43,6 @@ public enum WorldEventHandler implements IWorldEventListener {
 
     @Override
     public void playRecord(SoundEvent soundIn, BlockPos pos) {
-    }
-
-    @Override
-    public void spawnParticle(int particleID, boolean ignoreRange, boolean minParticles, double xCoord, double yCoord, double zCoord, double xSpeed, double ySpeed, double zSpeed, int... parameters) {
     }
 
     @Override
@@ -65,7 +66,13 @@ public enum WorldEventHandler implements IWorldEventListener {
     }
 
     @Override
-    public void spawnParticle(int particleID, boolean ignoreRange, double xCoord, double yCoord, double zCoord, double xSpeed, double ySpeed, double zSpeed, int... parameters) {
+    public void addParticle(IParticleData particleData, boolean b, boolean b1, double xCoord, double yCoord, double zCoord, double xSpeed, double ySpeed, double zSpeed) {
+
+    }
+
+    @Override
+    public void addParticle(IParticleData particleData, boolean b, double xCoord, double yCoord, double zCoord, double xSpeed, double ySpeed, double zSpeed) {
+
     }
 
 }

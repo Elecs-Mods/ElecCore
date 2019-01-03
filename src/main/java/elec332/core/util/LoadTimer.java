@@ -1,7 +1,7 @@
 package elec332.core.util;
 
-import net.minecraftforge.fml.common.LoaderState;
-import net.minecraftforge.fml.common.event.FMLStateEvent;
+import net.minecraftforge.fml.ModLoadingStage;
+import net.minecraftforge.fml.common.event.ModLifecycleEvent;
 import org.apache.logging.log4j.Logger;
 
 /**
@@ -19,19 +19,19 @@ public class LoadTimer {
     private final String mod;
     private final Logger logger;
     private long start;
-    private LoaderState.ModState lastState;
+    private ModLoadingStage lastState;
 
     /**
      * Starts the timer for the specified event, should be called at the beginning of the event
      *
      * @param event The FML loading event
      */
-    public void startPhase(FMLStateEvent event) {
+    public void startPhase(ModLifecycleEvent event) {
         if (lastState != null) {
             throw new IllegalStateException("Cannot start phase without ending phase " + lastState + "first.");
         }
         start = System.currentTimeMillis();
-        lastState = event.getModState();
+        lastState = FMLHelper.getStageFrom(event);
     }
 
     /**
@@ -40,8 +40,8 @@ public class LoadTimer {
      *
      * @param event The FML loading event
      */
-    public void endPhase(FMLStateEvent event) {
-        LoaderState.ModState modState = event.getModState();
+    public void endPhase(ModLifecycleEvent event) {
+        ModLoadingStage modState = FMLHelper.getStageFrom(event);
         if (this.lastState != modState) {
             throw new IllegalArgumentException();
         }

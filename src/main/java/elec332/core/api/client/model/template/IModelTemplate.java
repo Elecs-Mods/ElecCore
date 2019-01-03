@@ -2,15 +2,15 @@ package elec332.core.api.client.model.template;
 
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import java.util.List;
 
 /**
  * Created by Elec332 on 5-12-2015.
  */
-@SideOnly(Side.CLIENT)
+@OnlyIn(Dist.CLIENT)
 public interface IModelTemplate extends IQuadProviderTemplate {
 
     public List<IQuadTemplate> getGeneralQuads();

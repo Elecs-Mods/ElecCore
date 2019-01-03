@@ -5,8 +5,8 @@ import elec332.core.inventory.window.Window;
 import elec332.core.util.StatCollector;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import java.util.function.Supplier;
 
@@ -42,10 +42,10 @@ public class WidgetText extends Widget {
     }
 
     @Override
-    @SideOnly(Side.CLIENT)
-    public void draw(Window window, int guiX, int guiY, int mouseX, int mouseY) {
+    @OnlyIn(Dist.CLIENT)
+    public void draw(Window window, int guiX, int guiY, double mouseX, double mouseY) {
         GlStateManager.pushMatrix();
-        GlStateManager.translate(guiX, guiY, 0);
+        GlStateManager.translatef(guiX, guiY, 0);
         FontRenderer font = RenderHelper.getMCFontrenderer();
         int oH = font.FONT_HEIGHT;
         String txt = StatCollector.translateToLocal(this.txt.get());
@@ -54,7 +54,7 @@ public class WidgetText extends Widget {
         }
         int xN = centerWindow ? window.xSize / 2 : x;
         font.drawString(txt, center ? (xN - font.getStringWidth(txt) / 2) : xN, y, 4210752);
-        GlStateManager.color(1, 1, 1, 1);
+        GlStateManager.color4f(1, 1, 1, 1);
         font.FONT_HEIGHT = oH;
         GlStateManager.popMatrix();
     }

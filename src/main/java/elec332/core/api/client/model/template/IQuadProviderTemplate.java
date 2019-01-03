@@ -1,14 +1,14 @@
 package elec332.core.api.client.model.template;
 
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import java.util.List;
 
 /**
  * Created by Elec332 on 11-3-2016.
  */
-@SideOnly(Side.CLIENT)
+@OnlyIn(Dist.CLIENT)
 public interface IQuadProviderTemplate {
 
     public List<IQuadTemplate> getGeneralQuads();

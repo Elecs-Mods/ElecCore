@@ -4,6 +4,7 @@ import com.google.common.collect.Maps;
 import elec332.core.ElecCore;
 import elec332.core.api.client.ITessellator;
 import elec332.core.client.util.ElecTessellator;
+import net.minecraft.client.MainWindow;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.particle.Particle;
@@ -15,10 +16,11 @@ import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.block.model.ModelRotation;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.culling.ICamera;
+import net.minecraft.client.renderer.texture.MissingTextureSprite;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
+import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
-import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
@@ -27,11 +29,11 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.model.ITransformation;
 import net.minecraftforge.common.model.TRSRTransformation;
 import net.minecraftforge.fluids.Fluid;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nonnull;
 import javax.vecmath.Vector3f;
@@ -40,7 +42,7 @@ import java.util.Map;
 /**
  * Created by Elec332 on 31-7-2015.
  */
-@SideOnly(Side.CLIENT)
+@OnlyIn(Dist.CLIENT)
 @SuppressWarnings("all")
 public class RenderHelper {
 
@@ -78,6 +80,10 @@ public class RenderHelper {
         return mc.fontRenderer;
     }
 
+    public static MainWindow getMainWindow() {
+        return mc.mainWindow;
+    }
+
     @Nonnull
     public static ITessellator getTessellator() {
         return tessellator;
@@ -85,27 +91,17 @@ public class RenderHelper {
 
     @Nonnull
     public static IBakedModel getMissingModel() {
-        return Minecraft.getMinecraft().modelManager.getMissingModel();
+        return Minecraft.getInstance().modelManager.getMissingModel();
     }
 
-    @SideOnly(Side.CLIENT)
-    public static <T extends TileEntity> void renderTileEntityAt(TileEntitySpecialRenderer<T> tesr, T tile, double x, double y, double z, float partialTicks, int destroyStage) {
-        renderTileEntityAt(tesr, tile, x, y, z, partialTicks, destroyStage, 1.0f);
+    @OnlyIn(Dist.CLIENT)
+    public static <T extends TileEntity> void renderTileEntityAt(TileEntityRenderer<T> tesr, T tile, double x, double y, double z, float partialTicks, int destroyStage) {
+        tesr.render(tile, x, y, x, partialTicks, destroyStage);
     }
 
-    @SideOnly(Side.CLIENT)
-    public static <T extends TileEntity> void renderTileEntityAt(TileEntitySpecialRenderer<T> tesr, T tile, double x, double y, double z, float partialTicks, int destroyStage, float alpha) {
-        tesr.render(tile, x, y, x, partialTicks, destroyStage, alpha);
-    }
-
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public static void renderTileEntityAt(TileEntity tile, double x, double y, double z, float partialTicks, int destroyStage) {
-        renderTileEntityAt(tile, x, y, z, partialTicks, destroyStage, 1.0f);
-    }
-
-    @SideOnly(Side.CLIENT)
-    public static void renderTileEntityAt(TileEntity tile, double x, double y, double z, float partialTicks, int destroyStage, float alpha) {
-        TileEntityRendererDispatcher.instance.render(tile, x, y, z, partialTicks, destroyStage, alpha);
+        TileEntityRendererDispatcher.instance.render(tile, x, y, z, partialTicks, destroyStage, false);
     }
 
     public static void drawExpandedSelectionBoundingBox(@Nonnull AxisAlignedBB aabb) {
@@ -176,7 +172,7 @@ public class RenderHelper {
 
     public static void translateToWorld(float partialTicks) {
         Vec3d vec = getPlayerVec(partialTicks);
-        GlStateManager.translate(-vec.x, -vec.y, -vec.z);
+        GlStateManager.translated(-vec.x, -vec.y, -vec.z);
     }
 
     @Nonnull
@@ -194,7 +190,7 @@ public class RenderHelper {
     }
 
     public static void drawLine(Vec3d from, Vec3d to, Vec3d player, float thickness) {
-        drawQuad(from, from.addVector(thickness, thickness, thickness), to, to.addVector(thickness, thickness, thickness));
+        drawQuad(from, from.add(thickness, thickness, thickness), to, to.add(thickness, thickness, thickness));
     }
 
     public static void drawQuad(Vec3d v1, Vec3d v2, Vec3d v3, Vec3d v4) {
@@ -214,7 +210,7 @@ public class RenderHelper {
     }
 
     public static void bindTexture(ResourceLocation rl) {
-        mc.renderEngine.bindTexture(rl);
+        mc.textureManager.bindTexture(rl);
     }
 
     @Nonnull
@@ -233,11 +229,11 @@ public class RenderHelper {
 
     @Nonnull
     public static TextureAtlasSprite getMissingTextureIcon() {
-        return mc.getTextureMapBlocks().getMissingSprite();//((TextureMap) Minecraft.getMinecraft().getTextureManager().getTexture(getBlocksResourceLocation())).getAtlasSprite("missingno");
+        return MissingTextureSprite.getSprite();//mc.getTextureMap().getMissingSprite();//((TextureMap) Minecraft.getInstance().getTextureManager().getTexture(getBlocksResourceLocation())).getAtlasSprite("missingno");
     }
 
     public static TextureAtlasSprite getIconFrom(ResourceLocation rl) {
-        return mc.getTextureMapBlocks().getAtlasSprite(rl.toString());
+        return mc.getTextureMap().getAtlasSprite(rl.toString());
     }
 
     @Nonnull
@@ -246,7 +242,7 @@ public class RenderHelper {
     }
 
     public void spawnParticle(Particle particle) {
-        mc.effectRenderer.addEffect(particle);
+        mc.particles.addEffect(particle);
     }
 
     public static void disableStandardItemLighting() {
@@ -264,11 +260,11 @@ public class RenderHelper {
     static {
         mcTessellator = Tessellator.getInstance();
         tessellator = new ElecTessellator(mcTessellator);
-        mc = Minecraft.getMinecraft();
+        mc = Minecraft.getInstance();
         worldRenderTessellators = Maps.newHashMap();
         worldRenderTessellators.put(mcTessellator.getBuffer(), tessellator);
         rotateAroundMap = Maps.newEnumMap(EnumFacing.class);
-        for (EnumFacing facing : EnumFacing.VALUES) {
+        for (EnumFacing facing : EnumFacing.values()) {
             switch (facing) {
                 case NORTH:
                     rotateAroundMap.put(facing, new ITransformation[]{RenderHelper.getTransformation(0, 0, 0), RenderHelper.getTransformation(0, 0, 90), RenderHelper.getTransformation(0, 0, 180), RenderHelper.getTransformation(0, 0, 270)});

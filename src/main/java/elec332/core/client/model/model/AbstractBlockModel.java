@@ -8,13 +8,13 @@ import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 /**
  * Created by Elec332 on 15-11-2015.
  */
-@SideOnly(Side.CLIENT)
+@OnlyIn(Dist.CLIENT)
 @SuppressWarnings({"deprecation", "unused"})
 public abstract class AbstractBlockModel implements IModelWithoutQuads {
 
@@ -37,7 +37,7 @@ public abstract class AbstractBlockModel implements IModelWithoutQuads {
 
     @Override
     public TextureAtlasSprite getParticleTexture() {
-        return Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite(getTextureLocation().toString());
+        return Minecraft.getInstance().getTextureMap().getAtlasSprite(getTextureLocation().toString());
     }
 
     public abstract ResourceLocation getTextureLocation();

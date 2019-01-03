@@ -7,12 +7,10 @@ import elec332.core.api.client.model.loading.IItemModelHandler;
 import elec332.core.api.client.model.loading.IModelHandler;
 import elec332.core.api.client.model.loading.ModelHandler;
 import elec332.core.loader.client.RenderingRegistry;
-import net.minecraft.client.renderer.ItemMeshDefinition;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraftforge.client.model.ModelLoader;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -50,7 +48,8 @@ public class ItemModelHandler implements IModelHandler {
                 if (handler.handleItem(item)) {
                     String s = handler.getIdentifier(item);
                     final ModelResourceLocation mr = new ModelResourceLocation(item.getRegistryName().toString(), s);
-                    ModelLoader.setCustomMeshDefinition(item, new ItemMeshDefinition() {
+                    Minecraft.getInstance().getItemRenderer().getItemModelMesher().register(item, mr); //TODO: more testing
+                    /*ModelLoader.setCustomMeshDefinition(item, new ItemMeshDefinition() {
 
                         @Override
                         @Nonnull
@@ -58,7 +57,7 @@ public class ItemModelHandler implements IModelHandler {
                             return mr;
                         }
 
-                    });
+                    });*/
                     itemResourceLocations.put(item, mr);
                     break;
                 }

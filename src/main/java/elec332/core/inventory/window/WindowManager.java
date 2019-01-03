@@ -4,12 +4,13 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Maps;
 import elec332.core.ElecCore;
+import elec332.core.MC113ToDoReference;
 import elec332.core.api.network.ElecByteBuf;
 import elec332.core.api.network.IExtendedMessageContext;
 import elec332.core.api.network.simple.ISimpleNetworkPacketManager;
 import elec332.core.api.network.simple.ISimplePacket;
 import elec332.core.api.network.simple.ISimplePacketHandler;
-import elec332.core.util.FMLUtil;
+import elec332.core.util.FMLHelper;
 import elec332.core.util.NBTTypes;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
@@ -20,11 +21,11 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -38,7 +39,7 @@ public enum WindowManager implements ISimplePacket, ISimplePacketHandler {
     INSTANCE;
 
     WindowManager() {
-        ElecCore.networkHandler.registerPacket(this, this);
+        ElecCore.networkHandler.registerSimplePacket(this, this);
         MinecraftForge.EVENT_BUS.register(new Object() {
 
             @SubscribeEvent
@@ -61,7 +62,7 @@ public enum WindowManager implements ISimplePacket, ISimplePacketHandler {
     private int index;
 
     public void register(IWindowHandler windowHandler) {
-        register(windowHandler, new ResourceLocation(FMLUtil.getLoader().activeModContainer().getModId(), windowHandler.getClass().getCanonicalName()));
+        register(windowHandler, new ResourceLocation(FMLHelper.getActiveModContainer().getModId(), windowHandler.getClass().getCanonicalName()));
     }
 
     public void register(IWindowHandler windowHandler, ResourceLocation name) {
@@ -71,7 +72,7 @@ public enum WindowManager implements ISimplePacket, ISimplePacketHandler {
     }
 
     private void register(Entry entry, int i) {
-        if (!FMLUtil.isInModInitialisation()) {
+        if (!FMLHelper.isInModInitialisation()) {
             throw new IllegalStateException("Cannot register window handlers after mod loading.");
         }
         if (names.containsValue(entry.toString())) {
@@ -100,11 +101,11 @@ public enum WindowManager implements ISimplePacket, ISimplePacketHandler {
         if (tag1 == null) {
             throw new IllegalArgumentException();
         }
-        NBTTagList list = tag1.getTagList("list", NBTTypes.COMPOUND.getID());
+        NBTTagList list = tag1.getList("list", NBTTypes.COMPOUND.getID());
         names.clear();
-        for (int i = 0; i < list.tagCount(); i++) {
-            NBTTagCompound tag = list.getCompoundTagAt(i);
-            names.put(tag.getInteger("i"), tag.getString("n"));
+        for (int i = 0; i < list.size(); i++) {
+            NBTTagCompound tag = list.getCompound(i);
+            names.put(tag.getInt("i"), tag.getString("n"));
         }
     }
 
@@ -114,12 +115,12 @@ public enum WindowManager implements ISimplePacket, ISimplePacketHandler {
         NBTTagCompound tag;
         for (Map.Entry<Integer, String> entry : names.entrySet()) {
             tag = new NBTTagCompound();
-            tag.setInteger("i", entry.getKey());
-            tag.setString("n", entry.getValue());
-            list.appendTag(tag);
+            tag.putInt("i", entry.getKey());
+            tag.putString("n", entry.getValue());
+            list.add(tag);
         }
         NBTTagCompound tag1 = new NBTTagCompound();
-        tag1.setTag("list", list);
+        tag1.put("list", list);
         byteBuf.writeNBTTagCompoundToBuffer(tag1);
     }
 
@@ -128,9 +129,9 @@ public enum WindowManager implements ISimplePacket, ISimplePacketHandler {
         return this;
     }
 
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public static void openClientWindow(Window window) {
-        Minecraft.getMinecraft().displayGuiScreen(new WindowGui(ElecCore.proxy.getClientPlayer(), window));
+        Minecraft.getInstance().displayGuiScreen(new WindowGui(ElecCore.proxy.getClientPlayer(), window));
     }
 
     public static void openWindow(@Nonnull EntityPlayer player, IWindowHandler windowHandler, World world, BlockPos pos) {
@@ -162,7 +163,8 @@ public enum WindowManager implements ISimplePacket, ISimplePacketHandler {
     }
 
     public static void openWindow(@Nonnull EntityPlayer player, IWindowHandler windowHandler, World world, int x, int y, int z, byte id) {
-        player.openGui(ElecCore.instance, (id << 8) + INSTANCE.getID(windowHandler), world, x, y, z);
+        MC113ToDoReference.update();
+        //player.openGui(ElecCore.instance, (id << 8) + INSTANCE.getID(windowHandler), world, x, y, z);
     }
 
     @Nullable

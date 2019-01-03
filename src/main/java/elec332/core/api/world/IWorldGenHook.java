@@ -1,8 +1,9 @@
 package elec332.core.api.world;
 
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.world.World;
-import net.minecraft.world.chunk.Chunk;
+import net.minecraft.world.IWorld;
+import net.minecraft.world.chunk.IChunk;
+import net.minecraft.world.gen.IChunkGenSettings;
 import net.minecraft.world.gen.IChunkGenerator;
 
 import java.util.Random;
@@ -10,12 +11,14 @@ import java.util.Random;
 /**
  * Created by Elec332 on 17-10-2016.
  */
-public interface IWorldGenHook {
+public interface IWorldGenHook extends IChunkIOHook {
 
-    public void populateChunk(IChunkGenerator chunkGenerator, World world, Random rand, int chunkX, int chunkZ, boolean hasVillageGenerated);
+    public boolean populateChunk(IChunkGenerator<? extends IChunkGenSettings> chunkGenerator, IWorld world, Random rand, int chunkX, int chunkZ);
 
-    public void chunkLoadedFromDisk(Chunk chunk, NBTTagCompound data, IWorldGenManager worldGenManager);
+    @Override
+    public void chunkLoadedFromDisk(IChunk chunk, NBTTagCompound data, IWorldGenManager worldGenManager);
 
-    public void chunkSavedToDisk(Chunk chunk, NBTTagCompound data, IWorldGenManager worldGenManager);
+    @Override
+    public void chunkSavedToDisk(IChunk chunk, NBTTagCompound data, IWorldGenManager worldGenManager);
 
 }

@@ -5,8 +5,8 @@ import com.google.common.collect.Maps;
 import elec332.core.api.client.model.template.IQuadTemplate;
 import elec332.core.api.client.model.template.IQuadTemplateSidedMap;
 import net.minecraft.util.EnumFacing;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nonnull;
 import java.util.EnumMap;
@@ -15,13 +15,13 @@ import java.util.List;
 /**
  * Created by Elec332 on 6-12-2015.
  */
-@SideOnly(Side.CLIENT)
+@OnlyIn(Dist.CLIENT)
 public class MutableQuadSidedMap implements IQuadTemplateSidedMap {
 
     @Nonnull
     public static MutableQuadSidedMap newQuadSidedMap() {
         EnumMap<EnumFacing, List<IQuadTemplate>> param = Maps.newEnumMap(EnumFacing.class);
-        for (EnumFacing facing : EnumFacing.VALUES) {
+        for (EnumFacing facing : EnumFacing.values()) {
             param.put(facing, Lists.<IQuadTemplate>newArrayList());
         }
         return new MutableQuadSidedMap(param);

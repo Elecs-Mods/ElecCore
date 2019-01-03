@@ -1,53 +1,49 @@
 package elec332.core.network.impl;
 
 import com.google.common.base.Preconditions;
-import elec332.core.api.network.ElecByteBuf;
-import elec332.core.api.network.INetworkHandler;
-import elec332.core.api.network.IPacketDispatcher;
+import elec332.core.api.network.*;
 import elec332.core.api.network.simple.ISimpleNetworkPacketManager;
 import elec332.core.api.network.simple.ISimplePacket;
 import elec332.core.api.network.simple.ISimplePacketHandler;
-import gnu.trove.map.TIntObjectMap;
-import gnu.trove.map.TObjectIntMap;
-import gnu.trove.map.hash.TIntObjectHashMap;
-import gnu.trove.map.hash.TObjectIntHashMap;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.buffer.UnpooledByteBufAllocator;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraftforge.fml.common.network.NetworkRegistry;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
-import net.minecraftforge.fml.relauncher.Side;
+import net.minecraft.network.PacketBuffer;
+import net.minecraft.util.ResourceLocation;
+
+import java.util.function.BiConsumer;
+import java.util.function.Supplier;
 
 /**
  * Created by Elec332 on 23-10-2016.
  */
-class DefaultSimpleNetworkHandler implements ISimpleNetworkPacketManager, IMessageHandler<DefaultSimpleNetworkHandler.PacketSimplePacket, IMessage> {
+class DefaultSimpleNetworkHandler implements ISimpleNetworkPacketManager, BiConsumer<DefaultSimpleNetworkHandler.PacketSimplePacket, Supplier<IExtendedMessageContext>> {
 
     @SuppressWarnings("all")
-    DefaultSimpleNetworkHandler(INetworkHandler networkHandler, String s) {
-        this.idToHandler = new TIntObjectHashMap<ISimplePacketHandler>();
-        this.handlerToId = new TObjectIntHashMap<ISimplePacketHandler>();
-        this.packetToId = new TObjectIntHashMap<Class<? extends ISimplePacket>>();
+    DefaultSimpleNetworkHandler(INetworkHandler networkHandler, ResourceLocation s) {
+        this.idToHandler = new Int2ObjectOpenHashMap<>();
+        this.handlerToId = new Object2IntOpenHashMap<>();
+        this.packetToId = new Object2IntOpenHashMap<>();
         this.b = 0;
-        for (Side side : Side.values()) {
-            networkHandler.registerPacket(this, PacketSimplePacket.class, side);
-        }
+        networkHandler.registerPacket(this, PacketSimplePacket.class);
         this.packetDispatcher = networkHandler;
         this.s = s;
     }
 
     private final IPacketDispatcher packetDispatcher;
-    private final String s;
-    private TIntObjectMap<ISimplePacketHandler> idToHandler;
-    private TObjectIntMap<ISimplePacketHandler> handlerToId;
-    private TObjectIntMap<Class<? extends ISimplePacket>> packetToId;
+    private final ResourceLocation s;
+    private Int2ObjectMap<ISimplePacketHandler> idToHandler;
+    private Object2IntMap<ISimplePacketHandler> handlerToId;
+    private Object2IntMap<Class<? extends ISimplePacket>> packetToId;
     private byte b;
 
     @Override
-    public String getChannelName() {
+    public ResourceLocation getChannelName() {
         return s;
     }
 
@@ -62,7 +58,7 @@ class DefaultSimpleNetworkHandler implements ISimpleNetworkPacketManager, IMessa
     }
 
     @Override
-    public void sendToAllAround(ISimplePacket message, NetworkRegistry.TargetPoint point) {
+    public void sendToAllAround(ISimplePacket message, IPacketDispatcher.TargetPoint point) {
         packetDispatcher.sendToAllAround(from(message), point);
     }
 
@@ -87,7 +83,7 @@ class DefaultSimpleNetworkHandler implements ISimpleNetworkPacketManager, IMessa
     }
 
     @Override
-    public void sendToAllAround(ISimplePacket message, ISimplePacketHandler packetHandler, NetworkRegistry.TargetPoint point) {
+    public void sendToAllAround(ISimplePacket message, ISimplePacketHandler packetHandler, IPacketDispatcher.TargetPoint point) {
         packetDispatcher.sendToAllAround(from(message, packetHandler), point);
     }
 
@@ -112,7 +108,7 @@ class DefaultSimpleNetworkHandler implements ISimpleNetworkPacketManager, IMessa
     }
 
     @Override
-    public void sendToAllAround(ByteBuf data, ISimplePacketHandler packetHandler, NetworkRegistry.TargetPoint point) {
+    public void sendToAllAround(ByteBuf data, ISimplePacketHandler packetHandler, IPacketDispatcher.TargetPoint point) {
         packetDispatcher.sendToAllAround(from(data, packetHandler), point);
     }
 
@@ -145,25 +141,25 @@ class DefaultSimpleNetworkHandler implements ISimpleNetworkPacketManager, IMessa
     }
 
     @Override
-    public void registerPacket(Class<? extends ISimplePacket> packet) {
+    public void registerSimplePacket(Class<? extends ISimplePacket> packet) {
         try {
-            registerPacket(packet.newInstance());
+            registerSimplePacket(packet.newInstance());
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
     @Override
-    public void registerPacket(ISimplePacket packet) {
+    public void registerSimplePacket(ISimplePacket packet) {
         ISimplePacketHandler handler = packet.getPacketHandler();
         if (handler == null) {
             throw new UnsupportedOperationException();
         }
-        registerPacket(packet, handler);
+        registerSimplePacket(packet, handler);
     }
 
     @Override
-    public void registerPacketHandler(ISimplePacketHandler packetHandler) {
+    public void registerSimplePacketHandler(ISimplePacketHandler packetHandler) {
         Preconditions.checkNotNull(packetHandler);
         idToHandler.put(b, packetHandler);
         handlerToId.put(packetHandler, b);
@@ -171,9 +167,9 @@ class DefaultSimpleNetworkHandler implements ISimpleNetworkPacketManager, IMessa
     }
 
     @Override
-    public void registerPacket(Class<? extends ISimplePacket> packet, ISimplePacketHandler packetHandler) {
+    public void registerSimplePacket(Class<? extends ISimplePacket> packet, ISimplePacketHandler packetHandler) {
         try {
-            registerPacket(packet.newInstance(), packetHandler);
+            registerSimplePacket(packet.newInstance(), packetHandler);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -181,7 +177,7 @@ class DefaultSimpleNetworkHandler implements ISimpleNetworkPacketManager, IMessa
 
     @Override
     @SuppressWarnings("unchecked")
-    public void registerPacket(ISimplePacket packet, ISimplePacketHandler packetHandler) {
+    public void registerSimplePacket(ISimplePacket packet, ISimplePacketHandler packetHandler) {
         Preconditions.checkNotNull(packet);
         Preconditions.checkNotNull(packetHandler);
         ISimplePacketHandler ph = packet.getPacketHandler();
@@ -189,7 +185,7 @@ class DefaultSimpleNetworkHandler implements ISimpleNetworkPacketManager, IMessa
             throw new IllegalArgumentException();
         }
         packetToId.put(packet.getClass(), b);
-        registerPacketHandler(packetHandler);
+        registerSimplePacketHandler(packetHandler);
     }
 
     @Override
@@ -198,9 +194,8 @@ class DefaultSimpleNetworkHandler implements ISimpleNetworkPacketManager, IMessa
     }
 
     @Override
-    public IMessage onMessage(PacketSimplePacket message, MessageContext ctx) {
-        Preconditions.checkNotNull(idToHandler.get(message.i)).onPacket(new ElecByteBufImpl(message.data), NetworkManager.INSTANCE.wrapMessageContext(ctx), this);
-        return null;
+    public void accept(PacketSimplePacket message, Supplier<IExtendedMessageContext> extendedMessageContext) {
+        Preconditions.checkNotNull(idToHandler.get(message.i)).onPacket(new ElecByteBufImpl(message.data), extendedMessageContext.get(), this);
     }
 
     @SuppressWarnings("all")
@@ -219,14 +214,14 @@ class DefaultSimpleNetworkHandler implements ISimpleNetworkPacketManager, IMessa
         ByteBuf data;
 
         @Override
-        public void fromBytes(ByteBuf buf) {
+        public void fromBytes(PacketBuffer buf) {
             this.i = buf.readByte();
             this.data = Unpooled.buffer(buf.readableBytes());
             buf.readBytes(this.data);
         }
 
         @Override
-        public void toBytes(ByteBuf buf) {
+        public void toBytes(PacketBuffer buf) {
             buf.writeByte(i);
             buf.writeBytes(data);
         }

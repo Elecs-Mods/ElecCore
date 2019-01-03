@@ -22,11 +22,11 @@ public enum NBTTypes {
 
     ///##########################///
 
-    NBTTypes(NBTBase nbtBase) {
+    NBTTypes(INBTBase nbtBase) {
         this(nbtBase.getId(), nbtBase.getClass());
     }
 
-    NBTTypes(byte i, Class<? extends NBTBase> clazz) {
+    NBTTypes(byte i, Class<? extends INBTBase> clazz) {
         this.ID = i;
         this.clazz = clazz;
         if (i != ordinal()) {
@@ -35,13 +35,13 @@ public enum NBTTypes {
     }
 
     private final byte ID;
-    private final Class<? extends NBTBase> clazz;
+    private final Class<? extends INBTBase> clazz;
 
     public byte getID() {
         return ID;
     }
 
-    public Class<? extends NBTBase> getClazz() {
+    public Class<? extends INBTBase> getClazz() {
         return clazz;
     }
 
@@ -49,7 +49,7 @@ public enum NBTTypes {
         return i == ID;
     }
 
-    public static Class<? extends NBTBase> getClass(int i) {
+    public static Class<? extends INBTBase> getClass(int i) {
         for (NBTTypes data : NBTTypes.values()) {
             if (data.ID == i) {
                 return data.clazz;

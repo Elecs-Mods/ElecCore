@@ -1,5 +1,6 @@
 package elec332.core.item;
 
+import com.google.common.base.Preconditions;
 import elec332.core.api.client.IColoredItem;
 import elec332.core.api.client.IIconRegistrar;
 import elec332.core.api.client.model.IElecModelBakery;
@@ -9,14 +10,15 @@ import elec332.core.client.RenderHelper;
 import elec332.core.client.model.loading.INoJsonItem;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nonnull;
 
@@ -26,19 +28,19 @@ import javax.annotation.Nonnull;
 public class ItemEnumBased<E extends Enum<E> & IEnumItem> extends AbstractItem implements INoJsonItem, IColoredItem {
 
     public ItemEnumBased(Class<E> clazz) {
+        super(clazz.getEnumConstants()[0].getItemData());
         this.clazz = clazz;
         this.values = clazz.getEnumConstants();
         this.nji = this.values[0] instanceof INoJsonItem;
-        this.setHasSubtypes(true);
         this.values[0].initializeItem(this);
     }
 
     protected final Class<E> clazz;
     protected final E[] values;
     private final boolean nji;
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     private TextureAtlasSprite[][] textures;
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     private IBakedModel[] models;
 
     public ItemStack getStackFromType(E type) {
@@ -46,18 +48,20 @@ public class ItemEnumBased<E extends Enum<E> & IEnumItem> extends AbstractItem i
     }
 
     public ItemStack getStackFromType(E type, int amount) {
-        return new ItemStack(this, amount, type.ordinal());
+        ItemStack ret = new ItemStack(this, amount);
+        putOrdinal(ret, type);
+        return ret;
     }
 
     @Override
     public int getColorFromItemStack(ItemStack stack, int tintIndex) {
-        int i = stack.getItemDamage();
+        int i = getOrdinal(stack);
         return i >= values.length ? -1 : values[i].getColorFromItemStack(stack, tintIndex);
     }
 
     @Override
-    public void getSubItems(@Nonnull CreativeTabs creativeTab, @Nonnull NonNullList<ItemStack> subItems) {
-        if (!isInCreativeTab(creativeTab)) {
+    public void fillItemGroup(ItemGroup creativeTab, NonNullList<ItemStack> subItems) {
+        if (!isInGroup(creativeTab)) {
             return;
         }
         for (E e : values) {
@@ -67,12 +71,12 @@ public class ItemEnumBased<E extends Enum<E> & IEnumItem> extends AbstractItem i
         }
     }
 
-    @Override
     @Nonnull
-    public String getUnlocalizedName(ItemStack stack) {
-        E e = stack == null ? null : get(stack.getItemDamage());
+    @Override
+    public String getTranslationKey(ItemStack stack) {
+        E e = stack == null ? null : get(getOrdinal(stack));
         if (e == null) {
-            return super.getUnlocalizedName(stack);
+            return super.getTranslationKey(stack);
         }
         return e.getUnlocalizedName(stack);
     }
@@ -95,7 +99,7 @@ public class ItemEnumBased<E extends Enum<E> & IEnumItem> extends AbstractItem i
 
     @Override
     public IBakedModel getItemModel(ItemStack stack, World world, EntityLivingBase entity) {
-        int i = stack.getItemDamage();
+        int i = getOrdinal(stack);
         E e = get(i);
         if (e == null) {
             return RenderHelper.getMissingModel();
@@ -120,17 +124,22 @@ public class ItemEnumBased<E extends Enum<E> & IEnumItem> extends AbstractItem i
         }
     }
 
-    @Override
-    public int getDamage(ItemStack stack) {
-        if (values.length <= super.getDamage(stack)) {
-            stack.setItemDamage(0);
-        }
-        return super.getDamage(stack);
-    }
-
-
     private E get(int i) {
         return i >= values.length ? null : values[i];
+    }
+
+    private int getOrdinal(ItemStack stack) {
+        if (!stack.hasTag()) {
+            stack.setTag(new NBTTagCompound());
+        }
+        return Preconditions.checkNotNull(stack.getTag()).getInt("elenord");
+    }
+
+    private void putOrdinal(ItemStack stack, E val) {
+        if (!stack.hasTag()) {
+            stack.setTag(new NBTTagCompound());
+        }
+        Preconditions.checkNotNull(stack.getTag()).putInt("elenord", val.ordinal());
     }
 
 }

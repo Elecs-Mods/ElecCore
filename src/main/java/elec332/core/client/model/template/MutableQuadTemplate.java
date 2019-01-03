@@ -3,19 +3,19 @@ package elec332.core.client.model.template;
 import elec332.core.api.client.model.template.IMutableQuadTemplate;
 import elec332.core.api.client.model.template.IQuadTemplate;
 import elec332.core.client.RenderHelper;
+import net.minecraft.client.renderer.Vector3f;
 import net.minecraft.client.renderer.block.model.ModelRotation;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.util.EnumFacing;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
-import org.lwjgl.util.vector.Vector3f;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nonnull;
 
 /**
  * Created by Elec332 on 6-12-2015.
  */
-@SideOnly(Side.CLIENT)
+@OnlyIn(Dist.CLIENT)
 public class MutableQuadTemplate implements IMutableQuadTemplate {
 
     @Nonnull

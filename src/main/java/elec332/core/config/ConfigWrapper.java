@@ -7,10 +7,10 @@ import elec332.core.api.config.Configurable;
 import elec332.core.api.config.IConfigElementSerializer;
 import elec332.core.api.config.IConfigWrapper;
 import elec332.core.api.config.IConfigurableElement;
-import elec332.core.util.FMLUtil;
+import elec332.core.util.FMLHelper;
 import elec332.core.util.ReflectionHelper;
 import net.minecraftforge.common.config.Configuration;
-import net.minecraftforge.fml.common.LoaderState;
+import net.minecraftforge.fml.ModLoadingStage;
 
 import javax.annotation.Nonnull;
 import java.lang.reflect.Field;
@@ -264,7 +264,7 @@ public class ConfigWrapper implements IConfigWrapper {
     }
 
     public static void registerConfigElementSerializer(IConfigElementSerializer serializer) {
-        if (FMLUtil.hasReachedState(LoaderState.INITIALIZATION)) {
+        if (FMLHelper.hasReachedState(ModLoadingStage.INIT)) {
             throw new RuntimeException("Cannot register config element serializer after PreInit!");
         }
         serializers.add(serializer);

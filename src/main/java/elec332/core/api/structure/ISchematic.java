@@ -56,18 +56,18 @@ public interface ISchematic {
     public NBTTagCompound getTileData(int x, int y, int z);
 
     /**
-     * Gets the metadata for the block at the specified coordinates, ranging from 0 to the width (x), height (y) and
+     * Gets the {@link IBlockState} at the specified coordinates, ranging from 0 to the width (x), height (y) and
      * length (z). 0 is inclusive, the width, height and length values are exclusive.
      *
      * @param pos Coordinate within the local schematic coordinates.
      * @return The metadata for the block at the specified local schematic coordinates.
      */
-    default public byte getMetaData(BlockPos pos) {
-        return getMetadata(pos.getX(), pos.getY(), pos.getZ());
+    default public IBlockState getBlockState(BlockPos pos) {
+        return getBlockState(pos.getX(), pos.getY(), pos.getZ());
     }
 
     /**
-     * Gets the metadata for the block at the specified coordinates, ranging from 0 to the width (x), height (y) and
+     * Gets the {@link IBlockState} at the specified coordinates, ranging from 0 to the width (x), height (y) and
      * length (z). 0 is inclusive, the width, height and length values are exclusive.
      *
      * @param x Coordinate x within the local schematic coordinates.
@@ -75,13 +75,7 @@ public interface ISchematic {
      * @param z Coordinate z within the local schematic coordinates.
      * @return The metadata for the block at the specified local schematic coordinates.
      */
-
-    public byte getMetadata(int x, int y, int z);
-
-    @SuppressWarnings("deprecation")
-    default public IBlockState getBlockState(BlockPos pos) {
-        return getBlock(pos).getStateFromMeta(getMetaData(pos));
-    }
+    public IBlockState getBlockState(int x, int y, int z);
 
     public short getBlockLength();
 

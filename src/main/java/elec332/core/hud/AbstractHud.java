@@ -3,20 +3,20 @@ package elec332.core.hud;
 import com.google.common.base.Strings;
 import elec332.core.ElecCore;
 import elec332.core.api.config.IConfigurableElement;
+import elec332.core.client.RenderHelper;
 import elec332.core.hud.position.Alignment;
 import elec332.core.hud.position.HorizontalStartingPoint;
 import elec332.core.hud.position.IStartingPoint;
 import elec332.core.hud.position.VerticalStartingPoint;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
-import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.world.World;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nonnull;
 
@@ -105,17 +105,16 @@ public abstract class AbstractHud implements IConfigurableElement {
         return ver;
     }
 
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     @SubscribeEvent
     public final void onRenderTick(TickEvent.RenderTickEvent event) {
         EntityPlayerSP player = (EntityPlayerSP) ElecCore.proxy.getClientPlayer();
-        if (player != null && Minecraft.getMinecraft().inGameHasFocus && shouldRenderHud(player, event.renderTickTime, event.phase)) {
-            Minecraft mc = Minecraft.getMinecraft();
-            ScaledResolution res = new ScaledResolution(mc);
+        if (player != null && Minecraft.getInstance().isGameFocused() && shouldRenderHud(player, event.renderTickTime, event.phase)) {
+            Minecraft mc = Minecraft.getInstance();
 
             int hudHeight = getHudHeight();
-            int startX = getHorizontalStartingPoint().getStartingPoint(mc, res, hudHeight);
-            int startY = getVerticalStartingPoint().getStartingPoint(mc, res, hudHeight);
+            int startX = getHorizontalStartingPoint().getStartingPoint(mc, RenderHelper.getMainWindow(), hudHeight);
+            int startY = getVerticalStartingPoint().getStartingPoint(mc, RenderHelper.getMainWindow(), hudHeight);
 
             renderHud(player, ElecCore.proxy.getClientWorld(), getAlignment(), startX, startY, event.renderTickTime);
 
@@ -128,7 +127,7 @@ public abstract class AbstractHud implements IConfigurableElement {
 
     public abstract int getHudHeight();
 
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public abstract void renderHud(@Nonnull EntityPlayerSP player, @Nonnull World world, @Nonnull Alignment alignment, int startX, int startY, float partialTicks);
 
     static {

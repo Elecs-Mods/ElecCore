@@ -6,15 +6,15 @@ import elec332.core.api.client.model.IElecTemplateBakery;
 import elec332.core.api.client.model.template.*;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.util.EnumFacing;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nonnull;
 
 /**
  * Created by Elec332 on 6-12-2015.
  */
-@SideOnly(Side.CLIENT)
+@OnlyIn(Dist.CLIENT)
 public final class ElecTemplateBakery implements IElecTemplateBakery {
 
     private static final ElecTemplateBakery instance = new ElecTemplateBakery();
@@ -103,7 +103,7 @@ public final class ElecTemplateBakery implements IElecTemplateBakery {
     @Override
     public IQuadTemplateSidedMap newQuadSidedMap(TextureAtlasSprite texture) {
         IQuadTemplateSidedMap ret = newQuadSidedMap();
-        for (EnumFacing facing : EnumFacing.VALUES) {
+        for (EnumFacing facing : EnumFacing.values()) {
             ret.addQuadForSide(facing, templateQuadForTexture(facing, texture));
         }
         return ret;
@@ -116,7 +116,7 @@ public final class ElecTemplateBakery implements IElecTemplateBakery {
             throw new IllegalArgumentException();
         IQuadTemplateSidedMap ret = newQuadSidedMap();
         for (int i = 0; i < textures.length; i++) {
-            ret.addQuadForSide(EnumFacing.VALUES[i], templateQuadForTexture(EnumFacing.VALUES[i], textures[i]));
+            ret.addQuadForSide(EnumFacing.values()[i], templateQuadForTexture(EnumFacing.values()[i], textures[i]));
         }
         return ret;
     }

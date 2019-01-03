@@ -6,16 +6,16 @@ import com.google.common.collect.ListMultimap;
 import elec332.core.ElecCore;
 import elec332.core.api.annotations.StaticLoad;
 import elec332.core.api.data.IExternalSaveHandler;
-import elec332.core.util.FMLUtil;
+import elec332.core.util.FMLHelper;
 import elec332.core.util.IOHelper;
 import elec332.core.world.WorldHelper;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.world.World;
+import net.minecraft.world.IWorld;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.world.WorldEvent;
-import net.minecraftforge.fml.common.ModContainer;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.ModContainer;
 
 import java.io.File;
 
@@ -39,14 +39,14 @@ public enum SaveHandler {
     private boolean loaded;
 
     public boolean registerSaveHandler(ModContainer mc, IExternalSaveHandler saveHandler) {
-        if (!FMLUtil.isInModInitialisation()) {
+        if (!FMLHelper.isInModInitialisation()) {
             return false;
         }
         saveHandlers.put(mc, saveHandler);
         return true;
     }
 
-    private void load(World world) {
+    private void load(IWorld world) {
         NBTTagCompound tag;
         File file = new File(world.getSaveHandler().getWorldDirectory(), folder);
         IOHelper.ensureExists(file);
@@ -56,14 +56,14 @@ public enum SaveHandler {
                 Preconditions.checkNotNull(world);
                 Preconditions.checkNotNull(saveHandler);
                 Preconditions.checkNotNull(tag);
-                saveHandler.load(world.getSaveHandler(), world.getWorldInfo(), tag.getCompoundTag(saveHandler.getName()));
+                saveHandler.load(world.getSaveHandler(), world.getWorldInfo(), tag.getCompound(saveHandler.getName()));
             }
         }
 
         this.loaded = true;
     }
 
-    private void save(World world) {
+    private void save(IWorld world) {
         if (!this.loaded && !ElecCore.suppressSpongeIssues) {
             ElecCore.logger.error("World is unloading before data has been loaded, skipping data saving...");
             ElecCore.logger.error("This probably happened due to a crash in EG worldgen.");
@@ -76,14 +76,14 @@ public enum SaveHandler {
             for (IExternalSaveHandler saveHandler : saveHandlers.get(mc)) {
                 NBTTagCompound n = saveHandler.save(world.getSaveHandler(), world.getWorldInfo());
                 if (n != null) {
-                    tag.setTag(saveHandler.getName(), n);
+                    tag.put(saveHandler.getName(), n);
                 }
             }
             IOHelper.writeWithBackup(new File(file, mc.getModId() + ".dat"), tag, IOHelper.NBT_COMPRESSED_IO);
         }
     }
 
-    private void unLoad(World world) {
+    private void unLoad(IWorld world) {
         this.loaded = false;
         for (ModContainer mc : saveHandlers.keySet()) {
             for (IExternalSaveHandler saveHandler : saveHandlers.get(mc)) {
@@ -115,8 +115,8 @@ public enum SaveHandler {
             }
         }
 
-        private boolean isOverworld(World world) {
-            return !world.isRemote && WorldHelper.getDimID(world) == 0 && world.getClass() == WorldServer.class;
+        private boolean isOverworld(IWorld world) {
+            return !world.isRemote() && WorldHelper.getDimID(world) == 0 && world.getClass() == WorldServer.class;
         }
 
     }

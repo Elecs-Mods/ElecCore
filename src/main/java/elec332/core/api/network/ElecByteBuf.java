@@ -3,6 +3,7 @@ package elec332.core.api.network;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 
@@ -16,7 +17,11 @@ import java.util.UUID;
 /**
  * Created by Elec332 on 25-10-2016.
  */
-public abstract class ElecByteBuf extends ByteBuf {
+public abstract class ElecByteBuf extends PacketBuffer {
+
+    public ElecByteBuf(ByteBuf buf) {
+        super(buf);
+    }
 
     /**
      * Writes a compressed NBTTagCompound to this buffer
@@ -46,6 +51,7 @@ public abstract class ElecByteBuf extends ByteBuf {
      *
      * @param string The string to write
      */
+    @Override
     public abstract ElecByteBuf writeString(String string);
 
     /**
@@ -62,6 +68,7 @@ public abstract class ElecByteBuf extends ByteBuf {
      *
      * @param toWrite The integer to write
      */
+    @Override
     public ElecByteBuf writeVarInt(int toWrite) {
         return writeVarInt(toWrite, 5);
     }
@@ -96,16 +103,22 @@ public abstract class ElecByteBuf extends ByteBuf {
 
     public abstract UUID readUuid();
 
+    @Override
     public abstract ElecByteBuf writeBlockPos(BlockPos pos);
 
+    @Override
     public abstract BlockPos readBlockPos();
 
+    @Override
     public abstract ElecByteBuf writeTextComponent(ITextComponent component);
 
-    public abstract ITextComponent readTextComponent() throws IOException;
+    @Override
+    public abstract ITextComponent readTextComponent();
 
+    @Override
     public abstract ElecByteBuf writeEnumValue(Enum<?> value);
 
+    @Override
     public abstract <T extends Enum<T>> T readEnumValue(Class<T> enumClass);
 
 
@@ -185,13 +198,28 @@ public abstract class ElecByteBuf extends ByteBuf {
     public abstract ElecByteBuf setShort(int p_setShort_1_, int p_setShort_2_);
 
     @Override
+    public abstract ElecByteBuf setShortLE(int p_setShortLE_1_, int p_setShortLE_2_);
+
+    @Override
     public abstract ElecByteBuf setMedium(int p_setMedium_1_, int p_setMedium_2_);
+
+    @Override
+    public abstract ElecByteBuf setMediumLE(int p_setMediumLE_1_, int p_setMediumLE_2_);
+
+    @Override
+    public abstract ElecByteBuf writeMediumLE(int p_writeMediumLE_1_);
 
     @Override
     public abstract ElecByteBuf setInt(int p_setInt_1_, int p_setInt_2_);
 
     @Override
+    public abstract ElecByteBuf writeIntLE(int p_writeIntLE_1_);
+
+    @Override
     public abstract ElecByteBuf setLong(int p_setLong_1_, long p_setLong_2_);
+
+    @Override
+    public abstract ElecByteBuf setLongLE(int p_setLongLE_1_, long p_setLongLE_2_);
 
     @Override
     public abstract ElecByteBuf setChar(int p_setChar_1_, int p_setChar_2_);
@@ -227,9 +255,6 @@ public abstract class ElecByteBuf extends ByteBuf {
     public abstract ElecByteBuf readBytes(int p_readBytes_1_);
 
     @Override
-    public abstract ElecByteBuf readSlice(int p_readSlice_1_);
-
-    @Override
     public abstract ElecByteBuf readBytes(ByteBuf p_readBytes_1_);
 
     @Override
@@ -263,6 +288,9 @@ public abstract class ElecByteBuf extends ByteBuf {
     public abstract ElecByteBuf writeShort(int p_writeShort_1_);
 
     @Override
+    public abstract ElecByteBuf writeShortLE(int p_writeShortLE_1_);
+
+    @Override
     public abstract ElecByteBuf writeMedium(int p_writeMedium_1_);
 
     @Override
@@ -270,6 +298,9 @@ public abstract class ElecByteBuf extends ByteBuf {
 
     @Override
     public abstract ElecByteBuf writeLong(long p_writeLong_1_);
+
+    @Override
+    public abstract ElecByteBuf writeLongLE(long p_writeLongLE_1_);
 
     @Override
     public abstract ElecByteBuf writeChar(int p_writeChar_1_);
@@ -308,10 +339,7 @@ public abstract class ElecByteBuf extends ByteBuf {
     public abstract ElecByteBuf copy(int p_copy_1_, int p_copy_2_);
 
     @Override
-    public abstract ElecByteBuf slice();
-
-    @Override
-    public abstract ElecByteBuf slice(int p_slice_1_, int p_slice_2_);
+    public abstract ElecByteBuf setIntLE(int p_setIntLE_1_, int p_setIntLE_2_);
 
     @Override
     public abstract ElecByteBuf duplicate();
@@ -321,6 +349,12 @@ public abstract class ElecByteBuf extends ByteBuf {
 
     @Override
     public abstract ElecByteBuf retain();
+
+    @Override
+    public abstract ElecByteBuf touch();
+
+    @Override
+    public abstract ElecByteBuf touch(Object hint);
 
     public interface Factory {
 

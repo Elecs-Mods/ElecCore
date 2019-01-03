@@ -7,18 +7,16 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.SetMultimap;
 import elec332.core.ElecCore;
-import elec332.core.api.APIHandlerInject;
 import elec332.core.api.IAPIHandler;
-import elec332.core.api.annotations.StaticLoad;
-import elec332.core.api.discovery.ASMDataProcessor;
-import elec332.core.api.discovery.IASMDataHelper;
-import elec332.core.api.discovery.IASMDataProcessor;
-import elec332.core.api.discovery.IAdvancedASMData;
-import elec332.core.util.FMLUtil;
+import elec332.core.api.discovery.AnnotationDataProcessor;
+import elec332.core.api.discovery.IAnnotationData;
+import elec332.core.api.discovery.IAnnotationDataHandler;
+import elec332.core.api.discovery.IAnnotationDataProcessor;
+import elec332.core.util.FMLHelper;
+import elec332.core.util.FieldPointer;
 import elec332.core.util.ReflectionHelper;
-import net.minecraftforge.common.util.EnumHelper;
-import net.minecraftforge.fml.common.LoaderState;
-import net.minecraftforge.fml.common.ModContainer;
+import net.minecraftforge.fml.ModContainer;
+import net.minecraftforge.fml.ModLoadingStage;
 import org.apache.commons.lang3.ObjectUtils;
 
 import javax.annotation.Nullable;
@@ -34,8 +32,8 @@ import java.util.stream.Collectors;
 /**
  * Created by Elec332 on 29-10-2016.
  */
-@ASMDataProcessor(value = LoaderState.PREINITIALIZATION, importance = Integer.MAX_VALUE)
-enum APIHandler implements IASMDataProcessor, IAPIHandler {
+@AnnotationDataProcessor(value = ModLoadingStage.PREINIT, importance = Integer.MAX_VALUE)
+enum APIHandler implements IAnnotationDataProcessor, IAPIHandler {
 
     INSTANCE;
 
@@ -48,19 +46,20 @@ enum APIHandler implements IASMDataProcessor, IAPIHandler {
     private final Map<Class<?>, Object> injectedHandlers;
 
     @Override
-    public void processASMData(IASMDataHelper asmData, LoaderState state) {
+    public void processASMData(IAnnotationDataHandler asmData, ModLoadingStage state) {
 
-        getWeightedAdvancedAnnotationList(asmData, StaticLoad.class, "weight").forEach(IAdvancedASMData::loadClass);
+        //todo: re-enable
+        //getWeightedAdvancedAnnotationList(asmData, StaticLoad.class, "weight").forEach(IAnnotationData::loadClass);
 
-        collect(asmData, APIHandlerInject.class, "weight");
+        //collect(asmData, APIHandlerInject.class, "weight");
 
         inject(INSTANCE, IAPIHandler.class);
 
     }
 
     @SuppressWarnings("all")
-    private void collect(IASMDataHelper asmData, Class<? extends Annotation> annotationClass, String weightField) {
-        for (IAdvancedASMData data : getWeightedAdvancedAnnotationList(asmData, annotationClass, weightField)) {
+    private void collect(IAnnotationDataHandler asmData, Class<? extends Annotation> annotationClass, String weightField) {
+        for (IAnnotationData data : getWeightedAdvancedAnnotationList(asmData, annotationClass, weightField)) {
 
             Consumer<?> ret;
             Class<?> type;
@@ -98,7 +97,7 @@ enum APIHandler implements IASMDataProcessor, IAPIHandler {
                     }
                     clsz.forEach(obj -> {
                         try {
-                            EnumHelper.setFailsafeFieldValue(field, obj, o);
+                            (new FieldPointer<>(field)).set(obj, o);
                         } catch (Exception e) {
                             throw new RuntimeException(e);
                         }
@@ -133,9 +132,9 @@ enum APIHandler implements IASMDataProcessor, IAPIHandler {
     }
 
     @SuppressWarnings("all")
-    private Collection<IAdvancedASMData> getWeightedAdvancedAnnotationList(IASMDataHelper asmData, Class<? extends Annotation> annotationClass, String weightField) {
-        return asmData.getAdvancedAnnotationList(annotationClass).stream().sorted((o1, o2) -> {
-            int ic = Strings.isNullOrEmpty(weightField) ? 0 : Comparator.comparingInt((ToIntFunction<IAdvancedASMData>) value -> Math.abs((int) ObjectUtils.firstNonNull(value.getAnnotationInfo().get(weightField), (int) Byte.MAX_VALUE))).compare(o1, o2);
+    private Collection<IAnnotationData> getWeightedAdvancedAnnotationList(IAnnotationDataHandler asmData, Class<? extends Annotation> annotationClass, String weightField) {
+        return asmData.getAnnotationList(annotationClass).stream().sorted((o1, o2) -> {
+            int ic = Strings.isNullOrEmpty(weightField) ? 0 : Comparator.comparingInt((ToIntFunction<IAnnotationData>) value -> Math.abs((int) ObjectUtils.firstNonNull(value.getAnnotationInfo().get(weightField), (int) Byte.MAX_VALUE))).compare(o1, o2);
             if (ic == 0) {
                 return Integer.compare(o1.hashCode(), o2.hashCode());
             }
@@ -152,7 +151,7 @@ enum APIHandler implements IASMDataProcessor, IAPIHandler {
         if (owner.isEnum()) {
             return Arrays.asList(owner.getEnumConstants());
         }
-        ModContainer mc = FMLUtil.getOwner(owner);
+        ModContainer mc = FMLHelper.getOwner(owner);
         if (mc != null && mc.getMod().getClass() == owner) {
             return Lists.newArrayList(mc.getMod());
         }

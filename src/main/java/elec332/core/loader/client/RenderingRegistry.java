@@ -23,28 +23,28 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.registry.IRegistry;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.ModelBakeEvent;
 import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.client.model.IModel;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.client.model.ModelLoaderRegistry;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.common.FMLLog;
-import net.minecraftforge.fml.common.eventhandler.EventPriority;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.eventbus.api.EventPriority;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Consumer;
 
 /**
  * Created by Elec332 on 18-11-2015.
  */
 @StaticLoad
-@SideOnly(Side.CLIENT)
+@OnlyIn(Dist.CLIENT)
 public final class RenderingRegistry implements IElecRenderingRegistry {
 
     public static RenderingRegistry instance() {
@@ -60,6 +60,8 @@ public final class RenderingRegistry implements IElecRenderingRegistry {
         extraBlocks = Lists.newArrayList();
         extraModels = Lists.newArrayList();
         MinecraftForge.EVENT_BUS.register(this);
+        //todo: figure out why gui-events are passed to this...
+        //MinecraftForge.EVENT_BUS.addListener(EventPriority.HIGH, false, ModelLoadEvent.class, this::onJsonModelLoad);
     }
 
     private final Set<IModelLoader> modelLoaders;
@@ -142,16 +144,16 @@ public final class RenderingRegistry implements IElecRenderingRegistry {
         }
     }
 
-    @SubscribeEvent(priority = EventPriority.HIGH)
+    //@SubscribeEvent(priority = EventPriority.HIGH)
     public void onJsonModelLoad(ModelLoadEvent event) {
         for (ModelResourceLocation mrl : extraModels) {
             IBakedModel model;
             try {
-                IModel model_ = ModelLoaderRegistry.getModel(new ResourceLocation(mrl.getResourceDomain(), mrl.getResourcePath()));
-                model = model_.bake(model_.getDefaultState(), DefaultVertexFormats.ITEM, ModelLoader.defaultTextureGetter());
+                IModel model_ = ModelLoaderRegistry.getModel(new ResourceLocation(mrl.getNamespace(), mrl.getPath()));
+                model = model_.bake(ModelLoader.defaultModelGetter(), ModelLoader.defaultTextureGetter(), model_.getDefaultState(), false, DefaultVertexFormats.ITEM);
             } catch (Exception e) {
                 model = RenderHelper.getMissingModel();
-                FMLLog.log.error("Exception loading blockstate for the variant {}: ", new ResourceLocation(mrl.getResourceDomain(), mrl.getResourcePath()), e);
+                ElecCore.logger.error("Exception loading blockstate for the variant {}: ", new ResourceLocation(mrl.getNamespace(), mrl.getPath()), e);
             }
             event.registerModel(mrl, model);
         }
@@ -191,7 +193,7 @@ public final class RenderingRegistry implements IElecRenderingRegistry {
     }
 
     private Set<ModelResourceLocation> getValidLocations(ModelBakery modelLoader) {
-        IRegistry<ModelResourceLocation, IBakedModel> registry = Minecraft.getMinecraft().modelManager.modelRegistry;
+        IRegistry<ModelResourceLocation, IBakedModel> registry = Minecraft.getInstance().modelManager.modelRegistry;
         return ElecModelManager.INSTANCE.registerBakedModels(registry);
     }
 
@@ -205,7 +207,7 @@ public final class RenderingRegistry implements IElecRenderingRegistry {
 
         @Override
         public TextureAtlasSprite registerSprite(ResourceLocation location) {
-            textureMap.registerSprite(location);
+            textureMap.registerSprite(Minecraft.getInstance().getResourceManager(), location);
             return textureMap.getAtlasSprite(location.toString());
         }
 
@@ -249,15 +251,25 @@ public final class RenderingRegistry implements IElecRenderingRegistry {
             }
 
         });
-        MinecraftForge.EVENT_BUS.register(new Object() {
+        MinecraftForge.EVENT_BUS.addListener(EventPriority.HIGH, new Consumer<ModelBakeEvent>() {
 
-            @SubscribeEvent(priority = EventPriority.HIGH)
-            @SideOnly(Side.CLIENT)
-            public void bakeModels(ModelBakeEvent event) {
+            @Override
+            @OnlyIn(Dist.CLIENT)
+            public void accept(ModelBakeEvent event) {
                 MinecraftForge.EVENT_BUS.post(new ModelLoadEventImpl(instance().quadBakery, instance().modelBakery, instance.templateBakery, event.getModelRegistry()));
             }
 
         });
+        /* Todo: Forge says nope...
+        MinecraftForge.EVENT_BUS.register(new Object() {
+
+            @SubscribeEvent(priority = EventPriority.HIGH)
+            @OnlyIn(Dist.CLIENT)
+            public void bakeModels(ModelBakeEvent event) {
+                MinecraftForge.EVENT_BUS.post(new ModelLoadEventImpl(instance().quadBakery, instance().modelBakery, instance.templateBakery, event.getModelRegistry()));
+            }
+
+        });*/
     }
 
 }

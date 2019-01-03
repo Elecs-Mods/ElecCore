@@ -1,9 +1,10 @@
 package elec332.core.network.packets;
 
+import elec332.core.api.network.IExtendedMessageContext;
 import elec332.core.world.WorldHelper;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+import net.minecraft.world.World;
 
 /**
  * Created by Elec332 on 4-9-2015.
@@ -19,15 +20,15 @@ public class PacketReRenderBlock extends AbstractPacketTileAction {
 
     private static NBTTagCompound writeTileToNBT(TileEntity tile) {
         NBTTagCompound tag = new NBTTagCompound();
-        tile.writeToNBT(tag);
+        tile.write(tag);
         return tag;
     }
 
     @Override
-    public void processPacket(TileEntity tile, int id, NBTTagCompound message, MessageContext ctx) {
+    public void processPacket(World world, TileEntity tile, int id, NBTTagCompound message, IExtendedMessageContext ctx) {
         if (tile != null) {
-            tile.readFromNBT(message);
-            WorldHelper.markBlockForRenderUpdate(tile.getWorld(), tile.getPos());
+            tile.read(message);
+            WorldHelper.markBlockForRenderUpdate(world, tile.getPos());
         }
     }
 

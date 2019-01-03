@@ -1,0 +1,50 @@
+modLoader="javafml" #mandatory
+# A version range to match for said mod loader - for regular FML @Mod it will be the minecraft version (without the 1.)
+loaderVersion="[${loaderversion},)" #mandatory
+# A URL to query for updates for this mod. See the JSON update specification <here>
+#updateJSONURL="http://myurl.me/" #optional
+# A URL to refer people to when problems occur with this mod
+issueTrackerURL="https://github.com/Elecs-Mods/ElecCore/issues" #optional
+# A URL for the "homepage" for this mod, displayed in the mod UI
+#displayURL="http://example.com/" #optional
+# A file name (in the root of the mod JAR) containing a logo for display
+#logoFile="examplemod.png" #optional
+# A text field displayed in the mod UI
+#credits="Thanks for this example mod goes to Java" #optional
+# A text field displayed in the mod UI
+authors="Elec332" #optional
+
+[[mods]] #mandatory
+modId="eleccore" #mandatory
+version="${version}" #mandatory
+displayName="ElecCore" #mandatory
+description="Provides core functionality for Elec's Mods" #mandatory
+
+[[dependencies.eleccore]]
+    modId="minecraft"
+    mandatory=true
+    versionRange="[${mcversion},)"
+    ordering="NONE"
+    side="BOTH"
+
+#[[dependencies.eleccore]]
+#    modId="forge"
+#    mandatory=true
+#    #versionRange="[${forgeversion})"
+#    versionRange="[24.0,)"
+#    ordering="NONE"
+#    side="BOTH"
+
+#[[dependencies.eleccore]]
+#    modId="forestry"
+#    mandatory=false
+ #   versionRange="(,1,)" #Accepts anything (hopefully)
+#    ordering="AFTER"
+#    side="BOTH"
+
+[[mods]] #mandatory
+modId="eleccoreloader" #mandatory
+version="${version}" #mandatory
+displayName="ElecCoreLoader" #mandatory
+description="Loads the main ElecCore components" #mandatory
+

@@ -41,7 +41,7 @@ public class ItemStackHelper {
      * @return The {@link ItemStack} loaded from the provided {@link NBTTagCompound}
      */
     public static ItemStack loadItemStackFromNBT(NBTTagCompound tag) {
-        return new ItemStack(tag);
+        return ItemStack.read(tag);
     }
 
     public static ItemStack getAndSplit(List<ItemStack> stacks, int index, int amount) {

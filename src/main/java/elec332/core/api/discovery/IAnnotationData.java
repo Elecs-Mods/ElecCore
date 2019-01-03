@@ -1,6 +1,6 @@
 package elec332.core.api.discovery;
 
-import net.minecraftforge.fml.common.discovery.ModCandidate;
+import net.minecraftforge.fml.loading.moddiscovery.ModFile;
 import org.objectweb.asm.Type;
 
 import java.lang.reflect.Field;
@@ -10,20 +10,29 @@ import java.util.Map;
 /**
  * Created by Elec332 on 29-10-2016.
  * <p>
- * Wrapper for {@link net.minecraftforge.fml.common.discovery.ASMDataTable.ASMData}
- * with more features for easier handling
+ * Works like the legacy ASMData with more features for easier handling
  */
-public interface IAdvancedASMData {
+public interface IAnnotationData {
 
-    public ModCandidate getContainer();
+    public ModFile getFile();
 
-    public String getAnnotationName();
+    default public String getAnnotationName() {
+        return getAnnotationType().toString();
+    }
+
+    public Type getAnnotationType();
 
     public Map<String, Object> getAnnotationInfo();
 
-    public String getClassName();
+    default public String getClassName() {
+        return getClassType().getClassName();
+    }
 
     public Class<?> loadClass();
+
+    public Type getClassType();
+
+    public String getMemberName();
 
     public boolean isField();
 

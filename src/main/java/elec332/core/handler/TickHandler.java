@@ -3,9 +3,9 @@ package elec332.core.handler;
 import com.google.common.base.Preconditions;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
-import net.minecraftforge.fml.relauncher.Side;
 
 import java.util.ArrayDeque;
 import java.util.Queue;
@@ -45,16 +45,16 @@ public class TickHandler {
         register(runnable, Preconditions.checkNotNull(world).isRemote, clientCallbacks, serverCallbacks);
     }
 
-    public void registerCall(Runnable runnable, Side side) {
-        register(runnable, Preconditions.checkNotNull(side).isClient(), clientCallbacks, serverCallbacks);
+    public void registerCall(Runnable runnable, LogicalSide side) {
+        register(runnable, Preconditions.checkNotNull(side) == LogicalSide.CLIENT, clientCallbacks, serverCallbacks);
     }
 
     public void registerTickable(Runnable runnable, World world) {
         register(runnable, Preconditions.checkNotNull(world).isRemote, clientTickables, serverTickables);
     }
 
-    public void registerTickable(Runnable runnable, Side side) {
-        register(runnable, Preconditions.checkNotNull(side).isClient(), clientTickables, serverTickables);
+    public void registerTickable(Runnable runnable, LogicalSide side) {
+        register(runnable, Preconditions.checkNotNull(side) == LogicalSide.CLIENT, clientTickables, serverTickables);
     }
 
     public void registerCallServer(Runnable runnable) {

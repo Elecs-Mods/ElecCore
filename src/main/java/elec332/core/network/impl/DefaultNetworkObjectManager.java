@@ -2,37 +2,33 @@ package elec332.core.network.impl;
 
 import com.google.common.collect.Lists;
 import elec332.core.ElecCore;
-import elec332.core.api.network.ElecByteBuf;
-import elec332.core.api.network.INetworkHandler;
-import elec332.core.api.network.IPacketDispatcher;
+import elec332.core.api.network.*;
 import elec332.core.api.network.object.*;
 import elec332.core.api.util.IEntityFilter;
-import elec332.core.util.FMLUtil;
+import elec332.core.util.FMLHelper;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.server.MinecraftServer;
-import net.minecraftforge.fml.common.network.NetworkRegistry;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
-import net.minecraftforge.fml.relauncher.Side;
 
 import javax.annotation.Nullable;
 import java.util.Iterator;
 import java.util.List;
+import java.util.function.BiConsumer;
+import java.util.function.Supplier;
 
 /**
  * Created by Elec332 on 23-10-2016.
  */
 @SuppressWarnings("all")
-class DefaultNetworkObjectManager implements INetworkObjectManager, IMessageHandler<DefaultNetworkObjectManager.PacketNetworkObject, IMessage> {
+class DefaultNetworkObjectManager implements INetworkObjectManager, BiConsumer<DefaultNetworkObjectManager.PacketNetworkObject, Supplier<IExtendedMessageContext>> {
 
     DefaultNetworkObjectManager(INetworkHandler handler) {
         this.packetDispatcher = handler;
-        handler.registerPacket(this, PacketNetworkObject.class, Side.CLIENT);
-        handler.registerPacket(this, PacketNetworkObject.class, Side.SERVER);
+        handler.registerPacket(this, PacketNetworkObject.class);
+        handler.registerPacket(this, PacketNetworkObject.class);
         this.packetStuff = Lists.newArrayList();
         this.i = 0;
     }
@@ -46,7 +42,7 @@ class DefaultNetworkObjectManager implements INetworkObjectManager, IMessageHand
         if (networkObject instanceof INetworkObjectSender) {
             return registerNetworkObject(networkObject, (INetworkObjectSender) networkObject);
         }
-        if (!FMLUtil.isInModInitialisation()) {
+        if (!FMLHelper.isInModInitialisation()) {
             throw new IllegalStateException();
         }
         NOH<?> ret = new NOH(i, null, networkObject);
@@ -58,7 +54,7 @@ class DefaultNetworkObjectManager implements INetworkObjectManager, IMessageHand
 
     @Override
     public <N extends INetworkObjectReceiver, S extends INetworkObjectSender> INetworkObjectHandler<S> registerNetworkObject(@Nullable N networkObjectR, @Nullable S networkObjectS) {
-        if (!FMLUtil.isInModInitialisation() || (networkObjectS == null && networkObjectR == null)) {
+        if (!FMLHelper.isInModInitialisation() || (networkObjectS == null && networkObjectR == null)) {
             throw new IllegalStateException();
         }
         NOH<S> ret = new NOH<S>(i, networkObjectS, networkObjectR);
@@ -81,7 +77,7 @@ class DefaultNetworkObjectManager implements INetworkObjectManager, IMessageHand
 
     @Override
     public <N extends INetworkObject> INetworkObjectHandler<N> registerSpecialNetworkObject(N networkObject) {
-        if (!FMLUtil.isInModInitialisation()) {
+        if (!FMLHelper.isInModInitialisation()) {
             throw new IllegalStateException();
         }
         NOH<N> ret = new NOH<N>(i, networkObject, networkObject);
@@ -92,7 +88,7 @@ class DefaultNetworkObjectManager implements INetworkObjectManager, IMessageHand
     }
 
     @Override
-    public IMessage onMessage(final PacketNetworkObject message, MessageContext ctx) {
+    public void accept(PacketNetworkObject message, Supplier<IExtendedMessageContext> extendedMessageContext) {
         ElecCore.tickHandler.registerCall(new Runnable() {
 
             @Override
@@ -104,8 +100,7 @@ class DefaultNetworkObjectManager implements INetworkObjectManager, IMessageHand
                 }
             }
 
-        }, ctx.side);
-        return null;
+        }, extendedMessageContext.get().getSide());
     }
 
     private class NOH<T extends INetworkObjectSender> implements INetworkObjectHandler<T>, DefaultByteBufFactory {
@@ -157,7 +152,7 @@ class DefaultNetworkObjectManager implements INetworkObjectManager, IMessageHand
         }
 
         @Override
-        public void sendToAllAround(int id, NetworkRegistry.TargetPoint point) {
+        public void sendToAllAround(int id, IPacketDispatcher.TargetPoint point) {
             ByteBuf buf = Unpooled.buffer();
             if (getNetworkObjectSender() != null) {
                 getNetworkObjectSender().writePacket(id, new ElecByteBufImpl(buf));
@@ -204,7 +199,7 @@ class DefaultNetworkObjectManager implements INetworkObjectManager, IMessageHand
         }
 
         @Override
-        public void sendToAllAround(int id, NBTTagCompound data, NetworkRegistry.TargetPoint point) {
+        public void sendToAllAround(int id, NBTTagCompound data, IPacketDispatcher.TargetPoint point) {
             sendToAllAround(id, fromTag(data), point);
         }
 
@@ -229,7 +224,7 @@ class DefaultNetworkObjectManager implements INetworkObjectManager, IMessageHand
         }
 
         @Override
-        public void sendToAllAround(int id, ByteBuf data, NetworkRegistry.TargetPoint point) {
+        public void sendToAllAround(int id, ByteBuf data, IPacketDispatcher.TargetPoint point) {
             packetDispatcher.sendToAllAround(new PacketNetworkObject(b, (byte) id, data), point);
         }
 
@@ -284,14 +279,14 @@ class DefaultNetworkObjectManager implements INetworkObjectManager, IMessageHand
         ByteBuf data;
 
         @Override
-        public void fromBytes(ByteBuf buf) {
+        public void fromBytes(PacketBuffer buf) {
             this.i = buf.readByte();
             this.i2 = buf.readByte();
             this.data = buf.readBytes(Unpooled.buffer(buf.readableBytes()));
         }
 
         @Override
-        public void toBytes(ByteBuf buf) {
+        public void toBytes(PacketBuffer buf) {
             buf.writeByte(i);
             buf.writeByte(i2);
             buf.writeBytes(data);

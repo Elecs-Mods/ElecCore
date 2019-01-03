@@ -1,6 +1,6 @@
 package elec332.core.api.mod;
 
-import net.minecraftforge.fml.common.ModContainer;
+import net.minecraftforge.fml.ModContainer;
 
 import java.lang.annotation.Annotation;
 import java.util.function.BiConsumer;

@@ -2,7 +2,7 @@ package elec332.core.api.client;
 
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.IBlockReader;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -12,7 +12,7 @@ import javax.annotation.Nullable;
  */
 public interface IColoredBlock {
 
-    default public int colorMultiplier(@Nonnull IBlockState state, @Nullable IBlockAccess worldIn, @Nullable BlockPos pos, int tintIndex) {
+    default public int colorMultiplier(@Nonnull IBlockState state, @Nullable IBlockReader worldIn, @Nullable BlockPos pos, int tintIndex) {
         return -1;
     }
 

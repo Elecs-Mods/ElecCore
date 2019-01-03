@@ -5,11 +5,10 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -18,7 +17,7 @@ import java.util.List;
 /**
  * Created by Elec332 on 12-12-2015.
  */
-@SideOnly(Side.CLIENT)
+@OnlyIn(Dist.CLIENT)
 public class GuiDraw {
 
     private static final GuiDrawGui gui;
@@ -80,9 +79,8 @@ public class GuiDraw {
         if (mc.currentScreen != null) {
             mc.currentScreen.drawDefaultBackground();
         } else {
-            ScaledResolution scaledresolution = new ScaledResolution(mc);
-            gui.width = scaledresolution.getScaledWidth();
-            gui.height = scaledresolution.getScaledHeight();
+            gui.width = mc.mainWindow.getScaledWidth();
+            gui.height = mc.mainWindow.getScaledHeight();
             gui.drawDefaultBackground();
         }
     }
@@ -97,14 +95,14 @@ public class GuiDraw {
 
     static {
         gui = new GuiDrawGui();
-        mc = Minecraft.getMinecraft();
+        mc = Minecraft.getInstance();
     }
 
     private static class GuiDrawGui extends GuiScreen {
 
         private GuiDrawGui() {
             zLevel = 0.0F;
-            mc = Minecraft.getMinecraft();
+            mc = Minecraft.getInstance();
         }
 
         @Override

@@ -141,14 +141,14 @@ public class BasicItemHandler implements IItemHandlerModifiable, INBTSerializabl
 
     @Override
     public void deserializeNBT(NBTTagCompound nbt) {
-        setSize(nbt.hasKey("Size", net.minecraftforge.common.util.Constants.NBT.TAG_INT) ? nbt.getInteger("Size") : stacks.size());
+        setSize(nbt.contains("Size", net.minecraftforge.common.util.Constants.NBT.TAG_INT) ? nbt.getInt("Size") : stacks.size());
         InventoryHelper.readItemsFromNBT(nbt, stacks);
         onLoad();
     }
 
     public NBTTagCompound writeToNBT(NBTTagCompound compound) {
         NBTTagCompound tag = InventoryHelper.writeItemsToNBT(compound, stacks);
-        tag.setInteger("Size", stacks.size());
+        tag.putInt("Size", stacks.size());
         return tag;
     }
 

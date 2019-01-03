@@ -1,9 +1,9 @@
 package elec332.core.api.client.model.template;
 
+import net.minecraft.client.renderer.Vector3f;
 import net.minecraft.client.renderer.block.model.ModelRotation;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.util.EnumFacing;
-import org.lwjgl.util.vector.Vector3f;
 
 /**
  * Created by Elec332 on 29-10-2016.

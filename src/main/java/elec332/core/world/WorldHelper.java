@@ -12,16 +12,16 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.world.IBlockAccess;
-import net.minecraft.world.World;
-import net.minecraft.world.WorldServer;
+import net.minecraft.world.*;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
+import net.minecraft.world.chunk.IChunk;
+import net.minecraft.world.chunk.IChunkProvider;
+import net.minecraft.world.gen.ChunkProviderServer;
 import net.minecraftforge.common.BiomeDictionary;
 import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.ForgeChunkManager;
@@ -33,15 +33,30 @@ import java.util.Set;
 /**
  * Created by Elec332 on 20-3-2015.
  */
-@SuppressWarnings("unused")
+@SuppressWarnings({"unused", "WeakerAccess"})
 public class WorldHelper {
 
+    /**
+     * Flags are as follows:
+     * <p>
+     * 1 will cause a block update.
+     * 2 will send the change to clients.
+     * 4 will prevent the block from being re-rendered.
+     * 8 will force any re-renders to run on the main thread instead
+     * 16 will prevent neighbor reactions (e.g. fences connecting, observers pulsing).
+     * 32 will prevent neighbor reactions from spawning drops.
+     * 64 will signify the block is being moved.
+     * <p>
+     * Flags can be OR-ed
+     */
     public static final int PLACEBLOCK_NOTHING = 0;
     public static final int PLACEBLOCK_UPDATE = 1;
     public static final int PLACEBLOCK_SENDCHANGE = 2;
     public static final int PLACEBLOCK_NO_RERENDER = 4;
     public static final int PLACEBLOCK_RENDERMAIN = 8;
-    public static final int PLACEBLOCK_NO_OBSERVER = 16;
+    public static final int PLACEBLOCK_NO_NEIGHBOR_REACTION = 16;
+    public static final int PLACEBLOCK_NO_NEIGHBOR_REACTION_DROPS = 32;
+    public static final int PLACEBLOCK_BLOCK_BEING_MOVED = 64;
 
     /**
      * Gets the biome types opf the provided biome
@@ -71,11 +86,11 @@ public class WorldHelper {
      * @param entity The entity to be spawned
      * @return Whether the entity has been spawned in the world
      */
-    public static boolean spawnEntityInWorld(World world, Entity entity) {
+    public static boolean spawnEntityInWorld(IWorldWriter world, Entity entity) {
         return world.spawnEntity(entity);
     }
 
-    /**
+    /*
      * Whether the provided block can be placed at the specified location
      *
      * @param world              The world
@@ -85,10 +100,10 @@ public class WorldHelper {
      * @param facing             The facing the block will be placed at
      * @param entity             The entity placing the block
      * @return Whether the block can actually be placed at the specified location
-     */
+     *
     public static boolean canBlockBePlaced(World world, Block block, BlockPos pos, boolean skipCollisionCheck, EnumFacing facing, @Nullable Entity entity) {
         return world.mayPlace(block, pos, skipCollisionCheck, facing, entity);
-    }
+    }*/
 
     /**
      * Notifies neighboring blocks & observers of a state change at the specified location
@@ -98,7 +113,7 @@ public class WorldHelper {
      * @param block The block that has been changed
      */
     public static void notifyNeighborsOfStateChange(World world, BlockPos pos, Block block) {
-        world.notifyNeighborsOfStateChange(pos, block, true);
+        world.notifyNeighborsOfStateChange(pos, block);
     }
 
     /**
@@ -122,6 +137,17 @@ public class WorldHelper {
     }
 
     /**
+     * Gets a chunk from the provided {@link ChunkPos}
+     *
+     * @param world The world to get the chunk from
+     * @param pos   The chunk position
+     * @return The chunk at the provided position
+     */
+    public static IChunk getChunk(IWorld world, ChunkPos pos) {
+        return world.getChunk(pos.x, pos.z);
+    }
+
+    /**
      * Serializes a {@link ChunkPos} to a long
      *
      * @param chunkCoordIntPair The {@link ChunkPos} to be serialized
@@ -139,10 +165,11 @@ public class WorldHelper {
      * @param pos   The pos at which to change the {@link IBlockState}
      * @param state The new {@link IBlockState}
      * @param flags Placement flags, can be {@link WorldHelper#PLACEBLOCK_NOTHING} or any combination of
-     *              {@link WorldHelper#PLACEBLOCK_UPDATE}, {@link WorldHelper#PLACEBLOCK_SENDCHANGE}, {@link WorldHelper#PLACEBLOCK_NO_RERENDER}, {@link WorldHelper#PLACEBLOCK_RENDERMAIN}, {@link WorldHelper#PLACEBLOCK_NO_OBSERVER}
+     *              {@link WorldHelper#PLACEBLOCK_UPDATE}, {@link WorldHelper#PLACEBLOCK_SENDCHANGE}, {@link WorldHelper#PLACEBLOCK_NO_RERENDER}, {@link WorldHelper#PLACEBLOCK_RENDERMAIN},
+     *              {@link WorldHelper#PLACEBLOCK_NO_NEIGHBOR_REACTION}, {@link WorldHelper#PLACEBLOCK_NO_NEIGHBOR_REACTION_DROPS}, {@link WorldHelper#PLACEBLOCK_BLOCK_BEING_MOVED}
      *              (flags can be added together)
      */
-    public static void setBlockState(World world, BlockPos pos, IBlockState state, int flags) {
+    public static void setBlockState(IWorldWriter world, BlockPos pos, IBlockState state, int flags) {
         world.setBlockState(pos, state, flags);
     }
 
@@ -167,9 +194,16 @@ public class WorldHelper {
      * @param pos   The position to be checked
      * @return Whether the chunk in which the provided coordinate is located is loaded
      */
-    public static boolean chunkLoaded(World world, BlockPos pos) {
-        Chunk chunk = world.getChunkProvider().getLoadedChunk(pos.getX() >> 4, pos.getZ() >> 4);
-        return chunk != null && chunk.isLoaded();
+    public static boolean chunkLoaded(IWorld world, BlockPos pos) {
+        ChunkPos cp = chunkPosFromBlockPos(pos);
+        IChunkProvider chunkProvider = world.getChunkProvider();
+        boolean b1;
+        if (chunkProvider instanceof ChunkProviderServer) {
+            b1 = ((ChunkProviderServer) chunkProvider).chunkExists(cp.x, cp.z);
+        } else {
+            b1 = chunkProvider.func_191062_e(cp.x, cp.z);
+        }
+        return b1 && chunkProvider.getChunk(cp.x, cp.z).isLoaded();
     }
 
     /**
@@ -261,8 +295,8 @@ public class WorldHelper {
      * @param blockLoc The position at which to drop the item(s)
      * @param stack    The {@link ItemStack} to be dropped
      */
-    public static void dropStack(World world, BlockPos blockLoc, ItemStack stack) {
-        dropStack(world, blockLoc.getX(), blockLoc.getY(), blockLoc.getZ(), stack);
+    public static boolean dropStack(World world, BlockPos blockLoc, ItemStack stack) {
+        return dropStack(world, blockLoc.getX(), blockLoc.getY(), blockLoc.getZ(), stack);
     }
 
     /**
@@ -275,16 +309,17 @@ public class WorldHelper {
      * @param z         The Z coordinate
      * @param itemStack The {@link ItemStack} to be dropped
      */
-    public static void dropStack(World world, int x, int y, int z, ItemStack itemStack) {
-        if (!world.isRemote && world.getGameRules().getBoolean("doTileDrops")) {
+    public static boolean dropStack(World world, int x, int y, int z, ItemStack itemStack) {
+        if (!world.isRemote() && world.getGameRules().getBoolean("doTileDrops")) {
             float f = 0.7F;
             double d0 = (double) (world.rand.nextFloat() * f) + (double) (1.0F - f) * 0.5D;
             double d1 = (double) (world.rand.nextFloat() * f) + (double) (1.0F - f) * 0.5D;
             double d2 = (double) (world.rand.nextFloat() * f) + (double) (1.0F - f) * 0.5D;
             EntityItem entityitem = new EntityItem(world, (double) x + d0, (double) y + d1, (double) z + d2, itemStack);
             entityitem.setDefaultPickupDelay();
-            WorldHelper.spawnEntityInWorld(world, entityitem);
+            return WorldHelper.spawnEntityInWorld(world, entityitem);
         }
+        return false;
     }
 
     /**
@@ -293,7 +328,7 @@ public class WorldHelper {
      * @param world    The world
      * @param blockLoc The position to be updated
      */
-    public static void scheduleBlockUpdate(World world, BlockPos blockLoc) {
+    public static void scheduleBlockUpdate(IWorld world, BlockPos blockLoc) {
         scheduleBlockUpdate(world, blockLoc, 1);
     }
 
@@ -304,8 +339,8 @@ public class WorldHelper {
      * @param blockLoc The position to be updated
      * @param delay    The delay in ticks
      */
-    public static void scheduleBlockUpdate(World world, BlockPos blockLoc, int delay) {
-        world.scheduleUpdate(blockLoc, getBlockAt(world, blockLoc), delay);
+    public static void scheduleBlockUpdate(IWorld world, BlockPos blockLoc, int delay) {
+        world.getPendingBlockTicks().scheduleTick(blockLoc, getBlockAt(world, blockLoc), delay);
     }
 
     /**
@@ -317,11 +352,11 @@ public class WorldHelper {
      * @return The dimension-ID of the specified world.
      */
     @SuppressWarnings("all")
-    public static int getDimID(World world) {
+    public static int getDimID(IWorldReaderBase world) {
         if (world == null) {
             throw new IllegalArgumentException("Cannot fetch the Dimension-ID from a null world!");
         }
-        if (world.provider == null) {
+        if (world.getDimension() == null) {
             for (Integer i : DimensionManager.getIDs()) {
                 if (DimensionManager.getWorld(i) == world) {
                     return i;
@@ -329,17 +364,17 @@ public class WorldHelper {
             }
             throw new RuntimeException("Unable to determine the dimension of world: " + world);
         }
-        return world.provider.getDimension();
+        return world.getDimension().getId();
     }
 
-    /**
+    /*
      * Gets the metadata of the block at the specified location
      *
      * @param world    The world
      * @param blockLoc The position
      * @return The metadata of the block at the specified location
-     */
-    public static int getBlockMeta(IBlockAccess world, BlockPos blockLoc) {
+     *
+    public static int getBlockMeta(IBlockReader world, BlockPos blockLoc) {
         return getBlockMeta(getBlockState(world, blockLoc));
     }
 
@@ -348,10 +383,10 @@ public class WorldHelper {
      *
      * @param state The {@link IBlockState}
      * @return The metadata value of the specified {@link IBlockState}
-     */
+     *
     public static int getBlockMeta(IBlockState state) {
         return state.getBlock().getMetaFromState(state);
-    }
+    }*/
 
     /**
      * Gets the {@link TileEntity} at the specified location
@@ -360,7 +395,7 @@ public class WorldHelper {
      * @param loc   The position
      * @return The {@link TileEntity} at the specified location
      */
-    public static TileEntity getTileAt(IBlockAccess world, BlockPos loc) {
+    public static TileEntity getTileAt(IBlockReader world, BlockPos loc) {
         return world.getTileEntity(loc);
     }
 
@@ -371,7 +406,7 @@ public class WorldHelper {
      * @param loc   The position
      * @return The {@link Block} at the specified location
      */
-    public static Block getBlockAt(IBlockAccess world, BlockPos loc) {
+    public static Block getBlockAt(IBlockReader world, BlockPos loc) {
         return getBlockState(world, loc).getBlock();
     }
 
@@ -382,7 +417,7 @@ public class WorldHelper {
      * @param pos   The position
      * @return The {@link IBlockState} at the specified location
      */
-    public static IBlockState getBlockState(IBlockAccess world, BlockPos pos) {
+    public static IBlockState getBlockState(IBlockReader world, BlockPos pos) {
         return world.getBlockState(pos);
     }
 
@@ -418,7 +453,7 @@ public class WorldHelper {
     public static void spawnLightningAt(World world, double x, double y, double z) {
         //world.playSoundEffect(x, y, z,"ambient.weather.thunder", 10000.0F, 0.8F);
         //world.playSoundEffect(x, y, z,"random.explode", 10000.0F, 0.8F);
-        world.playSound(x, y, z, SoundEvents.ENTITY_LIGHTNING_THUNDER, SoundCategory.WEATHER, 10000.0F, 0.8F, true);
+        world.playSound(x, y, z, SoundEvents.ENTITY_LIGHTNING_BOLT_THUNDER, SoundCategory.WEATHER, 10000.0F, 0.8F, true);
         world.playSound(x, y, z, SoundEvents.ENTITY_GENERIC_EXPLODE, SoundCategory.WEATHER, 10000.0F, 0.8F, true);
         WorldHelper.spawnEntityInWorld(world, new EntityLightningBolt(world, x, y, z, false));
     }

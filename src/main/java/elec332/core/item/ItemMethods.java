@@ -14,17 +14,17 @@ public class ItemMethods {
     @SuppressWarnings("all")
     public static <I extends Item & IAbstractItem> String createUnlocalizedName(I item) {
         if (item instanceof ItemBlock) {
-            return ((ItemBlock) item).getBlock().getUnlocalizedName();
+            return ((ItemBlock) item).getBlock().getTranslationKey();
         }
         return "item." + item.getRegistryName().toString().replace(":", ".").toLowerCase();
     }
 
     @Nonnull
     public static <I extends Item & IAbstractItem> String getUnlocalizedName(ItemStack stack, I item) {
-        if (item.getHasSubtypes()) {
-            return item.getUnlocalizedName() + "." + item.getVariantName(stack);
+        if (stack.hasTag()) {
+            return item.getTranslationKey() + "." + item.getVariantName(stack);
         }
-        return item.getUnlocalizedName();
+        return item.getTranslationKey();
     }
 
 }

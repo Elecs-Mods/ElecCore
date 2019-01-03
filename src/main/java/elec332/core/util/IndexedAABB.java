@@ -3,8 +3,8 @@ package elec332.core.util;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 public class IndexedAABB extends AxisAlignedBB {
 
@@ -28,7 +28,7 @@ public class IndexedAABB extends AxisAlignedBB {
         this.index = index;
     }
 
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public IndexedAABB(Vec3d min, Vec3d max, int index) {
         super(min, max);
         this.index = index;

@@ -9,16 +9,15 @@ import elec332.core.api.network.IExtendedMessageContext;
 import elec332.core.api.network.INetworkManager;
 import elec332.core.api.network.IPacketRegistry;
 import elec332.core.api.network.simple.ISimpleNetworkPacketManager;
-import elec332.core.util.FMLUtil;
-import net.minecraftforge.fml.common.ModContainer;
-import net.minecraftforge.fml.common.network.FMLEmbeddedChannel;
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
-import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
-import net.minecraftforge.fml.relauncher.Side;
+import elec332.core.util.FMLHelper;
+import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.ModContainer;
+import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraftforge.fml.network.simple.SimpleChannel;
 
-import java.util.EnumMap;
 import java.util.Map;
-import java.util.UUID;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 /**
  * Created by Elec332 on 23-10-2016.
@@ -36,25 +35,16 @@ enum NetworkManager implements INetworkManager<DefaultNetworkHandler> {
 
     @Override
     public DefaultNetworkHandler getNetworkHandler(Object mod) {
-        ModContainer mc = FMLUtil.getModContainer(mod);
+        ModContainer mc = FMLHelper.getModContainer(mod);
         if (mc == null) {
             throw new IllegalArgumentException("No ModContainer found for: " + mod);
         }
         DefaultNetworkHandler ret = networkHandlers.get(mc);
         if (ret == null) {
-            String name = mc.getModId();
             try {
-                ret = new DefaultNetworkHandler(name);
-            } catch (RuntimeException e) { //Name already exists, try to import...
-                String name2 = UUID.randomUUID().toString();
-                SimpleNetworkWrapper wrapperFor = new SimpleNetworkWrapper(name2);
-                EnumMap<Side, FMLEmbeddedChannel> channels = DefaultNetworkHandler.getNetworkChannels(wrapperFor);
-                EnumMap<Side, Map<String, FMLEmbeddedChannel>> handler = DefaultNetworkHandler.getRegistryChannels();
-                for (Side side : Side.values()) {
-                    channels.put(side, handler.get(side).get(name));
-                    handler.get(side).remove(name2);
-                }
-                ret = new DefaultNetworkHandler(wrapperFor);
+                ret = new DefaultNetworkHandler(new ResourceLocation(mc.getModId(), "networkHandler"));
+            } catch (RuntimeException e) { //Name already exists...
+                ret = new DefaultNetworkHandler(new ResourceLocation(mc.getModId(), "networkManager"));
             }
             networkHandlers.put(mc, Preconditions.checkNotNull(ret));
         }
@@ -62,14 +52,28 @@ enum NetworkManager implements INetworkManager<DefaultNetworkHandler> {
     }
 
     @Override
-    public DefaultNetworkHandler createNetworkHandler(Object mod, SimpleNetworkWrapper simpleNetworkWrapper) {
-        ModContainer mc = FMLUtil.getModContainer(mod);
+    public DefaultNetworkHandler createNetworkHandler(Object mod, ResourceLocation channelName, Supplier<String> networkProtocolVersion, Predicate<String> clientAcceptedVersions, Predicate<String> serverAcceptedVersions) {
+        ModContainer mc = FMLHelper.getModContainer(mod);
         if (mc == null) {
             throw new IllegalArgumentException("No ModContainer found for: " + mod);
         }
         DefaultNetworkHandler ret = networkHandlers.get(mc);
         if (ret != null) {
-            throw new IllegalArgumentException("Mod " + mc.getName() + " already has a NetworkHandler!");
+            throw new IllegalArgumentException("Mod " + mc.getModId() + " already has a NetworkHandler!");
+        }
+        networkHandlers.put(mc, ret = new DefaultNetworkHandler(channelName, networkProtocolVersion, clientAcceptedVersions, serverAcceptedVersions));
+        return ret;
+    }
+
+    @Override
+    public DefaultNetworkHandler createNetworkHandler(Object mod, SimpleChannel simpleNetworkWrapper) {
+        ModContainer mc = FMLHelper.getModContainer(mod);
+        if (mc == null) {
+            throw new IllegalArgumentException("No ModContainer found for: " + mod);
+        }
+        DefaultNetworkHandler ret = networkHandlers.get(mc);
+        if (ret != null) {
+            throw new IllegalArgumentException("Mod " + mc.getModId() + " already has a NetworkHandler!");
         }
         networkHandlers.put(mc, ret = new DefaultNetworkHandler(simpleNetworkWrapper));
         return ret;
@@ -81,7 +85,7 @@ enum NetworkManager implements INetworkManager<DefaultNetworkHandler> {
     }
 
     @Override
-    public ISimpleNetworkPacketManager getAdditionalSimpleNetworkManager(Object mod, String name) {
+    public ISimpleNetworkPacketManager getAdditionalSimpleNetworkManager(Object mod, ResourceLocation name) {
         return getNetworkHandler(mod).getSimpleNetworkManager(name);
     }
 
@@ -91,8 +95,8 @@ enum NetworkManager implements INetworkManager<DefaultNetworkHandler> {
     }
 
     @Override
-    public IExtendedMessageContext wrapMessageContext(MessageContext messageContext) {
-        return null;
+    public IExtendedMessageContext wrapMessageContext(NetworkEvent.Context messageContext) {
+        return new DefaultExtendedMessageContext(messageContext);
     }
 
     @APIHandlerInject

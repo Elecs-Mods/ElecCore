@@ -7,7 +7,8 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.IBlockReader;
+import net.minecraftforge.common.capabilities.OptionalCapabilityInstance;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.IFluidTank;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
@@ -29,12 +30,9 @@ public class FluidHelper {
      * @return The {@link IFluidHandler} at the specified location, if it exists
      */
     @Nullable
-    public static IFluidHandler getFluidHandler(IBlockAccess iba, BlockPos pos, EnumFacing facing) {
+    public static IFluidHandler getFluidHandler(IBlockReader iba, BlockPos pos, EnumFacing facing) {
         TileEntity tile = WorldHelper.getTileAt(iba, pos);
-        if (tile.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, facing)) {
-            return tile.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, facing);
-        }
-        return null;
+        return tile.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, facing).orElse(null);
     }
 
     /**
@@ -93,8 +91,12 @@ public class FluidHelper {
             return false;
         }
         ///////Start
-        if (stack.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, null)) {
-            IFluidHandler item = stack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, null);
+        OptionalCapabilityInstance<IFluidHandler> ofh = stack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, null);
+        if (!ofh.isPresent()) {
+            ofh = stack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY);
+        }
+        if (ofh.isPresent()) {
+            IFluidHandler item = ofh.orElseThrow(NullPointerException::new);
             FluidStack stack1 = item.drain(capacity, false);
             if (stack1 == null) {
                 return false;
@@ -141,8 +143,12 @@ public class FluidHelper {
             return false;
         }
         ///////Start
-        if (stack.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, null)) {
-            IFluidHandler item = stack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, null);
+        OptionalCapabilityInstance<IFluidHandler> ofh = stack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, null);
+        if (!ofh.isPresent()) {
+            ofh = stack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY);
+        }
+        if (ofh.isPresent()) {
+            IFluidHandler item = ofh.orElseThrow(NullPointerException::new);
             FluidStack fluid = fluidHandler.drain(capacity, false);
             if (fluid == null) {
                 return false;

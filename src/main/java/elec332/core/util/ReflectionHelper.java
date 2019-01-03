@@ -1,9 +1,11 @@
 package elec332.core.util;
 
 import com.google.common.collect.Lists;
+import joptsimple.internal.Strings;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Member;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.List;
 
@@ -141,6 +143,34 @@ public class ReflectionHelper {
     public static Field makeFieldAccessible(Field field) {
         field.setAccessible(true);
         return field;
+    }
+
+    public static Field findField(Class<?> clazz, String... fieldNames) {
+        Exception lastE = null;
+        for (String fieldName : fieldNames) {
+            try {
+                Field f = clazz.getDeclaredField(fieldName);
+                f.setAccessible(true);
+                return f;
+            } catch (Exception e) {
+                lastE = e;
+            }
+        }
+        throw new RuntimeException("Failed to find fields: " + Strings.join(fieldNames, ","), lastE);
+    }
+
+    public static Method findMethod(Class<?> clazz, Class[] parameters, String... methodNames) {
+        Exception lastE = null;
+        for (String methodName : methodNames) {
+            try {
+                Method m = clazz.getDeclaredMethod(methodName, parameters);
+                m.setAccessible(true);
+                return m;
+            } catch (Exception e) {
+                lastE = e;
+            }
+        }
+        throw new RuntimeException("Failed to find fields: " + Strings.join(methodNames, ","), lastE);
     }
 
 }

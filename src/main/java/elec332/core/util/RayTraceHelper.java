@@ -1,6 +1,7 @@
 package elec332.core.util;
 
 import elec332.core.world.WorldHelper;
+import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -42,8 +43,8 @@ public class RayTraceHelper {
         Vec3d headVec = PlayerHelper.getCorrectedHeadVec(player);
         Vec3d lookVec = player.getLook(1.0F);
         double reach = PlayerHelper.getBlockReachDistance(player);
-        Vec3d endVec = headVec.addVector(lookVec.x * reach, lookVec.y * reach, lookVec.z * reach);
-        return blockState.collisionRayTrace(world, pos, headVec, endVec);
+        Vec3d endVec = headVec.add(lookVec.x * reach, lookVec.y * reach, lookVec.z * reach);
+        return Block.collisionRayTrace(blockState, world, pos, headVec, endVec);
     }
 
     /**
@@ -56,8 +57,8 @@ public class RayTraceHelper {
     public static RayTraceResult rayTrace(EntityLivingBase player, double distance) {
         Vec3d vec3d = new Vec3d(player.posX, player.posY + player.getEyeHeight(), player.posZ);
         Vec3d vec3d1 = getVectorForRotation(player.rotationPitch, player.rotationYawHead);
-        Vec3d vec3d2 = vec3d.addVector(vec3d1.x * distance, vec3d1.y * distance, vec3d1.z * distance);
-        return player.getEntityWorld().rayTraceBlocks(vec3d, vec3d2, false, false, true);
+        Vec3d vec3d2 = vec3d.add(vec3d1.x * distance, vec3d1.y * distance, vec3d1.z * distance);
+        return player.getEntityWorld().rayTraceBlocks(vec3d, vec3d2, RayTraceFluidMode.NEVER, false, true);
     }
 
     /**
@@ -74,7 +75,7 @@ public class RayTraceHelper {
         Vec3d vec3d = start.subtract((double) pos.getX(), (double) pos.getY(), (double) pos.getZ());
         Vec3d vec3d1 = end.subtract((double) pos.getX(), (double) pos.getY(), (double) pos.getZ());
         RayTraceResult raytraceresult = boundingBox.calculateIntercept(vec3d, vec3d1);
-        return raytraceresult == null ? null : new RayTraceResult(raytraceresult.hitVec.addVector((double) pos.getX(), (double) pos.getY(), (double) pos.getZ()), raytraceresult.sideHit, pos);
+        return raytraceresult == null ? null : new RayTraceResult(raytraceresult.hitVec.add((double) pos.getX(), (double) pos.getY(), (double) pos.getZ()), raytraceresult.sideHit, pos);
     }
 
     //Because this is protected in Entity -_-

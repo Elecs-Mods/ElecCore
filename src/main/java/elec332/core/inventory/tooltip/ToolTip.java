@@ -2,11 +2,12 @@ package elec332.core.inventory.tooltip;
 
 import com.google.common.collect.Lists;
 import elec332.core.client.RenderHelper;
-import net.minecraft.client.Minecraft;
+import elec332.core.util.ItemStackHelper;
+import net.minecraft.client.MainWindow;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.client.config.GuiUtils;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.Collections;
 import java.util.List;
@@ -49,10 +50,10 @@ public class ToolTip {
         return tooltip;
     }
 
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public void renderTooltip(int mouseX, int mouseY, int guiLeft, int guiTop) {
-        Minecraft mc = Minecraft.getMinecraft();
-        GuiUtils.drawHoveringText(null, tooltip, mouseX, mouseY, mc.displayWidth, mc.displayHeight, width, RenderHelper.getMCFontrenderer());
+        MainWindow mc = RenderHelper.getMainWindow();
+        GuiUtils.drawHoveringText(ItemStackHelper.NULL_STACK, tooltip, mouseX, mouseY, mc.getFramebufferWidth(), mc.getHeight(), width, RenderHelper.getMCFontrenderer());
     }
 
     public static class ColouredString {

@@ -40,7 +40,7 @@ public enum MoonPhase {
     }
 
     public static MoonPhase getMoonPhase(World w) {
-        return getMoonPhaseFromTime(w.getWorldTime());
+        return getMoonPhaseFromTime(w.getWorldInfo().getGameTime());
     }
 
     public static MoonPhase getMoonPhaseFromTime(long time) {

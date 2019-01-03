@@ -1,6 +1,6 @@
 package elec332.core.api.world;
 
-import net.minecraft.world.World;
+import net.minecraft.world.IWorld;
 import net.minecraft.world.gen.IChunkGenerator;
 
 import java.util.Random;
@@ -18,8 +18,8 @@ public interface IAdvancedChunkPopulator {
         return true;
     }
 
-    public void populateChunk(IChunkGenerator chunkGenerator, World world, Random rand, int chunkX, int chunkZ, boolean hasVillageGenerated);
+    public boolean populateChunk(IChunkGenerator chunkGenerator, IWorld world, Random rand, int chunkX, int chunkZ);
 
-    public boolean retroGen(Random random, int chunkX, int chunkZ, World world);
+    public boolean retroGen(Random random, int chunkX, int chunkZ, IWorld world);
 
 }

@@ -88,7 +88,7 @@ public abstract class AbstractExplosion extends Explosion {
                     xDifference /= d1;
                     yDifference /= d1;
                     zDifference /= d1;
-                    double density = world.getBlockDensity(new Vec3d(location.getX(), location.getY(), location.getZ()), entity.getEntityBoundingBox());
+                    double density = world.getBlockDensity(new Vec3d(location.getX(), location.getY(), location.getZ()), entity.getBoundingBox());
                     double d2 = (1.0D - distance) * density;
                     int damage = (int) ((d2 * d2 + d2) / 2.0D * 8.0D * power + 1.0D);
                     entity.attackEntityFrom(DamageSource.causeExplosionDamage(this), damage);

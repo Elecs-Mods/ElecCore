@@ -1,17 +1,12 @@
 package elec332.core.util;
 
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import elec332.core.api.registry.ISingleObjectRegistry;
-import elec332.core.api.registry.SimpleRegistries;
-import net.minecraft.command.ICommand;
-import net.minecraft.server.MinecraftServer;
-import net.minecraftforge.client.ClientCommandHandler;
-import net.minecraftforge.fml.common.FMLCommonHandler;
+import elec332.core.MC113ToDoReference;
+import elec332.core.api.APIHandlerInject;
+import elec332.core.api.mod.IElecCoreMod;
+import elec332.core.api.mod.IElecCoreModHandler;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -21,32 +16,39 @@ public class CommandHelper {
 
     /**
      * @return A registry for all server commands, removes the need to regster it everytime a server starts up
-     */
-    public static ISingleObjectRegistry<ICommand> getServerCommandRegistry() {
-        return serverCommandRegistry;
-    }
-
-    /**
+     * <p>
+     * public static ISingleObjectRegistry<ICommand> getServerCommandRegistry() {
+     * return serverCommandRegistry;
+     * }
+     * <p>
+     * /**
      * @return A registry for all client commands
-     */
-    public static ISingleObjectRegistry<ICommand> getClientCommandRegistry() {
-        return clientCommandRegistry;
-    }
-
-    /**
+     * <p>
+     * public static ISingleObjectRegistry<ICommand> getClientCommandRegistry() {
+     * return clientCommandRegistry;
+     * }
+     * <p>
+     * /**
      * INTERNAL USE ONLY!
      */
+
+    private static final Set<IElecCoreMod> mods = Sets.newHashSet();
+
     public static void registerCommands(FMLServerStartingEvent event) {
-        for (ICommand command : commands) {
-            event.registerServerCommand(command);
-        }
+        mods.forEach(m -> m.registerCommands(event.getCommandDispatcher()));
     }
 
-    private static final ISingleObjectRegistry<ICommand> serverCommandRegistry, clientCommandRegistry;
-    private static final List<ICommand> commands = Lists.newArrayList();
+    @APIHandlerInject
+    private void getCommandThings(IElecCoreModHandler handler) {
+        handler.registerModHandler((mc, mod) -> mods.add(mod));
+    }
+
+    //private static final ISingleObjectRegistry<ICommand> serverCommandRegistry, clientCommandRegistry;
+    //private static final List<ICommand> commands = Lists.newArrayList();
 
     static {
-        if (FMLCommonHandler.instance().getSide().isClient()) {
+        MC113ToDoReference.update(); //Cleanup when client commands are implemented
+        /*if (FMLCommonHandler.instance().getSide().isClient()) {
             clientCommandRegistry = new ISingleObjectRegistry<ICommand>() {
 
                 @Override
@@ -79,7 +81,7 @@ public class CommandHelper {
                 return server == null ? ImmutableSet.of() : Sets.newHashSet(server.commandManager.getCommands().values());
             }
 
-        };
+        };*/
 
     }
 

@@ -8,19 +8,17 @@ import elec332.core.util.IOHelper;
 import elec332.core.util.NBTTypes;
 import elec332.core.util.RegistryHelper;
 import elec332.core.world.WorldHelper;
-import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.fluid.IFluidState;
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.nbt.NBTUtil;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockAccess;
-import net.minecraft.world.WorldType;
-import net.minecraft.world.biome.Biome;
+import net.minecraft.world.IBlockReader;
 
 import javax.annotation.Nullable;
 import java.io.File;
@@ -95,25 +93,24 @@ public enum SchematicHelper {
      */
     public Schematic loadModSchematic(NBTTagCompound nbt) {
         try {
-            NBTTagList tileEntities = nbt.getTagList("TileEntities", NBTTypes.COMPOUND.getID());
+            NBTTagList tileEntities = nbt.getList("TileEntities", NBTTypes.COMPOUND.getID());
             short width = nbt.getShort("Width");
             short height = nbt.getShort("Height");
             short length = nbt.getShort("Length");
             short horizon = nbt.getShort("Horizon");
-            NBTTagList blockData = nbt.getTagList("BlockData", NBTTypes.COMPOUND.getID());
-            byte[] metadata = nbt.getByteArray("Data");
+            NBTTagList blockData = nbt.getList("BlockData", NBTTypes.COMPOUND.getID());
             int[] blockArray = nbt.getIntArray("Blocks");
-            Block[] blocks = new Block[width * height * length];
-            Map<Integer, Block> idMap = Maps.newHashMap();
-            idMap.put(-1, Blocks.AIR);
-            for (int i = 0; i < blockData.tagCount(); i++) {
-                NBTTagCompound tag = blockData.getCompoundTagAt(i);
-                idMap.put(tag.getInteger("p"), RegistryHelper.getBlockRegistry().getValue(new ResourceLocation(tag.getString("m"), tag.getString("b"))));
+            IBlockState[] blocks = new IBlockState[width * height * length];
+            Map<Integer, IBlockState> idMap = Maps.newHashMap();
+            idMap.put(-1, Blocks.AIR.getDefaultState());
+            for (int i = 0; i < blockData.size(); i++) {
+                NBTTagCompound tag = blockData.getCompound(i);
+                idMap.put(tag.getInt("p"), NBTUtil.readBlockState(tag.getCompound("ibs")));
             }
             for (int i = 0; i < blockArray.length; i++) {
                 blocks[i] = idMap.get(blockArray[i]);
             }
-            return new Schematic(tileEntities, width, height, length, horizon, metadata, blocks);
+            return new Schematic(tileEntities, width, height, length, horizon, blocks);
         } catch (Exception ex) {
             ElecCore.logger.fatal("Error loading ModSchematic.");
             ElecCore.logger.fatal(ex);
@@ -130,40 +127,38 @@ public enum SchematicHelper {
     public NBTTagCompound writeSchematic(ISchematic schematic_) {
         Schematic schematic = wrap(schematic_);
         NBTTagCompound nbt = new NBTTagCompound();
-        nbt.setShort("Width", schematic.getBlockWidth());
-        nbt.setShort("Height", schematic.getBlockHeight());
-        nbt.setShort("Length", schematic.getBlockLength());
-        nbt.setShort("Horizon", schematic.getHorizon());
-        nbt.setByteArray("Data", schematic.data);
-        nbt.setTag("TileEntities", schematic.tileDataList);
+        nbt.putShort("Width", schematic.getBlockWidth());
+        nbt.putShort("Height", schematic.getBlockHeight());
+        nbt.putShort("Length", schematic.getBlockLength());
+        nbt.putShort("Horizon", schematic.getHorizon());
+        nbt.put("TileEntities", schematic.tileDataList);
         int[] blocks = new int[schematic.blocks.length];
         NBTTagList blockData = new NBTTagList();
-        Map<Block, Integer> map = Maps.newHashMap();
+        Map<IBlockState, Integer> map = Maps.newHashMap();
         int id = 0;
         for (int i = 0; i < schematic.blocks.length; i++) {
-            Block block = schematic.blocks[i];
-            if (block != Blocks.AIR) {
+            IBlockState block = schematic.blocks[i];
+            if (block != Blocks.AIR.getDefaultState()) {
                 if (!map.containsKey(block)) {
-                    ResourceLocation rl = RegistryHelper.getBlockRegistry().getKey(block);
+                    ResourceLocation rl = RegistryHelper.getBlockRegistry().getKey(block.getBlock());
                     if (rl == null) {
                         blocks[i] = -1;
                         continue;
                     }
                     NBTTagCompound tag = new NBTTagCompound();
                     int ID = id++;
-                    tag.setInteger("p", ID);
+                    tag.putInt("p", ID);
                     map.put(block, ID);
-                    tag.setString("m", rl.getResourceDomain());
-                    tag.setString("b", rl.getResourcePath());
-                    blockData.appendTag(tag);
+                    tag.put("ibs", NBTUtil.writeBlockState(block));
+                    blockData.add(tag);
                 }
                 blocks[i] = map.get(block);
             } else {
                 blocks[i] = -1;
             }
         }
-        nbt.setIntArray("Blocks", blocks);
-        nbt.setTag("BlockData", blockData);
+        nbt.putIntArray("Blocks", blocks);
+        nbt.put("BlockData", blockData);
         return nbt;
     }
 
@@ -174,12 +169,11 @@ public enum SchematicHelper {
      * @param area    The area in the World from which a schematic will be created.
      * @param horizon The horizon, AKA offset down
      */
-    public Schematic createModSchematic(IBlockAccess world, Area area, short horizon) {
+    public Schematic createModSchematic(IBlockReader world, Area area, short horizon) {
         if (world == null || area == null) {
             return null;
         }
-        Block[] blocks = new Block[area.getBlockCount()];
-        byte[] data = new byte[area.getBlockCount()];
+        IBlockState[] blocks = new IBlockState[area.getBlockCount()];
         NBTTagList tileList = new NBTTagList();
         int i = 0;
 
@@ -190,16 +184,15 @@ public enum SchematicHelper {
                 int schematicX = 0;
                 for (int x = area.minX; x <= area.maxX; x++) {
                     BlockPos pos = new BlockPos(x, y, z);
-                    blocks[i] = WorldHelper.getBlockAt(world, pos);
-                    data[i] = (byte) WorldHelper.getBlockMeta(world, pos);
+                    blocks[i] = WorldHelper.getBlockState(world, pos);
                     TileEntity tile = WorldHelper.getTileAt(world, pos);
                     if (tile != null) {
                         NBTTagCompound tileNBT = new NBTTagCompound();
-                        tile.writeToNBT(tileNBT);
-                        tileNBT.setInteger("x", schematicX);
-                        tileNBT.setInteger("y", schematicY);
-                        tileNBT.setInteger("z", schematicZ);
-                        tileList.appendTag(tileNBT);
+                        tile.write(tileNBT);
+                        tileNBT.putInt("x", schematicX);
+                        tileNBT.putInt("y", schematicY);
+                        tileNBT.putInt("z", schematicZ);
+                        tileList.add(tileNBT);
                     }
                     ++i;
                     schematicX++;
@@ -209,7 +202,7 @@ public enum SchematicHelper {
             schematicY++;
         }
 
-        return new Schematic(tileList, area.getBlockWidth(), area.getBlockHeight(), area.getBlockHeight(), horizon, data, blocks);
+        return new Schematic(tileList, area.getBlockWidth(), area.getBlockHeight(), area.getBlockHeight(), horizon, blocks);
     }
 
     /**
@@ -221,21 +214,16 @@ public enum SchematicHelper {
         if (schematic instanceof Schematic) {
             return (Schematic) schematic;
         }
-        return createModSchematic(new IBlockAccess() {
+        return createModSchematic(new IBlockReader() {
 
             @Nullable
             @Override
             public TileEntity getTileEntity(BlockPos pos) {
                 NBTTagCompound tag = schematic.getTileData(pos.getX(), pos.getY(), pos.getZ());
                 if (tag != null) {
-                    TileEntity.create(null, tag);
+                    TileEntity.create(tag);
                 }
                 return null;
-            }
-
-            @Override
-            public int getCombinedLight(BlockPos pos, int lightValue) {
-                throw new UnsupportedOperationException();
             }
 
             @Override
@@ -244,29 +232,8 @@ public enum SchematicHelper {
             }
 
             @Override
-            public boolean isAirBlock(BlockPos pos) {
-                throw new UnsupportedOperationException();
-            }
-
-
-            @Override
-            public Biome getBiome(BlockPos pos) {
-                throw new UnsupportedOperationException();
-            }
-
-            @Override
-            public int getStrongPower(BlockPos pos, EnumFacing direction) {
-                throw new UnsupportedOperationException();
-            }
-
-            @Override
-            public WorldType getWorldType() {
-                throw new UnsupportedOperationException();
-            }
-
-            @Override
-            public boolean isSideSolid(BlockPos pos, EnumFacing side, boolean _default) {
-                throw new UnsupportedOperationException();
+            public IFluidState getFluidState(BlockPos blockPos) {
+                return null;
             }
 
         }, new Area(0, 0, 0, schematic.getBlockWidth() - 1, schematic.getBlockHeight() - 1, schematic.getBlockLength() - 1), schematic.getHorizon());

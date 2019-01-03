@@ -1,6 +1,7 @@
 package elec332.core.compat.waila;
 
 import elec332.core.ElecCore;
+import elec332.core.MC113ToDoReference;
 import elec332.core.api.info.IInfoDataAccessorBlock;
 import elec332.core.api.info.IInformation;
 import elec332.core.api.info.InfoMod;
@@ -26,7 +27,6 @@ import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLInterModComms;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -44,7 +44,8 @@ public class WailaCompatHandler implements IWailaDataProvider {
 
     @ElecModule.EventHandler
     public void init(FMLInitializationEvent event) {
-        FMLInterModComms.sendMessage(ModNames.WAILA, "register", getClass().getCanonicalName() + ".register");
+        MC113ToDoReference.update(); //FMLInterComms is gone..
+        //FMLInterModComms.sendMessage(ModNames.WAILA, "register", getClass().getCanonicalName() + ".register");
     }
 
     public static void register(IWailaRegistrar registrar) {
@@ -164,9 +165,9 @@ public class WailaCompatHandler implements IWailaDataProvider {
             tag = new NBTTagCompound();
         }
         final NBTTagCompound fTag = tag;
-        RayTraceResult rtr = RayTraceHelper.retraceBlock(world, player, pos);
+        RayTraceResult rtr = RayTraceHelper.retraceBlock(world, pos, player);
         if (rtr == null) {
-            fTag.setBoolean("_nope_", true);
+            fTag.putBoolean("_nope_", true);
             return fTag;
         }
         final RayTraceResult rtrF = rtr;

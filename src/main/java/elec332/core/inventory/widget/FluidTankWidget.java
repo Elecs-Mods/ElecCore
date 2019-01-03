@@ -39,7 +39,7 @@ public class FluidTankWidget extends Widget {
                     if (tank.getFluid() != null) {
                         tank.getFluid().writeToNBT(tag);
                     }
-                    tag.setInteger("capacity_TANK", tank.getCapacity());
+                    tag.putInt("capacity_TANK", tank.getCapacity());
                     sendNBTChangesToPlayer((EntityPlayerMP) iCrafting, tag);
                 }
             }
@@ -49,7 +49,7 @@ public class FluidTankWidget extends Widget {
     }
 
     @Override
-    public ToolTip getToolTip(int mouseX, int mouseY) {
+    public ToolTip getToolTip(double mouseX, double mouseY) {
         String fluid = (fluidStack == null || fluidStack.getFluid() == null) ? null : fluidStack.getFluid().getName();
         int amount = fluidStack == null ? 0 : fluidStack.amount;
         return new ToolTip(new ToolTip.ColouredString("Fluid: " + fluid + "  Amount: " + amount));
@@ -58,11 +58,11 @@ public class FluidTankWidget extends Widget {
     @Override
     public void readNBTChangesFromPacket(NBTTagCompound tagCompound) {
         this.fluidStack = FluidStack.loadFluidStackFromNBT(tagCompound);
-        this.capacity = tagCompound.getInteger("capacity_TANK");
+        this.capacity = tagCompound.getInt("capacity_TANK");
     }
 
     @Override
-    public void draw(Window gui, int guiX, int guiY, int mouseX, int mouseY) {
+    public void draw(Window gui, int guiX, int guiY, double mouseX, double mouseY) {
         GlStateManager.pushMatrix();
         drawFluid(guiX, guiY);
         GlStateManager.popMatrix();

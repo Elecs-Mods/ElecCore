@@ -11,15 +11,15 @@ import javax.annotation.Nonnull;
  */
 public abstract class AbstractItemBlock extends ItemBlock implements IAbstractItem {
 
-    public AbstractItemBlock(Block block) {
-        super(block);
+    public AbstractItemBlock(Block block, Builder itemBuilder) {
+        super(block, itemBuilder);
     }
 
     private String unlocalizedName;
 
     @Nonnull
     @Override
-    public String getUnlocalizedName() {
+    public String getDefaultTranslationKey() {
         if (this.unlocalizedName == null) {
             unlocalizedName = ItemMethods.createUnlocalizedName(this);
         }
@@ -28,13 +28,8 @@ public abstract class AbstractItemBlock extends ItemBlock implements IAbstractIt
 
     @Nonnull
     @Override
-    public String getUnlocalizedName(ItemStack stack) {
+    public String getTranslationKey(ItemStack stack) {
         return ItemMethods.getUnlocalizedName(stack, this);
-    }
-
-    @Override
-    public int getMetadata(int damage) {
-        return damage;
     }
 
 }

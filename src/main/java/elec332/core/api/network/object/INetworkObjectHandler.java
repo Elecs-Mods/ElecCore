@@ -1,12 +1,12 @@
 package elec332.core.api.network.object;
 
 import elec332.core.api.network.ElecByteBuf;
+import elec332.core.api.network.IPacketDispatcher;
 import elec332.core.api.util.IEntityFilter;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.server.MinecraftServer;
-import net.minecraftforge.fml.common.network.NetworkRegistry;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -24,7 +24,7 @@ public interface INetworkObjectHandler<N extends INetworkObjectSender> extends E
 
     public void sendTo(int id, EntityPlayerMP player);
 
-    public void sendToAllAround(int id, NetworkRegistry.TargetPoint point);
+    public void sendToAllAround(int id, IPacketDispatcher.TargetPoint point);
 
     public void sendToDimension(int id, int dimensionId);
 
@@ -38,7 +38,7 @@ public interface INetworkObjectHandler<N extends INetworkObjectSender> extends E
 
     public void sendTo(int id, NBTTagCompound data, EntityPlayerMP player);
 
-    public void sendToAllAround(int id, NBTTagCompound data, NetworkRegistry.TargetPoint point);
+    public void sendToAllAround(int id, NBTTagCompound data, IPacketDispatcher.TargetPoint point);
 
     public void sendToDimension(int id, NBTTagCompound data, int dimensionId);
 
@@ -60,7 +60,7 @@ public interface INetworkObjectHandler<N extends INetworkObjectSender> extends E
 
     public void sendTo(int id, ByteBuf data, EntityPlayerMP player);
 
-    public void sendToAllAround(int id, ByteBuf data, NetworkRegistry.TargetPoint point);
+    public void sendToAllAround(int id, ByteBuf data, IPacketDispatcher.TargetPoint point);
 
     public void sendToDimension(int id, ByteBuf data, int dimensionId);
 
