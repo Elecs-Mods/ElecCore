@@ -1,7 +1,5 @@
 package elec332.core.api.config;
 
-import net.minecraftforge.common.config.Configuration;
-
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -19,7 +17,7 @@ public @interface Configurable {
     /**
      * @return The config category of this field
      */
-    String category() default Configuration.CATEGORY_GENERAL;
+    String category() default IConfigWrapper.CATEGORY_GENERAL;
 
     /**
      * @return The comment on this configurable value
@@ -56,7 +54,7 @@ public @interface Configurable {
     @Target(ElementType.TYPE)
     public @interface Class {
 
-        String category() default Configuration.CATEGORY_GENERAL;
+        String category() default "";
 
         String comment() default "";
 

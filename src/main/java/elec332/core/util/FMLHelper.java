@@ -5,22 +5,26 @@ import com.google.common.collect.HashBiMap;
 import elec332.core.ElecCore;
 import elec332.core.loader.ElecCoreLoader;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.fml.*;
-import net.minecraftforge.fml.common.event.ModLifecycleEvent;
 import net.minecraftforge.fml.common.thread.EffectiveSide;
+import net.minecraftforge.fml.event.lifecycle.ModLifecycleEvent;
 import net.minecraftforge.fml.javafmlmod.FMLModContainer;
 import net.minecraftforge.fml.javafmlmod.FMLModLoadingContext;
-import net.minecraftforge.fml.language.ModFileScanData;
+import net.minecraftforge.fml.loading.DefaultModInfos;
 import net.minecraftforge.fml.loading.FMLLoader;
 import net.minecraftforge.fml.loading.moddiscovery.ModInfo;
+import net.minecraftforge.forgespi.language.ModFileScanData;
 import org.objectweb.asm.Type;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 /**
@@ -50,7 +54,7 @@ public class FMLHelper {
      * @throws ClassNotFoundException If the class does not exist
      */
     public static Class<?> loadClass(String clazz) throws ClassNotFoundException {
-        return Class.forName(clazz, true, FMLLoader.getLaunchClassLoader());
+        return Class.forName(clazz, true, Thread.currentThread().getContextClassLoader());//, true, FMLLoader.getLaunchClassLoader());
     }
 
     /**
@@ -61,10 +65,13 @@ public class FMLHelper {
      */
     public static String getOwnerName(Class<?> clazz) {
         String cn = Type.getType(clazz).getClassName();
+        if (cn.startsWith("net.minecraft.")) {
+            return DefaultModInfos.minecraftModInfo.getModId();
+        }
         return getModList().getMods()
                 .stream()
-                .filter(mi -> mi.getOwningFile().getFile().getScanResult().getClasses()
-                        .stream()
+                .filter(mi -> mi != DefaultModInfos.minecraftModInfo) //The minecraft mod-info has a null file
+                .filter(mi -> mi.getOwningFile().getFile().getScanResult().getClasses().stream()
                         .anyMatch(cd -> classOwner.get(cd).getClassName().equals(cn)))
                 .findFirst() //Cannot account for multiple mods in 1 jar (yet...)
                 .map(ModInfo::getModId)
@@ -78,8 +85,20 @@ public class FMLHelper {
      * @return The {@link ModLoadingStage} belonging to the provided {@link ModLifecycleEvent}
      */
     public static ModLoadingStage getStageFrom(ModLifecycleEvent event) {
-        System.out.println("event to stage: " + eventMap.inverse().get(event.getClass()));
         return eventMap.inverse().get(event.getClass());
+    }
+
+    /**
+     * Used to get the {@link ModLifecycleEvent} belonging to the provided {@link ModLoadingStage}
+     *
+     * @param stage The stage to get the {@link ModLifecycleEvent} type from
+     * @return The {@link ModLifecycleEvent} type belonging to the provided {@link ModLoadingStage}
+     */
+    public static Class<? extends ModLifecycleEvent> getEventClass(ModLoadingStage stage) {
+        if (!eventMap.containsKey(stage)) {
+            throw new IllegalArgumentException();
+        }
+        return eventMap.get(stage);
     }
 
     /**
@@ -196,11 +215,8 @@ public class FMLHelper {
      *
      * @param workToEnqueue The work to be done after the event
      */
-    public static void enqueueWorkAfterEvent(Runnable workToEnqueue) {
-        DeferredWorkQueue.enqueueWork((Callable<Void>) () -> {
-            workToEnqueue.run();
-            return null;
-        });
+    public static void runLater(Runnable workToEnqueue) {
+        DeferredWorkQueue.runLater(workToEnqueue);
     }
 
     /**
@@ -209,8 +225,18 @@ public class FMLHelper {
      * @param workToEnqueue The work to be done after the event
      * @return The future of the callable
      */
-    public static <T> Future<T> enqueueWorkAfterEvent(Callable<T> workToEnqueue) {
-        return DeferredWorkQueue.enqueueWork(workToEnqueue);
+    @Nonnull
+    public static <T> Supplier<T> getLater(Callable<T> workToEnqueue) {
+        Future<T> f = DeferredWorkQueue.getLaterChecked(workToEnqueue);
+        return () -> {
+            try {
+                return f.get();
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            } catch (ExecutionException e) {
+                throw new RuntimeException(e.getCause());
+            }
+        };
     }
 
     /**

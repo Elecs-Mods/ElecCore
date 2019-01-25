@@ -34,7 +34,7 @@ import java.util.Set;
  */
 @StaticLoad
 @OnlyIn(Dist.CLIENT)
-@AnnotationDataProcessor(ModLoadingStage.PREINIT)
+@AnnotationDataProcessor(ModLoadingStage.COMMON_SETUP)
 enum ElecModelManager implements IAnnotationDataProcessor {
 
     INSTANCE;

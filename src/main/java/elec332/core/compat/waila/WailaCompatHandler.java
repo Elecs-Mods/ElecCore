@@ -1,7 +1,6 @@
 package elec332.core.compat.waila;
 
 import elec332.core.ElecCore;
-import elec332.core.MC113ToDoReference;
 import elec332.core.api.info.IInfoDataAccessorBlock;
 import elec332.core.api.info.IInformation;
 import elec332.core.api.info.InfoMod;
@@ -26,7 +25,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.InterModComms;
+import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -43,9 +43,8 @@ public class WailaCompatHandler implements IWailaDataProvider {
     private static WailaCompatHandler instance;
 
     @ElecModule.EventHandler
-    public void init(FMLInitializationEvent event) {
-        MC113ToDoReference.update(); //FMLInterComms is gone..
-        //FMLInterModComms.sendMessage(ModNames.WAILA, "register", getClass().getCanonicalName() + ".register");
+    public void init(InterModEnqueueEvent event) {
+        InterModComms.sendTo(ModNames.WAILA, "register", () -> getClass().getCanonicalName() + ".register");
     }
 
     public static void register(IWailaRegistrar registrar) {

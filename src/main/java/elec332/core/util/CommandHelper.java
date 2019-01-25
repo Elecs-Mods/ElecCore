@@ -5,7 +5,7 @@ import elec332.core.MC113ToDoReference;
 import elec332.core.api.APIHandlerInject;
 import elec332.core.api.mod.IElecCoreMod;
 import elec332.core.api.mod.IElecCoreModHandler;
-import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
+import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
 
 import java.util.Set;
 
@@ -39,7 +39,7 @@ public class CommandHelper {
     }
 
     @APIHandlerInject
-    private void getCommandThings(IElecCoreModHandler handler) {
+    private static void getCommandThings(IElecCoreModHandler handler) {
         handler.registerModHandler((mc, mod) -> mods.add(mod));
     }
 

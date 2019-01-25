@@ -1,7 +1,7 @@
 package elec332.core.util;
 
 import net.minecraftforge.fml.ModLoadingStage;
-import net.minecraftforge.fml.common.event.ModLifecycleEvent;
+import net.minecraftforge.fml.event.lifecycle.ModLifecycleEvent;
 import org.apache.logging.log4j.Logger;
 
 /**

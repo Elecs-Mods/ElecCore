@@ -7,7 +7,7 @@ import net.minecraftforge.fml.ModLoadingStage;
  * Created by Elec332 on 7-10-2016.
  */
 @SuppressWarnings("unused")
-@AnnotationDataProcessor(ModLoadingStage.POSTINIT)
+@AnnotationDataProcessor(ModLoadingStage.PROCESS_IMC)
 public class PostInitAnnotationProcessor extends AbstractAnnotationProcessor {
 
     @Override

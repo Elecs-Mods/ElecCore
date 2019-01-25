@@ -71,6 +71,10 @@ public final class FieldPointer<P, T> implements IMemberPointer<Field, P, T> {
 
     public void set(P parent, T value) {
         try {
+            if (isStatic() && parent == null) {
+                setter.invoke(value);
+                return;
+            }
             setter.invoke(parent, value);
         } catch (Throwable e) {
             throw new RuntimeException(e);

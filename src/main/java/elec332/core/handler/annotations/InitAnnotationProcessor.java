@@ -11,6 +11,7 @@ import elec332.core.api.discovery.IAnnotationData;
 import elec332.core.api.registration.HasSpecialRenderer;
 import elec332.core.api.registration.RegisteredTileEntity;
 import elec332.core.util.FMLHelper;
+import elec332.core.util.RegistryHelper;
 import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.api.distmarker.Dist;
@@ -26,7 +27,7 @@ import java.util.function.Consumer;
  * Created by Elec332 on 7-3-2016.
  */
 
-@AnnotationDataProcessor(ModLoadingStage.INIT)
+@AnnotationDataProcessor(ModLoadingStage.ENQUEUE_IMC)
 public class InitAnnotationProcessor extends AbstractAnnotationProcessor {
 
     @Override
@@ -101,6 +102,7 @@ public class InitAnnotationProcessor extends AbstractAnnotationProcessor {
                         String mod = FMLHelper.getOwnerName(clazz);
                         name = mod + ":" + name;
                     }
+                    RegistryHelper.til
                     //GameRegistry.registerTileEntity(clazz, new ResourceLocation(name));
                     MC113ToDoReference.update();
                 } catch (Exception e) {

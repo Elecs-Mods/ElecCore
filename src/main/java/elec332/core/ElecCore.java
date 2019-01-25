@@ -18,10 +18,15 @@ import elec332.core.network.packets.PacketWidgetDataToServer;
 import elec332.core.proxies.CommonProxy;
 import elec332.core.util.*;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.event.*;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent;
+import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent;
+import net.minecraftforge.fml.event.lifecycle.InterModProcessEvent;
+import net.minecraftforge.fml.event.server.FMLServerAboutToStartEvent;
+import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
+import net.minecraftforge.fml.network.NetworkRegistry;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -36,6 +41,17 @@ public class ElecCore implements IModuleController, IElecCoreMod {
             throw new RuntimeException();
         }
         instance = this;
+        org.apache.logging.log4j.core.Logger p = ((org.apache.logging.log4j.core.Logger) LogManager.getRootLogger());
+        while (p.getParent() != null) {
+            p = p.getParent();
+        }
+        //p.setLevel(Level.INFO);
+        //p.getContext().addFilter(LevelRangeFilter.createFilter(Level.INFO, null, null, null));
+        //p.getContext().addFilter(MarkerFilter.createFilter(Logging.SPLASH.getName(), Filter.Result.DENY, Filter.Result.NEUTRAL));
+        //p.getContext().addFilter(MarkerFilter.createFilter(Logging.LOADING.getName(), Filter.Result.DENY, Filter.Result.NEUTRAL));
+
+        //p.getContext().addFilter(LevelRangeFilter.createFilter(Level.DEBUG, null, null, null));
+
         logger = LogManager.getLogger(MODNAME);
         IEventBus eventBus = FMLHelper.getModContext().getModEventBus();
         eventBus.addListener(this::preInit);
@@ -44,6 +60,7 @@ public class ElecCore implements IModuleController, IElecCoreMod {
         eventBus.addListener(this::loadComplete);
         eventBus.addListener(this::onServerAboutToStart);
         eventBus.addListener(this::onServerStarting);
+        MinecraftForge.EVENT_BUS.register(this);
     }
 
     public static final String MODID = "eleccore";
@@ -58,7 +75,6 @@ public class ElecCore implements IModuleController, IElecCoreMod {
     public static IElecNetworkHandler networkHandler;
     public static TickHandler tickHandler;
     public static Logger logger;
-    private Configuration config;
     private LoadTimer loadTimer;
 
     public static final boolean developmentEnvironment;
@@ -66,11 +82,12 @@ public class ElecCore implements IModuleController, IElecCoreMod {
     public static boolean removeJSONErrors = true;
     public static boolean suppressSpongeIssues = false;
 
-    private void preInit(FMLPreInitializationEvent event) {
+    private void preInit(FMLCommonSetupEvent event) {
         this.loadTimer = new LoadTimer(logger, MODNAME);
         this.loadTimer.startPhase(event);
 
-        this.config = new Configuration(IOHelper.getConfigFile("eleccore.cfg"));
+        //todo
+        //this.config = new Configuration(IOHelper.getConfigFile("eleccore.cfg"));
         //this.config.load();
 
         //debug = config.getBoolean("debug", Configuration.CATEGORY_GENERAL, false, "Set to true to print debug info to the log.");
@@ -79,18 +96,13 @@ public class ElecCore implements IModuleController, IElecCoreMod {
 
         tickHandler = new TickHandler();
 
-        MC113ToDoReference.update();
-        //proxy.preInitRendering();
+        proxy.preInitRendering();
 
         loadTimer.endPhase(event);
     }
 
-    private void init(FMLInitializationEvent event) {
+    private void init(InterModEnqueueEvent event) {
         loadTimer.startPhase(event);
-
-        if (config.hasChanged()) {
-            config.save();
-        }
 
         networkHandler.registerSimplePacket(WindowManager.INSTANCE);
         networkHandler.registerAbstractPacket(PacketSyncWidget.class);
@@ -106,7 +118,7 @@ public class ElecCore implements IModuleController, IElecCoreMod {
         loadTimer.endPhase(event);
     }
 
-    private void postInit(FMLPostInitializationEvent event) {
+    private void postInit(InterModProcessEvent event) {
         loadTimer.startPhase(event);
 
         OredictHelper.initLists();

@@ -1,6 +1,7 @@
 package elec332.core.api.discovery;
 
 import net.minecraftforge.fml.ModContainer;
+import net.minecraftforge.forgespi.language.IModFileInfo;
 import org.objectweb.asm.Type;
 
 import java.lang.annotation.Annotation;
@@ -21,10 +22,12 @@ public interface IAnnotationDataHandler {
 
     public Set<IAnnotationData> getAnnotationList(Type annotationType);
 
-    public Function<Type, Set<IAnnotationData>> getAnnotationsFor(Path file);
+    public Function<Type, Set<IAnnotationData>> getAnnotationsFor(IModFileInfo file);
 
     public Function<Type, Set<IAnnotationData>> getAnnotationsFor(ModContainer mc);
 
-    public String deepSearchOwner(IAnnotationData annotationData);
+    public ModContainer deepSearchOwner(IAnnotationData annotationData);
+
+    public String deepSearchOwnerName(IAnnotationData annotationData);
 
 }

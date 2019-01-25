@@ -3,9 +3,11 @@ package elec332.core.api.world;
 import elec332.core.api.config.IConfigurableElement;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.gen.IChunkGenerator;
-import net.minecraftforge.common.config.Configuration;
+import net.minecraftforge.common.ForgeConfigSpec;
 
+import javax.annotation.Nonnull;
 import java.util.Random;
+import java.util.function.Supplier;
 
 /**
  * Created by Elec332 on 16-10-2016.
@@ -22,7 +24,9 @@ public class FeatureGeneratorWrapper implements IAdvancedChunkPopulator, IConfig
 
     private final ILegacyFeatureGenerator generator;
     private final String name;
-    private String genkey = "initial";
+    private Supplier<String> genkey = () -> INITIAL;
+
+    private static final String INITIAL = "initial";
 
     @Override
     public String getName() {
@@ -31,7 +35,7 @@ public class FeatureGeneratorWrapper implements IAdvancedChunkPopulator, IConfig
 
     @Override
     public String getGenKey() {
-        return genkey;
+        return genkey.get();
     }
 
     @Override
@@ -45,11 +49,12 @@ public class FeatureGeneratorWrapper implements IAdvancedChunkPopulator, IConfig
     }
 
     @Override
-    public void reconfigure(Configuration config) {
+    public void reconfigure(@Nonnull ForgeConfigSpec.Builder config) {
         if (this.generator instanceof IConfigurableElement) {
             ((IConfigurableElement) this.generator).reconfigure(config);
         }
-        this.genkey = config.getString("generationKey", getName(), this.genkey, "When this key differs from the key stored in the chunk data, the chunk will be retrogenned.");
+        //category = "generationKey"
+        this.genkey = config.comment("When this key differs from the key stored in the chunk data, the chunk will be retrogenned.").define(getName(), INITIAL)::get;
     }
 
 }

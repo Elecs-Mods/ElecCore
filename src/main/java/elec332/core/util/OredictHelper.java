@@ -1,6 +1,7 @@
 package elec332.core.util;
 
 import com.google.common.collect.Lists;
+import net.minecraftforge.oredict.OreDictionary;
 
 import java.util.Collections;
 import java.util.List;
@@ -15,7 +16,9 @@ public class OredictHelper {
     private static List<String> allOres_ = Collections.unmodifiableList(allOres), allIngots_ = Collections.unmodifiableList(allIngots), allDusts_ = Collections.unmodifiableList(allDusts);
 
     public static void initLists() {
+        OreDictionary.class.getClassLoader();
     }/* TODO: wait till Forge re-adds this
+
         allDusts.clear();
         allIngots.clear();
         allOres.clear();

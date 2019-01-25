@@ -1,5 +1,7 @@
 package elec332.core.handler;
 
+import com.google.common.base.Strings;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import elec332.core.ElecCore;
 import elec332.core.MC113ToDoReference;
@@ -111,37 +113,46 @@ public class ElecCoreSetup {
     }
 
     private static void registerConfigSerializers() {
-        ConfigWrapper.registerConfigElementSerializer((type, instance, field, data, config, category, defaultValue, comment) -> {
+        ConfigWrapper.registerConfigElementSerializer((type, instance, field, data, config, defaultValue, comment) -> {
             if (type.isAssignableFrom(Integer.TYPE)) {
-                field.set(instance, config.getInt(field.getName(), category, (Integer) defaultValue, (int) data.minValue(), (int) data.maxValue(), comment));
-                return true;
-            }
-            return false;
-        });
-        ConfigWrapper.registerConfigElementSerializer((type, instance, field, data, config, category, defaultValue, comment) -> {
-            if (type.isAssignableFrom(Boolean.TYPE)) {
-                field.set(instance, config.getBoolean(field.getName(), category, (Boolean) defaultValue, comment));
-                return true;
-            }
-            return false;
-        });
-        ConfigWrapper.registerConfigElementSerializer((type, instance, field, data, config, category, defaultValue, comment) -> {
-            if (field.getType().isAssignableFrom(String.class)) {
-                if (data.validStrings().length > 0) {
-                    field.set(instance, config.getString(field.getName(), category, (String) defaultValue, comment, data.validStrings()));
-                } else {
-                    field.set(instance, config.getString(field.getName(), category, (String) defaultValue, comment));
+                if (!Strings.isNullOrEmpty(comment)){
+                    config.comment(comment);
                 }
-                return true;
+                return config.defineInRange(field.getName(), (Integer) defaultValue, (int) data.minValue(), (int) data.maxValue());
             }
-            return false;
+            return null;
         });
-        ConfigWrapper.registerConfigElementSerializer((type, instance, field, data, config, category, defaultValue, comment) -> {
-            if (field.getType().isAssignableFrom(Float.TYPE)) {
-                field.set(instance, config.getFloat(field.getName(), category, (Float) defaultValue, data.minValue(), data.maxValue(), comment));
-                return true;
+        ConfigWrapper.registerConfigElementSerializer((type, instance, field, data, config, defaultValue, comment) -> {
+            if (type.isAssignableFrom(Boolean.TYPE)) {
+                if (!Strings.isNullOrEmpty(comment)){
+                    config.comment(comment);
+                }
+                return config.define(field.getName(), (boolean) defaultValue);
             }
-            return false;
+            return null;
+        });
+        ConfigWrapper.registerConfigElementSerializer((type, instance, field, data, config, defaultValue, comment) -> {
+            if (field.getType().isAssignableFrom(String.class)) {
+                if (!Strings.isNullOrEmpty(comment)){
+                    config.comment(comment);
+                }
+                if (data.validStrings().length > 0) {
+                    final List validVals = ImmutableList.copyOf(data.validStrings()); //No List<String>, because compiler warnings...
+                    return config.define(field.getName(), (String) defaultValue, validVals::contains);
+                } else {
+                    return config.define(field.getName(), (String) defaultValue);
+                }
+            }
+            return null;
+        });
+        ConfigWrapper.registerConfigElementSerializer((type, instance, field, data, config, defaultValue, comment) -> {
+            if (field.getType().isAssignableFrom(Float.TYPE)) {
+                if (!Strings.isNullOrEmpty(comment)){
+                    config.comment(comment);
+                }
+                return config.defineInRange(field.getName(), (float) defaultValue, data.minValue(), data.maxValue());
+            }
+            return null;
         });
     }
 

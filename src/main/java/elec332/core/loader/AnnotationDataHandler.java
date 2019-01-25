@@ -11,9 +11,10 @@ import elec332.core.util.FMLHelper;
 import net.minecraftforge.fml.ModContainer;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.ModLoadingStage;
-import net.minecraftforge.fml.language.ModFileScanData;
 import net.minecraftforge.fml.loading.moddiscovery.ModFile;
 import net.minecraftforge.fml.loading.moddiscovery.ModFileInfo;
+import net.minecraftforge.forgespi.language.IModFileInfo;
+import net.minecraftforge.forgespi.language.ModFileScanData;
 import org.apache.commons.lang3.tuple.Pair;
 import org.objectweb.asm.Type;
 
@@ -21,7 +22,10 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.nio.file.Path;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 /**
@@ -33,28 +37,77 @@ enum AnnotationDataHandler {
 
     AnnotationDataHandler() {
         asmLoaderMap = Maps.newHashMap();
-        validStates = ImmutableList.of(ModLoadingStage.CONSTRUCT, ModLoadingStage.PREINIT, ModLoadingStage.INIT, ModLoadingStage.POSTINIT, ModLoadingStage.COMPLETE);
+        validStates = ImmutableList.of(ModLoadingStage.CONSTRUCT, ModLoadingStage.COMMON_SETUP, ModLoadingStage.ENQUEUE_IMC, ModLoadingStage.PROCESS_IMC, ModLoadingStage.COMPLETE);
     }
 
     private final Map<ModLoadingStage, List<IAnnotationDataProcessor>> asmLoaderMap;
     private final List<ModLoadingStage> validStates;
+    private Function<String, ModContainer> packageOwners;
+    private Set<String> packSorted;
     private IAnnotationDataHandler asmDataHelper;
 
     void identify(ModList modList) {
         for (ModLoadingStage state : validStates) {
             asmLoaderMap.put(state, Lists.newArrayList());
         }
-        final SetMultimap<Type, IAnnotationData> annotationData = HashMultimap.create();
-        final Map<Path, SetMultimap<Type, IAnnotationData>> annotationDataF = modList.getModFiles().stream()
-                .map(ModFileInfo::getFile)
-                .collect(Collectors.toMap(ModFile::getFilePath, mf -> {
+
+        Map<String, ModContainer> pck = Maps.newTreeMap((o1, o2) -> {
+            if (o2.contains(o1)){
+                return 1;
+            }
+            if (o1.contains(o2)){
+                return -1;
+            }
+            return 0;
+        });
+
+        FMLHelper.getMods().forEach(mc -> {
+            if (mc.getMod() != null) {
+                String pack = mc.getMod().getClass().getCanonicalName();
+                pack = pack.substring(0, pack.lastIndexOf("."));
+                pck.put(pack, mc);
+            }
+        });
+
+        Map<String, ModContainer> pck2 = Maps.newHashMap(pck);
+
+        packSorted = pck.keySet();
+        packageOwners = pck2::get;
+
+        Function<IAnnotationData, ModContainer> modSearcher = annotationData -> {
+            if (annotationData.getClassName().startsWith("net.minecraft.") || annotationData.getClassName().startsWith("mcp.")){
+                return null;//FMLHelper.getModList().getModContainerById(DefaultModInfos.minecraftModInfo.getModId()).orElseThrow(NullPointerException::new);
+            }
+            ModFile owner = annotationData.getFile();
+            if (owner.getModInfos().size() == 1) {
+                return FMLHelper.getModList().getModContainerById(owner.getModInfos().get(0).getModId()).orElseThrow(RuntimeException::new);
+            }
+            String pack = packSorted.stream().filter(s -> annotationData.getClassName().contains(s)).findFirst().orElseThrow(RuntimeException::new);
+            return packageOwners.apply(pack);
+        };
+
+        final Map<String, SetMultimap<Type, IAnnotationData>> annotationDataM = Maps.newHashMap();
+        final Map<IModFileInfo, SetMultimap<Type, IAnnotationData>> annotationDataF = modList.getModFiles().stream()
+                .collect(Collectors.toMap(Function.identity(), mfi -> {
+                    ModFile mf = mfi.getFile();
                     SetMultimap<Type, IAnnotationData> ret = HashMultimap.create();
-                    mf.getScanResult().getAnnotations().forEach(
-                            ad -> annotationData.put(ad.getAnnotationType(), new AnnotationData(ad, mf))
-                    );
+                    mf.getScanResult().getAnnotations().forEach(ad -> {
+                        IAnnotationData annotationData = new AnnotationData(ad, mf);
+                        if (annotationData.getAnnotationName().startsWith("Ljava/lang") || annotationData.getAnnotationName().startsWith("Ljavax/annotation")){
+                            return;
+                        }
+                        Type annType = ad.getAnnotationType();
+                        ret.put(annType, annotationData);
+                        ModContainer mc = modSearcher.apply(annotationData);
+                        if (mc != null) {
+                            annotationDataM.computeIfAbsent(mc.getModId(), s -> HashMultimap.create()).put(annType, annotationData);
+                        }
+                    });
                     return ret;
                 }));
+        final SetMultimap<Type, IAnnotationData> annotationData = HashMultimap.create();
         annotationDataF.values().forEach(annotationData::putAll);
+
         this.asmDataHelper = new IAnnotationDataHandler() {
 
             @Override
@@ -65,22 +118,26 @@ enum AnnotationDataHandler {
 
             @Override
             public Function<Type, Set<IAnnotationData>> getAnnotationsFor(ModContainer mc) {
-                return getAnnotationsFor(((ModFileInfo) mc.getModInfo().getOwningFile()).getFile().getFilePath());
+                return type -> Optional.ofNullable(annotationDataM.get(mc.getModId())).map(t -> t.get(type)).orElse(ImmutableSet.of());
             }
 
             @Override
-            public Function<Type, Set<IAnnotationData>> getAnnotationsFor(Path file) {
-                return type -> Optional.of(annotationDataF.get(file).get(type)).orElse(ImmutableSet.of());
+            public Function<Type, Set<IAnnotationData>> getAnnotationsFor(IModFileInfo file) {
+                return type -> Optional.ofNullable(annotationDataF.get(file)).map(t -> t.get(type)).orElse(ImmutableSet.of());
             }
 
             @Override
-            public String deepSearchOwner(IAnnotationData annotationData) {
-                //Todo: advanced search
+            public ModContainer deepSearchOwner(IAnnotationData annotationData) {
+                return modSearcher.apply(annotationData);
+            }
+
+            @Override
+            public String deepSearchOwnerName(IAnnotationData annotationData) {
                 ModFile owner = annotationData.getFile();
                 if (owner.getModInfos().size() == 1) {
                     return owner.getModInfos().get(0).getModId();
                 }
-                return null;
+                return deepSearchOwner(annotationData).getModId();
             }
 
         };
@@ -300,11 +357,6 @@ enum AnnotationDataHandler {
                 throw new IllegalAccessError();
             }
             try {
-                //todo: sort out why existing methods don't exist
-                System.out.println(Lists.newArrayList(loadClass().getDeclaredMethods()));
-                Arrays.stream(loadClass().getDeclaredMethods()).forEach(m -> {
-                    System.out.println(m.getName() + "  " + Lists.newArrayList(m.getParameterTypes()));
-                });
                 method = loadClass().getDeclaredMethod(getMethodName(), getMethodParameters());
                 method.setAccessible(true);
                 return method;

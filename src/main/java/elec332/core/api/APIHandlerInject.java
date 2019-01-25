@@ -12,6 +12,7 @@ import java.lang.annotation.Target;
 @Target({ElementType.FIELD, ElementType.METHOD})
 public @interface APIHandlerInject {
 
+    //Lower weight = earlier
     int weight() default Byte.MAX_VALUE;
 
 }

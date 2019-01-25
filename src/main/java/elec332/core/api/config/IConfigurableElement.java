@@ -1,6 +1,8 @@
 package elec332.core.api.config;
 
-import net.minecraftforge.common.config.Configuration;
+import net.minecraftforge.common.ForgeConfigSpec;
+
+import javax.annotation.Nonnull;
 
 /**
  * Created by Elec332 on 18-10-2016.
@@ -9,6 +11,6 @@ import net.minecraftforge.common.config.Configuration;
  */
 public interface IConfigurableElement {
 
-    public void reconfigure(Configuration config);
+    public void reconfigure(@Nonnull ForgeConfigSpec.Builder config);
 
 }

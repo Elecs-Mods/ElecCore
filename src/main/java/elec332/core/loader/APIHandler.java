@@ -2,12 +2,13 @@ package elec332.core.loader;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
-import com.google.common.collect.HashMultimap;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.common.collect.SetMultimap;
 import elec332.core.ElecCore;
+import elec332.core.api.APIHandlerInject;
 import elec332.core.api.IAPIHandler;
+import elec332.core.api.annotations.StaticLoad;
 import elec332.core.api.discovery.AnnotationDataProcessor;
 import elec332.core.api.discovery.IAnnotationData;
 import elec332.core.api.discovery.IAnnotationDataHandler;
@@ -32,29 +33,27 @@ import java.util.stream.Collectors;
 /**
  * Created by Elec332 on 29-10-2016.
  */
-@AnnotationDataProcessor(value = ModLoadingStage.PREINIT, importance = Integer.MAX_VALUE)
+@AnnotationDataProcessor(value = ModLoadingStage.COMMON_SETUP, importance = Integer.MAX_VALUE)
 enum APIHandler implements IAnnotationDataProcessor, IAPIHandler {
 
     INSTANCE;
 
     APIHandler() {
-        callBacks = HashMultimap.create();
+        callBacks = Maps.newHashMap();
         injectedHandlers = Maps.newHashMap();
     }
 
-    private final SetMultimap<Class<?>, Consumer<?>> callBacks;
+    private final Map<Class<?>, List<Consumer<?>>> callBacks;
     private final Map<Class<?>, Object> injectedHandlers;
 
     @Override
     public void processASMData(IAnnotationDataHandler asmData, ModLoadingStage state) {
 
-        //todo: re-enable
-        //getWeightedAdvancedAnnotationList(asmData, StaticLoad.class, "weight").forEach(IAnnotationData::loadClass);
+        getWeightedAdvancedAnnotationList(asmData, StaticLoad.class, "weight").forEach(IAnnotationData::loadClass);
 
-        //collect(asmData, APIHandlerInject.class, "weight");
+        collect(asmData, APIHandlerInject.class, "weight");
 
         inject(INSTANCE, IAPIHandler.class);
-
     }
 
     @SuppressWarnings("all")
@@ -105,7 +104,8 @@ enum APIHandler implements IAnnotationDataProcessor, IAPIHandler {
                 };
             }
 
-            callBacks.put(Preconditions.checkNotNull(type), Preconditions.checkNotNull(ret));
+            List<Consumer<?>> l = callBacks.computeIfAbsent(Preconditions.checkNotNull(type), t -> Lists.newArrayList());
+            l.add(Preconditions.checkNotNull(ret));
 
         }
     }
@@ -117,7 +117,7 @@ enum APIHandler implements IAnnotationDataProcessor, IAPIHandler {
             if (!clazz.isAssignableFrom(o.getClass())) {
                 throw new IllegalArgumentException();
             }
-            for (Consumer consumer : callBacks.removeAll(clazz)) {
+            for (Consumer consumer : Optional.ofNullable(callBacks.remove(clazz)).orElse(ImmutableList.of())) {
                 consumer.accept(o);
             }
             injectedHandlers.put(clazz, o);

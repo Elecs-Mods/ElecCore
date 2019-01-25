@@ -1,84 +1,214 @@
 package elec332.core.config;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
+import com.electronwill.nightconfig.core.CommentedConfig;
+import com.electronwill.nightconfig.core.file.CommentedFileConfig;
+import com.electronwill.nightconfig.core.file.FileConfig;
+import com.electronwill.nightconfig.core.file.FileWatcher;
+import com.electronwill.nightconfig.core.io.WritingMode;
+import com.google.common.base.Strings;
+import com.google.common.collect.*;
 import elec332.core.api.config.Configurable;
 import elec332.core.api.config.IConfigElementSerializer;
 import elec332.core.api.config.IConfigWrapper;
 import elec332.core.api.config.IConfigurableElement;
 import elec332.core.util.FMLHelper;
+import elec332.core.util.FieldPointer;
 import elec332.core.util.ReflectionHelper;
-import net.minecraftforge.common.config.Configuration;
+import elec332.core.util.function.FuncHelper;
+import elec332.core.util.function.UnsafeRunnable;
+import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.fml.ModLoadingStage;
 
 import javax.annotation.Nonnull;
+import java.io.File;
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
+import java.nio.file.Path;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 /**
  * Created by Elec332 on 12-4-2015.
  */
 public class ConfigWrapper implements IConfigWrapper {
 
-    public ConfigWrapper(Configuration configuration) {
-        this.configuration = configuration;
-        this.instances = Lists.newArrayList();
-        this.hasInit = false;
-        this.categoryDataList = Lists.newArrayList();
-        this.categories = Sets.newHashSet();
-        this.configurableElements = Lists.newArrayList();
-        this.isReloading = false;
+    public ConfigWrapper(File location){
+        this(location.toPath());
     }
 
-    private Configuration configuration;
+    public ConfigWrapper(Path location){
+        this(CommentedFileConfig.builder(location).sync().autosave().writingMode(WritingMode.REPLACE).build());
+    }
+
+    public ConfigWrapper(CommentedConfig cfg) {
+        this.configuration = new ElecConfigBuilder();
+        this.instances = Lists.newArrayList();
+        this.category = Sets.newHashSet();
+        this.configurableElements = Lists.newArrayList();
+        this.loadTasks = Lists.newArrayList();
+        this.cfgBuilder = cfg;
+    }
+
+    private CommentedConfig cfgBuilder;
+    private ElecConfigBuilder configuration;
+    private ForgeConfigSpec spec = null;
     private List<Object> instances;
-    private boolean hasInit;
-    private List<CategoryData> categoryDataList;
-    private Set<String> categories;
+    private Set<String> category;
     private List<IConfigurableElement> configurableElements;
-    private boolean isReloading;
+    private List<Runnable> loadTasks;
+    private boolean blockLoad = false;
+    private FileConfig file = null;
     private static List<IConfigElementSerializer> serializers;
+
 
     @Override
     public void registerConfig(Object o) {
-        if (!hasInit) {
-            this.instances.add(o);
-        } else {
-            throw new RuntimeException("You cannot register configs after init");
+        if (hasBeenLoaded()){
+            throw new RuntimeException("Cannot register configs after baking!");
         }
+        if (instances.contains(o)){
+            return;
+        }
+        this.instances.add(o);
+        Class objClass = o.getClass();
+        if (o instanceof Class) {
+            objClass = (Class) o;
+            o = null;
+        }
+        final Object fInst = o;
+        String classCategory = CATEGORY_GENERAL;
+        String comment = "";
+        if (objClass.isAnnotationPresent(Configurable.Class.class)) {
+            Configurable.Class configClass = (Configurable.Class) objClass.getAnnotation(Configurable.Class.class);
+            if (configClass.inherit()) {
+                Class[] classes = ReflectionHelper.getAllTillMainClass(objClass);
+                StringBuilder s = new StringBuilder();
+                for (Class clazz : classes) {
+                    if (clazz.isAnnotationPresent(Configurable.Class.class)) {
+                        if (s.length() != 0) {
+                            s.append(".");
+                        }
+                        String s1 = ((Configurable.Class) clazz.getAnnotation(Configurable.Class.class)).category();
+                        s.append(Strings.isNullOrEmpty(s1) ? clazz.getSimpleName() : s1);
+                    }
+                }
+                classCategory = s.toString();
+            } else {
+                classCategory = configClass.category();
+            }
+            comment = configClass.comment();
+        }
+        for (Field field : objClass.getDeclaredFields()) {
+            try {
+                boolean oldAccess = field.isAccessible();
+                field.setAccessible(true);
+                if (field.isAnnotationPresent(Configurable.class)) {
+                    Configurable configurable = field.getAnnotation(Configurable.class);
+                    Object oldValue = field.get(fInst);
+                    String category = configurable.category();
+                    if (Strings.isNullOrEmpty(category)) {
+                        category = classCategory;
+                    }
+                    boolean serialized = false;
+                    int i = configuration.depth;
+                    if (!Strings.isNullOrEmpty(comment)){
+                        configuration.comment(comment);
+                    }
+                    configuration.push(category);
+                    for (IConfigElementSerializer serializer : serializers) {
+                        ForgeConfigSpec.ConfigValue cv = serializer.makeConfigEntry(field.getType(), o, field, configurable, configuration, oldValue, configurable.comment());
+                        if (cv != null) {
+                            loadTasks.add(FuncHelper.safeRunnable(() -> field.set(fInst, cv.get())));
+                            configuration.pop(configuration.depth - i);
+                            serialized = true;
+                            break;
+                        }
+                    }
+                    if (!serialized) {
+                        throw new RuntimeException("Could not find serializer for type " + field.getType());
+                    }
+                    if (configuration.depth != i){
+                        throw new RuntimeException("Invalid config depth!");
+                    }
+                }
+                field.setAccessible(oldAccess);
+            } catch (RuntimeException e){
+                throw e; //Eh
+            } catch (Throwable t) {
+                throw new RuntimeException(t);
+            }
+        }
+
+        /* todo: Maybe re-implement?
+        for (Method method : objClass.getDeclaredMethods()) {
+            try {
+                boolean oldAccess = method.isAccessible();
+                method.setAccessible(true);
+                if (method.isAnnotationPresent(Configurable.class) && method.getParameterTypes().length == 0) {
+                    Configurable configurable = method.getAnnotation(Configurable.class);
+                    if (configuration.getBoolean(method.getName(), configurable.category(), configurable.enabledByDefault(), configurable.comment())) {
+                        method.invoke(o);
+                    }
+                }
+
+                method.setAccessible(oldAccess);
+            } catch (Throwable t) {
+                throw new RuntimeException(t);
+            }
+        }
+         */
     }
 
     @Nonnull
     @Override
     public ConfigWrapper setCategoryData(String category, String description) {
-        for (CategoryData cat : this.categoryDataList) {
-            if (category.equals(cat.getCategory())) {
-                throw new IllegalArgumentException();
-            }
+        if (hasBeenLoaded()){
+            throw new RuntimeException("Cannot set category data after baking!");
         }
-        this.categoryDataList.add(new CategoryData(category, description));
-        addRegisteredCategory(category);
+        int i = configuration.depth;
+        if (!Strings.isNullOrEmpty(description)){
+            configuration.comment(description);
+        }
+        configuration.push(category);
+        configuration.pop(configuration.depth - i);
+        this.category.add(category);
         return this;
-    }
-
-    protected void addRegisteredCategory(String category) {
-        if (!categories.contains(category.toLowerCase())) {
-            this.categories.add(category.toLowerCase());
-        }
     }
 
     @Nonnull
     @Override
-    public List<String> getRegisteredCategories() {
-        return ImmutableList.copyOf(categories);
+    public Set<String> getRegisteredCategories() {
+        if (hasBeenLoaded()) {
+            return ImmutableSet.copyOf(category);
+        }
+        return category;
+    }
+
+    @Override
+    public void bake() {
+        configurableElements.forEach(ce -> ce.reconfigure(configuration));
+        configurableElements = null;
+        blockLoad = true;
+        spec = configuration.build();
+        spec.setConfig(cfgBuilder);
+        category = ImmutableSet.copyOf(category);
+        configuration = null;
+        try {
+            if (file != null && hasAutoReload.test(file.getFile().toPath())) {
+                FileWatcher.defaultInstance().setWatch(file.getFile(), this::load);
+            }
+        } catch (Exception e){
+            throw new RuntimeException(e);
+        }
+        blockLoad = false;
+        load();
     }
 
     @Override
     public boolean hasBeenLoaded() {
-        return hasInit;
+        return configuration == null;
     }
 
     @Override
@@ -97,200 +227,79 @@ public class ConfigWrapper implements IConfigWrapper {
 
     @Override
     public void registerConfigurableElement(IConfigurableElement configurableElement) {
+        if (hasBeenLoaded()){
+            throw new RuntimeException("Cannot register config elements after baking!");
+        }
         this.configurableElements.add(configurableElement);
-    }
-
-    @Nonnull
-    @Override
-    public Configuration getConfiguration() {
-        return this.configuration;
+        checkReloadListener(configurableElement);
     }
 
     @Override
-    public void refresh(boolean load) {
-        refreshInternal(load);
+    public void configureNow(IConfigurableElement configurableElement) {
+        if (hasBeenLoaded()){
+            throw new RuntimeException("Cannot register config elements after baking!");
+        }
+        configurableElement.reconfigure(configuration);
+        checkReloadListener(configurableElement);
     }
 
-    private void refreshInternal(boolean load) {
-        this.isReloading = true;
-        if (load) {
-            configuration.load();
-        }
-        if (!this.hasInit) {
-            this.hasInit = true;
-        }
-        for (CategoryData categoryData : categoryDataList) {
-            configuration.setCategoryComment(categoryData.getCategory(), categoryData.getDescription());
-        }
-        for (Object o : instances) {
-            Class objClass = o.getClass();
-            if (o instanceof Class) {
-                objClass = (Class) o;
-                o = null;
-            }
-            String classCategory = Configuration.CATEGORY_GENERAL;
-            if (objClass.isAnnotationPresent(Configurable.Class.class)) {
-                Configurable.Class configClass = (Configurable.Class) objClass.getAnnotation(Configurable.Class.class);
-                if (configClass.inherit()) {
-                    Class[] classes = ReflectionHelper.getAllTillMainClass(objClass);
-                    StringBuilder s = new StringBuilder();
-                    for (Class clazz : classes) {
-                        if (clazz.isAnnotationPresent(Configurable.Class.class)) {
-                            if (s.length() != 0) {
-                                s.append(".");
-                            }
-                            String s1 = ((Configurable.Class) clazz.getAnnotation(Configurable.Class.class)).category();
-                            s.append(s1.equals(Configuration.CATEGORY_GENERAL) ? clazz.getSimpleName() : s1);
-                        }
-                    }
-                    classCategory = s.toString();
-                } else {
-                    classCategory = configClass.category();
-                }
-                String comment = configClass.comment();
-                //classCategory = classCategory.toLowerCase();
-                if (!comment.equals("")) {
-                    configuration.setCategoryComment(classCategory, comment);
-                }
-            }
-            for (Field field : objClass.getDeclaredFields()) {
-                try {
-                    boolean oldAccess = field.isAccessible();
-                    field.setAccessible(true);
-                    if (field.isAnnotationPresent(Configurable.class)) {
-                        Configurable configurable = field.getAnnotation(Configurable.class);
-                        Object oldValue = field.get(o);
-                        String category = configurable.category();
-                        if (category.equals(Configuration.CATEGORY_GENERAL)) {
-                            category = classCategory;
-                        }
-                        addRegisteredCategory(category);
-                        boolean serialized = false;
-                        for (IConfigElementSerializer serializer : serializers) {
-                            if (serializer.setData(field.getType(), o, field, configurable, configuration, category, oldValue, configurable.comment())) {
-                                serialized = true;
-                                break;
-                            }
-                        }
-                        if (!serialized) {
-                            throw new RuntimeException("Could not find serializer for type " + field.getType());
-                        }
-                    }
-                    field.setAccessible(oldAccess);
-                } catch (Throwable t) {
-                    throw new RuntimeException(t);
-                }
-            }
-            for (Method method : objClass.getDeclaredMethods()) {
-                try {
-                    boolean oldAccess = method.isAccessible();
-                    method.setAccessible(true);
-                    if (method.isAnnotationPresent(Configurable.class) && method.getParameterTypes().length == 0) {
-                        Configurable configurable = method.getAnnotation(Configurable.class);
-                        if (configuration.getBoolean(method.getName(), configurable.category(), configurable.enabledByDefault(), configurable.comment())) {
-                            method.invoke(o);
-                        }
-                    }
-
-                    method.setAccessible(oldAccess);
-                } catch (Throwable t) {
-                    throw new RuntimeException(t);
-                }
-            }
-        }
-
-        for (IConfigurableElement cfgElement : configurableElements) {
-            cfgElement.reconfigure(configuration);
-        }
-
-        if (configuration.hasChanged()) {
-            configuration.save();
-        }
-        this.isReloading = false;
-    }
-
-    @Nonnull
     @Override
-    public IConfigWrapper wrapCategoryAsConfigWrapper(String category) {
-        return new ConfigWrapper(wrapCategoryAsConfig(category)) {
-
-            @Override
-            public void refresh(boolean load) {
-                if (load && isReloading) {
-                    throw new IllegalStateException("Cannot active load config file while master config is reloading.");
-                }
-                super.refresh(load);
-            }
-
-            @Override
-            protected void addRegisteredCategory(String category) {
-                super.addRegisteredCategory(category);
-                ConfigWrapper.this.addRegisteredCategory(category + "." + category);
-            }
-
-        };
+    public void load() {
+        if (spec == null){
+            throw new IllegalStateException();
+        }
+        if (blockLoad){
+            return;
+        }
+        if (file != null){
+            file.load();
+        }
+        loadTasks.forEach(Runnable::run);
     }
 
-    @Nonnull
-    @Override
-    public Configuration wrapCategoryAsConfig(String category) {
-        addRegisteredCategory(category);
-        return new CategoryAsConfig(category, configuration) {
-
-            @Override
-            public void load() {
-                if (!isReloading) {
-                    super.load();
-                } else {
-                    throw new IllegalStateException("Cannot load config while master configuration is reloading.");
-                }
-            }
-
-
-            @Override
-            public void save() {
-                if (!isReloading) {
-                    super.save();
-                } else {
-                    throw new IllegalStateException("Cannot save config while master configuration is reloading.");
-                }
-            }
-
-        };
+    private void checkReloadListener(IConfigurableElement cfg){
+        if (cfg instanceof Runnable){
+            loadTasks.add((Runnable) cfg);
+        } else if (cfg instanceof UnsafeRunnable) {
+            loadTasks.add(FuncHelper.safeRunnable((UnsafeRunnable) cfg));
+        }
     }
 
-    public static Configuration wrapCategoryAsConfig(Configuration configuration, String category) {
-        return new CategoryAsConfig(category, configuration);
+    private class ElecConfigBuilder extends ForgeConfigSpec.Builder {
+
+        private int depth = 0;
+
+        @Override
+        public <T> ForgeConfigSpec.ConfigValue<T> define(List<String> path, ForgeConfigSpec.ValueSpec value, Supplier<T> defaultSupplier) {
+            depth += path.size();
+            return super.define(path, value, defaultSupplier);
+        }
+
+        @Override
+        public ForgeConfigSpec.Builder pop(int count) {
+            super.pop(count);
+            depth -= count;
+            if (depth < 0){
+                throw new RuntimeException();
+            }
+            return this;
+        }
+
     }
 
     public static void registerConfigElementSerializer(IConfigElementSerializer serializer) {
-        if (FMLHelper.hasReachedState(ModLoadingStage.INIT)) {
+        if (FMLHelper.hasReachedState(ModLoadingStage.ENQUEUE_IMC)) {
             throw new RuntimeException("Cannot register config element serializer after PreInit!");
         }
         serializers.add(serializer);
     }
 
-    private final class CategoryData {
-
-        private CategoryData(String category, String desc) {
-            this.category = category;
-            this.desc = desc;
-        }
-
-        private final String category, desc;
-
-        private String getCategory() {
-            return this.category;
-        }
-
-        private String getDescription() {
-            return this.desc;
-        }
-
-    }
+    private static final Predicate<Path> hasAutoReload;
 
     static {
         serializers = Lists.newArrayList();
+        final FieldPointer<FileWatcher, Map> watchedFiles = new FieldPointer<>(FileWatcher.class, "watchedFiles");
+        hasAutoReload = p -> watchedFiles.get(FileWatcher.defaultInstance()).containsKey(p.toAbsolutePath());
     }
 
 }

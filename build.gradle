@@ -14,12 +14,6 @@ buildscript {
             url = "https://oss.sonatype.org/content/repositories/snapshots/"
         }
     }
-    configurations { //Todo: remove when FG is stable
-        classpath.resolutionStrategy {
-            cacheDynamicVersionsFor 10, 'seconds'
-            cacheChangingModulesFor 0, 'seconds'
-        }
-    }
     dependencies {
         classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '3.+', changing: true
     }
@@ -67,22 +61,14 @@ minecraft {
 
     setMappings config.mappings
 
-	runConfig {
-        name= "Minecraft Client"
-        main= "net.minecraftforge.userdev.UserdevLauncher"
-        ideaModuleName = "${project.name}_main"
-        workingDirectory = project.file("run").canonicalPath
-        environment "target", "fmldevclient"
-        environment "assetDirectory", downloadAssets.output.absolutePath
-    }
-
-    runConfig {
-        name= "Minecraft Server"
-        main= "net.minecraftforge.userdev.UserdevLauncher"
-        ideaModuleName = "${project.name}_main"
-        workingDirectory = project.file("run").canonicalPath
-        environment "target", "fmldevserver"
-        environment "assetDirectory", downloadAssets.output.absolutePath
+    runs {
+        client = {
+            workingDirectory project.file('run').canonicalPath
+            source sourceSets.main
+        }
+        server = {
+            workingDirectory project.file('run').canonicalPath
+        }
     }
 
 }

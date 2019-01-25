@@ -7,7 +7,7 @@ import net.minecraftforge.fml.ModLoadingStage;
  * Created by Elec332 on 24-9-2016.
  */
 @SuppressWarnings("unused")
-@AnnotationDataProcessor(ModLoadingStage.PREINIT)
+@AnnotationDataProcessor(ModLoadingStage.COMMON_SETUP)
 public class PreInitAnnotationProcessor extends AbstractAnnotationProcessor {
 
     @Override

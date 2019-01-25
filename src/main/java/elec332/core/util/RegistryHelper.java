@@ -95,6 +95,8 @@ public class RegistryHelper {
         return (ForgeRegistry<EntityType<?>>) ForgeRegistries.ENTITIES;
     }
 
+    public static ForgeRegistry<>
+
     public static Map<Block, Item> getBlockItemMap() {
         return GameData.getBlockItemMap();
     }

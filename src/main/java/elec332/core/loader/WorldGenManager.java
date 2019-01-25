@@ -6,6 +6,7 @@ import com.google.common.collect.*;
 import elec332.core.ElecCore;
 import elec332.core.api.APIHandlerInject;
 import elec332.core.api.IAPIHandler;
+import elec332.core.api.annotations.StaticLoad;
 import elec332.core.api.registration.IWorldGenRegister;
 import elec332.core.api.registry.ISingleObjectRegistry;
 import elec332.core.api.world.*;
@@ -54,7 +55,7 @@ import java.util.stream.StreamSupport;
  * Giant clusterfuck, beware your eyes!
  */
 @SuppressWarnings("unused")
-//@StaticLoad TODO: re-enable
+@StaticLoad
 enum WorldGenManager implements ISingleObjectRegistry<IWorldGenHook>, IWorldGenManager {
 
     INSTANCE;

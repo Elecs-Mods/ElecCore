@@ -31,7 +31,6 @@ public class ConstructionAnnotationProcessor implements IAnnotationDataProcessor
     public void processASMData(final IAnnotationDataHandler annotationData, ModLoadingStage state) {
         ElecCore.logger.info("Injecting proxies...");
         FMLHelper.getMods().forEach(mod -> {
-
             Function<Type, Set<IAnnotationData>> modData = annotationData.getAnnotationsFor(mod);
             Set<IAnnotationData> proxies = modData.apply(Type.getType(SidedProxy.class));
             proxies.forEach(ann -> {
@@ -40,7 +39,7 @@ public class ConstructionAnnotationProcessor implements IAnnotationDataProcessor
                 Supplier<String> modIdGetter = () -> {
                     String modId = (String) annotationInfo.get("modId");
                     if (Strings.isNullOrEmpty(modId)) {
-                        modId = annotationData.deepSearchOwner(ann);
+                        modId = annotationData.deepSearchOwnerName(ann);
                         if (Strings.isNullOrEmpty(modId)) {
                             throw new RuntimeException("Unable to determine owner of " + ann.getClassName());
                         }
@@ -75,7 +74,7 @@ public class ConstructionAnnotationProcessor implements IAnnotationDataProcessor
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
-                ElecCore.logger.info("Injecting proxy into " + member.getName());
+                ElecCore.logger.info("Injecting proxy into " + member.getName() + "  "+member.getParentType());
                 injector.accept(proxy);
             });
 

@@ -257,7 +257,7 @@ class DefaultNetworkHandler implements IElecNetworkHandler, DefaultByteBufFactor
 
     @SuppressWarnings("unchecked")
     private int getNextIndex() {
-        while (messageIndexUsed.test(networkWrapper, i)) {
+        while (messageIndexUsed.test(networkWrapper, (short) i)) {
             i++;
         }
         int ret = i;
@@ -265,16 +265,16 @@ class DefaultNetworkHandler implements IElecNetworkHandler, DefaultByteBufFactor
         return ret;
     }
 
-    private static final BiPredicate<SimpleChannel, Integer> messageIndexUsed;
+    private static final BiPredicate<SimpleChannel, Short> messageIndexUsed;
     private static final FieldPointer<SimpleChannel, IndexedMessageCodec> indexer;
     private static final FieldPointer<IndexedMessageCodec, Short2ObjectArrayMap> indexer2;
     private static final FieldPointer<SimpleChannel, NetworkInstance> nameGetter;
 
     static {
         indexer = new FieldPointer<>(SimpleChannel.class, "indexedCodec");
-        indexer2 = new FieldPointer<>(IndexedMessageCodec.class, " indices");
+        indexer2 = new FieldPointer<>(IndexedMessageCodec.class, "indicies");
         messageIndexUsed = (c, i) -> indexer2.get(indexer.get(c)).containsKey(i);
-        nameGetter = new FieldPointer<>(SimpleChannel.class, " instance");
+        nameGetter = new FieldPointer<>(SimpleChannel.class, "instance");
     }
 
 }

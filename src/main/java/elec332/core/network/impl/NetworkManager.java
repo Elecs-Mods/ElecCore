@@ -42,9 +42,9 @@ enum NetworkManager implements INetworkManager<DefaultNetworkHandler> {
         DefaultNetworkHandler ret = networkHandlers.get(mc);
         if (ret == null) {
             try {
-                ret = new DefaultNetworkHandler(new ResourceLocation(mc.getModId(), "networkHandler"));
+                ret = new DefaultNetworkHandler(new ResourceLocation(mc.getModId(), "networkhandler"));
             } catch (RuntimeException e) { //Name already exists...
-                ret = new DefaultNetworkHandler(new ResourceLocation(mc.getModId(), "networkManager"));
+                ret = new DefaultNetworkHandler(new ResourceLocation(mc.getModId(), "networkmanager"));
             }
             networkHandlers.put(mc, Preconditions.checkNotNull(ret));
         }

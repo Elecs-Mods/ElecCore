@@ -11,6 +11,7 @@ import elec332.core.api.discovery.IAnnotationData;
 import elec332.core.api.discovery.IAnnotationDataHandler;
 import elec332.core.api.mod.IElecCoreMod;
 import elec332.core.api.mod.IElecCoreModHandler;
+import elec332.core.api.network.ModNetworkHandler;
 import elec332.core.util.FMLHelper;
 import net.minecraftforge.fml.ModContainer;
 import org.apache.commons.lang3.tuple.Pair;
@@ -99,14 +100,13 @@ enum ElecModHandler implements IElecCoreModHandler {
 
                 if (mc != null) {
                     try {
-                        clz = targets.loadClass();
-                        f = clz.getDeclaredField(targets.getMemberName());
+                        f = targets.getField();
                         f.setAccessible(true);
                         isStatic = Modifier.isStatic(f.getModifiers());
                         injectedMod = retriever.apply(mc);
                     } catch (Exception e) {
-                        e.printStackTrace();
                         ElecCore.logger.error(String.format("Attempting to load @%s in class %s for %s and failing", annotationName, targets.getClassName(), mc.getModId()), e);
+                        e.printStackTrace();
                         throw e;
                     }
                 }
@@ -123,7 +123,7 @@ enum ElecModHandler implements IElecCoreModHandler {
                 }
             }
         } catch (Exception e) {
-            //
+            throw new RuntimeException(e);
         }
     }
 
@@ -137,7 +137,7 @@ enum ElecModHandler implements IElecCoreModHandler {
         handlers.add(handler);
     }
 
-    @APIHandlerInject()
+    @APIHandlerInject(weight = Short.MAX_VALUE)
     public void injectModHandler(IAPIHandler apiHandler) {
         apiHandler.inject(INSTANCE, IElecCoreModHandler.class);
     }

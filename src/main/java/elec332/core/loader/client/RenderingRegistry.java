@@ -10,6 +10,7 @@ import elec332.core.api.client.IIconRegistrar;
 import elec332.core.api.client.ITextureLoader;
 import elec332.core.api.client.model.*;
 import elec332.core.client.RenderHelper;
+import elec332.core.util.FMLHelper;
 import elec332.core.util.ReflectionHelper;
 import elec332.core.util.RegistryHelper;
 import net.minecraft.block.Block;
@@ -60,7 +61,19 @@ public final class RenderingRegistry implements IElecRenderingRegistry {
         extraBlocks = Lists.newArrayList();
         extraModels = Lists.newArrayList();
         MinecraftForge.EVENT_BUS.register(this);
-        //todo: figure out why gui-events are passed to this...
+        //todo: figure out why all events are passed to this...
+        /*ModelRegistryEvent
+        System.out.println("KJGFGVFBHBTFGNVGHVCVHVG");
+        try {
+            MinecraftForge.EVENT_BUS.addListener(EventPriority.HIGH, false, (Class<ModelLoadEvent>)FMLHelper.loadClass(ModelLoadEvent.class.getCanonicalName()), new Consumer<ModelLoadEvent>() {
+                @Override
+                public void accept(ModelLoadEvent modelLoadEvent) {
+                    onJsonModelLoad(modelLoadEvent);
+                }
+            });
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }*/
         //MinecraftForge.EVENT_BUS.addListener(EventPriority.HIGH, false, ModelLoadEvent.class, this::onJsonModelLoad);
     }
 
@@ -144,7 +157,7 @@ public final class RenderingRegistry implements IElecRenderingRegistry {
         }
     }
 
-    //@SubscribeEvent(priority = EventPriority.HIGH)
+    @SubscribeEvent(priority = EventPriority.HIGH)
     public void onJsonModelLoad(ModelLoadEvent event) {
         for (ModelResourceLocation mrl : extraModels) {
             IBakedModel model;
@@ -251,16 +264,6 @@ public final class RenderingRegistry implements IElecRenderingRegistry {
             }
 
         });
-        MinecraftForge.EVENT_BUS.addListener(EventPriority.HIGH, new Consumer<ModelBakeEvent>() {
-
-            @Override
-            @OnlyIn(Dist.CLIENT)
-            public void accept(ModelBakeEvent event) {
-                MinecraftForge.EVENT_BUS.post(new ModelLoadEventImpl(instance().quadBakery, instance().modelBakery, instance.templateBakery, event.getModelRegistry()));
-            }
-
-        });
-        /* Todo: Forge says nope...
         MinecraftForge.EVENT_BUS.register(new Object() {
 
             @SubscribeEvent(priority = EventPriority.HIGH)
@@ -269,7 +272,7 @@ public final class RenderingRegistry implements IElecRenderingRegistry {
                 MinecraftForge.EVENT_BUS.post(new ModelLoadEventImpl(instance().quadBakery, instance().modelBakery, instance.templateBakery, event.getModelRegistry()));
             }
 
-        });*/
+        });
     }
 
 }

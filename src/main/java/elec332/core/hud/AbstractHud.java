@@ -2,6 +2,7 @@ package elec332.core.hud;
 
 import com.google.common.base.Strings;
 import elec332.core.ElecCore;
+import elec332.core.api.config.IConfigWrapper;
 import elec332.core.api.config.IConfigurableElement;
 import elec332.core.client.RenderHelper;
 import elec332.core.hud.position.Alignment;
@@ -14,7 +15,6 @@ import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 
@@ -30,7 +30,7 @@ public abstract class AbstractHud implements IConfigurableElement {
         this.alignment = alignment;
         this.horiz = horizontal;
         this.ver = vertical;
-        this.category = Configuration.CATEGORY_CLIENT;
+        this.category = IConfigWrapper.CATEGORY_CLIENT;
     }
 
     public AbstractHud setConfigCategory(String s) {
@@ -50,6 +50,7 @@ public abstract class AbstractHud implements IConfigurableElement {
     private Alignment alignment = Alignment.LEFT;
     private IStartingPoint horiz = HorizontalStartingPoint.LEFT, ver = VerticalStartingPoint.MIDDLE;
 
+    /* todo ?
     @Override
     public void reconfigure(Configuration config) {
         if (config != null) {
@@ -78,7 +79,7 @@ public abstract class AbstractHud implements IConfigurableElement {
      * @param config     The config
      * @param horizontal The (non-default) horizontal starting point
      * @param vertical   The (non-default) vertical starting point
-     */
+     *
     protected void configureCustom(@Nonnull Configuration config, @Nonnull IStartingPoint horizontal, @Nonnull IStartingPoint vertical) {
         throw new UnsupportedOperationException();
     }
@@ -87,9 +88,9 @@ public abstract class AbstractHud implements IConfigurableElement {
      * Use this internally to configure additional HUD settings
      *
      * @param config The config
-     */
+     *
     protected abstract void configure(@Nonnull Configuration config);
-
+*/
     @Nonnull
     protected Alignment getAlignment() {
         return alignment;
