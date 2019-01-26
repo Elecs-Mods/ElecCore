@@ -90,16 +90,7 @@ enum ModuleManager implements IModuleManager {
 
         constructModules(depCheckModules);
 
-        /*activeModules.forEach(module -> {
-
-            try {
-                ((FMLEvent) event).applyModContainer(module.getOwnerMod());
-                module.invokeEvent(event);
-            } catch (Exception e) {
-                throw new RuntimeException("Error invoking FMLPreInitializationEvent on module " + module.getName() + ", owned by: " + module.getOwnerMod(), e.getCause());
-            }
-
-        });*/
+        registerModulesToModBus();
 
         this.fieldProcessors.forEach(ModuleManager.INSTANCE::processModuleField);
 
@@ -186,6 +177,9 @@ enum ModuleManager implements IModuleManager {
         }
     }
 
+    /**
+     * This is possible without reflection in 1.13, but not in 1.12 :(
+     */
     @SuppressWarnings("all")
     private void registerModulesToModBus() {
         for (IModuleContainer module : activeModules) {
@@ -199,7 +193,6 @@ enum ModuleManager implements IModuleManager {
                     @com.google.common.eventbus.Subscribe
                     public void onEvent(Object event) {
                         try {
-                            System.out.println("invoke " + event + " on " + module);
                             module.invokeEvent(event);
                         } catch (Exception e) {
                             throw new RuntimeException("Error invoking event on module " + module.getModule() + ", owned by: " + module.getOwnerMod(), e.getCause());
