@@ -142,7 +142,7 @@ enum ElecModHandler implements IElecCoreModHandler {
         handlers.add(handler);
     }
 
-    @APIHandlerInject()
+    @APIHandlerInject(weight = Short.MAX_VALUE)
     public void injectModHandler(IAPIHandler apiHandler) {
         apiHandler.inject(INSTANCE, IElecCoreModHandler.class);
     }

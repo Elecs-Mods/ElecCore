@@ -164,7 +164,7 @@ public class WailaCompatHandler implements IWailaDataProvider {
             tag = new NBTTagCompound();
         }
         final NBTTagCompound fTag = tag;
-        RayTraceResult rtr = RayTraceHelper.retraceBlock(world, player, pos);
+        RayTraceResult rtr = RayTraceHelper.retraceBlock(world, pos, player);
         if (rtr == null) {
             fTag.setBoolean("_nope_", true);
             return fTag;

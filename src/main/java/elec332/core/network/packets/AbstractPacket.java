@@ -31,7 +31,7 @@ public abstract class AbstractPacket extends AbstractMessage implements IMessage
         ElecCore.tickHandler.registerCall(new Runnable() {
             @Override
             public void run() {
-                Object o = onMessageThreadSafe(message, ctx);
+                Object o = onMessageThreadSafe(message.networkPackageObject, ctx);
                 if (o != null) {
                     throw new RuntimeException();
                 }
@@ -40,6 +40,6 @@ public abstract class AbstractPacket extends AbstractMessage implements IMessage
         return null;
     }
 
-    public abstract IMessage onMessageThreadSafe(AbstractPacket message, MessageContext ctx);
+    public abstract IMessage onMessageThreadSafe(NBTTagCompound message, MessageContext ctx);
 
 }

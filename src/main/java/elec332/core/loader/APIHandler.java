@@ -2,10 +2,9 @@ package elec332.core.loader;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
-import com.google.common.collect.HashMultimap;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.common.collect.SetMultimap;
 import elec332.core.ElecCore;
 import elec332.core.api.APIHandlerInject;
 import elec332.core.api.IAPIHandler;
@@ -40,11 +39,12 @@ enum APIHandler implements IASMDataProcessor, IAPIHandler {
     INSTANCE;
 
     APIHandler() {
-        callBacks = HashMultimap.create();
+        callBacks = Maps.newHashMap();
         injectedHandlers = Maps.newHashMap();
     }
 
-    private final SetMultimap<Class<?>, Consumer<?>> callBacks;
+    private final Map<Class<?>, List<Consumer<?>>> callBacks;   //Used to be a multimap, but multimaps sort contents themselves,
+                                                                // we do not want that to happen, because they will be inserted in order
     private final Map<Class<?>, Object> injectedHandlers;
 
     @Override
@@ -55,7 +55,6 @@ enum APIHandler implements IASMDataProcessor, IAPIHandler {
         collect(asmData, APIHandlerInject.class, "weight");
 
         inject(INSTANCE, IAPIHandler.class);
-
     }
 
     @SuppressWarnings("all")
@@ -106,7 +105,8 @@ enum APIHandler implements IASMDataProcessor, IAPIHandler {
                 };
             }
 
-            callBacks.put(Preconditions.checkNotNull(type), Preconditions.checkNotNull(ret));
+            List<Consumer<?>> l = callBacks.computeIfAbsent(Preconditions.checkNotNull(type), t -> Lists.newArrayList());
+            l.add(Preconditions.checkNotNull(ret));
 
         }
     }
@@ -118,7 +118,7 @@ enum APIHandler implements IASMDataProcessor, IAPIHandler {
             if (!clazz.isAssignableFrom(o.getClass())) {
                 throw new IllegalArgumentException();
             }
-            for (Consumer consumer : callBacks.removeAll(clazz)) {
+            for (Consumer consumer : Optional.ofNullable(callBacks.remove(clazz)).orElse(ImmutableList.of())) {
                 consumer.accept(o);
             }
             injectedHandlers.put(clazz, o);
