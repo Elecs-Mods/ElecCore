@@ -27,8 +27,8 @@ public abstract class AbstractPacketTileAction extends AbstractPacket {
     }
 
     @Override
-    public void onMessageThreadSafe(AbstractPacket message, IExtendedMessageContext ctx) {
-        NBTBuilder tag = new NBTBuilder(message.networkPackageObject);
+    public void onMessageThreadSafe(NBTTagCompound message, IExtendedMessageContext ctx) {
+        NBTBuilder tag = new NBTBuilder(message);
         BlockPos loc = tag.getBlockPos();
         int i = tag.getInteger("id");
         NBTTagCompound data = tag.getTag("data");

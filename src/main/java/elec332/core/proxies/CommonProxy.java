@@ -35,7 +35,6 @@ public class CommonProxy implements IGuiHandler {
     @Override
     public synchronized WindowContainer getServerGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z) {
         currentOpeningPlayer.set(player);
-        player.openBook();
         WindowContainer ret = new WindowContainer(player, WindowManager.INSTANCE.get(ID & 0xFF).createWindow((byte) (ID >> 8), player, world, x, y, z));
         currentOpeningPlayer.remove();
         return ret;

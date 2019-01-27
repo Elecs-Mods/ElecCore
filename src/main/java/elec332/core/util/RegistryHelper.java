@@ -7,6 +7,8 @@ import net.minecraft.item.Item;
 import net.minecraft.nbt.INBTBase;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionType;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
@@ -17,6 +19,7 @@ import net.minecraftforge.fml.common.registry.VillagerRegistry;
 import net.minecraftforge.registries.*;
 
 import java.util.Map;
+import java.util.function.Supplier;
 
 /**
  * Created by Elec332 on 5-4-2016.
@@ -95,7 +98,18 @@ public class RegistryHelper {
         return (ForgeRegistry<EntityType<?>>) ForgeRegistries.ENTITIES;
     }
 
-    public static ForgeRegistry<>
+    public static ForgeRegistry<TileEntityType<?>> getTileEntities(){
+        return (ForgeRegistry<TileEntityType<?>>) ForgeRegistries.TILE_ENTITIES;
+    }
+
+    public static <T extends TileEntity> TileEntityType<T> registerTileEntity(ResourceLocation id, Supplier<T> builder) {
+        return registerTileEntity(id, new TileEntityType<>(builder, null));
+    }
+
+    public static <T extends TileEntity> TileEntityType<T> registerTileEntity(ResourceLocation id, TileEntityType<T> type) {
+        GameData.register_impl(type.setRegistryName(id));
+        return type;
+    }
 
     public static Map<Block, Item> getBlockItemMap() {
         return GameData.getBlockItemMap();

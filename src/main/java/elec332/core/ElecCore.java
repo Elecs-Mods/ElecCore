@@ -6,8 +6,11 @@ import elec332.core.api.mod.IElecCoreMod;
 import elec332.core.api.mod.SidedProxy;
 import elec332.core.api.module.IModuleController;
 import elec332.core.api.network.ModNetworkHandler;
+import elec332.core.api.registration.IObjectRegister;
+import elec332.core.api.registration.IWorldGenRegister;
 import elec332.core.grid.internal.GridEventInputHandler;
 import elec332.core.handler.TickHandler;
+import elec332.core.handler.annotations.TileEntityAnnotationProcessor;
 import elec332.core.handler.event.PlayerEventHandler;
 import elec332.core.inventory.window.WindowManager;
 import elec332.core.network.IElecNetworkHandler;
@@ -16,7 +19,10 @@ import elec332.core.network.packets.PacketSyncWidget;
 import elec332.core.network.packets.PacketTileDataToServer;
 import elec332.core.network.packets.PacketWidgetDataToServer;
 import elec332.core.proxies.CommonProxy;
-import elec332.core.util.*;
+import elec332.core.util.CommandHelper;
+import elec332.core.util.FMLHelper;
+import elec332.core.util.LoadTimer;
+import elec332.core.util.OredictHelper;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
@@ -26,9 +32,10 @@ import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent;
 import net.minecraftforge.fml.event.lifecycle.InterModProcessEvent;
 import net.minecraftforge.fml.event.server.FMLServerAboutToStartEvent;
 import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
-import net.minecraftforge.fml.network.NetworkRegistry;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import java.util.function.Consumer;
 
 /**
  * Created by Elec332.
@@ -141,6 +148,11 @@ public class ElecCore implements IModuleController, IElecCoreMod {
 
     private void onServerStarting(FMLServerStartingEvent event) {
         CommandHelper.registerCommands(event);
+    }
+
+    @Override
+    public void registerRegisters(Consumer<IObjectRegister<?>> objectHandler, Consumer<IWorldGenRegister> worldHandler) {
+        objectHandler.accept(new TileEntityAnnotationProcessor());
     }
 
     @Override

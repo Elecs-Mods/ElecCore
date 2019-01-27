@@ -40,6 +40,7 @@ public class ElecCoreLoader {
             ElecCoreLoader.lastStage = ModLoadingStage.CONSTRUCT;
             annotationDataHandler.identify(FMLHelper.getModList());
             annotationDataHandler.process(ModLoadingStage.CONSTRUCT);
+            ElecModHandler.INSTANCE.afterConstruct();
         });
     }
 
@@ -52,7 +53,6 @@ public class ElecCoreLoader {
         FMLHelper.runLater(() -> {
             annotationDataHandler.process(ModLoadingStage.COMMON_SETUP);
             ModuleManager.INSTANCE.init();
-            ElecModHandler.INSTANCE.latePreInit();
             ElecCoreLoader.lastStage = FMLHelper.getStageFrom(event);
         });
     }

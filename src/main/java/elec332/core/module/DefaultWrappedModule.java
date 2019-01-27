@@ -9,7 +9,6 @@ import elec332.core.api.module.IModuleInfo;
 import elec332.core.util.FMLHelper;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.ModContainer;
-import net.minecraftforge.fml.common.Mod;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.maven.artifact.versioning.VersionRange;
 
@@ -91,7 +90,7 @@ public class DefaultWrappedModule implements IModuleContainer {
     public void invokeEvent(Object event) throws Exception {
         Class objClass = this.module.getClass();
         for (Method method : objClass.getDeclaredMethods()) {
-            if (method.isAnnotationPresent(ElecModule.EventHandler.class) || method.isAnnotationPresent(Mod.EventHandler.class)) {
+            if (method.isAnnotationPresent(ElecModule.EventHandler.class)/* || method.isAnnotationPresent(Mod.EventHandler.class)*/) {
 
                 if (method.getParameterTypes().length != 1) {
                     continue;

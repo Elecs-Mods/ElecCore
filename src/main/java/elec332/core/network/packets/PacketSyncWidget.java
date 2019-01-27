@@ -24,9 +24,9 @@ public class PacketSyncWidget extends AbstractPacket {
     }
 
     @Override
-    public void onMessageThreadSafe(AbstractPacket message, IExtendedMessageContext ctx) {
-        NBTTagCompound data = message.networkPackageObject.getCompound("data");
-        NBTTagCompound containerData = message.networkPackageObject.getCompound("containerData");
+    public void onMessageThreadSafe(NBTTagCompound message, IExtendedMessageContext ctx) {
+        NBTTagCompound data = message.getCompound("data");
+        NBTTagCompound containerData = message.getCompound("containerData");
         Container openContainer = ElecCore.proxy.getClientPlayer().openContainer;
         if (openContainer.windowId == containerData.getInt("window")) {
             ((IWidgetContainer) openContainer).getWidgets().get(containerData.getInt("widget")).readNBTChangesFromPacket(data, LogicalSide.CLIENT);

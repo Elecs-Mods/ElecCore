@@ -11,7 +11,6 @@ import elec332.core.api.discovery.IAnnotationData;
 import elec332.core.api.discovery.IAnnotationDataHandler;
 import elec332.core.api.mod.IElecCoreMod;
 import elec332.core.api.mod.IElecCoreModHandler;
-import elec332.core.api.network.ModNetworkHandler;
 import elec332.core.util.FMLHelper;
 import net.minecraftforge.fml.ModContainer;
 import org.apache.commons.lang3.tuple.Pair;
@@ -46,7 +45,7 @@ enum ElecModHandler implements IElecCoreModHandler {
     private Set<BiConsumer<ModContainer, IElecCoreMod>> handlers;
     private List<Pair<ModContainer, IElecCoreMod>> mods;
 
-    void latePreInit() {
+    void afterConstruct() {
         identifyMods();
         initAnnotations(asmData);
         init();
@@ -57,6 +56,12 @@ enum ElecModHandler implements IElecCoreModHandler {
                 .filter(o -> o.getMod() instanceof IElecCoreMod)
                 .sorted((o1, o2) -> o1.getMod() instanceof ElecCore ? 1 : (o2.getMod() instanceof ElecCore ? -1 : Integer.compare(o1.hashCode(), o2.hashCode())))
                 .map(modContainer -> Pair.of(modContainer, (IElecCoreMod) modContainer.getMod()))
+                .peek(mcp -> {
+                    if (!FMLHelper.hasFMLModContainer(mcp.getLeft())){
+                        ElecCore.logger.error("ModContainer " + mcp.getLeft() + " isn't instanceof FMLModContainer!");
+                        ElecCore.logger.error("This will limit some functionality.");
+                    }
+                })
                 .collect(Collectors.toList());
     }
 

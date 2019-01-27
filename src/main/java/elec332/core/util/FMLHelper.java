@@ -2,10 +2,10 @@ package elec332.core.util;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import com.google.common.collect.Maps;
 import elec332.core.ElecCore;
 import elec332.core.loader.ElecCoreLoader;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.fml.*;
 import net.minecraftforge.fml.common.thread.EffectiveSide;
 import net.minecraftforge.fml.event.lifecycle.ModLifecycleEvent;
@@ -32,9 +32,10 @@ import java.util.stream.Collectors;
  */
 public class FMLHelper {
 
-    private static FieldPointer<ModFileScanData.ClassData, Type> classOwner = new FieldPointer<>(ModFileScanData.ClassData.class, "clazz");
-    private static BiMap<ModLoadingStage, Class<? extends ModLifecycleEvent>> eventMap;
+    private static final FieldPointer<ModFileScanData.ClassData, Type> classOwner = new FieldPointer<>(ModFileScanData.ClassData.class, "clazz");
+    private static final BiMap<ModLoadingStage, Class<? extends ModLifecycleEvent>> eventMap;
     private static Map<String, ModContainer> mods = null;
+    private static final Map<ModLoadingStage, String> modLoadingNames;
     private static boolean mlVerify = false;
 
     private static Map<String, ModContainer> buildModList() {
@@ -99,6 +100,16 @@ public class FMLHelper {
             throw new IllegalArgumentException();
         }
         return eventMap.get(stage);
+    }
+
+    /**
+     * Returns a more user-friendly name for the provided mod loading stage
+     *
+     * @param stage The {@link ModLoadingStage} to get a name from
+     * @return A name for the provided {@link ModLoadingStage}
+     */
+    public static String getLoadingStageName(ModLoadingStage stage){
+        return modLoadingNames.get(stage);
     }
 
     /**
@@ -297,6 +308,32 @@ public class FMLHelper {
                 }
             }
         });
+        modLoadingNames = Maps.newEnumMap(ModLoadingStage.class);
+        for (ModLoadingStage stage : ModLoadingStage.values()){
+            String name;
+            switch (stage){
+                case COMMON_SETUP:
+                    name = "Pre-Initialized";
+                    break;
+                case ENQUEUE_IMC:
+                    name = "Initialized";
+                    break;
+                case PROCESS_IMC:
+                    name = "Post-Initialized";
+                    break;
+                case LOAD_REGISTRIES:
+                    name = "Registered objects";
+                    break;
+                case COMPLETE:
+                    name = "Finished loading";
+                    break;
+                case SIDED_SETUP:
+                    name = "Sided-Setup";
+                default:
+                    name = stage.toString();
+            }
+            modLoadingNames.put(stage, name);
+        }
     }
 
 }

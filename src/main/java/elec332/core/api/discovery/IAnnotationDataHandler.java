@@ -5,7 +5,6 @@ import net.minecraftforge.forgespi.language.IModFileInfo;
 import org.objectweb.asm.Type;
 
 import java.lang.annotation.Annotation;
-import java.nio.file.Path;
 import java.util.Set;
 import java.util.function.Function;
 

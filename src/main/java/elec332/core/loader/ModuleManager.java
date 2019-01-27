@@ -102,6 +102,8 @@ enum ModuleManager implements IModuleManager {
 
         });*/
 
+        registerModulesToModBus();
+
         this.fieldProcessors.forEach(ModuleManager.INSTANCE::processModuleField);
 
         loaded = true;
@@ -195,7 +197,6 @@ enum ModuleManager implements IModuleManager {
             }
             ((FMLModContainer) mc).getEventBus().addListener(event -> {
                 try {
-                    System.out.println("invoke " + event + " on " + module);
                     module.invokeEvent(event);
                 } catch (Exception e) {
                     throw new RuntimeException("Error invoking event on module " + module.getModule() + ", owned by: " + module.getOwnerMod(), e.getCause());

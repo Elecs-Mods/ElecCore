@@ -22,13 +22,13 @@ public class PacketTileDataToServer extends AbstractPacket {
     }
 
     @Override
-    public void onMessageThreadSafe(AbstractPacket message, IExtendedMessageContext ctx) {
-        NBTBuilder data = new NBTBuilder(message.networkPackageObject);
+    public void onMessageThreadSafe(NBTTagCompound message, IExtendedMessageContext ctx) {
+        NBTBuilder data = new NBTBuilder(message);
         int ID = data.getInteger("PacketId");
         EntityPlayerMP sender = (EntityPlayerMP) ctx.getSender();
         IElecCoreNetworkTile tile = (IElecCoreNetworkTile) WorldHelper.getTileAt(sender.getEntityWorld(), data.getBlockPos());
         if (tile != null) {
-            tile.onPacketReceivedFromClient(sender, ID, message.networkPackageObject.getCompound("data"));
+            tile.onPacketReceivedFromClient(sender, ID, message.getCompound("data"));
         }
     }
 }

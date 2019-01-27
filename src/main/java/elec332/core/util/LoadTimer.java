@@ -46,7 +46,7 @@ public class LoadTimer {
             throw new IllegalArgumentException();
         }
         lastState = null;
-        logger.info(mod + " has " + modState.toString() + " in " + (System.currentTimeMillis() - start) + " ms");
+        logger.info(mod + " has " + FMLHelper.getLoadingStageName(modState) + " in " + (System.currentTimeMillis() - start) + " ms");
     }
 
 }

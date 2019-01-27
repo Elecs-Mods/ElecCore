@@ -74,7 +74,7 @@ public class ConstructionAnnotationProcessor implements IAnnotationDataProcessor
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
-                ElecCore.logger.info("Injecting proxy into " + member.getName() + "  "+member.getParentType());
+                ElecCore.logger.info("Injecting proxy into " + member.getName() + "@"+member.getParentType().getCanonicalName());
                 injector.accept(proxy);
             });
 

@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
 /**
  * Created by Elec332 on 29-10-2016.
  */
-@AnnotationDataProcessor(value = ModLoadingStage.COMMON_SETUP, importance = Integer.MAX_VALUE)
+@AnnotationDataProcessor(value = ModLoadingStage.CONSTRUCT, importance = Integer.MAX_VALUE)
 enum APIHandler implements IAnnotationDataProcessor, IAPIHandler {
 
     INSTANCE;
@@ -43,7 +43,8 @@ enum APIHandler implements IAnnotationDataProcessor, IAPIHandler {
         injectedHandlers = Maps.newHashMap();
     }
 
-    private final Map<Class<?>, List<Consumer<?>>> callBacks;
+    private final Map<Class<?>, List<Consumer<?>>> callBacks;   //Used to be a multimap, but multimaps sort contents themselves,
+                                                                // we do not want that to happen, because they will be inserted in order
     private final Map<Class<?>, Object> injectedHandlers;
 
     @Override

@@ -23,9 +23,9 @@ public class PacketWidgetDataToServer extends AbstractPacket {
     }
 
     @Override
-    public void onMessageThreadSafe(AbstractPacket message, IExtendedMessageContext ctx) {
-        NBTTagCompound data = message.networkPackageObject.getCompound("data");
-        NBTTagCompound containerData = message.networkPackageObject.getCompound("containerData");
+    public void onMessageThreadSafe(NBTTagCompound message, IExtendedMessageContext ctx) {
+        NBTTagCompound data = message.getCompound("data");
+        NBTTagCompound containerData = message.getCompound("containerData");
         Window window = WindowManager.getOpenWindow(ctx.getSender(), containerData.getInt("window"));
         if (window != null) {
             window.getWidgets().get(containerData.getInt("widget")).readNBTChangesFromPacket(data, LogicalSide.SERVER);

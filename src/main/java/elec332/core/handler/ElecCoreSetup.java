@@ -20,9 +20,9 @@ import elec332.core.config.ConfigWrapper;
 import elec332.core.data.SaveHandler;
 import elec332.core.module.DefaultModuleInfo;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.javafmlmod.FMLModContainer;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -83,10 +83,11 @@ public class ElecCoreSetup {
         //});
         MC113ToDoReference.update(); //Above
         modHandler.registerModHandler((mc, mod) -> {
+
             List<IObjectRegister<?>> list = Lists.newArrayList();
             mod.registerRegisters(list::add, worldGenRegister -> worldGenManager.registerWorldGenRegistry(worldGenRegister, mc));
-            if (!list.isEmpty()) {
-                MinecraftForge.EVENT_BUS.register(new Object() {
+            if (!list.isEmpty() && mc instanceof FMLModContainer) {
+                ((FMLModContainer) mc).getEventBus().register(new Object() {
 
                     @SubscribeEvent
                     @SuppressWarnings("all")
@@ -98,8 +99,11 @@ public class ElecCoreSetup {
                                     .findFirst()
                                     .get()
                                     .getType();
-
-                            if (((ParameterizedType) ty).getActualTypeArguments()[0].equals(event1.getGenericType())) {
+                            ty = ((ParameterizedType) ty).getActualTypeArguments()[0];
+                            if (ty instanceof ParameterizedType){ //TileEntityType also has parameters...
+                                ty = ((ParameterizedType) ty).getRawType();
+                            }
+                            if (ty.equals(event1.getGenericType())) {
                                 register.preRegister();
                                 register.register(event1.getRegistry());
                             }
@@ -107,6 +111,8 @@ public class ElecCoreSetup {
                     }
 
                 });
+            } else if (!list.isEmpty()){
+                ElecCore.logger.warn("Ignored ObjectRegisters for mod " + mc.getModId() + ", EventBus could not be found...");
             }
         });
 

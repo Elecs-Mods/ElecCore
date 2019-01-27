@@ -3,6 +3,8 @@ package elec332.core.tile;
 import com.google.common.collect.Maps;
 import elec332.core.ElecCore;
 import elec332.core.MC113ToDoReference;
+import elec332.core.api.registration.RegisteredTileEntity;
+import elec332.core.handler.annotations.TileEntityAnnotationProcessor;
 import elec332.core.inventory.window.IWindowHandler;
 import elec332.core.inventory.window.WindowManager;
 import elec332.core.network.IElecCoreNetworkTile;
@@ -27,15 +29,22 @@ import java.util.Map;
 /**
  * Created by Elec332 on 3-8-2016.
  */
-public class AbstractTileEntity extends TileEntity implements IElecCoreNetworkTile {
+public class AbstractTileEntity extends TileEntity implements IElecCoreNetworkTile, RegisteredTileEntity.TypeSetter {
 
+    @SuppressWarnings("all")
+    public AbstractTileEntity(){
+        super(null);
+        setTileEntityType(TileEntityAnnotationProcessor.getTileType(getClass()));
+    }
+
+    public AbstractTileEntity(TileEntityType<?> type) {
+        super(type);
+        this.type = type;
+    }
+
+    private TileEntityType<?> type;
     private boolean isGatheringPackets;
     private Map<Integer, NBTTagCompound> gatherData;
-
-    public AbstractTileEntity(TileEntityType<?> p_i48289_1_) {
-        super(p_i48289_1_);
-        MC113ToDoReference.update();
-    }
 
     /*
     @Override
@@ -158,6 +167,17 @@ public class AbstractTileEntity extends TileEntity implements IElecCoreNetworkTi
     }
 
     public void onDataPacket(int id, NBTTagCompound tag) {
+    }
+
+    @Override
+    public void setTileEntityType(TileEntityType<?> type) {
+
+    }
+
+    @Nonnull
+    @Override
+    public TileEntityType<?> getType() {
+        return type;
     }
 
 }

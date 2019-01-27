@@ -2,16 +2,13 @@ package elec332.core.handler.annotations;
 
 import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
-import elec332.core.MC113ToDoReference;
 import elec332.core.api.callback.CallbackProcessor;
 import elec332.core.api.callback.ICallbackProcessor;
 import elec332.core.api.callback.RegisteredCallback;
 import elec332.core.api.discovery.AnnotationDataProcessor;
 import elec332.core.api.discovery.IAnnotationData;
 import elec332.core.api.registration.HasSpecialRenderer;
-import elec332.core.api.registration.RegisteredTileEntity;
 import elec332.core.util.FMLHelper;
-import elec332.core.util.RegistryHelper;
 import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.api.distmarker.Dist;
@@ -90,27 +87,6 @@ public class InitAnnotationProcessor extends AbstractAnnotationProcessor {
 
         }, Loader.isModLoaded("mcmultipart"));
 */
-        registerDataProcessor(RegisteredTileEntity.class, new Consumer<IAnnotationData>() {
-
-            @Override
-            @SuppressWarnings("unchecked")
-            public void accept(IAnnotationData data) {
-                try {
-                    String name = (String) data.getAnnotationInfo().get("value");
-                    Class<? extends TileEntity> clazz = (Class<? extends TileEntity>) Class.forName(data.getClassName());
-                    if (!name.contains(":")) {
-                        String mod = FMLHelper.getOwnerName(clazz);
-                        name = mod + ":" + name;
-                    }
-                    RegistryHelper.til
-                    //GameRegistry.registerTileEntity(clazz, new ResourceLocation(name));
-                    MC113ToDoReference.update();
-                } catch (Exception e) {
-                    logger.error("Error registering tile: " + data.getClassName());
-                }
-            }
-
-        });
 
     }
 

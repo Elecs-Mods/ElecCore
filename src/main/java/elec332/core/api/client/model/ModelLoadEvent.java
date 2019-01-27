@@ -5,7 +5,6 @@ import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.eventbus.ListenerList;
 import net.minecraftforge.eventbus.api.Event;
 
 import javax.annotation.Nonnull;
@@ -22,10 +21,6 @@ import javax.annotation.Nullable;
 @StaticLoad
 @OnlyIn(Dist.CLIENT)
 public class ModelLoadEvent extends Event {
-
-    public ModelLoadEvent(){
-        System.out.println("TFTYFYTFYTFYTFYTFYTFYT");
-    }
 
     @Nonnull
     public IElecQuadBakery getQuadBakery() {

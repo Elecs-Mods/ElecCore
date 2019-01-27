@@ -10,7 +10,6 @@ import elec332.core.api.client.IIconRegistrar;
 import elec332.core.api.client.ITextureLoader;
 import elec332.core.api.client.model.*;
 import elec332.core.client.RenderHelper;
-import elec332.core.util.FMLHelper;
 import elec332.core.util.ReflectionHelper;
 import elec332.core.util.RegistryHelper;
 import net.minecraft.block.Block;
@@ -39,7 +38,6 @@ import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Consumer;
 
 /**
  * Created by Elec332 on 18-11-2015.
