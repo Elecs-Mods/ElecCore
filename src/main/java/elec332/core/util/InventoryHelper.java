@@ -1,11 +1,13 @@
 package elec332.core.util;
 
+import com.google.common.collect.Lists;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
@@ -16,14 +18,12 @@ import net.minecraftforge.items.ItemHandlerHelper;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 /**
  * Created by Elec332 on 27-3-2015.
  */
-//TODO: Cleanup & document
 public class InventoryHelper {
 
     /**
@@ -62,6 +62,7 @@ public class InventoryHelper {
      * @param data  The NBT data
      * @param items Inventory representation
      */
+    @SuppressWarnings("all")
     public static void readItemsFromNBT(@Nonnull NBTTagCompound data, @Nonnull List<ItemStack> items) {
         items.clear();
         NBTTagList nbttaglist = data.getList("Items", 10);
@@ -94,18 +95,22 @@ public class InventoryHelper {
      * @return The original NBT tag with the inventory data added
      */
     public static NBTTagCompound writeItemsToNBT(@Nonnull NBTTagCompound tag, @Nonnull List<ItemStack> items) {
-        NBTTagList nbttaglist = new NBTTagList();
-
-        for (int i = 0; i < items.size(); ++i) {
-            ItemStack itemstack = items.get(i);
-            if (ItemStackHelper.isStackValid(itemstack)) {
-                NBTTagCompound nbttagcompound = new NBTTagCompound();
-                nbttagcompound.putByte("Slot", (byte) i);
-                itemstack.write(nbttagcompound);
-                nbttaglist.add(nbttagcompound);
-            }
+        NonNullList<ItemStack> wrap = NonNullList.withSize(items.size(), ItemStackHelper.NULL_STACK);
+        for (int i = 0; i < items.size(); i++) {
+            wrap.set(i, items.get(i));
         }
-        tag.put("Items", nbttaglist);
+        return writeItemsToNBT(tag, wrap);
+    }
+
+    /**
+     * Writes an inventory to NBT
+     *
+     * @param tag   The base NBT tag, to which the inventory data will be written
+     * @param items Inventory representation
+     * @return The original NBT tag with the inventory data added
+     */
+    public static NBTTagCompound writeItemsToNBT(@Nonnull NBTTagCompound tag, @Nonnull NonNullList<ItemStack> items) {
+        net.minecraft.inventory.ItemStackHelper.saveAllItems(tag, items);
         return tag;
     }
 
@@ -180,13 +185,7 @@ public class InventoryHelper {
         if (first == null || second == null) {
             return first == second;
         }
-        if (first.getItem() != second.getItem()) {
-            return false;
-        }
-        if (first.getDamage() != second.getDamage()) {
-            return false;
-        }
-        return true;
+        return first.getItem() == second.getItem() && first.getDamage() == second.getDamage();
     }
 
     /**
@@ -217,6 +216,28 @@ public class InventoryHelper {
         return -1;
     }
 
+    /**
+     * Stores the content of the provided inventory in a {@link List},
+     * useful for making a copy of an inventory's contents when performing test operations on it
+     *
+     * @param inventory The inventory to be copied;
+     * @return A copy of the contents of the provided inventory
+     */
+    public static List<ItemStack> storeContents(IItemHandler inventory) {
+        List<ItemStack> copy = Lists.newArrayListWithCapacity(inventory.getSlots());
+        for (int i = 0; i < inventory.getSlots(); i++) {
+            copy.add(i, ItemStackHelper.copyItemStack(inventory.getStackInSlot(i)));
+        }
+        return copy;
+    }
+
+    /**
+     * Sets the contents of the provided {@link List} to the provided inventory,
+     * useful when you want to restore an inventory to a former state
+     *
+     * @param inventory The inventory
+     * @param list The "new" inventory contents
+     */
     public static void setContents(IItemHandlerModifiable inventory, List<ItemStack> list) {
         if (inventory.getSlots() != list.size()) {
             System.out.println("Error copying inventory contents!");
@@ -225,83 +246,6 @@ public class InventoryHelper {
         for (int i = 0; i < list.size(); i++) {
             inventory.setStackInSlot(i, ItemStackHelper.copyItemStack(list.get(i)));
         }
-    }
-
-    public static List<ItemStack> storeContents(IItemHandler inventory) {
-        List<ItemStack> copy = new ArrayList<ItemStack>(inventory.getSlots());
-        for (int i = 0; i < inventory.getSlots(); i++) {
-            copy.add(i, ItemStackHelper.copyItemStack(inventory.getStackInSlot(i)));
-        }
-        return copy;
-    }
-/*
-TODO: Re-add when the oredict works again
-    public static int amountOfOreDictItemsInventoryHas(IItemHandler inventory, String s, int i) {
-        int total = 0;
-        if (doesInventoryHaveOreDictItem(inventory, s)) {
-            for (ItemStack oreStack : OreDictionary.getOres(s)) {
-                for (int p = 0; p < amountOfItemsInventoryHas(inventory, oreStack); p++) {
-                    total++;
-                }
-            }
-        }
-        return total;
-    }
-
-    public static boolean doesInventoryHaveOreDictItem(IItemHandler inventory, String s) {
-        for (ItemStack stack : OreDictionary.getOres(s)) {
-            if (getFirstSlotWithItemStackNoNBT(inventory, stack) != -1) {
-                return true;
-            }
-        }
-        return false;
-    }*/
-
-    public static int amountOfItemsInventoryHas(IItemHandler inventory, ItemStack stack) {
-        int total = 0;
-        if (getFirstSlotWithItemStackNoNBT(inventory, stack) != -1) {
-            for (int q : getSlotsWithItemStackNoNBT(inventory, stack)) {
-                ItemStack inSlot = inventory.getStackInSlot(q);
-                for (int p = 0; p < inSlot.getCount(); p++) {
-                    total++;
-                }
-            }
-        }
-        return total;
-    }
-
-    public static Integer[] getSlotsWithItemStackNoNBT(IItemHandler inventory, ItemStack stack) {
-        ArrayList<Integer> ret = new ArrayList<Integer>();
-        for (int i = 0; i < inventory.getSlots(); i++) {
-            ItemStack stackInSlot = inventory.getStackInSlot(i);
-            if (ItemStackHelper.isStackValid(stackInSlot) && stack != null && stackInSlot.getItem() == stack.getItem()) {
-                if (stackInSlot.getDamage() == stack.getDamage()) {
-                    ret.add(i);
-                }
-                //if (!stackInSlot.getItem().getHasSubtypes() && !stack.getItem().getHasSubtypes()) {
-                //    ret.add(i);
-                //}
-            }
-        }
-        if (!ret.isEmpty()) {
-            return ret.toArray(new Integer[ret.size()]);
-        }
-        return null;
-    }
-
-    public static int getFirstSlotWithItemStackNoNBT(IItemHandler inventory, ItemStack stack) {
-        for (int i = 0; i < inventory.getSlots(); ++i) {
-            ItemStack stackInSlot = inventory.getStackInSlot(i);
-            if (ItemStackHelper.isStackValid(stackInSlot) && stack != null && stackInSlot.getItem() == stack.getItem()) {
-                if (stackInSlot.getDamage() == stack.getDamage()) {
-                    return i;
-                }
-                //if (!stackInSlot.getItem().getHasSubtypes() && !stack.getItem().getHasSubtypes()) {
-                //    return i;
-                //}
-            }
-        }
-        return -1;
     }
 
 }

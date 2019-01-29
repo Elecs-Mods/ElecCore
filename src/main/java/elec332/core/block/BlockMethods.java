@@ -1,14 +1,11 @@
 package elec332.core.block;
 
 import com.google.common.collect.Lists;
-import elec332.core.MC113ToDoReference;
 import elec332.core.util.IndexedAABB;
 import elec332.core.util.PlayerHelper;
 import elec332.core.util.RayTraceHelper;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.Minecraft;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.fluid.IFluidState;
 import net.minecraft.util.EnumFacing;
@@ -18,8 +15,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -46,6 +41,23 @@ public final class BlockMethods {
         }, (a, b) -> b);
     }
 
+    public static <B extends Block & IAbstractBlock> boolean onBlockActivated(IBlockState state, World world, BlockPos pos, EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ, B block) {
+        RayTraceResult hit = RayTraceHelper.retraceBlock(state, world, pos, player);
+        return hit != null && block.onBlockActivated(world, pos, state, player, hand, hit);
+    }
+
+    public static <B extends Block & IAbstractBlock> boolean removedByPlayer(@Nonnull IBlockState state, World world, @Nonnull BlockPos pos, @Nonnull EntityPlayer player, boolean willHarvest, IFluidState fluid, B block) {
+        if (!block.canBreak(world, pos, player)) {
+            if (PlayerHelper.isPlayerInCreative(player)) {
+                block.onBlockClicked(state, world, pos, player);
+            }
+            return false;
+        }
+        block.onBlockHarvested(world, pos, state, player);
+        return world.setBlockState(pos, fluid.getBlockState(), world.isRemote ? 11 : 3);
+    }
+
+/*
     public static <B extends Block & IAbstractBlock> void addCollisionBoxToList(IBlockState state, @Nonnull World world, @Nonnull BlockPos pos, @Nonnull AxisAlignedBB entityBox, @Nonnull List<AxisAlignedBB> collidingBoxes, Entity entityIn, boolean isActualState, B block) {
         entityBox = entityBox.offset(BlockPos.ORIGIN.subtract(pos));
         List<AxisAlignedBB> list = Lists.newArrayList();
@@ -79,22 +91,5 @@ public final class BlockMethods {
             return aabb;
         }
         return MC113ToDoReference.update(world, pos);//state.getBoundingBox(world, pos);
-    }
-
-    public static <B extends Block & IAbstractBlock> boolean onBlockActivated(IBlockState state, World world, BlockPos pos, EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ, B block) {
-        RayTraceResult hit = RayTraceHelper.retraceBlock(state, world, pos, player);
-        return hit != null && block.onBlockActivated(world, pos, state, player, hand, hit);
-    }
-
-    public static <B extends Block & IAbstractBlock> boolean removedByPlayer(@Nonnull IBlockState state, World world, @Nonnull BlockPos pos, @Nonnull EntityPlayer player, boolean willHarvest, IFluidState fluid, B block) {
-        if (!block.canBreak(world, pos, player)) {
-            if (PlayerHelper.isPlayerInCreative(player)) {
-                block.onBlockClicked(state, world, pos, player);
-            }
-            return false;
-        }
-        block.onBlockHarvested(world, pos, state, player);
-        return world.setBlockState(pos, fluid.getBlockState(), world.isRemote ? 11 : 3);
-    }
-
+    }*/
 }

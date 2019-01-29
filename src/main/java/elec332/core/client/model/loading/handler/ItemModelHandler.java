@@ -1,5 +1,6 @@
 package elec332.core.client.model.loading.handler;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import elec332.core.ElecCore;
@@ -47,17 +48,8 @@ public class ItemModelHandler implements IModelHandler {
             for (IItemModelHandler handler : itemModelHandlers) {
                 if (handler.handleItem(item)) {
                     String s = handler.getIdentifier(item);
-                    final ModelResourceLocation mr = new ModelResourceLocation(item.getRegistryName().toString(), s);
-                    Minecraft.getInstance().getItemRenderer().getItemModelMesher().register(item, mr); //TODO: more testing
-                    /*ModelLoader.setCustomMeshDefinition(item, new ItemMeshDefinition() {
-
-                        @Override
-                        @Nonnull
-                        public ModelResourceLocation getModelLocation(@Nonnull ItemStack stack) {
-                            return mr;
-                        }
-
-                    });*/
+                    final ModelResourceLocation mr = new ModelResourceLocation(Preconditions.checkNotNull(item.getRegistryName()).toString(), s);
+                    Minecraft.getInstance().getItemRenderer().getItemModelMesher().register(item, mr);
                     itemResourceLocations.put(item, mr);
                     break;
                 }

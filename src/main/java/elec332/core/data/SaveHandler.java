@@ -7,22 +7,20 @@ import elec332.core.ElecCore;
 import elec332.core.api.annotations.StaticLoad;
 import elec332.core.api.data.IExternalSaveHandler;
 import elec332.core.util.FMLHelper;
-import elec332.core.util.IOHelper;
 import elec332.core.world.WorldHelper;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.WorldServer;
+import net.minecraft.world.storage.ISaveHandler;
+import net.minecraft.world.storage.WorldInfo;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModContainer;
-
-import java.io.File;
+import net.minecraftforge.fml.WorldPersistenceHooks;
 
 /**
  * Created by Elec332 on 20-7-2016.
- * <p>
- * TODO: Move to world cap
  */
 @StaticLoad
 public enum SaveHandler {
@@ -32,10 +30,28 @@ public enum SaveHandler {
     SaveHandler() {
         this.saveHandlers = LinkedListMultimap.create();
         this.loaded = false;
+        WorldPersistenceHooks.addHook(new WorldPersistenceHooks.WorldPersistenceHook() {
+
+            @Override
+            public String getModId() {
+                return SaveHandler.folder;
+            }
+
+            @Override
+            public NBTTagCompound getDataForWriting(net.minecraft.world.storage.SaveHandler handler, WorldInfo info) {
+                return SaveHandler.this.save(handler, info);
+            }
+
+            @Override
+            public void readData(net.minecraft.world.storage.SaveHandler handler, WorldInfo info, NBTTagCompound tag) {
+                SaveHandler.this.load(handler, info, tag);
+            }
+
+        });
     }
 
     private final ListMultimap<ModContainer, IExternalSaveHandler> saveHandlers;
-    private static final String folder = "extradata";
+    private static final String folder = "eleccore:managed_extradata";
     private boolean loaded;
 
     public boolean registerSaveHandler(ModContainer mc, IExternalSaveHandler saveHandler) {
@@ -46,41 +62,44 @@ public enum SaveHandler {
         return true;
     }
 
-    private void load(IWorld world) {
+    private void load(ISaveHandler save, WorldInfo worldInfo, NBTTagCompound base) {
+        System.out.println("Load "+worldInfo.getDimension());
         NBTTagCompound tag;
-        File file = new File(world.getSaveHandler().getWorldDirectory(), folder);
-        IOHelper.ensureExists(file);
+        Preconditions.checkNotNull(save);
+        Preconditions.checkNotNull(worldInfo);
         for (ModContainer mc : saveHandlers.keySet()) {
-            tag = IOHelper.readWithPossibleBackup(new File(file, mc.getModId() + ".dat"), IOHelper.NBT_COMPRESSED_IO);
+            tag = base.getCompound(mc.getModId());
             for (IExternalSaveHandler saveHandler : saveHandlers.get(mc)) {
-                Preconditions.checkNotNull(world);
                 Preconditions.checkNotNull(saveHandler);
                 Preconditions.checkNotNull(tag);
-                saveHandler.load(world.getSaveHandler(), world.getWorldInfo(), tag.getCompound(saveHandler.getName()));
+                saveHandler.load(save, worldInfo, tag.getCompound(saveHandler.getName()));
             }
         }
-
         this.loaded = true;
     }
 
-    private void save(IWorld world) {
+    private NBTTagCompound save(ISaveHandler save, WorldInfo worldInfo) {
         if (!this.loaded && !ElecCore.suppressSpongeIssues) {
             ElecCore.logger.error("World is unloading before data has been loaded, skipping data saving...");
             ElecCore.logger.error("This probably happened due to a crash in EG worldgen.");
-            return;
+            ElecCore.logger.error("All external data will be lost.");
+            return new NBTTagCompound();
         }
+        Preconditions.checkNotNull(save);
+        Preconditions.checkNotNull(worldInfo);
+        NBTTagCompound main = new NBTTagCompound();
         NBTTagCompound tag;
-        File file = new File(world.getSaveHandler().getWorldDirectory(), folder);
         for (ModContainer mc : saveHandlers.keySet()) {
             tag = new NBTTagCompound();
             for (IExternalSaveHandler saveHandler : saveHandlers.get(mc)) {
-                NBTTagCompound n = saveHandler.save(world.getSaveHandler(), world.getWorldInfo());
+                NBTTagCompound n = saveHandler.save(save, worldInfo);
                 if (n != null) {
                     tag.put(saveHandler.getName(), n);
                 }
             }
-            IOHelper.writeWithBackup(new File(file, mc.getModId() + ".dat"), tag, IOHelper.NBT_COMPRESSED_IO);
+            main.put(mc.getModId(), tag);
         }
+        return main;
     }
 
     private void unLoad(IWorld world) {
@@ -93,20 +112,6 @@ public enum SaveHandler {
     }
 
     private static class EventHandler {
-
-        @SubscribeEvent
-        public void onWorldLoad(WorldEvent.Load event) {
-            if (isOverworld(event.getWorld())) {
-                INSTANCE.load(event.getWorld());
-            }
-        }
-
-        @SubscribeEvent
-        public void onWorldSave(WorldEvent.Save event) {
-            if (isOverworld(event.getWorld())) {
-                INSTANCE.save(event.getWorld());
-            }
-        }
 
         @SubscribeEvent
         public void worldUnload(WorldEvent.Unload event) {

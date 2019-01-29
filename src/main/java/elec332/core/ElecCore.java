@@ -48,17 +48,6 @@ public class ElecCore implements IModuleController, IElecCoreMod {
             throw new RuntimeException();
         }
         instance = this;
-        org.apache.logging.log4j.core.Logger p = ((org.apache.logging.log4j.core.Logger) LogManager.getRootLogger());
-        while (p.getParent() != null) {
-            p = p.getParent();
-        }
-        //p.setLevel(Level.INFO);
-        //p.getContext().addFilter(LevelRangeFilter.createFilter(Level.INFO, null, null, null));
-        //p.getContext().addFilter(MarkerFilter.createFilter(Logging.SPLASH.getName(), Filter.Result.DENY, Filter.Result.NEUTRAL));
-        //p.getContext().addFilter(MarkerFilter.createFilter(Logging.LOADING.getName(), Filter.Result.DENY, Filter.Result.NEUTRAL));
-
-        //p.getContext().addFilter(LevelRangeFilter.createFilter(Level.DEBUG, null, null, null));
-
         logger = LogManager.getLogger(MODNAME);
         IEventBus eventBus = FMLHelper.getModContext().getModEventBus();
         eventBus.addListener(this::preInit);
@@ -120,7 +109,7 @@ public class ElecCore implements IModuleController, IElecCoreMod {
         OredictHelper.initLists();
 
         //NetworkRegistry.INSTANCE.registerGuiHandler(this, proxy);
-        MC113ToDoReference.update(this, proxy);
+        MC113ToDoReference.update(this, proxy); //Gui stuff
 
         loadTimer.endPhase(event);
     }

@@ -59,20 +59,6 @@ public final class RenderingRegistry implements IElecRenderingRegistry {
         extraBlocks = Lists.newArrayList();
         extraModels = Lists.newArrayList();
         MinecraftForge.EVENT_BUS.register(this);
-        //todo: figure out why all events are passed to this...
-        /*ModelRegistryEvent
-        System.out.println("KJGFGVFBHBTFGNVGHVCVHVG");
-        try {
-            MinecraftForge.EVENT_BUS.addListener(EventPriority.HIGH, false, (Class<ModelLoadEvent>)FMLHelper.loadClass(ModelLoadEvent.class.getCanonicalName()), new Consumer<ModelLoadEvent>() {
-                @Override
-                public void accept(ModelLoadEvent modelLoadEvent) {
-                    onJsonModelLoad(modelLoadEvent);
-                }
-            });
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }*/
-        //MinecraftForge.EVENT_BUS.addListener(EventPriority.HIGH, false, ModelLoadEvent.class, this::onJsonModelLoad);
     }
 
     private final Set<IModelLoader> modelLoaders;

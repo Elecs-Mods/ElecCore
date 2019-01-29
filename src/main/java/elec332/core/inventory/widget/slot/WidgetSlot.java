@@ -41,7 +41,7 @@ public class WidgetSlot extends Widget {
 
     @Override
     public void onWindowClosed(EntityPlayer player) {
-        //TODO inventory.closeInventory(player);
+        //inventory.closeInventory(player);
     }
 
     public void onSlotChange(ItemStack newStack, ItemStack oldStack) {
