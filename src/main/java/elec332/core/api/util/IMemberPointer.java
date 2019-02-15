@@ -22,7 +22,7 @@ public interface IMemberPointer<M extends AccessibleObject & Member, P, R> {
 
     public boolean isStatic();
 
-    default public <A extends Annotation> A get(Class<A> annotation) {
+    default public <A extends Annotation> A getAnnotation(Class<A> annotation) {
         return getReflectedMember().getAnnotation(annotation);
     }
 

@@ -96,7 +96,7 @@ public class ElecCoreSetup {
                                     .get()
                                     .getType();
                             ty = ((ParameterizedType) ty).getActualTypeArguments()[0];
-                            if (ty instanceof ParameterizedType){ //TileEntityType also has parameters...
+                            if (ty instanceof ParameterizedType) { //TileEntityType also has parameters...
                                 ty = ((ParameterizedType) ty).getRawType();
                             }
                             if (ty.equals(event1.getGenericType())) {
@@ -107,7 +107,7 @@ public class ElecCoreSetup {
                     }
 
                 });
-            } else if (!list.isEmpty()){
+            } else if (!list.isEmpty()) {
                 ElecCore.logger.warn("Ignored ObjectRegisters for mod " + mc.getModId() + ", EventBus could not be found...");
             }
         });
@@ -117,7 +117,7 @@ public class ElecCoreSetup {
     private static void registerConfigSerializers() {
         ConfigWrapper.registerConfigElementSerializer((type, instance, field, data, config, defaultValue, comment) -> {
             if (type.isAssignableFrom(Integer.TYPE)) {
-                if (!Strings.isNullOrEmpty(comment)){
+                if (!Strings.isNullOrEmpty(comment)) {
                     config.comment(comment);
                 }
                 return config.defineInRange(field.getName(), (Integer) defaultValue, (int) data.minValue(), (int) data.maxValue());
@@ -126,7 +126,7 @@ public class ElecCoreSetup {
         });
         ConfigWrapper.registerConfigElementSerializer((type, instance, field, data, config, defaultValue, comment) -> {
             if (type.isAssignableFrom(Boolean.TYPE)) {
-                if (!Strings.isNullOrEmpty(comment)){
+                if (!Strings.isNullOrEmpty(comment)) {
                     config.comment(comment);
                 }
                 return config.define(field.getName(), (boolean) defaultValue);
@@ -135,7 +135,7 @@ public class ElecCoreSetup {
         });
         ConfigWrapper.registerConfigElementSerializer((type, instance, field, data, config, defaultValue, comment) -> {
             if (field.getType().isAssignableFrom(String.class)) {
-                if (!Strings.isNullOrEmpty(comment)){
+                if (!Strings.isNullOrEmpty(comment)) {
                     config.comment(comment);
                 }
                 if (data.validStrings().length > 0) {
@@ -149,7 +149,7 @@ public class ElecCoreSetup {
         });
         ConfigWrapper.registerConfigElementSerializer((type, instance, field, data, config, defaultValue, comment) -> {
             if (field.getType().isAssignableFrom(Float.TYPE)) {
-                if (!Strings.isNullOrEmpty(comment)){
+                if (!Strings.isNullOrEmpty(comment)) {
                     config.comment(comment);
                 }
                 return config.defineInRange(field.getName(), (float) defaultValue, data.minValue(), data.maxValue());

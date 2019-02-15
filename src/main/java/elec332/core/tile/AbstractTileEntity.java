@@ -2,13 +2,13 @@ package elec332.core.tile;
 
 import com.google.common.collect.Maps;
 import elec332.core.ElecCore;
-import elec332.core.MC113ToDoReference;
 import elec332.core.api.registration.RegisteredTileEntity;
 import elec332.core.handler.annotations.TileEntityAnnotationProcessor;
-import elec332.core.inventory.window.IWindowHandler;
+import elec332.core.inventory.window.IWindowFactory;
 import elec332.core.inventory.window.WindowManager;
 import elec332.core.network.IElecCoreNetworkTile;
 import elec332.core.network.packets.PacketTileDataToServer;
+import elec332.core.util.BlockProperties;
 import elec332.core.util.NBTTypes;
 import elec332.core.util.ServerHelper;
 import elec332.core.world.WorldHelper;
@@ -18,8 +18,10 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
+import net.minecraft.state.IProperty;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.util.EnumFacing;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -32,7 +34,7 @@ import java.util.Map;
 public class AbstractTileEntity extends TileEntity implements IElecCoreNetworkTile, RegisteredTileEntity.TypeSetter {
 
     @SuppressWarnings("all")
-    public AbstractTileEntity(){
+    public AbstractTileEntity() {
         super(null);
         setTileEntityType(TileEntityAnnotationProcessor.getTileType(getClass()));
     }
@@ -46,21 +48,25 @@ public class AbstractTileEntity extends TileEntity implements IElecCoreNetworkTi
     private boolean isGatheringPackets;
     private Map<Integer, NBTTagCompound> gatherData;
 
+    public EnumFacing getTileFacing(){
+        return getTileFacing(BlockProperties.FACING_NORMAL);
+    }
+
+    public EnumFacing getTileFacing(IProperty<EnumFacing> prop){
+        return getBlockState().get(prop);
+    }
+
     /*
     @Override
     public boolean shouldRefresh(World world, BlockPos pos, @Nonnull IBlockState oldState, @Nonnull IBlockState newSate) {
         return oldState.getBlock() != newSate.getBlock();
     }*/
 
-    @Deprecated
-    public boolean openGui(EntityPlayer player, Object mod, int guiID) {
-        MC113ToDoReference.update();
-        //player.openGui(mod, guiID, getWorld(), getPos().getX(), getPos().getY(), getPos().getZ());
-        return true;
-    }
-
-    public boolean openWindow(EntityPlayer player, IWindowHandler windowHandler, int id) {
-        WindowManager.openWindow(player, windowHandler, getWorld(), pos, (byte) id);
+    public boolean openTileGui(EntityPlayer player) {
+        if (!(this instanceof IWindowFactory)){
+            throw new RuntimeException();
+        }
+        WindowManager.openTileWindow(player, getPos());
         return true;
     }
 
@@ -159,8 +165,7 @@ public class AbstractTileEntity extends TileEntity implements IElecCoreNetworkTi
     @Override
     public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity packet) {
         if (packet.getTileEntityType() == 0) {
-            read(packet.getNbtCompound());
-            onDataPacket(0, packet.getNbtCompound());
+            handleUpdateTag(packet.getNbtCompound());
         } else {
             onDataPacket(packet.getTileEntityType(), packet.getNbtCompound());
         }
@@ -171,7 +176,7 @@ public class AbstractTileEntity extends TileEntity implements IElecCoreNetworkTi
 
     @Override
     public void setTileEntityType(TileEntityType<?> type) {
-
+        this.type = type;
     }
 
     @Nonnull

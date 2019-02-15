@@ -121,8 +121,9 @@ enum WorldGenManager implements ISingleObjectRegistry<IWorldGenHook>, IWorldGenM
 
     @SuppressWarnings(" unchecked")
     void afterModsLoaded() {
-        structurez.removeIf(structure -> StreamSupport.stream(RegistryHelper.getBiomeRegistry().spliterator(), false)
-                .anyMatch(biome -> biome.hasStructure(structure))
+        structurez.removeIf(
+                structure -> StreamSupport.stream(RegistryHelper.getBiomeRegistry().spliterator(), false)
+                        .anyMatch(biome -> biome.hasStructure(structure))
         );
         if (!structurez.isEmpty()) {
             structurez.forEach(f -> ElecCore.logger.warn("Detected unregistered structure, type: " + f.getClass().getCanonicalName() + " instance: " + f.toString()));

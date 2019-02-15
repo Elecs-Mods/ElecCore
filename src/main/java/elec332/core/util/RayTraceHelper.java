@@ -7,7 +7,9 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.*;
 import net.minecraft.world.World;
+import org.apache.commons.lang3.tuple.Pair;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
@@ -28,6 +30,31 @@ public class RayTraceHelper {
         return retraceBlock(WorldHelper.getBlockState(world, pos), world, pos, player);
     }
 
+    public static Vec3d slightExpand(Vec3d start, Vec3d end) {
+        return end.add(end.subtract(start).normalize().scale(0.002d));
+    }
+
+    /**
+     * Returns the player's head and the end of the player's look vector,
+     * to be used as the "head" or "start" and "end" vectors in raytracing calculations respectively;
+     *
+     * @param player The player to calculate the vectors from
+     * @return The player's raytrace vectors
+     */
+    @Nonnull
+    public static Pair<Vec3d, Vec3d> getRayTraceVectors(EntityPlayer player) {
+        //player.getLookVec()
+        //Vec3d startPos = new Vec3d(entity.posX, entity.posY + entity.getEyeHeight(), entity.posZ);
+        //Vec3d endPos = startPos.add(new Vec3d(entity.getLookVec().x * length, entity.getLookVec().y * length, entity.getLookVec().z * length));
+
+
+        Vec3d headVec = PlayerHelper.getCorrectedHeadVec(player);
+        Vec3d lookVec = player.getLook(1.0F);
+        double reach = PlayerHelper.getBlockReachDistance(player);
+        Vec3d endVec = headVec.add(lookVec.x * reach, lookVec.y * reach, lookVec.z * reach);
+        return Pair.of(headVec, endVec);
+    }
+
     /**
      * Re-raytraces the provided position, to e.g. get more hit data than may be provided in some methods
      *
@@ -40,11 +67,8 @@ public class RayTraceHelper {
     @Nullable
     @SuppressWarnings("all")
     public static RayTraceResult retraceBlock(IBlockState blockState, World world, BlockPos pos, EntityPlayer player) {
-        Vec3d headVec = PlayerHelper.getCorrectedHeadVec(player);
-        Vec3d lookVec = player.getLook(1.0F);
-        double reach = PlayerHelper.getBlockReachDistance(player);
-        Vec3d endVec = headVec.add(lookVec.x * reach, lookVec.y * reach, lookVec.z * reach);
-        return Block.collisionRayTrace(blockState, world, pos, headVec, endVec);
+        Pair<Vec3d, Vec3d> rayTraceVectors = getRayTraceVectors(player);
+        return Block.collisionRayTrace(blockState, world, pos, rayTraceVectors.getLeft(), rayTraceVectors.getRight());
     }
 
     /**

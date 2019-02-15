@@ -12,7 +12,6 @@ import elec332.core.grid.internal.GridEventInputHandler;
 import elec332.core.handler.TickHandler;
 import elec332.core.handler.annotations.TileEntityAnnotationProcessor;
 import elec332.core.handler.event.PlayerEventHandler;
-import elec332.core.inventory.window.WindowManager;
 import elec332.core.network.IElecNetworkHandler;
 import elec332.core.network.packets.PacketReRenderBlock;
 import elec332.core.network.packets.PacketSyncWidget;
@@ -49,14 +48,16 @@ public class ElecCore implements IModuleController, IElecCoreMod {
         }
         instance = this;
         logger = LogManager.getLogger(MODNAME);
-        IEventBus eventBus = FMLHelper.getModContext().getModEventBus();
+
+        IEventBus eventBus = FMLHelper.getActiveModEventBus();
         eventBus.addListener(this::preInit);
         eventBus.addListener(this::init);
         eventBus.addListener(this::postInit);
         eventBus.addListener(this::loadComplete);
+        eventBus = MinecraftForge.EVENT_BUS;
         eventBus.addListener(this::onServerAboutToStart);
         eventBus.addListener(this::onServerStarting);
-        MinecraftForge.EVENT_BUS.register(this);
+        eventBus.register(this);
     }
 
     public static final String MODID = "eleccore";
@@ -100,16 +101,12 @@ public class ElecCore implements IModuleController, IElecCoreMod {
     private void init(InterModEnqueueEvent event) {
         loadTimer.startPhase(event);
 
-        networkHandler.registerSimplePacket(WindowManager.INSTANCE);
         networkHandler.registerAbstractPacket(PacketSyncWidget.class);
         networkHandler.registerAbstractPacket(PacketTileDataToServer.class);
         networkHandler.registerAbstractPacket(PacketWidgetDataToServer.class);
         networkHandler.registerAbstractPacket(PacketReRenderBlock.class);
 
         OredictHelper.initLists();
-
-        //NetworkRegistry.INSTANCE.registerGuiHandler(this, proxy);
-        MC113ToDoReference.update(this, proxy); //Gui stuff
 
         loadTimer.endPhase(event);
     }

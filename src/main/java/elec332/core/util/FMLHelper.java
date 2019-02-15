@@ -6,11 +6,12 @@ import com.google.common.collect.Maps;
 import elec332.core.ElecCore;
 import elec332.core.loader.ElecCoreLoader;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.*;
 import net.minecraftforge.fml.common.thread.EffectiveSide;
 import net.minecraftforge.fml.event.lifecycle.ModLifecycleEvent;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.javafmlmod.FMLModContainer;
-import net.minecraftforge.fml.javafmlmod.FMLModLoadingContext;
 import net.minecraftforge.fml.loading.DefaultModInfos;
 import net.minecraftforge.fml.loading.FMLLoader;
 import net.minecraftforge.fml.loading.moddiscovery.ModInfo;
@@ -108,7 +109,7 @@ public class FMLHelper {
      * @param stage The {@link ModLoadingStage} to get a name from
      * @return A name for the provided {@link ModLoadingStage}
      */
-    public static String getLoadingStageName(ModLoadingStage stage){
+    public static String getLoadingStageName(ModLoadingStage stage) {
         return modLoadingNames.get(stage);
     }
 
@@ -134,10 +135,21 @@ public class FMLHelper {
     }
 
     /**
+     * @return The {@link IEventBus} from the mod currently active
+     */
+    public static IEventBus getActiveModEventBus() {
+        Object o =  getModLoadingContext().extension();
+        if (o instanceof FMLJavaModLoadingContext){
+            return ((FMLJavaModLoadingContext) o).getModEventBus();
+        }
+        throw new UnsupportedOperationException();
+    }
+
+    /**
      * @return The {@link ModContainer} currently active
      */
-    public static FMLModContainer getActiveModContainer() {
-        return getModContext().getActiveContainer();
+    public static ModContainer getActiveModContainer() {
+        return getModLoadingContext().getActiveContainer();
     }
 
     /**
@@ -251,10 +263,10 @@ public class FMLHelper {
     }
 
     /**
-     * @return The {@link FMLModLoadingContext}, with data on the mod being handled
+     * @return The {@link ModLoadingContext}, with data on the mod being handled
      */
-    public static FMLModLoadingContext getModContext() {
-        return FMLModLoadingContext.get();
+    public static ModLoadingContext getModLoadingContext() {
+        return ModLoadingContext.get();
     }
 
     /**
@@ -309,9 +321,9 @@ public class FMLHelper {
             }
         });
         modLoadingNames = Maps.newEnumMap(ModLoadingStage.class);
-        for (ModLoadingStage stage : ModLoadingStage.values()){
+        for (ModLoadingStage stage : ModLoadingStage.values()) {
             String name;
-            switch (stage){
+            switch (stage) {
                 case COMMON_SETUP:
                     name = "Pre-Initialized";
                     break;

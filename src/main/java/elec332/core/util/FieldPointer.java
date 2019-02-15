@@ -2,7 +2,6 @@ package elec332.core.util;
 
 import elec332.core.api.util.IMemberPointer;
 
-import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Field;
@@ -63,6 +62,9 @@ public final class FieldPointer<P, T> implements IMemberPointer<Field, P, T> {
     @SuppressWarnings("unchecked")
     public T get(P parent) {
         try {
+            if (isStatic() && parent == null) {
+                return (T) getter.invoke();
+            }
             return (T) getter.invoke(parent);
         } catch (Throwable e) {
             throw new RuntimeException(e);
@@ -79,10 +81,6 @@ public final class FieldPointer<P, T> implements IMemberPointer<Field, P, T> {
         } catch (Throwable e) {
             throw new RuntimeException(e);
         }
-    }
-
-    public <A extends Annotation> A get(Class<A> annotation) {
-        return field.getAnnotation(annotation);
     }
 
     @Override

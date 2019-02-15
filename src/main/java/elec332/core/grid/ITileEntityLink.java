@@ -4,7 +4,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
-import net.minecraftforge.common.capabilities.OptionalCapabilityInstance;
+import net.minecraftforge.common.util.LazyOptional;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -19,7 +19,7 @@ public interface ITileEntityLink extends IPositionable, ICapabilityProvider {
 
     @Nonnull
     @Override
-    <T> OptionalCapabilityInstance<T> getCapability(@Nonnull Capability<T> cap, @Nullable EnumFacing side);
+    <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable EnumFacing side);
 
     @Nullable
     default public Class getInformationType() {

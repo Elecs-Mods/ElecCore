@@ -2,17 +2,28 @@ package elec332.core.proxies;
 
 import elec332.core.api.client.IColoredBlock;
 import elec332.core.api.client.IColoredItem;
+import elec332.core.api.network.ElecByteBuf;
+import elec332.core.client.util.ClientEventHandler;
 import elec332.core.inventory.window.WindowGui;
+import elec332.core.inventory.window.WindowManager;
+import elec332.core.util.FMLHelper;
 import elec332.core.util.RegistryHelper;
+import io.netty.buffer.Unpooled;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.color.IBlockColor;
 import net.minecraft.client.renderer.color.IItemColor;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
+import net.minecraft.network.PacketBuffer;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.ExtensionPoint;
+import net.minecraftforge.fml.network.FMLPlayMessages;
 
 /**
  * Created by Elec332.
@@ -33,7 +44,8 @@ public class ClientProxy extends CommonProxy {
 
     @Override
     public void preInitRendering() {
-
+        MinecraftForge.EVENT_BUS.register(new ClientEventHandler());
+        FMLHelper.getActiveModContainer().registerExtensionPoint(ExtensionPoint.GUIFACTORY, () -> this::openGui);
     }
 
     @Override
@@ -73,9 +85,10 @@ public class ClientProxy extends CommonProxy {
         return Minecraft.getInstance().player;
     }
 
-    @Override
-    public synchronized Object getClientGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z) {
-        return new WindowGui(super.getServerGuiElement(ID, player, world, x, y, z));
+    public GuiScreen openGui(FMLPlayMessages.OpenContainer data_){
+        PacketBuffer data = data_.getAdditionalData();
+        ResourceLocation name = data.readResourceLocation();
+        return new WindowGui(WindowManager.INSTANCE.getServerGuiElement(getClientPlayer(), getClientWorld(), ElecByteBuf.of(Unpooled.wrappedBuffer(data.readByteArray())), WindowManager.INSTANCE.get(name)));
     }
 
     static {

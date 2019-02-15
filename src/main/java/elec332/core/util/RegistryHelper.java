@@ -98,7 +98,7 @@ public class RegistryHelper {
         return (ForgeRegistry<EntityType<?>>) ForgeRegistries.ENTITIES;
     }
 
-    public static ForgeRegistry<TileEntityType<?>> getTileEntities(){
+    public static ForgeRegistry<TileEntityType<?>> getTileEntities() {
         return (ForgeRegistry<TileEntityType<?>>) ForgeRegistries.TILE_ENTITIES;
     }
 

@@ -13,11 +13,21 @@ import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.UUID;
+import java.util.function.Function;
 
 /**
  * Created by Elec332 on 25-10-2016.
  */
 public abstract class ElecByteBuf extends PacketBuffer {
+
+    public static ElecByteBuf of(ByteBuf buf){
+        if (factory == null){
+            throw new UnsupportedOperationException();
+        }
+        return factory.apply(buf);
+    }
+
+    private static Function<ByteBuf, ElecByteBuf> factory;
 
     public ElecByteBuf(ByteBuf buf) {
         super(buf);

@@ -1,11 +1,16 @@
 package elec332.core.block;
 
+import elec332.core.tile.ITileWithDrops;
+import elec332.core.world.WorldHelper;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.fluid.IFluidState;
+import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
@@ -97,6 +102,23 @@ public abstract class AbstractBlock extends Block implements IAbstractBlock {
     @Override //Old collisionRayTrace
     public RayTraceResult getRayTraceResult(IBlockState state, World world, BlockPos pos, Vec3d start, Vec3d end, RayTraceResult original) {
         return BlockMethods.collisionRayTrace(state, world, pos, start, end, this);
+    }
+
+    @Override
+    public void getDrops(IBlockState state, NonNullList<ItemStack> drops, World world, BlockPos pos, int fortune) {
+        getOriginalDrops(state, drops, world, pos, fortune);
+        getTileDrops(drops, world, pos, fortune);
+    }
+
+    public void getOriginalDrops(IBlockState state, NonNullList<ItemStack> drops, World world, BlockPos pos, int fortune){
+        super.getDrops(state, drops, world, pos, fortune);
+    }
+
+    public void getTileDrops(NonNullList<ItemStack> drops, World world, BlockPos pos, int fortune){
+        TileEntity tile = WorldHelper.getTileAt(world, pos);
+        if (tile instanceof ITileWithDrops){
+            ((ITileWithDrops) tile).getDrops(drops, fortune);
+        }
     }
 
     /*

@@ -30,7 +30,7 @@ public class ElecCoreLoader {
 
     public ElecCoreLoader() {
         annotationDataHandler = AnnotationDataHandler.INSTANCE; //Static load
-        IEventBus eventBus = FMLHelper.getModContext().getModEventBus();
+        IEventBus eventBus = FMLHelper.getActiveModEventBus();
         eventBus.addListener(this::preInit);
         eventBus.addListener(this::init);
         eventBus.addListener(this::postInit);
@@ -53,6 +53,7 @@ public class ElecCoreLoader {
         FMLHelper.runLater(() -> {
             annotationDataHandler.process(ModLoadingStage.COMMON_SETUP);
             ModuleManager.INSTANCE.init();
+            ElecModHandler.INSTANCE.latePreInit();
             ElecCoreLoader.lastStage = FMLHelper.getStageFrom(event);
         });
     }

@@ -36,7 +36,7 @@ public class TileEntityAnnotationProcessor implements IObjectRegister<TileEntity
 
     @Nullable
     @SuppressWarnings("unchecked")
-    public static <T extends TileEntity> TileEntityType<T> getTileType(Class<T> clazz){
+    public static <T extends TileEntity> TileEntityType<T> getTileType(Class<T> clazz) {
         return typeReference.get(clazz);
     }
 
@@ -103,7 +103,7 @@ public class TileEntityAnnotationProcessor implements IObjectRegister<TileEntity
             }
             if (f != null) {
                 TileEntityType<?> type = ref.get();
-                if (type instanceof TileType && ((TileType) type).getTileType() != clazz){
+                if (type instanceof TileType && ((TileType) type).getTileType() != clazz) {
                     throw new RuntimeException("Field type mismatch!");
                 }
                 new FieldPointer(f).set(null, type);
@@ -113,7 +113,7 @@ public class TileEntityAnnotationProcessor implements IObjectRegister<TileEntity
         }
     }
 
-    private class TileType<T extends TileEntity> extends TileEntityType<T>{
+    private class TileType<T extends TileEntity> extends TileEntityType<T> {
 
         @SuppressWarnings("all")
         private TileType(Supplier<? extends T> factoryIn, Class<T> clazz) {
@@ -123,7 +123,7 @@ public class TileEntityAnnotationProcessor implements IObjectRegister<TileEntity
 
         private final Class<T> clazz;
 
-        private Class<T> getTileType(){
+        private Class<T> getTileType() {
             return clazz;
         }
 

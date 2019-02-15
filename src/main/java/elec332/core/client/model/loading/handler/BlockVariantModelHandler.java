@@ -1,6 +1,7 @@
 package elec332.core.client.model.loading.handler;
 
 import com.google.common.base.Charsets;
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.*;
 import com.google.gson.Gson;
@@ -16,6 +17,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BlockModelShapes;
 import net.minecraft.client.renderer.block.model.*;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.renderer.vertex.VertexFormat;
 import net.minecraft.resources.IResource;
 import net.minecraft.resources.IResourceManager;
@@ -47,11 +49,28 @@ public class BlockVariantModelHandler implements IModelHandler {
     public BlockVariantModelHandler() {
         this.blockResourceLocations = Maps.newHashMap();
         this.uniqueNames = Sets.newHashSet();
-        ModelLoaderRegistry.registerLoader(new ModelLoader());
+        this.models = Maps.newHashMap();
+        ModelLoaderRegistry.registerLoader(new InternalModelLoader());
         MinecraftForge.EVENT_BUS.register(this);
+        RenderingRegistry.instance().registerLoader(iconRegistrar -> {
+            if (models.isEmpty()){
+                blockResourceLocations.keySet().forEach(mrl -> {
+                    IUnbakedModel model_;
+                    try {
+                        model_ = ModelLoaderRegistry.getModel(mrl);
+                    } catch (Exception e){
+                        throw new RuntimeException(e);
+                        //model_ = null;//ModelLoaderRegistry.getMissingModel();
+                    }
+                    models.put(mrl, model_);
+                });
+            }
+            models.values().stream().filter(Objects::nonNull).map(ubm -> ubm.getTextures(ModelLoader.defaultModelGetter(), Sets.newHashSet())).filter(Objects::nonNull).forEach(set -> set.forEach(iconRegistrar::registerSprite));
+        });
     }
 
     private final Map<ModelResourceLocation, IBlockState> blockResourceLocations;
+    private final Map<ModelResourceLocation, IUnbakedModel> models;
     private final Set<ResourceLocation> uniqueNames;
 
     @Override
@@ -64,7 +83,6 @@ public class BlockVariantModelHandler implements IModelHandler {
     public void preHandleModels() {
         for (Block block : RenderingRegistry.instance().getAllValidBlocks()) {
             if (block instanceof INoBlockStateJsonBlock && !(block instanceof INoJsonBlock)) {
-
                 ResourceLocation baseName = new ResourceLocation("varianthandled", block.getRegistryName().toString().replace(":", "_"));
                 uniqueNames.add(baseName);
 
@@ -100,15 +118,20 @@ public class BlockVariantModelHandler implements IModelHandler {
 
     @Override
     @Nonnull
-    public Map<ModelResourceLocation, IBakedModel> registerBakedModels(java.util.function.Function<ModelResourceLocation, IBakedModel> bakedModelGetter) {
-        return ImmutableMap.of();
+    public Map<ModelResourceLocation, IBakedModel> registerBakedModels(Function<ModelResourceLocation, IBakedModel> bakedModelGetter) {
+        return models.entrySet().stream()
+                .collect(Collectors.toMap(Map.Entry::getKey, e -> {
+                    IUnbakedModel model = MoreObjects.firstNonNull(e.getValue(), ModelLoaderRegistry.getMissingModel());
+                    return model.bake(ModelLoader.defaultModelGetter(), ModelLoader.defaultTextureGetter(), model.getDefaultState(), false, DefaultVertexFormats.BLOCK);
+                }));
+        //return ImmutableMap.of();
     }
 
     private ResourceLocation getFixedLocation(ResourceLocation rl) {
         return new ResourceLocation(rl.getPath().replace("_", ":"));
     }
 
-    private class ModelLoader implements ICustomModelLoader {
+    private class InternalModelLoader implements ICustomModelLoader {
 
         @Override
         public boolean accepts(@Nonnull ResourceLocation modelLocation) {

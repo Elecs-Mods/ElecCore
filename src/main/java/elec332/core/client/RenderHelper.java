@@ -27,8 +27,11 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.shapes.VoxelShape;
+import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.model.ITransformation;
@@ -115,6 +118,28 @@ public class RenderHelper {
     @Nonnull
     public static AxisAlignedBB expandAABB(@Nonnull AxisAlignedBB aabb) {
         return aabb.grow(BB_EXPAND_NUMBER);
+    }
+
+    public static void drawSelectionBox(EntityPlayer player, World world, BlockPos pos, VoxelShape shapeOverride, float partialTicks) {
+        if (world.getWorldBorder().contains(pos)) {
+            GlStateManager.enableBlend();
+            GlStateManager.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+            GlStateManager.lineWidth(Math.max(2.5F, (float) mc.mainWindow.getFramebufferWidth() / 1920.0F * 2.5F));
+            GlStateManager.disableTexture2D();
+            GlStateManager.depthMask(false);
+            GlStateManager.matrixMode(5889);
+            GlStateManager.pushMatrix();
+            GlStateManager.scalef(1.0F, 1.0F, 0.999F);
+            double d0 = player.lastTickPosX + (player.posX - player.lastTickPosX) * (double) partialTicks;
+            double d1 = player.lastTickPosY + (player.posY - player.lastTickPosY) * (double) partialTicks;
+            double d2 = player.lastTickPosZ + (player.posZ - player.lastTickPosZ) * (double) partialTicks;
+            RenderGlobal.drawShape(shapeOverride, (double) pos.getX() - d0, (double) pos.getY() - d1, (double) pos.getZ() - d2, 0.0F, 0.0F, 0.0F, 0.4F);
+            GlStateManager.popMatrix();
+            GlStateManager.matrixMode(5888);
+            GlStateManager.depthMask(true);
+            GlStateManager.enableTexture2D();
+            GlStateManager.disableBlend();
+        }
     }
 
     @Nonnull

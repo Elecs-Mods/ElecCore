@@ -2,7 +2,6 @@ package elec332.core.util;
 
 import elec332.core.api.util.IMemberPointer;
 
-import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Method;
@@ -63,10 +62,6 @@ public class MethodPointer<P, R> implements IMemberPointer<Method, P, R> {
         } catch (Throwable e) {
             throw new RuntimeException(e);
         }
-    }
-
-    public <A extends Annotation> A get(Class<A> annotation) {
-        return method.getAnnotation(annotation);
     }
 
     @Override

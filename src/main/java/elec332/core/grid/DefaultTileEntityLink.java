@@ -6,11 +6,10 @@ import elec332.core.world.DimensionCoordinate;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.OptionalCapabilityInstance;
+import net.minecraftforge.common.util.LazyOptional;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.EnumMap;
 import java.util.Map;
 
 /**
@@ -28,7 +27,7 @@ public class DefaultTileEntityLink implements ITileEntityLink {
 
     protected final TileEntity tile;
     protected final DimensionCoordinate coord;
-    protected final Map<Capability<?>, EnumMap<EnumFacing, OptionalCapabilityInstance<?>>> capCache;
+    protected final Map<Capability<?>, Map<EnumFacing, LazyOptional<?>>> capCache;
 
     @Nullable
     @Override
@@ -44,20 +43,23 @@ public class DefaultTileEntityLink implements ITileEntityLink {
 
     @Nonnull
     @Override
-    public <T> OptionalCapabilityInstance<T> getCapability(@Nonnull Capability<T> cap, @Nullable EnumFacing side) {
-        Map<EnumFacing, OptionalCapabilityInstance<?>> capC1 = capCache.computeIfAbsent(cap, c -> Maps.newEnumMap(EnumFacing.class));
+    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable EnumFacing side) {
+        if (!coord.isLoaded() || tile == null){
+            return LazyOptional.empty();
+        }
+        Map<EnumFacing, LazyOptional<?>> capC1 = capCache.computeIfAbsent(cap, c -> Maps.newIdentityHashMap());
         if (capC1.containsKey(side)) {
-            OptionalCapabilityInstance<?> cret = capC1.get(side);
+            LazyOptional<?> cret = capC1.get(side);
             if (cret.isPresent()) {
                 return cret.cast();
             }
         }
-        OptionalCapabilityInstance<?> ret;
-        if (coord.isLoaded() && tile != null) {
-            ret = Preconditions.checkNotNull(tile.getCapability(cap, side));
-        } else {
-            ret = OptionalCapabilityInstance.empty();
-        }
+        LazyOptional<?> ret;
+        //if (coord.isLoaded()) {
+        ret = Preconditions.checkNotNull(tile.getCapability(cap, side));
+        //} else {
+        //    ret = LazyOptional.empty();
+        //}
         capC1.put(side, ret);
         return ret.cast();
     }

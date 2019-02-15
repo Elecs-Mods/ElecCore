@@ -36,11 +36,11 @@ import java.util.function.Supplier;
  */
 public class ConfigWrapper implements IConfigWrapper {
 
-    public ConfigWrapper(File location){
+    public ConfigWrapper(File location) {
         this(location.toPath());
     }
 
-    public ConfigWrapper(Path location){
+    public ConfigWrapper(Path location) {
         this(CommentedFileConfig.builder(location).sync().autosave().writingMode(WritingMode.REPLACE).build());
     }
 
@@ -67,10 +67,10 @@ public class ConfigWrapper implements IConfigWrapper {
 
     @Override
     public void registerConfig(Object o) {
-        if (hasBeenLoaded()){
+        if (hasBeenLoaded()) {
             throw new RuntimeException("Cannot register configs after baking!");
         }
-        if (instances.contains(o)){
+        if (instances.contains(o)) {
             return;
         }
         this.instances.add(o);
@@ -115,7 +115,7 @@ public class ConfigWrapper implements IConfigWrapper {
                     }
                     boolean serialized = false;
                     int i = configuration.depth;
-                    if (!Strings.isNullOrEmpty(comment)){
+                    if (!Strings.isNullOrEmpty(comment)) {
                         configuration.comment(comment);
                     }
                     configuration.push(category);
@@ -131,12 +131,12 @@ public class ConfigWrapper implements IConfigWrapper {
                     if (!serialized) {
                         throw new RuntimeException("Could not find serializer for type " + field.getType());
                     }
-                    if (configuration.depth != i){
+                    if (configuration.depth != i) {
                         throw new RuntimeException("Invalid config depth!");
                     }
                 }
                 field.setAccessible(oldAccess);
-            } catch (RuntimeException e){
+            } catch (RuntimeException e) {
                 throw e; //Eh
             } catch (Throwable t) {
                 throw new RuntimeException(t);
@@ -166,11 +166,11 @@ public class ConfigWrapper implements IConfigWrapper {
     @Nonnull
     @Override
     public ConfigWrapper setCategoryData(String category, String description) {
-        if (hasBeenLoaded()){
+        if (hasBeenLoaded()) {
             throw new RuntimeException("Cannot set category data after baking!");
         }
         int i = configuration.depth;
-        if (!Strings.isNullOrEmpty(description)){
+        if (!Strings.isNullOrEmpty(description)) {
             configuration.comment(description);
         }
         configuration.push(category);
@@ -201,7 +201,7 @@ public class ConfigWrapper implements IConfigWrapper {
             if (file != null && hasAutoReload.test(file.getFile().toPath())) {
                 FileWatcher.defaultInstance().setWatch(file.getFile(), this::load);
             }
-        } catch (Exception e){
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
         blockLoad = false;
@@ -229,7 +229,7 @@ public class ConfigWrapper implements IConfigWrapper {
 
     @Override
     public void registerConfigurableElement(IConfigurableElement configurableElement) {
-        if (hasBeenLoaded()){
+        if (hasBeenLoaded()) {
             throw new RuntimeException("Cannot register config elements after baking!");
         }
         this.configurableElements.add(configurableElement);
@@ -238,7 +238,7 @@ public class ConfigWrapper implements IConfigWrapper {
 
     @Override
     public void configureNow(IConfigurableElement configurableElement) {
-        if (hasBeenLoaded()){
+        if (hasBeenLoaded()) {
             throw new RuntimeException("Cannot register config elements after baking!");
         }
         configurableElement.reconfigure(configuration);
@@ -247,20 +247,20 @@ public class ConfigWrapper implements IConfigWrapper {
 
     @Override
     public void load() {
-        if (spec == null){
+        if (spec == null) {
             throw new IllegalStateException();
         }
-        if (blockLoad){
+        if (blockLoad) {
             return;
         }
-        if (file != null){
+        if (file != null) {
             file.load();
         }
         loadTasks.forEach(Runnable::run);
     }
 
-    private void checkReloadListener(IConfigurableElement cfg){
-        if (cfg instanceof Runnable){
+    private void checkReloadListener(IConfigurableElement cfg) {
+        if (cfg instanceof Runnable) {
             loadTasks.add((Runnable) cfg);
         } else if (cfg instanceof UnsafeRunnable) {
             loadTasks.add(FuncHelper.safeRunnable((UnsafeRunnable) cfg));
@@ -281,7 +281,7 @@ public class ConfigWrapper implements IConfigWrapper {
         public ForgeConfigSpec.Builder pop(int count) {
             super.pop(count);
             depth -= count;
-            if (depth < 0){
+            if (depth < 0) {
                 throw new RuntimeException();
             }
             return this;

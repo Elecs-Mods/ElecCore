@@ -7,21 +7,21 @@ import java.util.function.Supplier;
  */
 public class FuncHelper {
 
-    public static Runnable safeRunnable(UnsafeRunnable runnable){
+    public static Runnable safeRunnable(UnsafeRunnable runnable) {
         return () -> {
             try {
                 runnable.run();
-            } catch (Exception e){
+            } catch (Exception e) {
                 throw new RuntimeException(e);
             }
         };
     }
 
-    public static <T> Supplier<T> safeSupplier(UnsafeSupplier<T> supplier){
+    public static <T> Supplier<T> safeSupplier(UnsafeSupplier<T> supplier) {
         return () -> {
             try {
                 return supplier.get();
-            } catch (Exception e){
+            } catch (Exception e) {
                 throw new RuntimeException(e);
             }
         };

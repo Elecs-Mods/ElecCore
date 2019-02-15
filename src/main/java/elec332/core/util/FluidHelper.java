@@ -8,7 +8,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockReader;
-import net.minecraftforge.common.capabilities.OptionalCapabilityInstance;
+import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.IFluidTank;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
@@ -91,7 +91,7 @@ public class FluidHelper {
             return false;
         }
         ///////Start
-        OptionalCapabilityInstance<IFluidHandler> ofh = stack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, null);
+        LazyOptional<IFluidHandler> ofh = stack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, null);
         if (!ofh.isPresent()) {
             ofh = stack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY);
         }
@@ -143,7 +143,7 @@ public class FluidHelper {
             return false;
         }
         ///////Start
-        OptionalCapabilityInstance<IFluidHandler> ofh = stack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, null);
+        LazyOptional<IFluidHandler> ofh = stack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, null);
         if (!ofh.isPresent()) {
             ofh = stack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY);
         }

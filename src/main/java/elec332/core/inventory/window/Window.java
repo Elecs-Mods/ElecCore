@@ -11,7 +11,6 @@ import elec332.core.inventory.widget.IWidget;
 import elec332.core.inventory.widget.IWidgetListener;
 import elec332.core.inventory.widget.slot.WidgetSlot;
 import elec332.core.inventory.widget.slot.WidgetSlotOutput;
-import elec332.core.proxies.CommonProxy;
 import elec332.core.util.ItemStackHelper;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.player.EntityPlayer;
@@ -474,7 +473,7 @@ public class Window implements IWidgetContainer {
     }
 
     public final EntityPlayer getPlayer() {
-        return windowContainer == null ? CommonProxy.currentOpeningPlayer.get() : windowContainer.getPlayer();
+        return windowContainer == null ? WindowManager.currentOpeningPlayer.get() : windowContainer.getPlayer();
     }
 
     public final List<IWindowListener> getListeners() {

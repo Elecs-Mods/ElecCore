@@ -1,7 +1,9 @@
 package elec332.core.util;
 
 import com.google.common.base.Preconditions;
+import net.minecraft.nbt.INBTBase;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.common.util.INBTSerializable;
 
@@ -32,11 +34,19 @@ public class NBTBuilder implements INBTSerializable<NBTTagCompound>, Supplier<NB
     /////////////////////////////
 
     public NBTBuilder setBlockPos(BlockPos pos) {
-        this.tag.putLong("position", pos.toLong());
+        return setBlockPos("position", pos);
+    }
+
+    public NBTBuilder setBlockPos(String name, BlockPos pos){
+        this.tag.putLong(name, pos.toLong());
         return this;
     }
 
-    public NBTBuilder setTag(String name, NBTTagCompound tag) {
+    public NBTBuilder setTag(String name, INBTSerializable<?> tag) {
+        return setTag(name, tag.serializeNBT());
+    }
+
+    public NBTBuilder setTag(String name, INBTBase tag) {
         this.tag.put(name, tag);
         return this;
     }
@@ -46,18 +56,147 @@ public class NBTBuilder implements INBTSerializable<NBTTagCompound>, Supplier<NB
         return this;
     }
 
+    public NBTBuilder setByte(String name, byte b) {
+        this.tag.putByte(name, b);
+        return this;
+    }
+
+    public NBTBuilder setShort(String name, short s) {
+        this.tag.putShort(name, s);
+        return this;
+    }
+
+    public NBTBuilder setLong(String name, long l) {
+        this.tag.putLong(name, l);
+        return this;
+    }
+
+    public NBTBuilder setFloat(String name, float f) {
+        this.tag.putFloat(name, f);
+        return this;
+    }
+
+    public NBTBuilder setDouble(String name, double d) {
+        this.tag.putDouble(name, d);
+        return this;
+    }
+
+    public NBTBuilder setString(String name, String str) {
+        this.tag.putString(name, str);
+        return this;
+    }
+
+    public NBTBuilder setByteArray(String name, byte[] b) {
+        this.tag.putByteArray(name, b);
+        return this;
+    }
+
+    public NBTBuilder setIntArray(String name, int[] i) {
+        this.tag.putIntArray(name, i);
+        return this;
+    }
+
+    public NBTBuilder setBoolean(String name, boolean b) {
+        this.tag.putBoolean(name, b);
+        return this;
+    }
+
     /////////////////////////////
 
     public BlockPos getBlockPos() {
-        return BlockPos.fromLong(this.tag.getLong("position"));
+        return getBlockPos("position");
     }
 
-    public NBTTagCompound getTag(String name) {
+    public BlockPos getBlockPos(String name) {
+        return BlockPos.fromLong(this.tag.getLong(name));
+    }
+
+    @SuppressWarnings("unchecked")
+    public <N extends INBTBase> void getDeserialized(String name, INBTSerializable<N> serializable){
+        serializable.deserializeNBT((N) getTag(name));
+    }
+
+    public INBTBase getTag(String name) {
+        return this.tag.get(name);
+    }
+
+    public NBTTagCompound getCompound(String name) {
         return this.tag.getCompound(name);
     }
 
     public int getInteger(String name) {
         return this.tag.getInt(name);
+    }
+
+    public byte getByte(String name) {
+        return this.tag.getByte(name);
+    }
+
+    public short getShort(String name) {
+        return this.tag.getShort(name);
+    }
+
+    public long getLong(String name) {
+        return this.tag.getLong(name);
+    }
+
+    public float getFloat(String name) {
+        return this.tag.getFloat(name);
+    }
+
+    public double getDouble(String name) {
+        return this.tag.getDouble(name);
+    }
+
+    public String getString(String name) {
+        return this.tag.getString(name);
+    }
+
+    public byte[] getByteArray(String name) {
+        return this.tag.getByteArray(name);
+    }
+
+    public int[] getIntArray(String name) {
+        return this.tag.getIntArray(name);
+    }
+
+    public NBTTagList getTagList(String name, int type) {
+        return this.tag.getList(name, type);
+    }
+
+    public boolean getBoolean(String name) {
+        return this.tag.getBoolean(name);
+    }
+
+    /////////////////////////////
+
+    public byte getTagId(String name) {
+        return this.tag.getTagId(name);
+    }
+
+    public boolean contains(String name) {
+        return this.tag.contains(name);
+    }
+
+    public boolean contains(String name, int type) {
+        return this.tag.contains(name, type);
+    }
+
+    public void remove(String name) {
+        this.tag.remove(name);
+    }
+
+    public boolean isEmpty(){
+        return this.tag.isEmpty();
+    }
+
+    public NBTBuilder copy(){
+        return NBTBuilder.from(this.tag.copy());
+    }
+
+    public NBTBuilder mergeWith(NBTBuilder other){
+        this.tag.merge(other.tag);
+        return this;
     }
 
     /////////////////////////////
@@ -69,7 +208,7 @@ public class NBTBuilder implements INBTSerializable<NBTTagCompound>, Supplier<NB
 
     @Override
     public void deserializeNBT(NBTTagCompound nbt) {
-        if (tag.isEmpty()) {
+        if (this.tag.isEmpty()) {
             this.tag = nbt;
         } else {
             throw new UnsupportedOperationException();

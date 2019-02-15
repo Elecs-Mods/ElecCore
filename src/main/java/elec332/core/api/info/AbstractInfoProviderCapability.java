@@ -4,7 +4,7 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.OptionalCapabilityInstance;
+import net.minecraftforge.common.util.LazyOptional;
 
 import javax.annotation.Nonnull;
 
@@ -26,7 +26,7 @@ public abstract class AbstractInfoProviderCapability<O> implements IInfoProvider
     public final void addInformation(@Nonnull IInformation information, @Nonnull IInfoDataAccessorBlock hitData) {
         TileEntity tile = hitData.getTileEntity();
         if (tile != null) {
-            OptionalCapabilityInstance<O> cap = tile.getCapability(capability, hitData.getSide());
+            LazyOptional<O> cap = tile.getCapability(capability, hitData.getSide());
             if (cap != null) {
                 O instance = cap.orElse(null);
                 if (instance != null) {
@@ -40,7 +40,7 @@ public abstract class AbstractInfoProviderCapability<O> implements IInfoProvider
     @Override
     public final NBTTagCompound getInfoNBTData(@Nonnull NBTTagCompound tag, TileEntity tile, @Nonnull EntityPlayerMP player, @Nonnull IInfoDataAccessorBlock hitData) {
         if (tile != null) {
-            OptionalCapabilityInstance<O> cap = tile.getCapability(capability, hitData.getSide());
+            LazyOptional<O> cap = tile.getCapability(capability, hitData.getSide());
             if (cap != null) {
                 O instance = cap.orElse(null);
                 if (instance != null) {

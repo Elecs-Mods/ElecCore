@@ -5,17 +5,21 @@ import com.google.common.collect.Maps;
 import elec332.core.api.APIHandlerInject;
 import elec332.core.api.IAPIHandler;
 import elec332.core.api.annotations.StaticLoad;
+import elec332.core.api.network.ElecByteBuf;
 import elec332.core.api.network.IExtendedMessageContext;
 import elec332.core.api.network.INetworkManager;
 import elec332.core.api.network.IPacketRegistry;
 import elec332.core.api.network.simple.ISimpleNetworkPacketManager;
 import elec332.core.util.FMLHelper;
+import elec332.core.util.FieldPointer;
+import io.netty.buffer.ByteBuf;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.ModContainer;
 import net.minecraftforge.fml.network.NetworkEvent;
 import net.minecraftforge.fml.network.simple.SimpleChannel;
 
 import java.util.Map;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
@@ -29,6 +33,7 @@ enum NetworkManager implements INetworkManager<DefaultNetworkHandler> {
 
     NetworkManager() {
         this.networkHandlers = Maps.newHashMap();
+        (new FieldPointer<ElecByteBuf, Function<ByteBuf, ElecByteBuf>>(ElecByteBuf.class, "factory")).set(null, ElecByteBufImpl::new);
     }
 
     private Map<ModContainer, DefaultNetworkHandler> networkHandlers;

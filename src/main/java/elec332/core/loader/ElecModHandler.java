@@ -48,7 +48,14 @@ enum ElecModHandler implements IElecCoreModHandler {
     void afterConstruct() {
         identifyMods();
         initAnnotations(asmData);
-        init();
+        init(mods);
+    }
+
+    void latePreInit(){
+        init(ModuleManager.INSTANCE.getActiveModules().stream()
+                .filter(mc -> mc.getModule() instanceof IElecCoreMod)
+                .map(moduleContainer -> Pair.of(moduleContainer.getOwnerMod(), (IElecCoreMod) moduleContainer.getModule()))
+                .collect(Collectors.toList()));
     }
 
     private void identifyMods() {
@@ -57,20 +64,12 @@ enum ElecModHandler implements IElecCoreModHandler {
                 .sorted((o1, o2) -> o1.getMod() instanceof ElecCore ? 1 : (o2.getMod() instanceof ElecCore ? -1 : Integer.compare(o1.hashCode(), o2.hashCode())))
                 .map(modContainer -> Pair.of(modContainer, (IElecCoreMod) modContainer.getMod()))
                 .peek(mcp -> {
-                    if (!FMLHelper.hasFMLModContainer(mcp.getLeft())){
+                    if (!FMLHelper.hasFMLModContainer(mcp.getLeft())) {
                         ElecCore.logger.error("ModContainer " + mcp.getLeft() + " isn't instanceof FMLModContainer!");
                         ElecCore.logger.error("This will limit some functionality.");
                     }
                 })
                 .collect(Collectors.toList());
-    }
-
-    private void init() {
-        init(mods);
-        init(ModuleManager.INSTANCE.getActiveModules().stream()
-                .filter(mc -> mc.getModule() instanceof IElecCoreMod)
-                .map(moduleContainer -> Pair.of(moduleContainer.getOwnerMod(), (IElecCoreMod) moduleContainer.getModule()))
-                .collect(Collectors.toList()));
     }
 
     private void init(List<Pair<ModContainer, IElecCoreMod>> mods) {

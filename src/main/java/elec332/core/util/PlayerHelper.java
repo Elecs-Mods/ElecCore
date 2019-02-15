@@ -37,7 +37,7 @@ public class PlayerHelper {
     public static Vec3d getCorrectedHeadVec(EntityPlayer player) {
         double yCoord = player.posY;
         if (player.getEntityWorld().isRemote) {
-            yCoord += (player.getEyeHeight() - player.getDefaultEyeHeight());
+            yCoord += player.getEyeHeight();// - player.getDefaultEyeHeight();
         } else {
             yCoord += player.getEyeHeight();
             if (player instanceof EntityPlayerMP && player.isSneaking()) {

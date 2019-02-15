@@ -47,10 +47,10 @@ enum AnnotationDataHandler {
         }
 
         Map<String, ModContainer> pck = Maps.newTreeMap((o1, o2) -> {
-            if (o2.contains(o1)){
+            if (o2.contains(o1)) {
                 return 1;
             }
-            if (o1.contains(o2)){
+            if (o1.contains(o2)) {
                 return -1;
             }
             return 0;
@@ -61,6 +61,24 @@ enum AnnotationDataHandler {
                 String pack = mc.getMod().getClass().getCanonicalName();
                 pack = pack.substring(0, pack.lastIndexOf("."));
                 pck.put(pack, mc);
+                if (pack.lastIndexOf(".") != -1) {
+                    pack = pack.substring(0, pack.lastIndexOf("."));
+
+                    pck.put(pack, mc);
+                }
+            }
+        });
+
+        FMLHelper.getMods().forEach(mc -> {
+            if (mc.getMod() != null) {
+                String pack = mc.getMod().getClass().getCanonicalName();
+                pack = pack.substring(0, pack.lastIndexOf("."));
+                if (pack.lastIndexOf(".") != -1) {
+                    pack = pack.substring(0, pack.lastIndexOf("."));
+                    if (!pck.containsKey(pack)) {
+                        pck.put(pack, mc);
+                    }
+                }
             }
         });
 
@@ -70,7 +88,7 @@ enum AnnotationDataHandler {
         packageOwners = pck2::get;
 
         Function<IAnnotationData, ModContainer> modSearcher = annotationData -> {
-            if (annotationData.getClassName().startsWith("net.minecraft.") || annotationData.getClassName().startsWith("mcp.")){
+            if (annotationData.getClassName().startsWith("net.minecraft.") || annotationData.getClassName().startsWith("mcp.")) {
                 return null;//FMLHelper.getModList().getModContainerById(DefaultModInfos.minecraftModInfo.getModId()).orElseThrow(NullPointerException::new);
             }
             ModFile owner = annotationData.getFile();
@@ -88,7 +106,7 @@ enum AnnotationDataHandler {
                     SetMultimap<Type, IAnnotationData> ret = HashMultimap.create();
                     mf.getScanResult().getAnnotations().forEach(ad -> {
                         IAnnotationData annotationData = new AnnotationData(ad, mf);
-                        if (annotationData.getAnnotationName().startsWith("Ljava/lang") || annotationData.getAnnotationName().startsWith("Ljavax/annotation")){
+                        if (annotationData.getAnnotationName().startsWith("Ljava/lang") || annotationData.getAnnotationName().startsWith("Ljavax/annotation")) {
                             return;
                         }
                         Type annType = ad.getAnnotationType();

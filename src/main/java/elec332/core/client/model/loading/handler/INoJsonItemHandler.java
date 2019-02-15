@@ -1,5 +1,6 @@
 package elec332.core.client.model.loading.handler;
 
+import com.google.common.base.Preconditions;
 import elec332.core.api.client.model.loading.IItemModelHandler;
 import elec332.core.api.client.model.loading.ModelHandler;
 import elec332.core.client.RenderHelper;
@@ -60,12 +61,14 @@ public class INoJsonItemHandler implements IItemModelHandler {
 
                 @Nonnull
                 @Override
-                @SuppressWarnings("all")
                 public IBakedModel getModelWithOverrides(@Nonnull IBakedModel originalModel, ItemStack stack, @Nullable World world, @Nullable EntityLivingBase entity) {
                     IBlockModelItemLink b = (IBlockModelItemLink) ((ItemBlock) stack.getItem()).getBlock();
                     IBakedModel ret = Minecraft.getInstance().getBlockRendererDispatcher().getModelForState(b.getRenderState(stack));
-                    ret = ret.getOverrides().getModelWithOverrides(ret, stack, world, entity);
-                    return ret;
+                    ItemOverrideList iol = ret.getOverrides();
+                    if (iol != null) {
+                        ret = iol.getModelWithOverrides(ret, stack, world, entity);
+                    }
+                    return Preconditions.checkNotNull(ret);
                 }
 
             });
@@ -81,7 +84,12 @@ public class INoJsonItemHandler implements IItemModelHandler {
                 @Override
                 @Nonnull
                 public IBakedModel getModelWithOverrides(@Nonnull IBakedModel originalModel, ItemStack stack, @Nullable World world, @Nullable EntityLivingBase entity) {
-                    return ((INoJsonItem) stack.getItem()).getItemModel(stack, world, entity);
+                    IBakedModel ret = ((INoJsonItem) stack.getItem()).getItemModel(stack, world, entity);
+                    ItemOverrideList iol = ret.getOverrides();
+                    if (iol != null) {
+                        ret = iol.getModelWithOverrides(ret, stack, world, entity);
+                    }
+                    return Preconditions.checkNotNull(ret);
                 }
 
             });
@@ -97,7 +105,12 @@ public class INoJsonItemHandler implements IItemModelHandler {
                 @Override
                 @Nonnull
                 public IBakedModel getModelWithOverrides(@Nonnull IBakedModel originalModel, ItemStack stack, @Nullable World world, @Nullable EntityLivingBase entity) {
-                    return ((INoJsonItem) (((ItemBlock) stack.getItem()).getBlock())).getItemModel(stack, world, entity);
+                    IBakedModel ret = ((INoJsonItem) (((ItemBlock) stack.getItem()).getBlock())).getItemModel(stack, world, entity);
+                    ItemOverrideList iol = ret.getOverrides();
+                    if (iol != null) {
+                        ret = iol.getModelWithOverrides(ret, stack, world, entity);
+                    }
+                    return Preconditions.checkNotNull(ret);
                 }
 
             });

@@ -236,7 +236,7 @@ public class InventoryHelper {
      * useful when you want to restore an inventory to a former state
      *
      * @param inventory The inventory
-     * @param list The "new" inventory contents
+     * @param list      The "new" inventory contents
      */
     public static void setContents(IItemHandlerModifiable inventory, List<ItemStack> list) {
         if (inventory.getSlots() != list.size()) {

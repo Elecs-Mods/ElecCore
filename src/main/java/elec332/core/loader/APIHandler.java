@@ -44,7 +44,7 @@ enum APIHandler implements IAnnotationDataProcessor, IAPIHandler {
     }
 
     private final Map<Class<?>, List<Consumer<?>>> callBacks;   //Used to be a multimap, but multimaps sort contents themselves,
-                                                                // we do not want that to happen, because they will be inserted in order
+    // we do not want that to happen, because they will be inserted in order
     private final Map<Class<?>, Object> injectedHandlers;
 
     @Override

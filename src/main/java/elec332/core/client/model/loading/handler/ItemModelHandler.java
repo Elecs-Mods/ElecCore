@@ -8,14 +8,18 @@ import elec332.core.api.client.model.loading.IItemModelHandler;
 import elec332.core.api.client.model.loading.IModelHandler;
 import elec332.core.api.client.model.loading.ModelHandler;
 import elec332.core.loader.client.RenderingRegistry;
-import net.minecraft.client.Minecraft;
+import elec332.core.util.FieldPointer;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;
+import net.minecraftforge.client.model.ModelLoader;
+import net.minecraftforge.registries.IRegistryDelegate;
+import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 /**
@@ -31,6 +35,10 @@ public class ItemModelHandler implements IModelHandler {
 
     private List<IItemModelHandler> itemModelHandlers;
     private Map<Item, ModelResourceLocation> itemResourceLocations;
+
+    //Temp until Forge restores this functionality
+    private static final FieldPointer<ModelLoader, Map<Pair<IRegistryDelegate<Item>, Integer>, ModelResourceLocation>> field = new FieldPointer<>(ModelLoader.class, "customModels");
+    private static final BiConsumer<Item, ModelResourceLocation> itemModelRegistry = (item, modelResourceLocation) -> field.get(null).put(Pair.of(item.delegate, 0), modelResourceLocation);
 
     @Override
     public void getModelHandlers(List<?> list) {
@@ -49,7 +57,7 @@ public class ItemModelHandler implements IModelHandler {
                 if (handler.handleItem(item)) {
                     String s = handler.getIdentifier(item);
                     final ModelResourceLocation mr = new ModelResourceLocation(Preconditions.checkNotNull(item.getRegistryName()).toString(), s);
-                    Minecraft.getInstance().getItemRenderer().getItemModelMesher().register(item, mr);
+                    itemModelRegistry.accept(item, mr);
                     itemResourceLocations.put(item, mr);
                     break;
                 }

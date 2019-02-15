@@ -67,14 +67,14 @@ public class ConstructionAnnotationProcessor implements IAnnotationDataProcessor
                 } else {
                     throw new IllegalArgumentException();
                 }
-                String proxyClass = FMLHelper.getLogicalSide() == LogicalSide.CLIENT ? member.get(SidedProxy.class).clientSide() : member.get(SidedProxy.class).serverSide();
+                String proxyClass = FMLHelper.getLogicalSide() == LogicalSide.CLIENT ? member.getAnnotation(SidedProxy.class).clientSide() : member.getAnnotation(SidedProxy.class).serverSide();
                 Object proxy;
                 try {
                     proxy = FMLHelper.loadClass(proxyClass).newInstance();
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
-                ElecCore.logger.info("Injecting proxy into " + member.getName() + "@"+member.getParentType().getCanonicalName());
+                ElecCore.logger.info("Injecting proxy into " + member.getName() + "@" + member.getParentType().getCanonicalName());
                 injector.accept(proxy);
             });
 

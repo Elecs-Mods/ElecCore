@@ -31,7 +31,7 @@ public abstract class AbstractPacketTileAction extends AbstractPacket {
         NBTBuilder tag = new NBTBuilder(message);
         BlockPos loc = tag.getBlockPos();
         int i = tag.getInteger("id");
-        NBTTagCompound data = tag.getTag("data");
+        NBTTagCompound data = tag.getCompound("data");
         World world;
         if (ctx.getSide() == LogicalSide.SERVER) {
             world = ctx.getWorld();

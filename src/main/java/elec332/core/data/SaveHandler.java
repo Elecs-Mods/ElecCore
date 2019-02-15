@@ -63,7 +63,7 @@ public enum SaveHandler {
     }
 
     private void load(ISaveHandler save, WorldInfo worldInfo, NBTTagCompound base) {
-        System.out.println("Load "+worldInfo.getDimension());
+        System.out.println("Load " + worldInfo.getDimension());
         NBTTagCompound tag;
         Preconditions.checkNotNull(save);
         Preconditions.checkNotNull(worldInfo);
