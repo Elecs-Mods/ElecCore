@@ -29,7 +29,7 @@ enum ASMDataHandler {
 
     ASMDataHandler() {
         asmLoaderMap = Maps.newHashMap();
-        validStates = ImmutableList.of(LoaderState.PREINITIALIZATION, LoaderState.INITIALIZATION, LoaderState.POSTINITIALIZATION, LoaderState.AVAILABLE);
+        validStates = ImmutableList.of(LoaderState.CONSTRUCTING, LoaderState.PREINITIALIZATION, LoaderState.INITIALIZATION, LoaderState.POSTINITIALIZATION, LoaderState.AVAILABLE);
     }
 
 

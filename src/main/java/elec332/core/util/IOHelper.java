@@ -37,6 +37,19 @@ public class IOHelper {
     }
 
     /**
+     * Creates a folder and it's sub-folders (If they don't exist yet)
+     *
+     * @param file The file to be created
+     */
+    public static void createFile(@Nonnull File file) throws IOException {
+        if (!file.exists()) {
+            if (!file.getParentFile().mkdirs() && !file.createNewFile()) {
+                throw new IOException();
+            }
+        }
+    }
+
+    /**
      * Makes sure the folder exists, tries to create it if it doesn't.
      * If it doesn't exist, and fails to creates it, it throws a {@link RuntimeException}
      *

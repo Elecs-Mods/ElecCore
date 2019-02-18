@@ -22,11 +22,13 @@ public class ElecCoreLoader {
     @Mod.EventHandler
     public void construct(FMLConstructionEvent event) {
         asmDataHandler = ASMDataHandler.INSTANCE; //Static load
+        asmDataHandler.identify(event.getASMHarvestedData());
+        asmDataHandler.process(LoaderState.CONSTRUCTING);
+        ElecModHandler.INSTANCE.afterConstruct();
     }
 
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event) {
-        asmDataHandler.identify(event.getAsmData());
         asmDataHandler.process(LoaderState.PREINITIALIZATION);
         ModuleManager.INSTANCE.init();
         ElecModHandler.INSTANCE.latePreInit();

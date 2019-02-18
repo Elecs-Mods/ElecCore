@@ -49,10 +49,17 @@ enum ElecModHandler implements IElecCoreModHandler {
     private Set<BiConsumer<ModContainer, IElecCoreMod>> handlers;
     private List<Pair<ModContainer, IElecCoreMod>> mods;
 
-    void latePreInit() {
+    void afterConstruct() {
         identifyMods();
         initAnnotations(asmData.getASMDataTable());
-        init();
+        init(mods);
+    }
+
+    void latePreInit(){
+        init(ModuleManager.INSTANCE.getActiveModules().stream()
+                .filter(mc -> mc.getModule() instanceof IElecCoreMod)
+                .map(moduleContainer -> Pair.of(moduleContainer.getOwnerMod(), (IElecCoreMod) moduleContainer.getModule()))
+                .collect(Collectors.toList()));
     }
 
     private void identifyMods() {
@@ -61,14 +68,6 @@ enum ElecModHandler implements IElecCoreModHandler {
                 .sorted((o1, o2) -> o1.getMod() instanceof ElecCore ? 1 : (o2.getMod() instanceof ElecCore ? -1 : Integer.compare(o1.hashCode(), o2.hashCode())))
                 .map(modContainer -> Pair.of(modContainer, (IElecCoreMod) modContainer.getMod()))
                 .collect(Collectors.toList());
-    }
-
-    private void init() {
-        init(mods);
-        init(ModuleManager.INSTANCE.getActiveModules().stream()
-                .filter(mc -> mc.getModule() instanceof IElecCoreMod)
-                .map(moduleContainer -> Pair.of(moduleContainer.getOwnerMod(), (IElecCoreMod) moduleContainer.getModule()))
-                .collect(Collectors.toList()));
     }
 
     private void init(List<Pair<ModContainer, IElecCoreMod>> mods) {

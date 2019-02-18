@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
 /**
  * Created by Elec332 on 29-10-2016.
  */
-@ASMDataProcessor(value = LoaderState.PREINITIALIZATION, importance = Integer.MAX_VALUE)
+@ASMDataProcessor(value = LoaderState.CONSTRUCTING, importance = Integer.MAX_VALUE)
 enum APIHandler implements IASMDataProcessor, IAPIHandler {
 
     INSTANCE;

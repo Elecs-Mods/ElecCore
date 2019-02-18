@@ -82,11 +82,8 @@ minecraft {
     version = config.minecraft_version + "-" + config.forge_version
     runDir = "run"
 	
-	replaceIn "main/ElecCore.java"
+	replaceIn "ElecCore.java"
     replace "#ELECCORE_VER#", modVersion
-	
-	replaceIn "effects/api/ElecCoreAbilitiesAPIVersion.java"
-    replace "#API_VER#", (config.abilityAPI_version)
 	
 	mappings = config.mappings
 	

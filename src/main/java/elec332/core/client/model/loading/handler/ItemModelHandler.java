@@ -1,5 +1,6 @@
 package elec332.core.client.model.loading.handler;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import elec332.core.ElecCore;
@@ -49,7 +50,7 @@ public class ItemModelHandler implements IModelHandler {
             for (IItemModelHandler handler : itemModelHandlers) {
                 if (handler.handleItem(item)) {
                     String s = handler.getIdentifier(item);
-                    final ModelResourceLocation mr = new ModelResourceLocation(item.getRegistryName().toString(), s);
+                    final ModelResourceLocation mr = new ModelResourceLocation(Preconditions.checkNotNull(item.getRegistryName()), s);
                     ModelLoader.setCustomMeshDefinition(item, new ItemMeshDefinition() {
 
                         @Override
