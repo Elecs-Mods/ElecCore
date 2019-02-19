@@ -6,7 +6,7 @@ import elec332.core.api.client.model.IElecModelBakery;
 import elec332.core.api.client.model.IElecQuadBakery;
 import elec332.core.api.client.model.IElecTemplateBakery;
 import elec332.core.client.model.loading.INoJsonItem;
-import net.minecraft.client.renderer.block.model.IBakedModel;
+import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.ItemStack;
@@ -20,7 +20,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
  */
 public class ItemTextured extends AbstractItem implements INoJsonItem {
 
-    public ItemTextured(ResourceLocation rl, Builder itemBuilder) {
+    public ItemTextured(ResourceLocation rl, Properties itemBuilder) {
         super(itemBuilder);
         setRegistryName(rl);
     }

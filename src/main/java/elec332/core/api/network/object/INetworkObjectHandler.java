@@ -7,6 +7,7 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.world.dimension.DimensionType;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -26,7 +27,7 @@ public interface INetworkObjectHandler<N extends INetworkObjectSender> extends E
 
     public void sendToAllAround(int id, IPacketDispatcher.TargetPoint point);
 
-    public void sendToDimension(int id, int dimensionId);
+    public void sendToDimension(int id, DimensionType dimensionId);
 
     public void sendToServer(int id);
 
@@ -40,7 +41,7 @@ public interface INetworkObjectHandler<N extends INetworkObjectSender> extends E
 
     public void sendToAllAround(int id, NBTTagCompound data, IPacketDispatcher.TargetPoint point);
 
-    public void sendToDimension(int id, NBTTagCompound data, int dimensionId);
+    public void sendToDimension(int id, NBTTagCompound data, DimensionType dimensionId);
 
     public void sendToServer(int id, NBTTagCompound data);
 
@@ -62,7 +63,7 @@ public interface INetworkObjectHandler<N extends INetworkObjectSender> extends E
 
     public void sendToAllAround(int id, ByteBuf data, IPacketDispatcher.TargetPoint point);
 
-    public void sendToDimension(int id, ByteBuf data, int dimensionId);
+    public void sendToDimension(int id, ByteBuf data, DimensionType dimensionId);
 
     public void sendToServer(int id, ByteBuf data);
 

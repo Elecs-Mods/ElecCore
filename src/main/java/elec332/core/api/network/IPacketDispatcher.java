@@ -7,6 +7,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
+import net.minecraft.world.dimension.DimensionType;
 
 import java.util.List;
 import java.util.stream.Stream;
@@ -97,7 +98,7 @@ public interface IPacketDispatcher extends ElecByteBuf.Factory {
      * @param range   The range around the position
      */
     default public void sendToAllAround(IMessage message, IWorld world, BlockPos pos, double range) {
-        sendToAllAround(message, new TargetPoint(world.getDimension().getId(), pos.getX(), pos.getY(), pos.getZ(), range));
+        sendToAllAround(message, new TargetPoint(world.getDimension().getType(), pos.getX(), pos.getY(), pos.getZ(), range));
     }
 
     /**
@@ -116,7 +117,7 @@ public interface IPacketDispatcher extends ElecByteBuf.Factory {
      * @param message     The message to send
      * @param dimensionId The dimension id to target
      */
-    public void sendToDimension(IMessage message, int dimensionId);
+    public void sendToDimension(IMessage message, DimensionType dimensionId);
 
     /**
      * Send this message to the server.
@@ -137,7 +138,7 @@ public interface IPacketDispatcher extends ElecByteBuf.Factory {
          * @param z         The Z coordinate
          * @param range     The range
          */
-        public TargetPoint(int dimension, double x, double y, double z, double range) {
+        public TargetPoint(DimensionType dimension, double x, double y, double z, double range) {
             this.x = x;
             this.y = y;
             this.z = z;
@@ -149,7 +150,7 @@ public interface IPacketDispatcher extends ElecByteBuf.Factory {
         public final double y;
         public final double z;
         public final double range;
-        public final int dimension;
+        public final DimensionType dimension;
 
     }
 

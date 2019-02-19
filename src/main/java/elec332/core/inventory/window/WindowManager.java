@@ -95,10 +95,6 @@ public enum WindowManager {
                 throw new IllegalArgumentException();
             }
             ElecByteBuf cdata = ElecByteBuf.of(Unpooled.wrappedBuffer(data));
-            ElecByteBuf allData = ElecByteBuf.of(Unpooled.buffer());
-            allData.writeResourceLocation(name);
-            allData.writeVarInt(data.readableBytes());
-            allData.writeBytes(data);
             NetworkHooks.openGui((EntityPlayerMP) player, new NullInteractionObject(GUI_NAME) {
 
                 @Nonnull
@@ -107,7 +103,11 @@ public enum WindowManager {
                     return INSTANCE.getServerGuiElement(entityPlayer, world, cdata, windowHandler);
                 }
 
-            }, allData);
+            }, allData -> {
+                allData.writeResourceLocation(name);
+                allData.writeVarInt(data.readableBytes());
+                allData.writeBytes(data);
+            });
             return;
         }
         throw new IllegalArgumentException();

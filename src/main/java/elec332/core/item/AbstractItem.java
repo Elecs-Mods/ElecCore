@@ -12,7 +12,7 @@ import javax.annotation.Nonnull;
  */
 public abstract class AbstractItem extends Item implements IAbstractItem {
 
-    public AbstractItem(Builder itemBuilder) {
+    public AbstractItem(Properties itemBuilder) {
         super(itemBuilder);
     }
 

@@ -1,6 +1,7 @@
 package elec332.core.loader.client;
 
 import com.google.common.base.MoreObjects;
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -13,11 +14,10 @@ import elec332.core.api.discovery.AnnotationDataProcessor;
 import elec332.core.api.discovery.IAnnotationData;
 import elec332.core.api.discovery.IAnnotationDataHandler;
 import elec332.core.api.discovery.IAnnotationDataProcessor;
-import net.minecraft.client.renderer.block.model.IBakedModel;
-import net.minecraft.client.renderer.block.model.ModelBakery;
-import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.client.renderer.model.IBakedModel;
+import net.minecraft.client.renderer.model.ModelBakery;
+import net.minecraft.client.renderer.model.ModelResourceLocation;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.registry.IRegistry;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.ModelRegistryEvent;
@@ -28,6 +28,7 @@ import net.minecraftforge.fml.ModLoadingStage;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 
 /**
  * Created by Elec332 on 11-3-2016.
@@ -76,15 +77,15 @@ enum ElecModelManager implements IAnnotationDataProcessor {
         }
     }
 
-    Set<ModelResourceLocation> registerBakedModels(IRegistry<ModelResourceLocation, IBakedModel> registry) {
+    Set<ModelResourceLocation> registerBakedModels(Map<ModelResourceLocation, IBakedModel> registry, Function<ModelResourceLocation, IBakedModel> modelGetter) {
         ElecCore.logger.info("Handling models");
         Set<ModelResourceLocation> ret = Sets.newHashSet();
-        IBakedModel missingModel = registry.getOrDefault(ModelBakery.MODEL_MISSING);
+        IBakedModel missingModel = Preconditions.checkNotNull(registry.get(ModelBakery.MODEL_MISSING));
 
         Map<ModelResourceLocation, IBakedModel> models = Maps.newHashMap();
 
         for (IModelHandler modelHandler : modelHandlers) {
-            models.putAll(modelHandler.registerBakedModels(registry::getOrDefault));
+            models.putAll(modelHandler.registerBakedModels(modelGetter));
         }
 
         for (Map.Entry<ModelResourceLocation, IBakedModel> entry : models.entrySet()) {

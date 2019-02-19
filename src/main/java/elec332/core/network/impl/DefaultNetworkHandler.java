@@ -17,6 +17,7 @@ import io.netty.buffer.ByteBuf;
 import it.unimi.dsi.fastutil.shorts.Short2ObjectArrayMap;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.dimension.DimensionType;
 import net.minecraftforge.fml.network.NetworkDirection;
 import net.minecraftforge.fml.network.NetworkEvent;
 import net.minecraftforge.fml.network.NetworkInstance;
@@ -141,7 +142,7 @@ class DefaultNetworkHandler implements IElecNetworkHandler, DefaultByteBufFactor
     }
 
     @Override
-    public void sendToDimension(IMessage message, int dimensionId) {
+    public void sendToDimension(IMessage message, DimensionType dimensionId) {
         sendTo(message, ServerHelper.getAllPlayersInDimension(dimensionId));
     }
 
@@ -176,7 +177,7 @@ class DefaultNetworkHandler implements IElecNetworkHandler, DefaultByteBufFactor
     }
 
     @Override
-    public void sendToDimension(ISimplePacket message, int dimensionId) {
+    public void sendToDimension(ISimplePacket message, DimensionType dimensionId) {
         simpleNetworkPacketManager.sendToDimension(message, dimensionId);
     }
 
@@ -201,7 +202,7 @@ class DefaultNetworkHandler implements IElecNetworkHandler, DefaultByteBufFactor
     }
 
     @Override
-    public void sendToDimension(ISimplePacket message, ISimplePacketHandler packetHandler, int dimensionId) {
+    public void sendToDimension(ISimplePacket message, ISimplePacketHandler packetHandler, DimensionType dimensionId) {
         simpleNetworkPacketManager.sendToDimension(message, packetHandler, dimensionId);
     }
 
@@ -226,7 +227,7 @@ class DefaultNetworkHandler implements IElecNetworkHandler, DefaultByteBufFactor
     }
 
     @Override
-    public void sendToDimension(ByteBuf data, ISimplePacketHandler packetHandler, int dimensionId) {
+    public void sendToDimension(ByteBuf data, ISimplePacketHandler packetHandler, DimensionType dimensionId) {
         simpleNetworkPacketManager.sendToDimension(data, packetHandler, dimensionId);
     }
 
@@ -283,7 +284,7 @@ class DefaultNetworkHandler implements IElecNetworkHandler, DefaultByteBufFactor
     static {
         indexer = new FieldPointer<>(SimpleChannel.class, "indexedCodec");
         indexer2 = new FieldPointer<>(IndexedMessageCodec.class, "indicies");
-        messageIndexUsed = (c, i) -> indexer2.get(indexer.get(c)).containsKey(i);
+        messageIndexUsed = (c, i) -> indexer2.get(indexer.get(c)).containsKey((short) i);
         nameGetter = new FieldPointer<>(SimpleChannel.class, "instance");
     }
 

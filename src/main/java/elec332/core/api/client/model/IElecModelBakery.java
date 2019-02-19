@@ -5,9 +5,9 @@ import elec332.core.api.client.model.model.IQuadProvider;
 import elec332.core.api.client.model.template.IModelTemplate;
 import elec332.core.api.client.model.template.IQuadTemplate;
 import elec332.core.api.client.model.template.IQuadTemplateSidedMap;
-import net.minecraft.client.renderer.block.model.IBakedModel;
-import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
-import net.minecraft.client.renderer.block.model.ModelRotation;
+import net.minecraft.client.renderer.model.IBakedModel;
+import net.minecraft.client.renderer.model.ItemCameraTransforms;
+import net.minecraft.client.renderer.model.ModelRotation;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 
 import javax.annotation.Nullable;
@@ -34,8 +34,10 @@ public interface IElecModelBakery {
 
     public IBakedModel itemModelForTextures(IModelTemplate template, TextureAtlasSprite... textures);
 
+    @SuppressWarnings("deprecation")
     public ItemCameraTransforms getDefaultItemTransformation();
 
+    @SuppressWarnings("deprecation")
     public ItemCameraTransforms getDefaultBlockTransformation();
 
 }

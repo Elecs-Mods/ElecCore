@@ -20,12 +20,12 @@ public interface IEnumItem extends IColoredItem {
     public void initializeItem(ItemEnumBased<? extends IEnumItem> item);
 
     /**
-     * Here you can define the {@link Item.Builder} parameters for your item.
+     * Here you can define the {@link Item.Properties} parameters for your item.
      * Used for things like setting max uses, creative tab, ect...
      * This only gets called for the first Enum value (ordinal 0), because all values
      * use the same item.
      */
-    public Item.Builder getItemData();
+    public Item.Properties getItemData();
 
     @Override
     default int getColorFromItemStack(ItemStack stack, int tintIndex) {

@@ -3,6 +3,7 @@ package elec332.core.proxies;
 import elec332.core.api.client.IColoredBlock;
 import elec332.core.api.client.IColoredItem;
 import elec332.core.api.network.ElecByteBuf;
+import elec332.core.client.RenderHelper;
 import elec332.core.client.util.ClientEventHandler;
 import elec332.core.inventory.window.WindowGui;
 import elec332.core.inventory.window.WindowManager;
@@ -52,20 +53,20 @@ public class ClientProxy extends CommonProxy {
     public void postInitRendering() {
         for (Item item : RegistryHelper.getItemRegistry()) {
             if (item instanceof IColoredItem) {
-                minecraft.itemColors.register(COLORED_ITEM, item);
+                RenderHelper.getItemColors().register(COLORED_ITEM, item);
             }
             if (item instanceof ItemBlock) {
                 Block block = ((ItemBlock) item).getBlock();
                 if (block instanceof IColoredItem) {
-                    minecraft.itemColors.register(COLORED_ITEM, block);
+                    RenderHelper.getItemColors().register(COLORED_ITEM, block);
                 } else if (block instanceof IColoredBlock) {
-                    minecraft.itemColors.register(COLORED_ITEMBLOCK, item);
+                    RenderHelper.getItemColors().register(COLORED_ITEMBLOCK, item);
                 }
             }
         }
         for (Block block : RegistryHelper.getBlockRegistry()) {
             if (block instanceof IColoredBlock) {
-                minecraft.blockColors.register(COLORED_BLOCK, block);
+                RenderHelper.getBlockColors().register(COLORED_BLOCK, block);
             }
         }
     }

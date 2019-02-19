@@ -2,8 +2,9 @@ package elec332.core.util;
 
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.shapes.ShapeUtils;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.shapes.VoxelShape;
+import net.minecraft.util.math.shapes.VoxelShapes;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -14,6 +15,14 @@ import java.util.stream.Stream;
  */
 public class HitboxHelper {
 
+    public static boolean doesShapeContain(VoxelShape shape, Vec3d pos) {
+        return doesShapeContain(shape, pos.x, pos.y, pos.z);
+    }
+
+    public static boolean doesShapeContain(VoxelShape shape, double x, double y, double z) {
+        return shape.contains(x, y, z);
+    }
+
     public static VoxelShape combineShapes(VoxelShape... shapes) {
         return combineShapes(Arrays.stream(shapes));
     }
@@ -23,12 +32,12 @@ public class HitboxHelper {
     }
 
     public static VoxelShape combineShapes(Stream<VoxelShape> shapes) {
-        return shapes.reduce(ShapeUtils.empty(), ShapeUtils::or);
+        return shapes.reduce(VoxelShapes.empty(), VoxelShapes::or);
     }
 
     public static VoxelShape rotateFromDown(VoxelShape shape, final EnumFacing facing) {
-        final ObjectReference<VoxelShape> shapeRef = ObjectReference.of(ShapeUtils.empty());
-        shape.forEachBox((x1, y1, z1, x2, y2, z2) -> shapeRef.set(ShapeUtils.or(shapeRef.get(), ShapeUtils.create(HitboxHelper.rotateFromDown(new AxisAlignedBB(x1, y1, z1, x2, y2, z2), facing)))));
+        final ObjectReference<VoxelShape> shapeRef = ObjectReference.of(VoxelShapes.empty());
+        shape.forEachBox((x1, y1, z1, x2, y2, z2) -> shapeRef.set(VoxelShapes.or(shapeRef.get(), VoxelShapes.create(HitboxHelper.rotateFromDown(new AxisAlignedBB(x1, y1, z1, x2, y2, z2), facing)))));
         return shapeRef.get();
     }
 

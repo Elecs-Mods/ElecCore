@@ -24,6 +24,7 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.IChunk;
+import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.gen.GenerationStage;
 import net.minecraft.world.gen.IChunkGenSettings;
 import net.minecraft.world.gen.IChunkGenerator;
@@ -75,10 +76,10 @@ enum WorldGenManager implements ISingleObjectRegistry<IWorldGenHook>, IWorldGenM
         this.retroGennableNames = Sets.newHashSet();
     }
 
-    private final Function<Integer, SetMultimap<ChunkPos, ILegacyFeatureGenerator>> absentGen;
+    private final Function<DimensionType, SetMultimap<ChunkPos, ILegacyFeatureGenerator>> absentGen;
     private final Set<IWorldGenHook> set, set_;
     private final Set<IChunkIOHook> chunkHooks;
-    private final Map<Integer, SetMultimap<ChunkPos, ILegacyFeatureGenerator>> retroGenChunks;
+    private final Map<DimensionType, SetMultimap<ChunkPos, ILegacyFeatureGenerator>> retroGenChunks;
     private final Map<Biome, IBiomeGenWrapper> biomeGen;
     private final Set<Structure<?>> structurez;
     private final Set<Triple<Structure<?>, ? extends IFeatureConfig, String>> registeredFeatures;

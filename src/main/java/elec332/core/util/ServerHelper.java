@@ -11,6 +11,7 @@ import net.minecraft.server.management.PlayerChunkMap;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
+import net.minecraft.world.dimension.DimensionType;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
 
 import javax.annotation.Nullable;
@@ -104,7 +105,7 @@ public class ServerHelper {
      * @param dimension The dimension ID
      * @return All players in the provided dimension
      */
-    public static List<EntityPlayerMP> getAllPlayersInDimension(final int dimension) {
+    public static List<EntityPlayerMP> getAllPlayersInDimension(final DimensionType dimension) {
         return getOnlinePlayers().stream()
                 .filter((Predicate<EntityPlayerMP>) player -> WorldHelper.getDimID(player.getEntityWorld()) == dimension)
                 .collect(Collectors.toList());
@@ -117,7 +118,7 @@ public class ServerHelper {
      * @param message        The message to be sent
      * @param networkHandler The network-handler who has to send the messages
      */
-    public static void sendMessageToAllPlayersInDimension(int dimension, IMessage message, INetworkHandler networkHandler) {
+    public static void sendMessageToAllPlayersInDimension(DimensionType dimension, IMessage message, INetworkHandler networkHandler) {
         getAllPlayersInDimension(dimension).forEach(playerMP -> networkHandler.sendTo(message, playerMP));
     }
 

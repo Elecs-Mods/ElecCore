@@ -3,7 +3,6 @@ package elec332.core.world;
 import elec332.core.ElecCore;
 import elec332.core.util.FMLHelper;
 import elec332.core.util.ItemStackHelper;
-import elec332.core.util.NBTBuilder;
 import elec332.core.util.PlayerHelper;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
@@ -21,16 +20,18 @@ import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.*;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
+import net.minecraft.world.chunk.EmptyChunk;
 import net.minecraft.world.chunk.IChunk;
 import net.minecraft.world.chunk.IChunkProvider;
+import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.gen.ChunkProviderServer;
 import net.minecraftforge.common.BiomeDictionary;
 import net.minecraftforge.common.DimensionManager;
-import net.minecraftforge.common.ForgeChunkManager;
 import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.items.IItemHandler;
 
 import javax.annotation.Nullable;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -201,12 +202,16 @@ public class WorldHelper {
         ChunkPos cp = chunkPosFromBlockPos(pos);
         IChunkProvider chunkProvider = world.getChunkProvider();
         boolean b1;
+        Chunk chunk = chunkProvider.getChunk(cp.x, cp.z, false, false);
+        if (chunk == null) {
+            return false;
+        }
         if (chunkProvider instanceof ChunkProviderServer) {
             b1 = ((ChunkProviderServer) chunkProvider).chunkExists(cp.x, cp.z);
         } else {
-            b1 = chunkProvider.func_191062_e(cp.x, cp.z);
+            b1 = chunk instanceof EmptyChunk;
         }
-        return b1 && chunkProvider.getChunk(cp.x, cp.z).isLoaded();
+        return b1 && chunk.isLoaded();
     }
 
     /**
@@ -234,27 +239,23 @@ public class WorldHelper {
     }
 
     /**
-     * Requests a {@link ForgeChunkManager.Ticket} for the specified location
+     * Requests a {@link //ForgeChunkManager.Ticket} for the specified location
      *
-     * @param world       The world in which the position is located
-     * @param loc         The position (normal world x,y,z) to be loaded
-     * @param modInstance The mod requesting the ticket
-     * @return A ticket with which to register chunks for loading, or null if no further tickets are available
-     */
-    @Nullable
-    public static ForgeChunkManager.Ticket requestTicket(World world, BlockPos loc, Object modInstance) {
-        ForgeChunkManager.Ticket ticket = ForgeChunkManager.requestTicket(modInstance, world, ForgeChunkManager.Type.NORMAL);
-        if (ticket != null) {
-            NBTBuilder.from(ticket.getModData()).setBlockPos(loc);
-        }
-        return ticket;
-    }
-
-    /**
-     * Gets the position of the chunk in which the provided position is located
-     *
-     * @param loc The position
+     * @param //world       The world in which the position is located
+     * @param loc           The position (normal world x,y,z) to be loaded
+     * @param //modInstance The mod requesting the ticket
+     * @param loc           The position
      * @return The position of the chunk in which the provided position is located
+     * @Nullable public static ForgeChunkManager.Ticket requestTicket(World world, BlockPos loc, Object modInstance) {
+     * ForgeChunkManager.Ticket ticket = ForgeChunkManager.requestTicket(modInstance, world, ForgeChunkManager.Type.NORMAL);
+     * if (ticket != null) {
+     * NBTBuilder.from(ticket.getModData()).setBlockPos(loc);
+     * }
+     * return ticket;
+     * }
+     * <p>
+     * /**
+     * Gets the position of the chunk in which the provided position is located
      */
     public static ChunkPos chunkPosFromBlockPos(BlockPos loc) {
         return new ChunkPos(loc.getX() >> 4, loc.getZ() >> 4);
@@ -267,10 +268,10 @@ public class WorldHelper {
      * with as tag name: "position"
      *
      * @param ticket The ticket
-     */
+     *
     public static void forceChunk(ForgeChunkManager.Ticket ticket) {
-        ForgeChunkManager.forceChunk(ticket, chunkPosFromBlockPos(new NBTBuilder(ticket.getModData()).getBlockPos()));
-    }
+    ForgeChunkManager.forceChunk(ticket, chunkPosFromBlockPos(new NBTBuilder(ticket.getModData()).getBlockPos()));
+    }*/
 
     /**
      * Drops all contents of the provided {@link IItemHandler} into the world at the specified coordinates.
@@ -348,38 +349,42 @@ public class WorldHelper {
 
     /**
      * Gets the dimension-ID of the specified world.
-     * If the {@link World#provider} is null, it tries to fetch it
+     * If the {@link World#dimension} is null, it tries to fetch it
      * from Forge's {@link DimensionManager}
      *
      * @param world The world from which to fetch the dimension-ID
      * @return The dimension-ID of the specified world.
      */
     @SuppressWarnings("all")
-    public static int getDimID(IWorldReaderBase world) {
+    public static DimensionType getDimID(IWorldReaderBase world) {
         if (world == null) {
             throw new IllegalArgumentException("Cannot fetch the Dimension-ID from a null world!");
         }
         if (world.getDimension() == null) {
-            for (Integer i : DimensionManager.getIDs()) {
-                if (DimensionManager.getWorld(i) == world) {
-                    return i;
-                }
-            }
-            throw new RuntimeException("Unable to determine the dimension of world: " + world);
+            return ElecCore.proxy.getServer().forgeGetWorldMap().entrySet().stream()
+                    .filter(e -> e.getValue() == world)
+                    .findFirst()
+                    .map(Map.Entry::getKey)
+                    .orElseThrow(() -> new RuntimeException("Unable to determine the dimension of world: " + world));
         }
-        return world.getDimension().getId();
+        return world.getDimension().getType();
     }
 
     @Nullable
-    public static World getWorld(int dimension) {
+    public static World getWorld(DimensionType dimension) {
         if (FMLHelper.getLogicalSide() == LogicalSide.CLIENT) {
             World ret = ElecCore.proxy.getClientWorld();
-            if (getDimID(ret) != dimension) {
+            if (ret.getDimension().getType() != dimension) {
                 ret = null;
             }
             return ret;
         }
-        return DimensionManager.getWorld(dimension);
+        return getServerWorldDirect(dimension);
+    }
+
+    @SuppressWarnings("all")
+    public static WorldServer getServerWorldDirect(DimensionType type) {
+        return ElecCore.proxy.getServer().getWorld(type);
     }
 
     /*

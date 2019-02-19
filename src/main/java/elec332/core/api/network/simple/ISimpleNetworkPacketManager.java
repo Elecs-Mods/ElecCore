@@ -4,6 +4,7 @@ import elec332.core.api.network.IPacketDispatcher;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.dimension.DimensionType;
 
 /**
  * Created by Elec332 on 23-10-2016.
@@ -114,7 +115,7 @@ public interface ISimpleNetworkPacketManager {
      * @param message     The message to send
      * @param dimensionId The dimension id to target
      */
-    public void sendToDimension(ISimplePacket message, int dimensionId);
+    public void sendToDimension(ISimplePacket message, DimensionType dimensionId);
 
     /**
      * Send this message to everyone within the supplied dimension.
@@ -124,7 +125,7 @@ public interface ISimpleNetworkPacketManager {
      * @param packetHandler The packet-handler the client has to use
      * @param dimensionId   The dimension id to target
      */
-    public void sendToDimension(ISimplePacket message, ISimplePacketHandler packetHandler, int dimensionId);
+    public void sendToDimension(ISimplePacket message, ISimplePacketHandler packetHandler, DimensionType dimensionId);
 
     /**
      * Send the data provided in the provided {@link ByteBuf} to everyone within the supplied dimension.
@@ -134,7 +135,7 @@ public interface ISimpleNetworkPacketManager {
      * @param packetHandler The packet-handler the client has to use
      * @param dimensionId   The dimension id to target
      */
-    public void sendToDimension(ByteBuf data, ISimplePacketHandler packetHandler, int dimensionId);
+    public void sendToDimension(ByteBuf data, ISimplePacketHandler packetHandler, DimensionType dimensionId);
 
 
     /**

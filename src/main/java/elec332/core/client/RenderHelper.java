@@ -4,18 +4,21 @@ import com.google.common.collect.Maps;
 import elec332.core.ElecCore;
 import elec332.core.api.client.ITessellator;
 import elec332.core.client.util.ElecTessellator;
+import elec332.core.loader.client.RenderingRegistry;
 import net.minecraft.client.MainWindow;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.RenderGlobal;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.block.model.IBakedModel;
-import net.minecraft.client.renderer.block.model.ModelRotation;
+import net.minecraft.client.renderer.WorldRenderer;
+import net.minecraft.client.renderer.color.BlockColors;
+import net.minecraft.client.renderer.color.ItemColors;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.culling.ICamera;
+import net.minecraft.client.renderer.model.IBakedModel;
+import net.minecraft.client.renderer.model.ModelRotation;
 import net.minecraft.client.renderer.texture.MissingTextureSprite;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
@@ -92,9 +95,17 @@ public class RenderHelper {
         return tessellator;
     }
 
+    public static ItemColors getItemColors() {
+        return mc.getItemColors();
+    }
+
+    public static BlockColors getBlockColors() {
+        return mc.getBlockColors();
+    }
+
     @Nonnull
     public static IBakedModel getMissingModel() {
-        return Minecraft.getInstance().modelManager.getMissingModel();
+        return RenderingRegistry.instance().missingModelGetter().get();
     }
 
     @OnlyIn(Dist.CLIENT)
@@ -112,7 +123,7 @@ public class RenderHelper {
     }
 
     public static void drawSelectionBoundingBox(@Nonnull AxisAlignedBB aabb) {
-        RenderGlobal.drawSelectionBoundingBox(aabb, 0.0F, 0.0F, 0.0F, 0.4F);
+        WorldRenderer.drawSelectionBoundingBox(aabb, 0.0F, 0.0F, 0.0F, 0.4F);
     }
 
     @Nonnull
@@ -133,7 +144,7 @@ public class RenderHelper {
             double d0 = player.lastTickPosX + (player.posX - player.lastTickPosX) * (double) partialTicks;
             double d1 = player.lastTickPosY + (player.posY - player.lastTickPosY) * (double) partialTicks;
             double d2 = player.lastTickPosZ + (player.posZ - player.lastTickPosZ) * (double) partialTicks;
-            RenderGlobal.drawShape(shapeOverride, (double) pos.getX() - d0, (double) pos.getY() - d1, (double) pos.getZ() - d2, 0.0F, 0.0F, 0.0F, 0.4F);
+            WorldRenderer.drawShape(shapeOverride, (double) pos.getX() - d0, (double) pos.getY() - d1, (double) pos.getZ() - d2, 0.0F, 0.0F, 0.0F, 0.4F);
             GlStateManager.popMatrix();
             GlStateManager.matrixMode(5888);
             GlStateManager.depthMask(true);

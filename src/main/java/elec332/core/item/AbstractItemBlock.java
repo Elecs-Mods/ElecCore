@@ -11,7 +11,7 @@ import javax.annotation.Nonnull;
  */
 public abstract class AbstractItemBlock extends ItemBlock implements IAbstractItem {
 
-    public AbstractItemBlock(Block block, Builder itemBuilder) {
+    public AbstractItemBlock(Block block, Properties itemBuilder) {
         super(block, itemBuilder);
     }
 

@@ -15,6 +15,7 @@ import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.dimension.DimensionType;
 
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
@@ -63,7 +64,7 @@ class DefaultSimpleNetworkHandler implements ISimpleNetworkPacketManager, BiCons
     }
 
     @Override
-    public void sendToDimension(ISimplePacket message, int dimensionId) {
+    public void sendToDimension(ISimplePacket message, DimensionType dimensionId) {
         packetDispatcher.sendToDimension(from(message), dimensionId);
     }
 
@@ -88,7 +89,7 @@ class DefaultSimpleNetworkHandler implements ISimpleNetworkPacketManager, BiCons
     }
 
     @Override
-    public void sendToDimension(ISimplePacket message, ISimplePacketHandler packetHandler, int dimensionId) {
+    public void sendToDimension(ISimplePacket message, ISimplePacketHandler packetHandler, DimensionType dimensionId) {
         packetDispatcher.sendToDimension(from(message, packetHandler), dimensionId);
     }
 
@@ -113,7 +114,7 @@ class DefaultSimpleNetworkHandler implements ISimpleNetworkPacketManager, BiCons
     }
 
     @Override
-    public void sendToDimension(ByteBuf data, ISimplePacketHandler packetHandler, int dimensionId) {
+    public void sendToDimension(ByteBuf data, ISimplePacketHandler packetHandler, DimensionType dimensionId) {
         packetDispatcher.sendToDimension(from(data, packetHandler), dimensionId);
     }
 

@@ -11,6 +11,7 @@ import elec332.core.world.WorldHelper;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.WorldServer;
+import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.storage.ISaveHandler;
 import net.minecraft.world.storage.WorldInfo;
 import net.minecraftforge.common.MinecraftForge;
@@ -121,7 +122,7 @@ public enum SaveHandler {
         }
 
         private boolean isOverworld(IWorld world) {
-            return !world.isRemote() && WorldHelper.getDimID(world) == 0 && world.getClass() == WorldServer.class;
+            return !world.isRemote() && WorldHelper.getDimID(world) == DimensionType.OVERWORLD && world.getClass() == WorldServer.class;
         }
 
     }

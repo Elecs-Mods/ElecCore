@@ -20,6 +20,7 @@ import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent;
 import net.minecraftforge.fml.event.lifecycle.InterModProcessEvent;
 
+import javax.annotation.Nonnull;
 import java.util.Random;
 
 /**
@@ -69,7 +70,7 @@ public class ElecCoreLoader {
         RegistryHelper.getBiomeRegistry().forEach(biome -> biome.addFeature(GenerationStage.Decoration.values()[GenerationStage.Decoration.values().length - 1], new CompositeFeature<>(new Feature<NoFeatureConfig>() {
 
             @Override
-            public boolean place(IWorld world, IChunkGenerator<? extends IChunkGenSettings> chunkGenerator, Random random, BlockPos pos, NoFeatureConfig noop) {
+            public boolean place(@Nonnull IWorld world, @Nonnull IChunkGenerator<? extends IChunkGenSettings> chunkGenerator, @Nonnull Random random, @Nonnull BlockPos pos, @Nonnull NoFeatureConfig noop) {
                 return WorldGenManager.INSTANCE.legacyPopulateChunk(world, chunkGenerator, random, pos);
             }
 

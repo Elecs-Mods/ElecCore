@@ -15,7 +15,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BlockModelShapes;
-import net.minecraft.client.renderer.block.model.*;
+import net.minecraft.client.renderer.model.*;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.renderer.vertex.VertexFormat;
@@ -65,7 +65,7 @@ public class BlockVariantModelHandler implements IModelHandler {
                     models.put(mrl, model_);
                 });
             }
-            models.values().stream().filter(Objects::nonNull).map(ubm -> ubm.getTextures(ModelLoader.defaultModelGetter(), Sets.newHashSet())).filter(Objects::nonNull).forEach(set -> set.forEach(iconRegistrar::registerSprite));
+            models.values().stream().filter(Objects::nonNull).map(ubm -> ubm.getTextures(ModelLoader.defaultModelGetter(), Sets.newHashSet())).forEach(set -> set.forEach(iconRegistrar::registerSprite));
         });
     }
 
@@ -200,7 +200,7 @@ public class BlockVariantModelHandler implements IModelHandler {
                 }
 
                 model = v.process(model);
-                for (ResourceLocation location : model.getOverrideLocations()) {
+                for (ResourceLocation location : model.getDependencies()) {
                     ModelLoaderRegistry.getModelOrMissing(location);
                 }
                 textures.addAll(model.getTextures(net.minecraftforge.client.model.ModelLoader.defaultModelGetter(), new HashSet<>()));
@@ -224,14 +224,15 @@ public class BlockVariantModelHandler implements IModelHandler {
 
             return new IUnbakedModel() {
 
+                @Nonnull
                 @Override
-                public Collection<ResourceLocation> getOverrideLocations() {
+                public Collection<ResourceLocation> getDependencies() {
                     return ImmutableList.copyOf(locations);
                 }
 
-
+                @Nonnull
                 @Override
-                public Collection<ResourceLocation> getTextures(Function<ResourceLocation, IUnbakedModel> modelGetter, Set<String> missingTextureErrors) {
+                public Collection<ResourceLocation> getTextures(@Nonnull Function<ResourceLocation, IUnbakedModel> modelGetter, @Nonnull Set<String> missingTextureErrors) {
                     return ImmutableSet.copyOf(textures);
                 }
 
@@ -413,10 +414,7 @@ public class BlockVariantModelHandler implements IModelHandler {
                     if (data.length != 2) {
                         throw new RuntimeException(textureOverrides.toString());
                     }
-                    Map<String, Pair<ResourceLocation, ResourceLocation>> or = processedTextureOverrides.get(prop);
-                    if (or == null) {
-                        processedTextureOverrides.put(prop, or = Maps.newHashMap());
-                    }
+                    Map<String, Pair<ResourceLocation, ResourceLocation>> or = processedTextureOverrides.computeIfAbsent(prop, k -> Maps.newHashMap());
                     ResourceLocation r1 = new ResourceLocation(data[0]), r2 = new ResourceLocation(data[1]);
                     or.put(value, Pair.of(r1, r2));
                     allTextures.add(r1);

@@ -12,6 +12,7 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.world.dimension.DimensionType;
 
 import javax.annotation.Nullable;
 import java.util.Iterator;
@@ -160,7 +161,7 @@ class DefaultNetworkObjectManager implements INetworkObjectManager, BiConsumer<D
         }
 
         @Override
-        public void sendToDimension(int id, int dimensionId) {
+        public void sendToDimension(int id, DimensionType dimensionId) {
             ByteBuf buf = Unpooled.buffer();
             if (getNetworkObjectSender() != null) {
                 getNetworkObjectSender().writePacket(id, new ElecByteBufImpl(buf));
@@ -203,7 +204,7 @@ class DefaultNetworkObjectManager implements INetworkObjectManager, BiConsumer<D
         }
 
         @Override
-        public void sendToDimension(int id, NBTTagCompound data, int dimensionId) {
+        public void sendToDimension(int id, NBTTagCompound data, DimensionType dimensionId) {
             sendToDimension(id, fromTag(data), dimensionId);
         }
 
@@ -228,7 +229,7 @@ class DefaultNetworkObjectManager implements INetworkObjectManager, BiConsumer<D
         }
 
         @Override
-        public void sendToDimension(int id, ByteBuf data, int dimensionId) {
+        public void sendToDimension(int id, ByteBuf data, DimensionType dimensionId) {
             packetDispatcher.sendToDimension(new PacketNetworkObject(b, (byte) id, data), dimensionId);
         }
 

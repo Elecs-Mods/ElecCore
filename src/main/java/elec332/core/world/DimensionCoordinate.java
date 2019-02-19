@@ -8,7 +8,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorld;
-import net.minecraftforge.common.DimensionManager;
+import net.minecraft.world.dimension.DimensionType;
 import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.fml.LogicalSide;
 import org.apache.commons.lang3.Validate;
@@ -32,18 +32,18 @@ public final class DimensionCoordinate implements INBTSerializable<NBTTagCompoun
         this(WorldHelper.getDimID(world), pos, new WeakReference<>(world));
     }
 
-    public DimensionCoordinate(int dimension, BlockPos pos) {
+    public DimensionCoordinate(DimensionType dimension, BlockPos pos) {
         this(dimension, pos, null);
     }
 
-    private DimensionCoordinate(int dimension, BlockPos pos, WeakReference<IWorld> worldRef) {
+    private DimensionCoordinate(DimensionType dimension, BlockPos pos, WeakReference<IWorld> worldRef) {
         this.pos = Validate.notNull(pos, "Cannot have a DimensionCoordinate with a null BlockPos!");
         this.dim = dimension;
         this.worldRef = worldRef;
     }
 
     private final BlockPos pos;
-    private final int dim;
+    private final DimensionType dim;
     private WeakReference<IWorld> worldRef;
 
     @Nonnull
@@ -51,11 +51,12 @@ public final class DimensionCoordinate implements INBTSerializable<NBTTagCompoun
         return pos;
     }
 
-    public int getDimension() {
+    public DimensionType getDimension() {
         return dim;
     }
 
     @Nullable
+    @SuppressWarnings("all")
     public IWorld getWorld() {
         if (FMLHelper.getLogicalSide() == LogicalSide.CLIENT) {
             IWorld world = ElecCore.proxy.getClientWorld();
@@ -65,7 +66,7 @@ public final class DimensionCoordinate implements INBTSerializable<NBTTagCompoun
             return null;
         } else {
             if (worldRef == null || worldRef.get() == null) {
-                worldRef = new WeakReference<>(DimensionManager.getWorld(dim));
+                worldRef = new WeakReference<>(WorldHelper.getServerWorldDirect(dim));
             }
             return worldRef.get();
         }
@@ -107,7 +108,7 @@ public final class DimensionCoordinate implements INBTSerializable<NBTTagCompoun
 
     @Override
     public NBTTagCompound serializeNBT() {
-        return new NBTBuilder().setBlockPos(pos).setInteger("dim", dim).serializeNBT();
+        return new NBTBuilder().setBlockPos(pos).setRegistryObject("dim", dim).serializeNBT();
     }
 
     @Override
@@ -117,7 +118,7 @@ public final class DimensionCoordinate implements INBTSerializable<NBTTagCompoun
 
     public static DimensionCoordinate fromNBT(NBTTagCompound tag) {
         NBTBuilder nbt = new NBTBuilder(tag);
-        return new DimensionCoordinate(nbt.getInteger("dim"), nbt.getBlockPos());
+        return new DimensionCoordinate(DimensionType.byName(nbt.getResourceLocation("dim")), nbt.getBlockPos());
     }
 
     public static DimensionCoordinate fromTileEntity(TileEntity tile) {
@@ -131,7 +132,7 @@ public final class DimensionCoordinate implements INBTSerializable<NBTTagCompoun
 
     @Override
     public int hashCode() {
-        return 31 * pos.hashCode() + dim;
+        return 31 * pos.hashCode() + dim.hashCode() * (dim.getId() + 1);
     }
 
     @Override

@@ -13,6 +13,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
+import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.gen.Heightmap;
 
 import java.util.Set;
@@ -22,18 +23,18 @@ import java.util.Set;
  */
 public class StructureTemplate {
 
-    public StructureTemplate(Schematic schematic, GenerationType generationType, Integer... dimensions) {
+    public StructureTemplate(Schematic schematic, GenerationType generationType, DimensionType... dimensions) {
         this.schematic = schematic;
         this.generationType = generationType;
         this.dimensions = Sets.newHashSet(dimensions);
     }
 
-    public StructureTemplate(Schematic schematic, Integer... dimensions) {
+    public StructureTemplate(Schematic schematic, DimensionType... dimensions) {
         this(schematic, GenerationType.NONE, dimensions);
     }
 
     protected Schematic schematic;
-    protected Set<Integer> dimensions;
+    protected Set<DimensionType> dimensions;
     protected GenerationType generationType;
 
     /**
@@ -118,7 +119,7 @@ public class StructureTemplate {
         return generationType;
     }
 
-    public Set<Integer> getDimensions() {
+    public Set<DimensionType> getDimensions() {
         return dimensions;
     }
 
@@ -126,7 +127,7 @@ public class StructureTemplate {
         return getDimensions() != null && !getDimensions().isEmpty();
     }
 
-    public boolean canSpawnInDimension(int dimension) {
+    public boolean canSpawnInDimension(DimensionType dimension) {
         return !isDimensionRestricted() || getDimensions().contains(dimension);
     }
 

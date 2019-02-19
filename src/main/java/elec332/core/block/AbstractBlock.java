@@ -26,7 +26,7 @@ import javax.annotation.Nullable;
  */
 public abstract class AbstractBlock extends Block implements IAbstractBlock {
 
-    public AbstractBlock(Builder builder) {
+    public AbstractBlock(Properties builder) {
         super(builder);
     }
 

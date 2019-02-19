@@ -10,19 +10,19 @@ import elec332.core.api.client.IIconRegistrar;
 import elec332.core.api.client.ITextureLoader;
 import elec332.core.api.client.model.*;
 import elec332.core.client.RenderHelper;
+import elec332.core.util.ObjectReference;
 import elec332.core.util.ReflectionHelper;
 import elec332.core.util.RegistryHelper;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.block.model.IBakedModel;
-import net.minecraft.client.renderer.block.model.ModelBakery;
-import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.client.renderer.model.IBakedModel;
+import net.minecraft.client.renderer.model.ModelManager;
+import net.minecraft.client.renderer.model.ModelResourceLocation;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.registry.IRegistry;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.ModelBakeEvent;
@@ -38,6 +38,7 @@ import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Supplier;
 
 /**
  * Created by Elec332 on 18-11-2015.
@@ -59,6 +60,7 @@ public final class RenderingRegistry implements IElecRenderingRegistry {
         extraBlocks = Lists.newArrayList();
         extraModels = Lists.newArrayList();
         MinecraftForge.EVENT_BUS.register(this);
+        missingModel = new ObjectReference<>();
     }
 
     private final Set<IModelLoader> modelLoaders;
@@ -68,6 +70,8 @@ public final class RenderingRegistry implements IElecRenderingRegistry {
     private final List<Block> extraBlocks;
 
     private final List<ModelResourceLocation> extraModels;
+
+    private final ObjectReference<IBakedModel> missingModel;
 
     @APIHandlerInject
     private IElecQuadBakery quadBakery = null;
@@ -124,6 +128,12 @@ public final class RenderingRegistry implements IElecRenderingRegistry {
         return list;
     }
 
+    @Nonnull
+    @Override
+    public Supplier<IBakedModel> missingModelGetter() {
+        return missingModel;
+    }
+
     private void registerLoader(Object obj) {
         if (obj instanceof IModelLoader) {
             this.modelLoaders.add((IModelLoader) obj);
@@ -161,7 +171,7 @@ public final class RenderingRegistry implements IElecRenderingRegistry {
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public void afterAllModelsBaked(ModelBakeEvent event) {
-        removeJsonErrors(event.getModelLoader());
+        removeJsonErrors(event.getModelLoader(), event.getModelManager(), event.getModelRegistry());
     }
 
     @APIHandlerInject
@@ -170,7 +180,7 @@ public final class RenderingRegistry implements IElecRenderingRegistry {
     }
 
     @SuppressWarnings("all")
-    void removeJsonErrors(ModelLoader modelLoader) {
+    void removeJsonErrors(ModelLoader modelLoader, ModelManager modelManager, Map<ModelResourceLocation, IBakedModel> modelRegistry) {
         ElecCore.logger.info("Cleaning up internal Json stuff...");
         try {
             Set<ModelResourceLocation> set = (Set<ModelResourceLocation>) ReflectionHelper.makeFinalFieldModifiable(ModelLoader.class.getDeclaredField("missingVariants")).get(modelLoader);
@@ -178,7 +188,7 @@ public final class RenderingRegistry implements IElecRenderingRegistry {
             //if (ElecCore.removeJSONErrors){
             //    exceptionMap.clear();
             //}
-            for (ModelResourceLocation rl : getValidLocations(modelLoader)) {
+            for (ModelResourceLocation rl : getValidLocations(modelManager, modelRegistry)) {
                 set.remove(rl);
                 exceptionMap.remove(rl);
             }
@@ -189,9 +199,8 @@ public final class RenderingRegistry implements IElecRenderingRegistry {
         ElecCore.logger.info("Finished cleaning up internal Json stuff.");
     }
 
-    private Set<ModelResourceLocation> getValidLocations(ModelBakery modelLoader) {
-        IRegistry<ModelResourceLocation, IBakedModel> registry = Minecraft.getInstance().modelManager.modelRegistry;
-        return ElecModelManager.INSTANCE.registerBakedModels(registry);
+    private Set<ModelResourceLocation> getValidLocations(ModelManager modelLoader, Map<ModelResourceLocation, IBakedModel> modelRegistry) {
+        return ElecModelManager.INSTANCE.registerBakedModels(modelRegistry, modelLoader::getModel);
     }
 
     private class IconRegistrar implements IIconRegistrar {
@@ -253,7 +262,8 @@ public final class RenderingRegistry implements IElecRenderingRegistry {
             @SubscribeEvent(priority = EventPriority.HIGH)
             @OnlyIn(Dist.CLIENT)
             public void bakeModels(ModelBakeEvent event) {
-                MinecraftForge.EVENT_BUS.post(new ModelLoadEventImpl(instance().quadBakery, instance().modelBakery, instance.templateBakery, event.getModelRegistry()));
+                instance().missingModel.set(event.getModelManager().getMissingModel());
+                MinecraftForge.EVENT_BUS.post(new ModelLoadEventImpl(instance().quadBakery, instance().modelBakery, instance.templateBakery, event.getModelRegistry(), event.getModelManager()::getModel));
             }
 
         });

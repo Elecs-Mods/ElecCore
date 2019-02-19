@@ -3,6 +3,7 @@ package elec332.core.world.posmap;
 import com.google.common.collect.Lists;
 import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import net.minecraft.world.dimension.DimensionType;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -68,20 +69,20 @@ public abstract class DefaultMultiWorldPositionedObjectHolder<T, V> implements I
 
     @Nullable
     @Override
-    public PositionedObjectHolder<T, V> get(int world) {
-        return objectsInternal.get(world);
+    public PositionedObjectHolder<T, V> get(DimensionType world) {
+        return objectsInternal.get(world.getId());
     }
 
     @Nonnull
     @Override
-    public PositionedObjectHolder<T, V> getOrCreate(int world) {
+    public PositionedObjectHolder<T, V> getOrCreate(DimensionType world) {
         PositionedObjectHolder<T, V> ret = get(world);
         if (ret == null) {
             ret = createNew();
             for (Consumer<PositionedObjectHolder<T, V>> callback : callbacks) {
                 callback.accept(ret);
             }
-            objectsInternal.put(world, ret);
+            objectsInternal.put(world.getId(), ret);
         }
         return ret;
     }

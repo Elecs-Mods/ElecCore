@@ -1,6 +1,6 @@
 package elec332.core.api.client.model.template;
 
-import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
+import net.minecraft.client.renderer.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 
 import java.util.List;
@@ -22,6 +22,7 @@ public interface IMutableModelTemplate extends IModelTemplate {
 
     public IMutableModelTemplate setTexture(TextureAtlasSprite texture);
 
+    @SuppressWarnings("deprecation")
     public IMutableModelTemplate setItemCameraTransforms(ItemCameraTransforms transforms);
 
 }

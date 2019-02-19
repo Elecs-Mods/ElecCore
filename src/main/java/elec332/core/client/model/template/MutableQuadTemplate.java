@@ -4,7 +4,7 @@ import elec332.core.api.client.model.template.IMutableQuadTemplate;
 import elec332.core.api.client.model.template.IQuadTemplate;
 import elec332.core.client.RenderHelper;
 import net.minecraft.client.renderer.Vector3f;
-import net.minecraft.client.renderer.block.model.ModelRotation;
+import net.minecraft.client.renderer.model.ModelRotation;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.util.EnumFacing;
 import net.minecraftforge.api.distmarker.Dist;

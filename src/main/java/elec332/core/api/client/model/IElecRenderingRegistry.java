@@ -2,10 +2,12 @@ package elec332.core.api.client.model;
 
 import elec332.core.api.client.ITextureLoader;
 import net.minecraft.block.Block;
-import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.client.renderer.model.IBakedModel;
+import net.minecraft.client.renderer.model.ModelResourceLocation;
 import net.minecraft.item.Item;
 
 import javax.annotation.Nonnull;
+import java.util.function.Supplier;
 
 /**
  * Created by Elec332 on 29-10-2016.
@@ -29,5 +31,8 @@ public interface IElecRenderingRegistry {
 
     @Nonnull
     public Iterable<Item> getAllValidItems();
+
+    @Nonnull
+    public Supplier<IBakedModel> missingModelGetter();
 
 }
