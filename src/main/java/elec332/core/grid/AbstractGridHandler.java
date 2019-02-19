@@ -28,10 +28,10 @@ public abstract class AbstractGridHandler<T extends IPositionable> implements IS
 
     public AbstractGridHandler() {
         this.objectsInternal = getWorldPosObjHolder();
-        this.objectsInternal.get().addCreateCallback(new Consumer<PositionedObjectHolder<T>>() {
+        this.objectsInternal.get().addCreateCallback(new Consumer<PositionedObjectHolder<T, T>>() {
 
             @Override
-            public void accept(PositionedObjectHolder<T> obj) {
+            public void accept(PositionedObjectHolder<T, T> obj) {
                 for (PositionedObjectHolder.ChangeCallback<T> callback : changeCallbacks) {
                     obj.registerCallback(callback);
                 }
@@ -83,16 +83,16 @@ public abstract class AbstractGridHandler<T extends IPositionable> implements IS
         });
     }
 
-    private final Supplier<IMultiWorldPositionedObjectHolder<T>> objectsInternal;
+    private final Supplier<IMultiWorldPositionedObjectHolder<T, T>> objectsInternal;
     private final Set<PositionedObjectHolder.ChangeCallback<T>> changeCallbacks;
     protected final Set<DimensionCoordinate> extraUnload, changeCheck, add;
     protected boolean removeWarningOverride = false;
 
-    protected Supplier<IMultiWorldPositionedObjectHolder<T>> getWorldPosObjHolder() {
-        return new DefaultMultiWorldPositionedObjectHolder<>();
+    protected Supplier<IMultiWorldPositionedObjectHolder<T, T>> getWorldPosObjHolder() {
+        return DefaultMultiWorldPositionedObjectHolder.create();
     }
 
-    protected final Map<Integer, PositionedObjectHolder<T>> getObjects() {
+    protected final Map<Integer, PositionedObjectHolder<T, T>> getObjects() {
         return objectsInternal.get().getUnModifiableView();
     }
 
@@ -152,7 +152,7 @@ public abstract class AbstractGridHandler<T extends IPositionable> implements IS
 
     @Override
     public void worldUnload(World world) {
-        PositionedObjectHolder<T> worldObjects = objectsInternal.get().get(world);
+        PositionedObjectHolder<T, T> worldObjects = objectsInternal.get().get(world);
         if (worldObjects != null) {
             Set<DimensionCoordinate> unload = Sets.newHashSet();
             for (ChunkPos chunkPos : worldObjects.getChunks()) {
@@ -258,13 +258,13 @@ public abstract class AbstractGridHandler<T extends IPositionable> implements IS
         return getDim(dimensionCoordinate).get(dimensionCoordinate.getPos());
     }
 
-    protected PositionedObjectHolder<T> getDim(DimensionCoordinate dimensionCoordinate) {
+    protected PositionedObjectHolder<T, T> getDim(DimensionCoordinate dimensionCoordinate) {
         return objectsInternal.get().getOrCreate(dimensionCoordinate.getDimension());
     }
 
     public void registerChangeCallback(PositionedObjectHolder.ChangeCallback<T> callback) {
         if (changeCallbacks.add(callback)) {
-            for (PositionedObjectHolder<T> o : objectsInternal.get().getValues()) {
+            for (PositionedObjectHolder<T, T> o : objectsInternal.get().getValues()) {
                 o.registerCallback(callback);
             }
         }

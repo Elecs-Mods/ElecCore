@@ -85,7 +85,7 @@ public class ClientProxy extends CommonProxy {
         return Minecraft.getInstance().player;
     }
 
-    public GuiScreen openGui(FMLPlayMessages.OpenContainer data_){
+    public GuiScreen openGui(FMLPlayMessages.OpenContainer data_) {
         PacketBuffer data = data_.getAdditionalData();
         ResourceLocation name = data.readResourceLocation();
         return new WindowGui(WindowManager.INSTANCE.getServerGuiElement(getClientPlayer(), getClientWorld(), ElecByteBuf.of(Unpooled.wrappedBuffer(data.readByteArray())), WindowManager.INSTANCE.get(name)));

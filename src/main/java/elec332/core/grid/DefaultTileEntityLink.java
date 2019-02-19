@@ -44,7 +44,7 @@ public class DefaultTileEntityLink implements ITileEntityLink {
     @Nonnull
     @Override
     public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable EnumFacing side) {
-        if (!coord.isLoaded() || tile == null){
+        if (!coord.isLoaded() || tile == null) {
             return LazyOptional.empty();
         }
         Map<EnumFacing, LazyOptional<?>> capC1 = capCache.computeIfAbsent(cap, c -> Maps.newIdentityHashMap());

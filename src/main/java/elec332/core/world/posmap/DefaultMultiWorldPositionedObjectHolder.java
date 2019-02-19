@@ -6,10 +6,7 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -18,9 +15,43 @@ import java.util.function.Supplier;
  * <p>
  * Default implementation of {@link IMultiWorldPositionedObjectHolder}
  */
-public class DefaultMultiWorldPositionedObjectHolder<T> implements IMultiWorldPositionedObjectHolder<T>, Supplier<IMultiWorldPositionedObjectHolder<T>> {
+public abstract class DefaultMultiWorldPositionedObjectHolder<T, V> implements IMultiWorldPositionedObjectHolder<T, V>, Supplier<IMultiWorldPositionedObjectHolder<T, V>> {
 
-    public DefaultMultiWorldPositionedObjectHolder(Consumer<PositionedObjectHolder<T>> callback) {
+    @SafeVarargs
+    public static <T> DefaultMultiWorldPositionedObjectHolder<T, T> create(Consumer<PositionedObjectHolder<T, T>>... callbacks) {
+        DefaultMultiWorldPositionedObjectHolder<T, T> ret = new DefaultMultiWorldPositionedObjectHolder<T, T>() {
+
+            @Nonnull
+            @Override
+            protected PositionedObjectHolder<T, T> createNew() {
+                return PositionedObjectHolder.create();
+            }
+
+        };
+        if (callbacks != null) {
+            ret.callbacks.addAll(Arrays.asList(callbacks));
+        }
+        return ret;
+    }
+
+    @SafeVarargs
+    public static <T> DefaultMultiWorldPositionedObjectHolder<Set<T>, T> createListed(Consumer<PositionedObjectHolder<Set<T>, T>>... callbacks) {
+        DefaultMultiWorldPositionedObjectHolder<Set<T>, T> ret = new DefaultMultiWorldPositionedObjectHolder<Set<T>, T>() {
+
+            @Nonnull
+            @Override
+            protected PositionedObjectHolder<Set<T>, T> createNew() {
+                return new PositionedObjectHolder<>(PositionedObjectHolder.MultiMapPositionChunk::new);
+            }
+
+        };
+        if (callbacks != null) {
+            ret.callbacks.addAll(Arrays.asList(callbacks));
+        }
+        return ret;
+    }
+
+    public DefaultMultiWorldPositionedObjectHolder(Consumer<PositionedObjectHolder<T, V>> callback) {
         this();
         callbacks.add(callback);
     }
@@ -31,23 +62,23 @@ public class DefaultMultiWorldPositionedObjectHolder<T> implements IMultiWorldPo
         this.callbacks = Lists.newArrayList();
     }
 
-    private final List<Consumer<PositionedObjectHolder<T>>> callbacks;
-    private final Int2ObjectMap<PositionedObjectHolder<T>> objectsInternal;
-    private final Map<Integer, PositionedObjectHolder<T>> view;
+    private final List<Consumer<PositionedObjectHolder<T, V>>> callbacks;
+    private final Int2ObjectMap<PositionedObjectHolder<T, V>> objectsInternal;
+    private final Map<Integer, PositionedObjectHolder<T, V>> view;
 
     @Nullable
     @Override
-    public PositionedObjectHolder<T> get(int world) {
+    public PositionedObjectHolder<T, V> get(int world) {
         return objectsInternal.get(world);
     }
 
     @Nonnull
     @Override
-    public PositionedObjectHolder<T> getOrCreate(int world) {
-        PositionedObjectHolder<T> ret = get(world);
+    public PositionedObjectHolder<T, V> getOrCreate(int world) {
+        PositionedObjectHolder<T, V> ret = get(world);
         if (ret == null) {
-            ret = create();
-            for (Consumer<PositionedObjectHolder<T>> callback : callbacks) {
+            ret = createNew();
+            for (Consumer<PositionedObjectHolder<T, V>> callback : callbacks) {
                 callback.accept(ret);
             }
             objectsInternal.put(world, ret);
@@ -57,18 +88,18 @@ public class DefaultMultiWorldPositionedObjectHolder<T> implements IMultiWorldPo
 
     @Nonnull
     @Override
-    public Collection<PositionedObjectHolder<T>> getValues() {
+    public Collection<PositionedObjectHolder<T, V>> getValues() {
         return objectsInternal.values();
     }
 
     @Nonnull
     @Override
-    public Map<Integer, PositionedObjectHolder<T>> getUnModifiableView() {
+    public Map<Integer, PositionedObjectHolder<T, V>> getUnModifiableView() {
         return view;
     }
 
     @Override
-    public void addCreateCallback(Consumer<PositionedObjectHolder<T>> callback) {
+    public void addCreateCallback(Consumer<PositionedObjectHolder<T, V>> callback) {
         callbacks.add(callback);
     }
 
@@ -79,12 +110,10 @@ public class DefaultMultiWorldPositionedObjectHolder<T> implements IMultiWorldPo
     }
 
     @Nonnull
-    protected PositionedObjectHolder<T> create() {
-        return new PositionedObjectHolder<>();
-    }
+    protected abstract PositionedObjectHolder<T, V> createNew();
 
     @Override
-    public IMultiWorldPositionedObjectHolder<T> get() {
+    public IMultiWorldPositionedObjectHolder<T, V> get() {
         return this;
     }
 

@@ -48,11 +48,11 @@ public class AbstractTileEntity extends TileEntity implements IElecCoreNetworkTi
     private boolean isGatheringPackets;
     private Map<Integer, NBTTagCompound> gatherData;
 
-    public EnumFacing getTileFacing(){
+    public EnumFacing getTileFacing() {
         return getTileFacing(BlockProperties.FACING_NORMAL);
     }
 
-    public EnumFacing getTileFacing(IProperty<EnumFacing> prop){
+    public EnumFacing getTileFacing(IProperty<EnumFacing> prop) {
         return getBlockState().get(prop);
     }
 
@@ -63,7 +63,10 @@ public class AbstractTileEntity extends TileEntity implements IElecCoreNetworkTi
     }*/
 
     public boolean openTileGui(EntityPlayer player) {
-        if (!(this instanceof IWindowFactory)){
+        if (world.isRemote()) {
+            return true;
+        }
+        if (!(this instanceof IWindowFactory)) {
             throw new RuntimeException();
         }
         WindowManager.openTileWindow(player, getPos());

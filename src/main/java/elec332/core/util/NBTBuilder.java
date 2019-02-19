@@ -1,12 +1,20 @@
 package elec332.core.util;
 
 import com.google.common.base.Preconditions;
+import net.minecraft.item.EnumDyeColor;
 import net.minecraft.nbt.INBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.common.util.INBTSerializable;
+import net.minecraftforge.registries.IForgeRegistry;
+import net.minecraftforge.registries.IForgeRegistryEntry;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.UUID;
 import java.util.function.Supplier;
 
 /**
@@ -37,9 +45,38 @@ public class NBTBuilder implements INBTSerializable<NBTTagCompound>, Supplier<NB
         return setBlockPos("position", pos);
     }
 
-    public NBTBuilder setBlockPos(String name, BlockPos pos){
-        this.tag.putLong(name, pos.toLong());
+    public NBTBuilder setBlockPos(String name, BlockPos pos) {
+        return setLong(name, pos.toLong());
+    }
+
+    public NBTBuilder setUUID(String name, UUID uuid) {
+        return setString(name, uuid.toString());
+    }
+
+    public NBTBuilder setVec(String name, Vec3d vec) {
+        setDouble(name + "_vecx", vec.x);
+        setDouble(name + "_vecy", vec.y);
+        setDouble(name + "_vecz", vec.z);
         return this;
+    }
+
+    public NBTBuilder setColor(String name, @Nullable EnumDyeColor color) {
+        if (color != null) {
+            setInteger(name, color.getId());
+        }
+        return this;
+    }
+
+    public NBTBuilder setResourceLocation(String name, @Nonnull ResourceLocation rl) {
+        return setString(name, rl.toString());
+    }
+
+    public <T extends IForgeRegistryEntry<T>> NBTBuilder setRegistryObject(String name, T obj) {
+        return setResourceLocation(name, Preconditions.checkNotNull(obj.getRegistryName()));
+    }
+
+    public <T extends Enum<T>> NBTBuilder setEnum(String name, T type) {
+        return setShort(name, (short) type.ordinal());
     }
 
     public NBTBuilder setTag(String name, INBTSerializable<?> tag) {
@@ -108,11 +145,38 @@ public class NBTBuilder implements INBTSerializable<NBTTagCompound>, Supplier<NB
     }
 
     public BlockPos getBlockPos(String name) {
-        return BlockPos.fromLong(this.tag.getLong(name));
+        return BlockPos.fromLong(getLong(name));
+    }
+
+    public UUID getUUID(String name) {
+        return UUID.fromString(getString(name));
+    }
+
+    public Vec3d getVec(String name) {
+        return new Vec3d(getDouble(name + "_vecx"), getDouble(name + "_vecy"), getDouble(name + "_vecz"));
+    }
+
+    public EnumDyeColor getColor(String name) {
+        if (!contains(name)) {
+            return null;
+        }
+        return EnumDyeColor.byId(getInteger(name));
+    }
+
+    public ResourceLocation getResourceLocation(String name) {
+        return new ResourceLocation(getString(name));
+    }
+
+    public <T extends IForgeRegistryEntry<T>> T getRegistryObject(String name, IForgeRegistry<T> registry) {
+        return registry.getValue(getResourceLocation(name));
+    }
+
+    public <T extends Enum<T>> T getEnum(String name, Class<T> type) {
+        return type.getEnumConstants()[getInteger(name)];
     }
 
     @SuppressWarnings("unchecked")
-    public <N extends INBTBase> void getDeserialized(String name, INBTSerializable<N> serializable){
+    public <N extends INBTBase> void getDeserialized(String name, INBTSerializable<N> serializable) {
         serializable.deserializeNBT((N) getTag(name));
     }
 
@@ -186,15 +250,15 @@ public class NBTBuilder implements INBTSerializable<NBTTagCompound>, Supplier<NB
         this.tag.remove(name);
     }
 
-    public boolean isEmpty(){
+    public boolean isEmpty() {
         return this.tag.isEmpty();
     }
 
-    public NBTBuilder copy(){
+    public NBTBuilder copy() {
         return NBTBuilder.from(this.tag.copy());
     }
 
-    public NBTBuilder mergeWith(NBTBuilder other){
+    public NBTBuilder mergeWith(NBTBuilder other) {
         this.tag.merge(other.tag);
         return this;
     }

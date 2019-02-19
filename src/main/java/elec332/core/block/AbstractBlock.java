@@ -110,13 +110,13 @@ public abstract class AbstractBlock extends Block implements IAbstractBlock {
         getTileDrops(drops, world, pos, fortune);
     }
 
-    public void getOriginalDrops(IBlockState state, NonNullList<ItemStack> drops, World world, BlockPos pos, int fortune){
+    public void getOriginalDrops(IBlockState state, NonNullList<ItemStack> drops, World world, BlockPos pos, int fortune) {
         super.getDrops(state, drops, world, pos, fortune);
     }
 
-    public void getTileDrops(NonNullList<ItemStack> drops, World world, BlockPos pos, int fortune){
+    public void getTileDrops(NonNullList<ItemStack> drops, World world, BlockPos pos, int fortune) {
         TileEntity tile = WorldHelper.getTileAt(world, pos);
-        if (tile instanceof ITileWithDrops){
+        if (tile instanceof ITileWithDrops) {
             ((ITileWithDrops) tile).getDrops(drops, fortune);
         }
     }

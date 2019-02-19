@@ -1,5 +1,6 @@
 package elec332.core.util;
 
+import com.google.common.base.Preconditions;
 import net.minecraft.block.Block;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.EntityType;
@@ -19,6 +20,7 @@ import net.minecraftforge.fml.common.registry.VillagerRegistry;
 import net.minecraftforge.registries.*;
 
 import java.util.Map;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 /**
@@ -49,8 +51,14 @@ public class RegistryHelper {
         });
     }
 
-    public static <T extends IForgeRegistryEntry<T>, C extends IForgeRegistry.AddCallback<T> & IForgeRegistry.ClearCallback<T> & IForgeRegistry.CreateCallback<T>> ForgeRegistry<T> createRegistry(ResourceLocation registryName, Class<T> registryType, C callback) {
-        return createRegistry(registryName, registryType, 0, Byte.MAX_VALUE, callback);
+    public static <T extends IForgeRegistryEntry<T>> ForgeRegistry<T> createRegistry(ResourceLocation name, Class<T> type, Consumer<RegistryBuilder<T>> modifier) {
+        RegistryBuilder<T> b = new RegistryBuilder<>();
+        b.setName(Preconditions.checkNotNull(name));
+        b.setType(Preconditions.checkNotNull(type));
+        if (modifier != null) {
+            modifier.accept(b);
+        }
+        return (ForgeRegistry<T>) b.create();
     }
 
     @SuppressWarnings("deprecation")

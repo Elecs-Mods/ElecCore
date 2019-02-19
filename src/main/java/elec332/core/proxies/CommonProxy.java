@@ -34,7 +34,7 @@ public class CommonProxy {
         return null;
     }
 
-    public MinecraftServer getServer(){
+    public MinecraftServer getServer() {
         return server;
     }
 

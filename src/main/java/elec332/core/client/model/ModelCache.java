@@ -100,7 +100,7 @@ public abstract class ModelCache<K> implements IBakedModel {
         }
     }
 
-    public final IBakedModel getModel(K key){
+    public final IBakedModel getModel(K key) {
         Callable<IBakedModel> loader = () -> new WrappedModel(ModelCache.this) {
 
             Map<EnumFacing, List<BakedQuad>> quads = ModelCache.this.getQuads(key);

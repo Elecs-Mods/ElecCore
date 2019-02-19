@@ -46,20 +46,20 @@ public enum WindowManager {
 
     public void register(IWindowHandler windowHandler) {
         ModContainer mc = FMLHelper.getActiveModContainer();
-        if (mc == null || mc == DefaultModContainers.MINECRAFT){
+        if (mc == null || mc == DefaultModContainers.MINECRAFT) {
             throw new RuntimeException();
         }
         register(windowHandler, new ResourceLocation(FMLHelper.getActiveModContainer().getModId(), windowHandler.getClass().getCanonicalName()));
     }
 
     public void register(IWindowHandler windowHandler, ResourceLocation name) {
-        if (lookup.containsKey(name)){
-            throw new IllegalArgumentException("Name already in use: "+name);
+        if (lookup.containsKey(name)) {
+            throw new IllegalArgumentException("Name already in use: " + name);
         }
         lookup.put(name, windowHandler);
     }
 
-    public IWindowHandler get(ResourceLocation name){
+    public IWindowHandler get(ResourceLocation name) {
         return lookup.get(name);
     }
 
@@ -91,14 +91,14 @@ public enum WindowManager {
     public static void openWindow(@Nonnull EntityPlayer player, IWindowHandler windowHandler, World world, ElecByteBuf data) {
         if (player instanceof EntityPlayerMP) {
             ResourceLocation name = INSTANCE.lookup.inverse().get(windowHandler);
-            if (name == null){
+            if (name == null) {
                 throw new IllegalArgumentException();
             }
-            byte[] b = data.readByteArray();
-            ElecByteBuf cdata = ElecByteBuf.of(Unpooled.wrappedBuffer(b));
+            ElecByteBuf cdata = ElecByteBuf.of(Unpooled.wrappedBuffer(data));
             ElecByteBuf allData = ElecByteBuf.of(Unpooled.buffer());
             allData.writeResourceLocation(name);
-            allData.writeBytes(b);
+            allData.writeVarInt(data.readableBytes());
+            allData.writeBytes(data);
             NetworkHooks.openGui((EntityPlayerMP) player, new NullInteractionObject(GUI_NAME) {
 
                 @Nonnull
@@ -141,7 +141,7 @@ public enum WindowManager {
     static {
         INSTANCE.register((player, world, data) -> {
             TileEntity tile = WorldHelper.getTileAt(world, data.readBlockPos());
-            if (tile instanceof IWindowFactory){
+            if (tile instanceof IWindowFactory) {
                 return ((IWindowFactory) tile).createWindow();
             }
             return null;

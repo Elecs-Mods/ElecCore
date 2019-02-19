@@ -18,6 +18,7 @@ import it.unimi.dsi.fastutil.shorts.Short2ObjectArrayMap;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.network.NetworkDirection;
+import net.minecraftforge.fml.network.NetworkEvent;
 import net.minecraftforge.fml.network.NetworkInstance;
 import net.minecraftforge.fml.network.NetworkRegistry;
 import net.minecraftforge.fml.network.simple.IndexedMessageCodec;
@@ -83,15 +84,24 @@ class DefaultNetworkHandler implements IElecNetworkHandler, DefaultByteBufFactor
         } catch (Exception e) {
             throw new IllegalArgumentException();
         }
-        networkWrapper.registerMessage(getNextIndex(), messageType, IMessage::toBytes, packetBuffer -> {
-            try {
-                M m = messageType.newInstance();
-                m.fromBytes(packetBuffer);
-                return m;
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        }, (m, contextSupplier) -> messageHandler.accept(m, () -> NetworkManager.INSTANCE.wrapMessageContext(contextSupplier.get())));
+        networkWrapper.registerMessage(getNextIndex(),
+                messageType,
+                IMessage::toBytes,
+                packetBuffer -> {
+                    try {
+                        M m = messageType.newInstance();
+                        m.fromBytes(packetBuffer);
+                        return m;
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                },
+                (m, contextSupplier) -> {
+                    NetworkEvent.Context context = contextSupplier.get();
+                    messageHandler.accept(m, () -> NetworkManager.INSTANCE.wrapMessageContext(context));
+                    context.setPacketHandled(true);
+                }
+        );
     }
 
     @Override

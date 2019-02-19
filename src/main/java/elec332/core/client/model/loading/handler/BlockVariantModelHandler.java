@@ -53,12 +53,12 @@ public class BlockVariantModelHandler implements IModelHandler {
         ModelLoaderRegistry.registerLoader(new InternalModelLoader());
         MinecraftForge.EVENT_BUS.register(this);
         RenderingRegistry.instance().registerLoader(iconRegistrar -> {
-            if (models.isEmpty()){
+            if (models.isEmpty()) {
                 blockResourceLocations.keySet().forEach(mrl -> {
                     IUnbakedModel model_;
                     try {
                         model_ = ModelLoaderRegistry.getModel(mrl);
-                    } catch (Exception e){
+                    } catch (Exception e) {
                         throw new RuntimeException(e);
                         //model_ = null;//ModelLoaderRegistry.getMissingModel();
                     }

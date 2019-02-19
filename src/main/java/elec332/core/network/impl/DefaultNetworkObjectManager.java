@@ -28,7 +28,6 @@ class DefaultNetworkObjectManager implements INetworkObjectManager, BiConsumer<D
     DefaultNetworkObjectManager(INetworkHandler handler) {
         this.packetDispatcher = handler;
         handler.registerPacket(this, PacketNetworkObject.class);
-        handler.registerPacket(this, PacketNetworkObject.class);
         this.packetStuff = Lists.newArrayList();
         this.i = 0;
     }
@@ -282,13 +281,14 @@ class DefaultNetworkObjectManager implements INetworkObjectManager, BiConsumer<D
         public void fromBytes(PacketBuffer buf) {
             this.i = buf.readByte();
             this.i2 = buf.readByte();
-            this.data = buf.readBytes(Unpooled.buffer(buf.readableBytes()));
+            this.data = new PacketBuffer(Unpooled.wrappedBuffer(buf.readByteArray()));
         }
 
         @Override
         public void toBytes(PacketBuffer buf) {
             buf.writeByte(i);
             buf.writeByte(i2);
+            buf.writeVarInt(data.readableBytes());
             buf.writeBytes(data);
         }
 

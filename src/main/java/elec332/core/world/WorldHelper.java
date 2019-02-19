@@ -1,5 +1,7 @@
 package elec332.core.world;
 
+import elec332.core.ElecCore;
+import elec332.core.util.FMLHelper;
 import elec332.core.util.ItemStackHelper;
 import elec332.core.util.NBTBuilder;
 import elec332.core.util.PlayerHelper;
@@ -25,6 +27,7 @@ import net.minecraft.world.gen.ChunkProviderServer;
 import net.minecraftforge.common.BiomeDictionary;
 import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.ForgeChunkManager;
+import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.items.IItemHandler;
 
 import javax.annotation.Nullable;
@@ -365,6 +368,18 @@ public class WorldHelper {
             throw new RuntimeException("Unable to determine the dimension of world: " + world);
         }
         return world.getDimension().getId();
+    }
+
+    @Nullable
+    public static World getWorld(int dimension) {
+        if (FMLHelper.getLogicalSide() == LogicalSide.CLIENT) {
+            World ret = ElecCore.proxy.getClientWorld();
+            if (getDimID(ret) != dimension) {
+                ret = null;
+            }
+            return ret;
+        }
+        return DimensionManager.getWorld(dimension);
     }
 
     /*

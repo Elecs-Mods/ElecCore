@@ -3,7 +3,6 @@ package elec332.core.inventory.widget;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Lists;
 
-import javax.annotation.Nullable;
 import java.util.List;
 
 /**
@@ -23,12 +22,7 @@ public class WidgetEnumChange<E extends Enum> extends WidgetButton {
         this.index = 0;
         this.list = Lists.newArrayList();
         setDisplayString(getEnum().toString());
-        predicate = new Predicate<E>() {
-            @Override
-            public boolean apply(@Nullable E input) {
-                return true;
-            }
-        };
+        predicate = input -> true;
     }
 
     private final Class<E> enumClass;

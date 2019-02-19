@@ -6,6 +6,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -27,8 +28,11 @@ public class ClientEventHandler {
             BlockPos pos = hit.getBlockPos();
             IBlockState state = world.getBlockState(pos);
             if (!state.isAir(world, pos) && state.getBlock() instanceof ISelectionBoxOverride) {
-                RenderHelper.drawSelectionBox(event.getPlayer(), world, pos, ((ISelectionBoxOverride) state.getBlock()).getSelectionBox(state, world, pos, event.getPlayer(), event.getTarget()), event.getPartialTicks());
-                event.setCanceled(true);
+                VoxelShape shape = ((ISelectionBoxOverride) state.getBlock()).getSelectionBox(state, world, pos, event.getPlayer(), event.getTarget());
+                if (shape != null) {
+                    RenderHelper.drawSelectionBox(event.getPlayer(), world, pos, shape, event.getPartialTicks());
+                    event.setCanceled(true);
+                }
             }
         }
     }

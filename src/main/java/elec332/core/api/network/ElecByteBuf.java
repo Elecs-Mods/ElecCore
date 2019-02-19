@@ -20,8 +20,8 @@ import java.util.function.Function;
  */
 public abstract class ElecByteBuf extends PacketBuffer {
 
-    public static ElecByteBuf of(ByteBuf buf){
-        if (factory == null){
+    public static ElecByteBuf of(ByteBuf buf) {
+        if (factory == null) {
             throw new UnsupportedOperationException();
         }
         return factory.apply(buf);

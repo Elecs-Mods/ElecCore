@@ -22,7 +22,7 @@ class DefaultExtendedMessageContext implements IExtendedMessageContext {
 
     @Override
     public LogicalSide getSide() {
-        return messageContext.getDirection().getLogicalSide();
+        return messageContext.getDirection().getLogicalSide() == LogicalSide.CLIENT ? LogicalSide.SERVER : LogicalSide.CLIENT;
     }
 
     @Override

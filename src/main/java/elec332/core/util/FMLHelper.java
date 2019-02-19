@@ -138,8 +138,8 @@ public class FMLHelper {
      * @return The {@link IEventBus} from the mod currently active
      */
     public static IEventBus getActiveModEventBus() {
-        Object o =  getModLoadingContext().extension();
-        if (o instanceof FMLJavaModLoadingContext){
+        Object o = getModLoadingContext().extension();
+        if (o instanceof FMLJavaModLoadingContext) {
             return ((FMLJavaModLoadingContext) o).getModEventBus();
         }
         throw new UnsupportedOperationException();

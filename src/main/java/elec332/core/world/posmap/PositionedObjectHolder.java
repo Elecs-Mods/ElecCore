@@ -1,7 +1,6 @@
 package elec332.core.world.posmap;
 
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
+import com.google.common.collect.*;
 import elec332.core.api.util.IClearable;
 import elec332.core.world.WorldHelper;
 import it.unimi.dsi.fastutil.longs.Long2ObjectLinkedOpenHashMap;
@@ -9,35 +8,39 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Stream;
 
 /**
  * Created by Elec332 on 4-2-2016.
  * <p>
  * A fast way to store objects in a 3D coordinate based map
  */
-public class PositionedObjectHolder<T> implements IClearable {
+public class PositionedObjectHolder<T, V> implements IClearable {
 
-    public PositionedObjectHolder() {
-        this(256);
+    public static <T> PositionedObjectHolder<T, T> create() {
+        return new PositionedObjectHolder<>(PositionChunk::new);
     }
 
-    @SuppressWarnings("unused")
-    private PositionedObjectHolder(int height) {
-        this(new Long2ObjectLinkedOpenHashMap<PositionChunk>());
+    public PositionedObjectHolder(Function<ChunkPos, AbstractPositionChunk<T, V>> supplier) {
+        this(new Long2ObjectLinkedOpenHashMap<>(), supplier);
     }
 
-    private PositionedObjectHolder(Map<Long, PositionChunk> positionedMap) {
+    private PositionedObjectHolder(Map<Long, AbstractPositionChunk<T, V>> positionedMap, Function<ChunkPos, AbstractPositionChunk<T, V>> supplier) {
         this.positionedMap = positionedMap;
         this.callbacks = Sets.newHashSet();
         this.hasCallbacks = false;
+        this.supplier = supplier;
     }
 
-    private final Map<Long, PositionChunk> positionedMap;
-    private final Set<ChangeCallback<T>> callbacks;
+    private final Function<ChunkPos, AbstractPositionChunk<T, V>> supplier;
+
+    private final Map<Long, AbstractPositionChunk<T, V>> positionedMap;
+    private final Set<ChangeCallback<V>> callbacks;
     private boolean hasCallbacks;
 
     /**
@@ -45,7 +48,7 @@ public class PositionedObjectHolder<T> implements IClearable {
      */
     @Override
     public void clear() {
-        positionedMap.values().forEach(PositionChunk::clear);
+        positionedMap.values().forEach(AbstractPositionChunk::clear);
         positionedMap.clear();
         callbacks.clear();
     }
@@ -55,7 +58,7 @@ public class PositionedObjectHolder<T> implements IClearable {
      *
      * @param callback The callback to be registered
      */
-    public void registerCallback(ChangeCallback<T> callback) {
+    public void registerCallback(ChangeCallback<V> callback) {
         if (callback == null) {
             return;
         }
@@ -71,23 +74,21 @@ public class PositionedObjectHolder<T> implements IClearable {
      * @param pos The position to check
      * @return The object at the specified coordinates, can be null.
      */
-    @Nullable
     public T get(BlockPos pos) {
         return getChunkForPos(pos).get(pos);
     }
 
     @Nonnull
-    private PositionChunk getChunkForPos(BlockPos pos) {
+    private AbstractPositionChunk<T, V> getChunkForPos(BlockPos pos) {
         return getChunkForPos(new ChunkPos(pos));
     }
 
     @Nonnull
-    @SuppressWarnings("all")
-    private PositionChunk getChunkForPos(ChunkPos chunkPos) {
+    private AbstractPositionChunk<T, V> getChunkForPos(ChunkPos chunkPos) {
         long l = WorldHelper.longFromChunkPos(chunkPos);
-        PositionChunk positionChunk = positionedMap.get(l);
+        AbstractPositionChunk<T, V> positionChunk = positionedMap.get(l);
         if (positionChunk == null) {
-            positionChunk = new PositionChunk(chunkPos);
+            positionChunk = supplier.apply(chunkPos);
             positionedMap.put(l, positionChunk);
         }
         return positionChunk;
@@ -99,8 +100,13 @@ public class PositionedObjectHolder<T> implements IClearable {
      * @param t   The object to be stored
      * @param pos The position
      */
-    public void put(T t, BlockPos pos) {
+    public void put(V t, BlockPos pos) {
         getChunkForPos(pos).put(t, pos);
+        if (hasCallbacks) {
+            for (ChangeCallback<V> callback : callbacks) {
+                callback.onChange(t, pos, true);
+            }
+        }
     }
 
     /**
@@ -109,9 +115,34 @@ public class PositionedObjectHolder<T> implements IClearable {
      * @param pos The position to be cleared
      */
     public void remove(BlockPos pos) {
-        PositionChunk chunk = getChunkForPos(pos);
-        chunk.remove(pos);
-        if (chunk.posMap.isEmpty()) {
+        AbstractPositionChunk<T, V> chunk = getChunkForPos(pos);
+        Iterable<V> t = chunk.remove(pos);
+        if (hasCallbacks) {
+            for (ChangeCallback<V> callback : callbacks) {
+                for (V v : t) {
+                    callback.onChange(v, pos, false);
+                }
+            }
+        }
+        if (chunk.isEmpty()) {
+            positionedMap.remove(WorldHelper.longFromChunkPos(chunk.pos));
+        }
+    }
+
+    /**
+     * Removes the object at the specified coordinated
+     *
+     * @param pos The position to be cleared
+     */
+    public void remove(BlockPos pos, V obj) {
+        AbstractPositionChunk<T, V> chunk = getChunkForPos(pos);
+        boolean b = chunk.remove(pos, obj);
+        if (b && hasCallbacks) {
+            for (ChangeCallback<V> callback : callbacks) {
+                callback.onChange(obj, pos, false);
+            }
+        }
+        if (chunk.isEmpty()) {
             positionedMap.remove(WorldHelper.longFromChunkPos(chunk.pos));
         }
     }
@@ -121,7 +152,7 @@ public class PositionedObjectHolder<T> implements IClearable {
      */
     public Set<ChunkPos> getChunks() {
         Set<ChunkPos> ret = Sets.newHashSet();
-        for (PositionChunk chunk : positionedMap.values()) {
+        for (AbstractPositionChunk chunk : positionedMap.values()) {
             ret.add(chunk.pos);
         }
         return ret;
@@ -129,7 +160,11 @@ public class PositionedObjectHolder<T> implements IClearable {
 
     @Nonnull
     public Map<BlockPos, T> getObjectsInChunk(ChunkPos chunk) {
-        return getChunkForPos(chunk).publicVisibleMap;
+        return getChunkForPos(chunk).getView();
+    }
+
+    public Stream<V> streamValues() {
+        return positionedMap.values().stream().flatMap(AbstractPositionChunk::streamValues);
     }
 
     /**
@@ -156,41 +191,137 @@ public class PositionedObjectHolder<T> implements IClearable {
     /**
      * Just like MC chunks, store the stuff in smaller patches.
      */
-    private class PositionChunk {
+    public static abstract class AbstractPositionChunk<T, V> {
+
+        protected AbstractPositionChunk(ChunkPos pos) {
+            this.pos = pos;
+        }
+
+        private final ChunkPos pos;
+
+        protected abstract T get(BlockPos pos);
+
+        protected abstract void put(V t, BlockPos pos);
+
+        protected abstract Iterable<V> remove(BlockPos pos);
+
+        protected abstract boolean remove(BlockPos pos, V obj);
+
+        protected abstract boolean isEmpty();
+
+        protected abstract Map<BlockPos, T> getView();
+
+        protected abstract Stream<V> streamValues();
+
+        protected abstract void clear();
+
+    }
+
+    private static class PositionChunk<T> extends AbstractPositionChunk<T, T> {
 
         private PositionChunk(ChunkPos pos) {
-            this.pos = pos;
+            super(pos);
             this.posMap = Maps.newHashMap();
             this.publicVisibleMap = Collections.unmodifiableMap(this.posMap);
         }
 
-        private final ChunkPos pos;
         private final Map<BlockPos, T> posMap;
         private final Map<BlockPos, T> publicVisibleMap;
 
-        private T get(BlockPos pos) {
+        @Override
+        protected T get(BlockPos pos) {
             return posMap.get(pos);
         }
 
-        private void put(T t, BlockPos pos) {
+        @Override
+        protected void put(T t, BlockPos pos) {
             posMap.put(pos, t);
-            if (hasCallbacks) {
-                for (ChangeCallback<T> callback : callbacks) {
-                    callback.onChange(t, pos, true);
-                }
-            }
         }
 
-        private void remove(BlockPos pos) {
-            T t = posMap.remove(pos);
-            if (hasCallbacks) {
-                for (ChangeCallback<T> callback : callbacks) {
-                    callback.onChange(t, pos, false);
-                }
+        @Override
+        protected Iterable<T> remove(BlockPos pos) {
+            T ret = posMap.remove(pos);
+            if (ret == null) {
+                return ImmutableList.of();
             }
+            return ImmutableList.of(ret);
         }
 
-        private void clear() {
+        @Override
+        protected boolean remove(BlockPos pos, T obj) {
+            return posMap.remove(pos, obj);
+        }
+
+        @Override
+        protected Map<BlockPos, T> getView() {
+            return publicVisibleMap;
+        }
+
+        @Override
+        protected Stream<T> streamValues() {
+            return publicVisibleMap.values().stream();
+        }
+
+        @Override
+        protected boolean isEmpty() {
+            return this.posMap.isEmpty();
+        }
+
+        @Override
+        protected void clear() {
+            posMap.clear();
+        }
+
+    }
+
+    public static class MultiMapPositionChunk<T> extends AbstractPositionChunk<Set<T>, T> {
+
+        public MultiMapPositionChunk(ChunkPos pos) {
+            super(pos);
+            this.posMap = HashMultimap.create();
+            this.publicVisibleMap = Collections.unmodifiableMap(Multimaps.asMap(this.posMap));
+        }
+
+        private final SetMultimap<BlockPos, T> posMap;
+        private final Map<BlockPos, Set<T>> publicVisibleMap;
+
+        @Override
+        protected Set<T> get(BlockPos pos) {
+            return posMap.get(pos);
+        }
+
+        @Override
+        protected void put(T t, BlockPos pos) {
+            posMap.put(pos, t);
+        }
+
+        @Override
+        protected Collection<T> remove(BlockPos pos) {
+            return posMap.removeAll(pos);
+        }
+
+        @Override
+        protected boolean remove(BlockPos pos, T obj) {
+            return posMap.remove(pos, obj);
+        }
+
+        @Override
+        protected Map<BlockPos, Set<T>> getView() {
+            return publicVisibleMap;
+        }
+
+        @Override
+        protected Stream<T> streamValues() {
+            return posMap.values().stream();
+        }
+
+        @Override
+        protected boolean isEmpty() {
+            return this.posMap.isEmpty();
+        }
+
+        @Override
+        protected void clear() {
             posMap.clear();
         }
 
@@ -199,7 +330,7 @@ public class PositionedObjectHolder<T> implements IClearable {
     /**
      * An callback for when the {@link PositionedObjectHolder} has changed
      */
-    public interface ChangeCallback<T> {
+    public interface ChangeCallback<V> {
 
         /**
          * Gets called when the contents at the specified location have changed
@@ -208,16 +339,18 @@ public class PositionedObjectHolder<T> implements IClearable {
          * @param pos    The position that has changed
          * @param add    True if the object was added, false if the object was removed
          */
-        public void onChange(T object, BlockPos pos, boolean add);
+        public void onChange(V object, BlockPos pos, boolean add);
 
     }
 
-    public static <T> PositionedObjectHolder<T> immutableCopy(PositionedObjectHolder<T> original) {
+    public static <T, V> PositionedObjectHolder<T, V> immutableCopy(PositionedObjectHolder<T, V> original) {
 
-        return new PositionedObjectHolder<T>(original.positionedMap) {
+        return new PositionedObjectHolder<T, V>(original.positionedMap, p -> {
+            throw new UnsupportedOperationException();
+        }) {
 
             @Override
-            public void put(T t, BlockPos pos) {
+            public void put(V t, BlockPos pos) {
                 throw new UnsupportedOperationException();
             }
 
@@ -228,6 +361,11 @@ public class PositionedObjectHolder<T> implements IClearable {
 
             @Override
             public void clear() {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public void remove(BlockPos pos, V obj) {
                 throw new UnsupportedOperationException();
             }
 

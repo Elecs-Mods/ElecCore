@@ -16,7 +16,7 @@ import javax.annotation.Nullable;
  */
 public abstract class NullInteractionObject implements IInteractionObject {
 
-    public NullInteractionObject(ResourceLocation guiId){
+    public NullInteractionObject(ResourceLocation guiId) {
         this.guiId = Preconditions.checkNotNull(guiId);
     }
 

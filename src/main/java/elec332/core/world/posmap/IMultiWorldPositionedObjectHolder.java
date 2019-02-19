@@ -2,7 +2,7 @@ package elec332.core.world.posmap;
 
 import elec332.core.api.util.IClearable;
 import elec332.core.world.WorldHelper;
-import net.minecraft.world.World;
+import net.minecraft.world.IWorldReaderBase;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -15,7 +15,7 @@ import java.util.function.Consumer;
  * <p>
  * A {@link PositionedObjectHolder} spanning multiple dimensions
  */
-public interface IMultiWorldPositionedObjectHolder<T> extends IClearable {
+public interface IMultiWorldPositionedObjectHolder<T, V> extends IClearable {
 
     /**
      * Gets the {@link PositionedObjectHolder} for the specified dimension,
@@ -25,7 +25,7 @@ public interface IMultiWorldPositionedObjectHolder<T> extends IClearable {
      * @return The {@link PositionedObjectHolder} for the specified dimension, can be null
      */
     @Nullable
-    default public PositionedObjectHolder<T> get(World world) {
+    default public PositionedObjectHolder<T, V> get(IWorldReaderBase world) {
         return get(WorldHelper.getDimID(world));
     }
 
@@ -37,7 +37,7 @@ public interface IMultiWorldPositionedObjectHolder<T> extends IClearable {
      * @return The {@link PositionedObjectHolder} for the specified dimension
      */
     @Nonnull
-    default public PositionedObjectHolder<T> getOrCreate(World world) {
+    default public PositionedObjectHolder<T, V> getOrCreate(IWorldReaderBase world) {
         return getOrCreate(WorldHelper.getDimID(world));
     }
 
@@ -49,7 +49,7 @@ public interface IMultiWorldPositionedObjectHolder<T> extends IClearable {
      * @return The {@link PositionedObjectHolder} for the specified dimension-ID, can be null
      */
     @Nullable
-    public PositionedObjectHolder<T> get(int world);
+    public PositionedObjectHolder<T, V> get(int world);
 
     /**
      * Gets the {@link PositionedObjectHolder} for the specified dimension-ID,
@@ -59,26 +59,26 @@ public interface IMultiWorldPositionedObjectHolder<T> extends IClearable {
      * @return The {@link PositionedObjectHolder} for the specified dimension-ID
      */
     @Nonnull
-    public PositionedObjectHolder<T> getOrCreate(int world);
+    public PositionedObjectHolder<T, V> getOrCreate(int world);
 
     /**
      * @return A collection of all underlying {@link PositionedObjectHolder}'s
      */
     @Nonnull
-    public Collection<PositionedObjectHolder<T>> getValues();
+    public Collection<PositionedObjectHolder<T, V>> getValues();
 
     /**
      * @return A map with all underlying {@link PositionedObjectHolder}'s including the dimension it belongs to
      */
     @Nonnull
-    public Map<Integer, PositionedObjectHolder<T>> getUnModifiableView();
+    public Map<Integer, PositionedObjectHolder<T, V>> getUnModifiableView();
 
     /**
      * Add a callback, gets called when a new {@link PositionedObjectHolder} is created
      *
      * @param callback the callback
      */
-    public void addCreateCallback(Consumer<PositionedObjectHolder<T>> callback);
+    public void addCreateCallback(Consumer<PositionedObjectHolder<T, V>> callback);
 
     /**
      * Clears this map, clearing and removing all underlying {@link PositionedObjectHolder}'s
