@@ -36,8 +36,8 @@ public class WidgetButtonArrow extends WidgetButton {
     }
 
     @Override
-    public WidgetButtonArrow addButtonEvent(IButtonEventListener event) {
-        super.addButtonEvent(event);
+    public WidgetButtonArrow addButtonEventListener(IButtonEventListener event) {
+        super.addButtonEventListener(event);
         return this;
     }
 

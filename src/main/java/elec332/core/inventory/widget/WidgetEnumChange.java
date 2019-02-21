@@ -1,9 +1,7 @@
 package elec332.core.inventory.widget;
 
-import com.google.common.base.Predicate;
-import com.google.common.collect.Lists;
-
-import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 /**
  * Created by Elec332 on 23-8-2015.
@@ -20,32 +18,32 @@ public class WidgetEnumChange<E extends Enum> extends WidgetButton {
         super(x, y, 0, 0, width, height);
         this.enumClass = clazz;
         this.index = 0;
-        this.list = Lists.newArrayList();
+        this.listener = t -> {};
         setDisplayString(getEnum().toString());
         predicate = input -> true;
     }
 
     private final Class<E> enumClass;
-    private List<IEnumChangedEvent<WidgetEnumChange<E>>> list;
+    private Consumer<E> listener;
     private int index;
     private Predicate<E> predicate;
 
-    public WidgetEnumChange<E> addButtonEvent(IEnumChangedEvent<WidgetEnumChange<E>> event) {
-        this.list.add(event);
+    public WidgetEnumChange<E> onValueChanged(Consumer<E> event) {
+        this.listener = this.listener.andThen(event);
         return this;
     }
 
     public E getEnum() {
-        return enumClass.getEnumConstants()[index];
+        return getEnumValues()[index];
     }
 
     public void setEnum(E e) {
-        if (!predicate.apply(e)) {
+        if (!predicate.test(e)) {
             return;
         }
         boolean b = true;
-        for (int i = 0; i < enumClass.getEnumConstants().length; i++) {
-            E en = enumClass.getEnumConstants()[i];
+        for (int i = 0; i < getEnumValues().length; i++) {
+            E en = getEnumValues()[i];
             if (e == en) {
                 setDisplayString(en.toString());
                 this.index = i;
@@ -67,7 +65,7 @@ public class WidgetEnumChange<E extends Enum> extends WidgetButton {
     @Override
     public void onButtonClicked(int mouseButton) {
         nextIdx();
-        while (!predicate.apply(getEnum())) {
+        while (!predicate.test(getEnum())) {
             nextIdx();
         }
         setDisplayString(getEnum().toString());
@@ -75,17 +73,21 @@ public class WidgetEnumChange<E extends Enum> extends WidgetButton {
         distributeEvents();
     }
 
+    private E[] getEnumValues(){
+        return enumClass.getEnumConstants(); //Forge can dynamically add more values at runtime, so don't cache it
+    }
+
     private void nextIdx() {
         index++;
-        if (index >= enumClass.getEnumConstants().length) {
+        if (index >= getEnumValues().length) {
             index = 0;
         }
     }
 
     private void checkPredicate() {
         boolean b = false;
-        for (E e : enumClass.getEnumConstants()) {
-            if (predicate.apply(e)) {
+        for (E e : getEnumValues()) {
+            if (predicate.test(e)) {
                 b = true;
                 break;
             }
@@ -95,16 +97,9 @@ public class WidgetEnumChange<E extends Enum> extends WidgetButton {
         }
     }
 
+    @SuppressWarnings("all")
     private void distributeEvents() {
-        for (IEnumChangedEvent<WidgetEnumChange<E>> event : list) {
-            event.onEnumChanged(this);
-        }
-    }
-
-    public interface IEnumChangedEvent<E extends WidgetEnumChange> {
-
-        public void onEnumChanged(E widget);
-
+        listener.accept(getEnum());
     }
 
 }

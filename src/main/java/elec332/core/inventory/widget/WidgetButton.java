@@ -128,7 +128,7 @@ public class WidgetButton extends Widget {
         }
     }
 
-    public WidgetButton addButtonEvent(IButtonEventListener event) {
+    public WidgetButton addButtonEventListener(IButtonEventListener event) {
         if (!buttonEvents.contains(event)) {
             buttonEvents.add(event);
         }
