@@ -154,11 +154,11 @@ task("uploadJars", dependsOn: "reobf") {
                     pom {
                         groupId = project.group
                         version = project.version
-                        artifactId = project.archivesBaseName
+                        artifactId = project.archivesBaseName.toLowercase()
                         project {
-                            name project.archivesBaseName.toLowerCase()
+                            name project.archivesBaseName
                             packaging 'jar'
-                            description mod.fileName
+                            description project.archivesBaseName
                             issueManagement {
                                 system 'github'
                                 url 'https://github.com/Elecs-Mods/ElecCore/issues'
