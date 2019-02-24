@@ -11,6 +11,7 @@ import elec332.core.util.FMLUtil;
 import net.minecraftforge.fml.common.LoaderState;
 import net.minecraftforge.fml.common.discovery.ASMDataTable;
 import net.minecraftforge.fml.common.discovery.ModCandidate;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.commons.lang3.tuple.Pair;
 import org.objectweb.asm.Type;
 
@@ -19,6 +20,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 /**
  * Created by Elec332 on 29-10-2016.
@@ -30,6 +32,7 @@ enum ASMDataHandler {
     ASMDataHandler() {
         asmLoaderMap = Maps.newHashMap();
         validStates = ImmutableList.of(LoaderState.CONSTRUCTING, LoaderState.PREINITIALIZATION, LoaderState.INITIALIZATION, LoaderState.POSTINITIALIZATION, LoaderState.AVAILABLE);
+        sideOnlyCache = Maps.newHashMap();
     }
 
 
@@ -37,11 +40,16 @@ enum ASMDataHandler {
     private final Map<LoaderState, List<IASMDataProcessor>> asmLoaderMap;
     private final List<LoaderState> validStates;
     private IASMDataHelper asmDataHelper;
+    private Map<String, Boolean> sideOnlyCache;
+    private Predicate<String> hasSideOnly;
 
     void identify(ASMDataTable dataTable) {
         for (LoaderState state : validStates) {
             asmLoaderMap.put(state, Lists.newArrayList());
         }
+        this.hasSideOnly = cls -> ASMDataHandler.this.sideOnlyCache.computeIfAbsent(cls,
+                name -> asmDataHelper.getAnnotationList(SideOnly.class).stream().anyMatch(asmData -> asmData.getClassName().equals(cls))
+        );
         this.asmDataHelper = new IASMDataHelper() {
 
             private final Map<String, Set<IAdvancedASMData>> annotationData = Maps.newHashMap();
@@ -67,6 +75,11 @@ enum ASMDataHandler {
                     annotationData.put(s, ret = createNew(s));
                 }
                 return ret;
+            }
+
+            @Override
+            public boolean hasSideOnlyAnnotation(String clazz) {
+                return hasSideOnly.test(clazz);
             }
 
             private Set<IAdvancedASMData> createNew(String s) {
@@ -168,7 +181,7 @@ enum ASMDataHandler {
         apiHandler.inject(this.asmDataHelper, IASMDataHelper.class);
     }
 
-    private static class AdvancedASMData implements IAdvancedASMData {
+    private class AdvancedASMData implements IAdvancedASMData {
 
         private AdvancedASMData(ASMDataTable.ASMData asmData) {
             this.asmData = asmData;
@@ -186,6 +199,7 @@ enum ASMDataHandler {
         private Method method;
         private Type[] paramTypes;
         private Class[] params;
+        private Boolean sideOnly;
 
         @Override
         public ModCandidate getContainer() {
@@ -325,6 +339,14 @@ enum ASMDataHandler {
                 throw new RuntimeException(e);
             }
             return params = ret;
+        }
+
+        @Override
+        public boolean hasSideOnlyAnnotation() {
+            if (sideOnly == null) {
+                sideOnly = hasSideOnly.test(getClassName());
+            }
+            return sideOnly;
         }
 
         @Override

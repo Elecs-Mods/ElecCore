@@ -18,4 +18,6 @@ public interface IASMDataHelper {
 
     public Set<IAdvancedASMData> getAdvancedAnnotationList(Class<? extends Annotation> annotationClass);
 
+    public boolean hasSideOnlyAnnotation(String clazz);
+
 }

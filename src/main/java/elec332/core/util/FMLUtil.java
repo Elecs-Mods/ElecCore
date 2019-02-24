@@ -1,5 +1,8 @@
 package elec332.core.util;
 
+import elec332.core.api.discovery.ASMDataProcessor;
+import elec332.core.api.discovery.IASMDataHelper;
+import elec332.core.api.discovery.IASMDataProcessor;
 import net.minecraftforge.fml.common.*;
 import net.minecraftforge.fml.relauncher.FMLInjectionData;
 
@@ -11,6 +14,8 @@ import javax.annotation.Nullable;
  */
 public class FMLUtil {
 
+    private static IASMDataHelper asmData;
+
     /**
      * Loads a class with the FML classloader
      *
@@ -19,7 +24,14 @@ public class FMLUtil {
      * @throws ClassNotFoundException If the class does not exist
      */
     public static Class<?> loadClass(String clazz) throws ClassNotFoundException {
-        return Class.forName(clazz, true, FMLUtil.getLoader().getModClassLoader());
+        try {
+            return Class.forName(clazz, true, FMLUtil.getLoader().getModClassLoader());
+        } catch (ClassNotFoundException e) {
+            if (asmData.hasSideOnlyAnnotation(clazz)) {
+                throw new SideOnlyClassNotFoundException(e.getMessage(), e.getCause());
+            }
+            throw e;
+        }
     }
 
     /**
@@ -134,6 +146,30 @@ public class FMLUtil {
             }
         }
         return null;
+    }
+
+    public static class SideOnlyClassNotFoundException extends ClassNotFoundException {
+
+        public SideOnlyClassNotFoundException(String s, Throwable ex) {
+            super(s, ex);
+        }
+
+    }
+
+    @ASMDataProcessor(value = LoaderState.CONSTRUCTING, importance = Integer.MAX_VALUE)
+    public static class ASMGetter implements IASMDataProcessor {
+
+        public ASMGetter() {
+            if (FMLUtil.asmData != null) {
+                throw new IllegalStateException();
+            }
+        }
+
+        @Override
+        public void processASMData(IASMDataHelper asmData, LoaderState state) {
+            FMLUtil.asmData = asmData;
+        }
+
     }
 
 }

@@ -1,7 +1,9 @@
 package elec332.core.util;
 
 import com.google.common.base.Preconditions;
-import net.minecraft.nbt.*;
+import net.minecraft.nbt.NBTBase;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.common.util.INBTSerializable;
 
@@ -35,7 +37,7 @@ public class NBTBuilder implements INBTSerializable<NBTTagCompound>, Supplier<NB
         return setBlockPos("position", pos);
     }
 
-    public NBTBuilder setBlockPos(String name, BlockPos pos){
+    public NBTBuilder setBlockPos(String name, BlockPos pos) {
         this.tag.setLong(name, pos.toLong());
         return this;
     }
@@ -110,7 +112,7 @@ public class NBTBuilder implements INBTSerializable<NBTTagCompound>, Supplier<NB
     }
 
     @SuppressWarnings("unchecked")
-    public <N extends NBTBase> void getDeserialized(String name, INBTSerializable<N> serializable){
+    public <N extends NBTBase> void getDeserialized(String name, INBTSerializable<N> serializable) {
         serializable.deserializeNBT((N) getTag(name));
     }
 
@@ -184,15 +186,15 @@ public class NBTBuilder implements INBTSerializable<NBTTagCompound>, Supplier<NB
         this.tag.removeTag(name);
     }
 
-    public boolean isEmpty(){
+    public boolean isEmpty() {
         return this.tag.hasNoTags();
     }
 
-    public NBTBuilder copy(){
+    public NBTBuilder copy() {
         return NBTBuilder.from(this.tag.copy());
     }
 
-    public NBTBuilder mergeWith(NBTBuilder other){
+    public NBTBuilder mergeWith(NBTBuilder other) {
         this.tag.merge(other.tag);
         return this;
     }

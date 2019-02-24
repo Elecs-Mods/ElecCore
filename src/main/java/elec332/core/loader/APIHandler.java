@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
 /**
  * Created by Elec332 on 29-10-2016.
  */
-@ASMDataProcessor(value = LoaderState.CONSTRUCTING, importance = Integer.MAX_VALUE)
+@ASMDataProcessor(value = LoaderState.CONSTRUCTING, importance = Integer.MAX_VALUE - 8)
 enum APIHandler implements IASMDataProcessor, IAPIHandler {
 
     INSTANCE;
@@ -43,14 +43,24 @@ enum APIHandler implements IASMDataProcessor, IAPIHandler {
         injectedHandlers = Maps.newHashMap();
     }
 
-    private final Map<Class<?>, List<Consumer<?>>> callBacks;   //Used to be a multimap, but multimaps sort contents themselves,
-                                                                // we do not want that to happen, because they will be inserted in order
+    //Used to be a multimap, but multimaps sort contents themselves,
+    //we do not want that to happen, because they will be inserted in order
+    private final Map<Class<?>, List<Consumer<?>>> callBacks;
     private final Map<Class<?>, Object> injectedHandlers;
 
     @Override
     public void processASMData(IASMDataHelper asmData, LoaderState state) {
 
-        getWeightedAdvancedAnnotationList(asmData, StaticLoad.class, "weight").forEach(IAdvancedASMData::loadClass);
+        getWeightedAdvancedAnnotationList(asmData, StaticLoad.class, "weight").forEach(slD -> {
+            try {
+                slD.loadClass();
+            } catch (Exception e) {
+                if (slD.hasSideOnlyAnnotation()) {
+                    return;
+                }
+                throw e;
+            }
+        });
 
         collect(asmData, APIHandlerInject.class, "weight");
 
@@ -59,55 +69,63 @@ enum APIHandler implements IASMDataProcessor, IAPIHandler {
 
     @SuppressWarnings("all")
     private void collect(IASMDataHelper asmData, Class<? extends Annotation> annotationClass, String weightField) {
+        bpl:
         for (IAdvancedASMData data : getWeightedAdvancedAnnotationList(asmData, annotationClass, weightField)) {
 
-            Consumer<?> ret;
-            Class<?> type;
+            try {
+                Consumer<?> ret;
+                Class<?> type;
 
-            if (data.isMethod()) {
-                Class[] params = data.getMethodParameters();
-                if (params.length > 1 || params.length < 0) {
-                    ElecCore.logger.error("Skipping invalid API method: " + data.getClassName() + " " + data.getMethodName());
+                if (data.isMethod()) {
+                    Class[] params = data.getMethodParameters();
+                    if (params.length > 1 || params.length < 0) {
+                        ElecCore.logger.error("Skipping invalid API method: " + data.getClassName() + " " + data.getMethodName());
+                    }
+                    type = params[0];
+                    final Method m = data.getMethod();
+                    ret = (Consumer<Object>) o -> {
+                        List<Object> clsz = tryGetFieldOwner(m);
+                        if (clsz == null) {
+                            ElecCore.logger.error("Method " + data.getClassName() + " " + data.getMethodName() + " is not accessible! it will be skipped...");
+                            return;
+                        }
+                        m.setAccessible(true);
+                        clsz.forEach(obj -> {
+                            try {
+                                m.invoke(obj, o);
+                            } catch (Exception e) {
+                                throw new RuntimeException(e);
+                            }
+                        });
+                    };
+                } else {
+                    type = data.getFieldType();
+                    final Field field = data.getField();
+                    ret = (Consumer<Object>) o -> {
+                        List<Object> clsz = tryGetFieldOwner(field);
+                        if (clsz == null) {
+                            ElecCore.logger.error("Field " + data.getClassName() + "." + data.getFieldName() + " is not accessible! it will be skipped...");
+                            return;
+                        }
+                        clsz.forEach(obj -> {
+                            try {
+                                EnumHelper.setFailsafeFieldValue(field, obj, o);
+                            } catch (Exception e) {
+                                throw new RuntimeException(e);
+                            }
+                        });
+                    };
                 }
-                type = params[0];
-                ret = (Consumer<Object>) o -> {
-                    Method m = data.getMethod();
-                    List<Object> clsz = tryGetFieldOwner(m);
-                    if (clsz == null) {
-                        ElecCore.logger.error("Method " + data.getClassName() + " " + data.getMethodName() + " is not accessible! it will be skipped...");
-                        return;
-                    }
-                    m.setAccessible(true);
-                    clsz.forEach(obj -> {
-                        try {
-                            m.invoke(obj, o);
-                        } catch (Exception e) {
-                            throw new RuntimeException(e);
-                        }
-                    });
-                };
-            } else {
-                type = data.getFieldType();
-                ret = (Consumer<Object>) o -> {
-                    Field field = data.getField();
-                    List<Object> clsz = tryGetFieldOwner(field);
-                    if (clsz == null) {
-                        ElecCore.logger.error("Field " + data.getClassName() + "." + data.getFieldName() + " is not accessible! it will be skipped...");
-                        return;
-                    }
-                    clsz.forEach(obj -> {
-                        try {
-                            EnumHelper.setFailsafeFieldValue(field, obj, o);
-                        } catch (Exception e) {
-                            throw new RuntimeException(e);
-                        }
-                    });
-                };
+
+                List<Consumer<?>> l = callBacks.computeIfAbsent(Preconditions.checkNotNull(type), t -> Lists.newArrayList());
+                l.add(Preconditions.checkNotNull(ret));
+
+            } catch (Exception e) {
+                if (data.hasSideOnlyAnnotation()) {
+                    continue bpl;
+                }
+                throw e;
             }
-
-            List<Consumer<?>> l = callBacks.computeIfAbsent(Preconditions.checkNotNull(type), t -> Lists.newArrayList());
-            l.add(Preconditions.checkNotNull(ret));
-
         }
     }
 

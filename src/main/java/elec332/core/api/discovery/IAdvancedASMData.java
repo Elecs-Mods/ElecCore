@@ -43,4 +43,6 @@ public interface IAdvancedASMData {
 
     public Class<?>[] getMethodParameters();
 
+    public boolean hasSideOnlyAnnotation();
+
 }

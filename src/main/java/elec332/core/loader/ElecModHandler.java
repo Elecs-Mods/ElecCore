@@ -55,7 +55,7 @@ enum ElecModHandler implements IElecCoreModHandler {
         init(mods);
     }
 
-    void latePreInit(){
+    void latePreInit() {
         init(ModuleManager.INSTANCE.getActiveModules().stream()
                 .filter(mc -> mc.getModule() instanceof IElecCoreMod)
                 .map(moduleContainer -> Pair.of(moduleContainer.getOwnerMod(), (IElecCoreMod) moduleContainer.getModule()))
