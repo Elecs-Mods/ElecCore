@@ -71,7 +71,7 @@ configFile.withReader {
 }
 
 version = modFileVersion
-group= "elec332" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
+group = "nl.elec332.core" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "ElecCore"
 
 sourceCompatibility = 1.8
@@ -154,7 +154,7 @@ task("uploadJars", dependsOn: "reobf") {
                     pom {
                         groupId = project.group
                         version = project.version
-                        artifactId = project.archivesBaseName.toString().toLowerCase()
+                        artifactId = project.archivesBaseName
                         project {
                             name project.archivesBaseName
                             packaging 'jar'
