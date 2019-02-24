@@ -154,7 +154,7 @@ task("uploadJars", dependsOn: "reobf") {
                     pom {
                         groupId = project.group
                         version = project.version
-                        artifactId = project.archivesBaseName.toString().toLowercase()
+                        artifactId = project.archivesBaseName.toString().toLowerCase()
                         project {
                             name project.archivesBaseName
                             packaging 'jar'
