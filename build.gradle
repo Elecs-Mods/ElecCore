@@ -149,7 +149,7 @@ task("uploadJars", dependsOn: "reobf") {
         uploadArchives {
             repositories {
                 mavenDeployer {
-                    setRepository("file://" + System.getenv("local_maven"))
+                    repository(url: "file://" + System.getenv("local_maven"))
                     pom {
                         groupId = project.group
                         version = project.version
