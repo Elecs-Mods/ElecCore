@@ -1,5 +1,6 @@
 package elec332.core.world;
 
+import com.google.common.base.Preconditions;
 import elec332.core.ElecCore;
 import elec332.core.util.FMLHelper;
 import elec332.core.util.NBTBuilder;
@@ -108,7 +109,7 @@ public final class DimensionCoordinate implements INBTSerializable<NBTTagCompoun
 
     @Override
     public NBTTagCompound serializeNBT() {
-        return new NBTBuilder().setBlockPos(pos).setRegistryObject("dim", dim).serializeNBT();
+        return new NBTBuilder().setBlockPos(pos).setResourceLocation("dim", Preconditions.checkNotNull(DimensionType.getKey(dim))).serializeNBT();
     }
 
     @Override

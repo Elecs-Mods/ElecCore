@@ -4,9 +4,9 @@ import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import elec332.core.ElecCore;
-import elec332.core.MC113ToDoReference;
 import elec332.core.api.APIHandlerInject;
 import elec332.core.api.discovery.IAnnotationData;
+import elec332.core.api.mod.IElecCoreMod;
 import elec332.core.api.mod.IElecCoreModHandler;
 import elec332.core.api.module.ElecModule;
 import elec332.core.api.module.IModuleContainer;
@@ -20,8 +20,11 @@ import elec332.core.config.ConfigWrapper;
 import elec332.core.data.SaveHandler;
 import elec332.core.module.DefaultModuleInfo;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.ModContainer;
+import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
 import net.minecraftforge.fml.javafmlmod.FMLModContainer;
 
 import java.lang.reflect.ParameterizedType;
@@ -29,6 +32,8 @@ import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 /**
  * Created by Elec332 on 13-8-2018.
@@ -74,44 +79,55 @@ public class ElecCoreSetup {
     @APIHandlerInject
     private static void registerModHandlers(IElecCoreModHandler modHandler) {
         modHandler.registerSimpleFieldHandler(ModNetworkHandler.class, networkManager::getNetworkHandler);
-        //modHandler.registerModHandler((mc, mod) -> mod.registerClientCommands(CommandHelper.getClientCommandRegistry()));
-        //modHandler.registerModHandler((mc, mod) -> mod.registerServerCommands(CommandHelper.getServerCommandRegistry()));
-        MC113ToDoReference.update(); //Above
-        modHandler.registerModHandler((mc, mod) -> mod.registerSaveHandlers(saveHandler -> SaveHandler.INSTANCE.registerSaveHandler(mc, saveHandler)));
         modHandler.registerModHandler((mc, mod) -> {
-
+            MinecraftForge.EVENT_BUS.addListener((Consumer<FMLServerStartingEvent>) e -> {
+                mod.registerCommands(e.getCommandDispatcher());
+                mod.registerClientCommands(e.getCommandDispatcher()); //Todo: Move when forge add client commands back
+            });
+        });
+        modHandler.registerModHandler((mc, mod) -> mod.registerSaveHandlers(saveHandler -> SaveHandler.INSTANCE.registerSaveHandler(mc, saveHandler)));
+        modHandler.registerModHandler(forFMLMod((mc, mod) -> {
             List<IObjectRegister<?>> list = Lists.newArrayList();
             mod.registerRegisters(list::add, worldGenRegister -> worldGenManager.registerWorldGenRegistry(worldGenRegister, mc));
-            if (!list.isEmpty() && mc instanceof FMLModContainer) {
-                ((FMLModContainer) mc).getEventBus().register(new Object() {
+            if (list.isEmpty()) {
+                return;
+            }
+            mc.getEventBus().register(new Object() {
 
-                    @SubscribeEvent
-                    @SuppressWarnings("all")
-                    public void registerStuff(RegistryEvent.Register event1) {
-                        for (IObjectRegister register : list) {
-                            Type ty = Arrays.stream(register.getClass().getAnnotatedInterfaces())
-                                    .filter(annotatedType -> annotatedType.getType() instanceof ParameterizedType)
-                                    .filter(annotatedType -> ((ParameterizedType) register.getClass().getAnnotatedInterfaces()[0].getType()).getRawType().equals(IObjectRegister.class))
-                                    .findFirst()
-                                    .get()
-                                    .getType();
-                            ty = ((ParameterizedType) ty).getActualTypeArguments()[0];
-                            if (ty instanceof ParameterizedType) { //TileEntityType also has parameters...
-                                ty = ((ParameterizedType) ty).getRawType();
-                            }
-                            if (ty.equals(event1.getGenericType())) {
-                                register.preRegister();
-                                register.register(event1.getRegistry());
-                            }
+                @SubscribeEvent
+                @SuppressWarnings("all")
+                public void registerStuff(RegistryEvent.Register event1) {
+                    for (IObjectRegister register : list) {
+                        Type ty = Arrays.stream(register.getClass().getAnnotatedInterfaces())
+                                .filter(annotatedType -> annotatedType.getType() instanceof ParameterizedType)
+                                .filter(annotatedType -> ((ParameterizedType) register.getClass().getAnnotatedInterfaces()[0].getType()).getRawType().equals(IObjectRegister.class))
+                                .findFirst()
+                                .get()
+                                .getType();
+                        ty = ((ParameterizedType) ty).getActualTypeArguments()[0];
+                        if (ty instanceof ParameterizedType) { //TileEntityType also has parameters...
+                            ty = ((ParameterizedType) ty).getRawType();
+                        }
+                        if (ty.equals(event1.getGenericType())) {
+                            register.preRegister();
+                            register.register(event1.getRegistry());
                         }
                     }
+                }
 
-                });
-            } else if (!list.isEmpty()) {
+            });
+        }));
+
+    }
+
+    private static BiConsumer<ModContainer, IElecCoreMod> forFMLMod(BiConsumer<FMLModContainer, IElecCoreMod> c) {
+        return (mc, mod) -> {
+            if (mc instanceof FMLModContainer) {
+                c.accept((FMLModContainer) mc, mod);
+            } else {
                 ElecCore.logger.warn("Ignored ObjectRegisters for mod " + mc.getModId() + ", EventBus could not be found...");
             }
-        });
-
+        };
     }
 
     private static void registerConfigSerializers() {

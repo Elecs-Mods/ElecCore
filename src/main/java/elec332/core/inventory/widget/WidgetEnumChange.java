@@ -18,7 +18,8 @@ public class WidgetEnumChange<E extends Enum> extends WidgetButton {
         super(x, y, 0, 0, width, height);
         this.enumClass = clazz;
         this.index = 0;
-        this.listener = t -> {};
+        this.listener = t -> {
+        };
         setDisplayString(getEnum().toString());
         predicate = input -> true;
     }
@@ -73,7 +74,7 @@ public class WidgetEnumChange<E extends Enum> extends WidgetButton {
         distributeEvents();
     }
 
-    private E[] getEnumValues(){
+    private E[] getEnumValues() {
         return enumClass.getEnumConstants(); //Forge can dynamically add more values at runtime, so don't cache it
     }
 

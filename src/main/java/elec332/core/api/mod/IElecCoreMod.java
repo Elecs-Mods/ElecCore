@@ -24,7 +24,7 @@ public interface IElecCoreMod {
     default public void registerCommands(CommandDispatcher<CommandSource> commandRegistry) {
     }
 
-    default public void registerClientCommands(CommandDispatcher<ISuggestionProvider> commandRegistry) {
+    default public void registerClientCommands(CommandDispatcher<? extends ISuggestionProvider> commandRegistry) {
     }
 
     default public void registerSaveHandlers(ISingleRegister<IExternalSaveHandler> saveHandlerRegistry) {

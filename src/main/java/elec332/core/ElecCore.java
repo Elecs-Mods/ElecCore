@@ -18,10 +18,8 @@ import elec332.core.network.packets.PacketSyncWidget;
 import elec332.core.network.packets.PacketTileDataToServer;
 import elec332.core.network.packets.PacketWidgetDataToServer;
 import elec332.core.proxies.CommonProxy;
-import elec332.core.util.CommandHelper;
 import elec332.core.util.FMLHelper;
 import elec332.core.util.LoadTimer;
-import elec332.core.util.OredictHelper;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
@@ -30,7 +28,6 @@ import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent;
 import net.minecraftforge.fml.event.lifecycle.InterModProcessEvent;
 import net.minecraftforge.fml.event.server.FMLServerAboutToStartEvent;
-import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -56,7 +53,6 @@ public class ElecCore implements IModuleController, IElecCoreMod {
         eventBus.addListener(this::loadComplete);
         eventBus = MinecraftForge.EVENT_BUS;
         eventBus.addListener(this::onServerAboutToStart);
-        eventBus.addListener(this::onServerStarting);
         eventBus.register(this);
     }
 
@@ -106,7 +102,7 @@ public class ElecCore implements IModuleController, IElecCoreMod {
         networkHandler.registerAbstractPacket(PacketWidgetDataToServer.class);
         networkHandler.registerAbstractPacket(PacketReRenderBlock.class);
 
-        OredictHelper.initLists();
+        //OredictHelper.initLists();
 
         loadTimer.endPhase(event);
     }
@@ -114,7 +110,7 @@ public class ElecCore implements IModuleController, IElecCoreMod {
     private void postInit(InterModProcessEvent event) {
         loadTimer.startPhase(event);
 
-        OredictHelper.initLists();
+        //OredictHelper.initLists();
         proxy.postInitRendering();
         MinecraftForge.EVENT_BUS.register(new PlayerEventHandler());
 
@@ -123,17 +119,13 @@ public class ElecCore implements IModuleController, IElecCoreMod {
 
     private void loadComplete(FMLLoadCompleteEvent event) {
         loadTimer.startPhase(event);
-        OredictHelper.initLists();
+        //OredictHelper.initLists();
 
         loadTimer.endPhase(event);
     }
 
     private void onServerAboutToStart(FMLServerAboutToStartEvent event) {
         GridEventInputHandler.INSTANCE.reloadHandlers();
-    }
-
-    private void onServerStarting(FMLServerStartingEvent event) {
-        CommandHelper.registerCommands(event);
     }
 
     @Override

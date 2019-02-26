@@ -37,19 +37,17 @@ configFile.withReader {
     prop.load(it)
     project.ext.config = new ConfigSlurper().parse prop
     String build = System.getenv("BUILD_NUMBER")
-    project.ext.localBuild = Strings.isNullOrEmpty(build)
+    boolean localBuild = Strings.isNullOrEmpty(build)
 
     String temp = config.mod_version
     String classifier = config.mod_classifier
     classifier = Strings.isNullOrEmpty(classifier) ? "" : "-" + classifier
-	project.ext.modVersion = temp + "." + (ext.localBuild ? "9999.custom" : build)
-    config.mod_version = "${config.minecraft_version}-" + temp + "." + (ext.localBuild ? "localBuild" : build) + classifier
-    temp = config.forge_branch
-    config.forge_branch = Strings.isNullOrEmpty(temp) ? "" : "-" + temp
+	project.ext.modVersion = temp + "." + (localBuild ? "9999.custom" : build)
+    config.mod_version = "${config.minecraft_version}-" + temp + "." + (localBuild ? "localBuild" : build) + classifier
 }
 
 version = config.mod_version
-group= "elec332.core" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
+group= "nl.elec332.core" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "ElecCore"
 
 sourceCompatibility = 1.8
@@ -138,7 +136,45 @@ jar {
 tasks.build.dependsOn('deobfJar')
 
 task deobfJar(type: Jar) { // Generate deobfuscated
-	//version = "Newest"
     from sourceSets.main.output
     classifier = 'deobf'
+}
+
+
+//Maven magic
+task("uploadJars", dependsOn: "reobf") {
+    description = "uploads JARs"
+    if (System.getenv("local_maven") != null) {
+        apply plugin: 'maven'
+        uploadArchives {
+            repositories {
+                mavenDeployer {
+                    repository(url: "file://" + System.getenv("local_maven"))
+                    pom {
+                        groupId = project.group
+                        version = project.version
+                        artifactId = project.archivesBaseName
+                        project {
+                            name project.archivesBaseName
+                            packaging 'jar'
+                            description project.archivesBaseName
+                            issueManagement {
+                                system 'github'
+                                url 'https://github.com/Elecs-Mods/ElecCore/issues'
+                            }
+                            developers {
+                                developer {
+                                    id 'Elec332'
+                                    name 'Elec332'
+                                    roles {
+                                        role 'developer'
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 }

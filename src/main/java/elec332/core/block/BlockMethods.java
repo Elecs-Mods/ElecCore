@@ -57,39 +57,4 @@ public final class BlockMethods {
         return world.setBlockState(pos, fluid.getBlockState(), world.isRemote ? 11 : 3);
     }
 
-/*
-    public static <B extends Block & IAbstractBlock> void addCollisionBoxToList(IBlockState state, @Nonnull World world, @Nonnull BlockPos pos, @Nonnull AxisAlignedBB entityBox, @Nonnull List<AxisAlignedBB> collidingBoxes, Entity entityIn, boolean isActualState, B block) {
-        entityBox = entityBox.offset(BlockPos.ORIGIN.subtract(pos));
-        List<AxisAlignedBB> list = Lists.newArrayList();
-        block.addCollisionBoxes(state, world, pos, list);
-        for (AxisAlignedBB box : list) {
-            if (box.intersects(entityBox)) {
-                collidingBoxes.add(box.offset(pos));
-            }
-        }
-    }
-
-    @Nonnull
-    @OnlyIn(Dist.CLIENT)
-    public static <B extends Block & IAbstractBlock> AxisAlignedBB getSelectedBoundingBox(IBlockState state, @Nonnull World world, @Nonnull BlockPos pos, B block) {
-        return getSelectedBoundingBox(state, world, pos, RayTraceHelper.retraceBlock(state, world, pos, Minecraft.getInstance().player), block).offset(pos);
-    }
-
-    @OnlyIn(Dist.CLIENT)
-    public static <B extends Block & IAbstractBlock> AxisAlignedBB getSelectedBoundingBox(IBlockState state, World world, BlockPos pos, RayTraceResult hit, B block) {
-        List<AxisAlignedBB> list = Lists.newArrayList();
-        block.addSelectionBoxes(state, world, pos, list);
-        if (!list.isEmpty()) {
-            AxisAlignedBB aabb = null;
-            for (AxisAlignedBB box : list) {
-                if (aabb == null) {
-                    aabb = box;
-                } else {
-                    aabb = aabb.union(box);
-                }
-            }
-            return aabb;
-        }
-        return MC113ToDoReference.update(world, pos);//state.getBoundingBox(world, pos);
-    }*/
 }
