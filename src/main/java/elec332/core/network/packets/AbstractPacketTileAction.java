@@ -33,7 +33,7 @@ public abstract class AbstractPacketTileAction extends AbstractPacket {
         int i = tag.getInteger("id");
         NBTTagCompound data = tag.getCompound("data");
         World world;
-        if (ctx.getSide() == LogicalSide.SERVER) {
+        if (ctx.getReceptionSide() == LogicalSide.SERVER) {
             world = ctx.getWorld();
         } else {
             world = ElecCore.proxy.getClientWorld();

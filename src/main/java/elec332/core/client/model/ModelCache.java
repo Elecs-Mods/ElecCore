@@ -16,9 +16,14 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.client.model.data.EmptyModelData;
+import net.minecraftforge.client.model.data.IModelData;
+import net.minecraftforge.client.model.data.ModelDataMap;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -54,7 +59,7 @@ public abstract class ModelCache<K> implements IBakedModel {
     private final ItemOverrideList iol;
     protected boolean debug;
 
-    protected abstract K get(IBlockState state);
+    protected abstract K get(IBlockState state, IModelData modelState);
 
     protected abstract K get(ItemStack stack);
 
@@ -119,10 +124,37 @@ public abstract class ModelCache<K> implements IBakedModel {
         }
     }
 
-    @Override
     @Nonnull
-    public final List<BakedQuad> getQuads(@Nullable IBlockState state, @Nullable EnumFacing side, @Nonnull Random rand) {
-        return getQuads(get(state)).get(side);
+    @Override
+    public final List<BakedQuad> getQuads(@Nullable IBlockState state, @Nullable EnumFacing side, @Nonnull Random rand, @Nonnull IModelData extraData) {
+        return getQuads(get(state, extraData)).get(side);
+    }
+
+    @Nonnull
+    @Override
+    public List<BakedQuad> getQuads(@Nullable IBlockState state, @Nullable EnumFacing side, @Nonnull Random rand) {
+        if (needsModelData()){
+            throw new UnsupportedOperationException();
+        }
+        return getQuads(state, side, rand, EmptyModelData.INSTANCE);
+    }
+
+    protected boolean needsModelData(){
+        return false;
+    }
+
+    @Nonnull
+    @Override
+    public IModelData getModelData(@Nonnull IWorldReader world, @Nonnull BlockPos pos, @Nonnull IBlockState state, @Nonnull IModelData tileData) {
+        if (tileData == EmptyModelData.INSTANCE){
+            tileData = new ModelDataMap.Builder().build();
+        }
+        addModelData(world, pos, state, tileData);
+        return tileData;
+    }
+
+    public void addModelData(@Nonnull IWorldReader world, @Nonnull BlockPos pos, @Nonnull IBlockState state, @Nonnull IModelData modelData) {
+
     }
 
     @Override

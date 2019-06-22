@@ -10,7 +10,7 @@ import net.minecraftforge.fml.network.PacketDispatcher;
  */
 public interface IExtendedMessageContext {
 
-    public LogicalSide getSide();
+    public LogicalSide getReceptionSide();
 
     public EntityPlayer getSender();
 

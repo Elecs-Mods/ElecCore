@@ -40,7 +40,7 @@ public class PacketWindowData implements ISimplePacket, ISimplePacketHandler {
     public void onPacket(ElecByteBuf data, IExtendedMessageContext messageContext, ISimpleNetworkPacketManager networkHandler) {
         Container container = messageContext.getSender().openContainer;
         if (container.windowId == data.readInt() && container instanceof WindowContainer) {
-            ((WindowContainer) container).getWindow().onPacket(data.readNBTTagCompoundFromBuffer(), messageContext.getSide());
+            ((WindowContainer) container).getWindow().onPacket(data.readNBTTagCompoundFromBuffer(), messageContext.getReceptionSide());
         }
     }
 

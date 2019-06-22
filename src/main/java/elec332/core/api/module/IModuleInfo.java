@@ -4,6 +4,7 @@ import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.forgespi.language.IModInfo;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.maven.artifact.versioning.VersionRange;
 
@@ -100,7 +101,7 @@ public interface IModuleInfo {
                 if (split.length > 2) {
                     throw new IllegalArgumentException(s);
                 }
-                VersionRange version = null;
+                VersionRange version = IModInfo.UNBOUNDED;
                 if (split.length == 2) {
                     version = VersionRange.createFromVersionSpec(split[1]);
                 }

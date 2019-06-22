@@ -27,7 +27,7 @@ public abstract class AbstractPacket extends AbstractMessage implements BiConsum
     @Override
     public void accept(AbstractPacket abstractPacket, Supplier<IExtendedMessageContext> extendedMessageContext) {
         IExtendedMessageContext messageContext = extendedMessageContext.get();
-        ElecCore.tickHandler.registerCall(() -> onMessageThreadSafe(abstractPacket.networkPackageObject, messageContext), messageContext.getSide());
+        ElecCore.tickHandler.registerCall(() -> onMessageThreadSafe(abstractPacket.networkPackageObject, messageContext), messageContext.getReceptionSide());
     }
 
     public abstract void onMessageThreadSafe(NBTTagCompound message, IExtendedMessageContext ctx);

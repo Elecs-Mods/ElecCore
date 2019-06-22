@@ -40,7 +40,7 @@ public class BasicItemHandler implements IItemHandlerModifiable, INBTSerializabl
     public void setStackInSlot(int slot, @Nonnull ItemStack stack) {
         validateSlotIndex(slot);
         ItemStack stackInSlot = this.stacks.get(slot);
-        if (ItemStack.areItemStacksEqual(stackInSlot, stack) || !isStackValidForSlot(slot, stack)) {
+        if (ItemStack.areItemStacksEqual(stackInSlot, stack) || !isItemValid(slot, stack)) {
             return;
         }
         this.stacks.set(slot, stack);
@@ -65,7 +65,7 @@ public class BasicItemHandler implements IItemHandlerModifiable, INBTSerializabl
         if (!ItemStackHelper.isStackValid(stack)) {
             return ItemStackHelper.NULL_STACK;
         }
-        if (!canInsert(slot, stack) || !isStackValidForSlot(slot, stack)) {
+        if (!canInsert(slot, stack) || !isItemValid(slot, stack)) {
             return stack;
         }
 
@@ -176,7 +176,8 @@ public class BasicItemHandler implements IItemHandlerModifiable, INBTSerializabl
 
     }
 
-    public boolean isStackValidForSlot(int slot, @Nonnull ItemStack stack) {
+    @Override
+    public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
         return true;
     }
 

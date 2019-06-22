@@ -77,6 +77,15 @@ public class DoubleItemHandler<I1 extends IItemHandlerModifiable, I2 extends IIt
         }
     }
 
+    @Override
+    public boolean isItemValid(int slot, @Nonnull ItemStack itemStack) {
+        if (slot < i1Size) {
+            return i1.isItemValid(slot, itemStack);
+        } else {
+            return i2.isItemValid(slot - i1Size, itemStack);
+        }
+    }
+
     public boolean insertItem(ItemStack stack, boolean simulate) {
         return InventoryHelper.addItemToInventory(this, stack, simulate);
     }

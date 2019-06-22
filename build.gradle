@@ -1,4 +1,4 @@
-import joptsimple.internal.Strings
+import com.google.common.base.Strings;
 
 buildscript {
     repositories {
@@ -76,7 +76,7 @@ dependencies {
 	minecraft 'net.minecraftforge:forge:' + config.minecraft_version + "-" + config.forge_version
 
 	//WAILA
-    compile "mcp.mobius.waila:Hwyla:${config.WAILA_version}"
+    compile fg.deobf("mcp.mobius.waila:Hwyla:${config.WAILA_version}")
 	//deobfCompile "mcp.mobius.waila:Hwyla:${config.WAILA_version}"
 	
 	//JEI

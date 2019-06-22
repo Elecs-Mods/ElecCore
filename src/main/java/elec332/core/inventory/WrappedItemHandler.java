@@ -99,4 +99,9 @@ public abstract class WrappedItemHandler implements IItemHandlerModifiable {
         throw new UnsupportedOperationException();
     }
 
+    @Override
+    public boolean isItemValid(int slot, @Nonnull ItemStack itemStack) {
+        return getItemHandler().isItemValid(slot, itemStack);
+    }
+
 }

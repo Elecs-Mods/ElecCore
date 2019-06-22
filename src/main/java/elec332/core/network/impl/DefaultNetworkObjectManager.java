@@ -100,7 +100,7 @@ class DefaultNetworkObjectManager implements INetworkObjectManager, BiConsumer<D
                 }
             }
 
-        }, extendedMessageContext.get().getSide());
+        }, extendedMessageContext.get().getReceptionSide());
     }
 
     private class NOH<T extends INetworkObjectSender> implements INetworkObjectHandler<T>, DefaultByteBufFactory {

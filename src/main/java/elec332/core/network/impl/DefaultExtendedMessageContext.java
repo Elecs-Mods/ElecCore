@@ -21,18 +21,18 @@ class DefaultExtendedMessageContext implements IExtendedMessageContext {
     private final NetworkEvent.Context messageContext;
 
     @Override
-    public LogicalSide getSide() {
-        return messageContext.getDirection().getLogicalSide() == LogicalSide.CLIENT ? LogicalSide.SERVER : LogicalSide.CLIENT;
+    public LogicalSide getReceptionSide() {
+        return messageContext.getDirection().getReceptionSide();
     }
 
     @Override
     public EntityPlayer getSender() {
-        return getSide() == LogicalSide.CLIENT ? ElecCore.proxy.getClientPlayer() : messageContext.getSender();
+        return getReceptionSide() == LogicalSide.CLIENT ? ElecCore.proxy.getClientPlayer() : messageContext.getSender();
     }
 
     @Override
     public World getWorld() {
-        return getSide() == LogicalSide.CLIENT ? ElecCore.proxy.getClientWorld() : Preconditions.checkNotNull(messageContext.getSender()).getEntityWorld();
+        return getReceptionSide() == LogicalSide.CLIENT ? ElecCore.proxy.getClientWorld() : Preconditions.checkNotNull(messageContext.getSender()).getEntityWorld();
     }
 
     @Override

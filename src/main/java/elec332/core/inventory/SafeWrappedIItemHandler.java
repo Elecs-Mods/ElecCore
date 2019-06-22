@@ -66,4 +66,9 @@ public class SafeWrappedIItemHandler implements IItemHandlerModifiable, IClearab
         return itemHandler == null ? 0 : itemHandler.getSlotLimit(slot);
     }
 
+    @Override
+    public boolean isItemValid(int slot, @Nonnull ItemStack itemStack) {
+        return itemHandler != null && itemHandler.isItemValid(slot, itemStack);
+    }
+
 }
