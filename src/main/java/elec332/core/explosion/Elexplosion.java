@@ -2,9 +2,9 @@ package elec332.core.explosion;
 
 import elec332.core.world.WorldHelper;
 import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
-import net.minecraft.init.Blocks;
+import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -33,7 +33,7 @@ public class Elexplosion extends AbstractExplosion {
                         BlockPos targetPosition = this.getLocation().add(x, y, z);
                         double dist = Math.sqrt(getLocation().distanceSq(targetPosition));
                         if (dist < this.getRadius()) {
-                            IBlockState state = WorldHelper.getBlockState(getWorld(), targetPosition);
+                            BlockState state = WorldHelper.getBlockState(getWorld(), targetPosition);
                             Block block = state.getBlock();
                             if (block != null && !block.isAir(state, getWorld(), targetPosition) && state.getBlockHardness(getWorld(), targetPosition.toImmutable()) >= 0) {
                                 if (dist < this.getRadius() - 1 || getWorld().rand.nextFloat() > 0.7) {

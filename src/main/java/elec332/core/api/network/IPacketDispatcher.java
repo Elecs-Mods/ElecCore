@@ -1,7 +1,7 @@
 package elec332.core.api.network;
 
 import elec332.core.api.util.IEntityFilter;
-import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
@@ -39,8 +39,8 @@ public interface IPacketDispatcher extends ElecByteBuf.Factory {
      * @param message      The message to send
      * @param playerFilter The selector that determines what players to send the message to.
      */
-    default public void sendTo(IMessage message, IEntityFilter<EntityPlayerMP> playerFilter, MinecraftServer server) {
-        for (EntityPlayerMP player : playerFilter.filterEntities(server.getPlayerList().getPlayers())) {
+    default public void sendTo(IMessage message, IEntityFilter<ServerPlayerEntity> playerFilter, MinecraftServer server) {
+        for (ServerPlayerEntity player : playerFilter.filterEntities(server.getPlayerList().getPlayers())) {
             sendTo(message, player);
         }
     }
@@ -52,7 +52,7 @@ public interface IPacketDispatcher extends ElecByteBuf.Factory {
      * @param message The message to send
      * @param players The players to send it to
      */
-    default public void sendTo(IMessage message, List<EntityPlayerMP> players) {
+    default public void sendTo(IMessage message, List<ServerPlayerEntity> players) {
         players.forEach(p -> sendTo(message, p));
     }
 
@@ -63,7 +63,7 @@ public interface IPacketDispatcher extends ElecByteBuf.Factory {
      * @param message The message to send
      * @param players The players to send it to
      */
-    default public void sendTo(IMessage message, Stream<EntityPlayerMP> players) {
+    default public void sendTo(IMessage message, Stream<ServerPlayerEntity> players) {
         players.forEach(p -> sendTo(message, p));
     }
 
@@ -74,7 +74,7 @@ public interface IPacketDispatcher extends ElecByteBuf.Factory {
      * @param message The message to send
      * @param player  The player to send it to
      */
-    public void sendTo(IMessage message, EntityPlayerMP player);
+    public void sendTo(IMessage message, ServerPlayerEntity player);
 
     /**
      * Send this message to everyone within a certain range of a point defined in the packet.

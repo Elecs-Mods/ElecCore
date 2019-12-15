@@ -4,16 +4,18 @@ import com.google.common.base.Preconditions;
 import net.minecraft.block.Block;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.merchant.villager.VillagerProfession;
 import net.minecraft.item.Item;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.item.crafting.RecipeSerializers;
-import net.minecraft.nbt.INBTBase;
+import net.minecraft.nbt.INBT;
+import net.minecraft.potion.Effect;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionType;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.world.biome.Biome;
@@ -43,12 +45,12 @@ public class RegistryHelper {
         CapabilityManager.INSTANCE.register(clazz, new Capability.IStorage<T>() {
 
             @Override
-            public INBTBase writeNBT(Capability capability, Object instance, EnumFacing side) {
+            public INBT writeNBT(Capability capability, Object instance, Direction side) {
                 throw new UnsupportedOperationException();
             }
 
             @Override
-            public void readNBT(Capability capability, Object instance, EnumFacing side, INBTBase nbt) {
+            public void readNBT(Capability capability, Object instance, Direction side, INBT nbt) {
                 throw new UnsupportedOperationException();
             }
 
@@ -80,8 +82,8 @@ public class RegistryHelper {
         return (ForgeRegistry<Item>) ForgeRegistries.ITEMS;
     }
 
-    public static ForgeRegistry<Potion> getPotionRegistry() {
-        return (ForgeRegistry<Potion>) ForgeRegistries.POTIONS;
+    public static ForgeRegistry<Effect> getPotionRegistry() {
+        return (ForgeRegistry<Effect>) ForgeRegistries.POTIONS;
     }
 
     public static ForgeRegistry<Biome> getBiomeRegistry() {
@@ -92,16 +94,16 @@ public class RegistryHelper {
         return (ForgeRegistry<SoundEvent>) ForgeRegistries.SOUND_EVENTS;
     }
 
-    public static ForgeRegistry<PotionType> getPotionTypesRegistry() {
-        return (ForgeRegistry<PotionType>) ForgeRegistries.POTION_TYPES;
+    public static ForgeRegistry<Potion> getPotionTypesRegistry() {
+        return (ForgeRegistry<Potion>) ForgeRegistries.POTION_TYPES;
     }
 
     public static ForgeRegistry<Enchantment> getEnchantmentRegistry() {
         return (ForgeRegistry<Enchantment>) ForgeRegistries.ENCHANTMENTS;
     }
 
-    public static ForgeRegistry<VillagerRegistry.VillagerProfession> getVillagerRegistry() {
-        return (ForgeRegistry<VillagerRegistry.VillagerProfession>) ForgeRegistries.VILLAGER_PROFESSIONS;
+    public static ForgeRegistry<VillagerProfession> getVillagerRegistry() {
+        return (ForgeRegistry<VillagerProfession>) ForgeRegistries.PROFESSIONS;
     }
 
     public static ForgeRegistry<EntityType<?>> getEntities() {
@@ -117,7 +119,14 @@ public class RegistryHelper {
     }
 
     public static <T extends TileEntity> TileEntityType<T> registerTileEntity(ResourceLocation id, Supplier<T> builder) {
-        return registerTileEntity(id, new TileEntityType<>(builder, null));
+        return registerTileEntity(id, new TileEntityType<T>(builder, null, null) {
+
+            @Override
+            public boolean isValidBlock(@Nonnull Block p_223045_1_) {
+                return true;
+            }
+
+        });
     }
 
     public static <T extends TileEntity> TileEntityType<T> registerTileEntity(ResourceLocation id, TileEntityType<T> type) {

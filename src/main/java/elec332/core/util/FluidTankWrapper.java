@@ -1,15 +1,13 @@
 package elec332.core.util;
 
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.FluidTank;
-import net.minecraftforge.fluids.FluidTankInfo;
+import net.minecraftforge.fluids.capability.templates.FluidTank;
 import net.minecraftforge.fluids.IFluidTank;
 import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.fluids.capability.IFluidTankProperties;
 
-import javax.annotation.Nullable;
+import javax.annotation.Nonnull;
 import java.util.function.Supplier;
 
 /**
@@ -17,7 +15,7 @@ import java.util.function.Supplier;
  * <p>
  * An {@link IFluidHandler} wrapper for an {@link IFluidTank}
  */
-public abstract class FluidTankWrapper implements IFluidHandler, IFluidTank, INBTSerializable<NBTTagCompound> {
+public abstract class FluidTankWrapper implements IFluidHandler, IFluidTank, INBTSerializable<CompoundNBT> {
 
     /**
      * Creates a new fluid handler with the specified capacity
@@ -48,61 +46,84 @@ public abstract class FluidTankWrapper implements IFluidHandler, IFluidTank, INB
         };
     }
 
-    public FluidTankWrapper() {
-        final IFluidTankProperties prop = new Properties(this);
-        this.properties = new IFluidTankProperties[]{
-                prop
-        };
-    }
-
-    private IFluidTankProperties[] properties;
-
     protected abstract IFluidTank getTank();
 
     @Override
-    public IFluidTankProperties[] getTankProperties() {
-        return properties;
+    public int getTanks() {
+        return 1;
+    }
+
+    @Nonnull
+    @Override
+    public FluidStack getFluidInTank(int tank) {
+        if (tank == 0){
+            return getFluid();
+        }
+        return FluidStack.EMPTY;
     }
 
     @Override
-    public int fill(FluidStack resource, boolean doFill) {
-        if (resource == null) {
-            return 0;
-        }
-        FluidStack f = getTank().getFluid();
-        if (!(f == null || f.isFluidEqual(resource))) {
-            return 0;
-        }
-        if (canFillFluidType(resource)) {
-            return getTank().fill(resource, doFill);
+    public int getTankCapacity(int tank) {
+        if (tank == 0){
+            return getCapacity();
         }
         return 0;
     }
 
-
     @Override
-    public FluidStack drain(FluidStack resource, boolean doDrain) {
-        FluidStack f = getTank().getFluid();
-        if (resource == null || !resource.isFluidEqual(f)) {
-            return null;
+    public boolean isFluidValid(int tank, @Nonnull FluidStack stack) {
+        if (tank == 0){
+            return isFluidValid(stack);
         }
-        return drain(resource.amount, doDrain);
+        return false;
     }
 
     @Override
-    public FluidStack drain(int maxDrain, boolean doDrain) {
-        FluidStack f = getTank().getFluid();
-        if (f == null || !canDrainFluidType(f)) {
-            return null;
+    public boolean isFluidValid(FluidStack stack) {
+        return getFluid().equals(stack) && canFillFluidType(stack);
+    }
+
+    @Override
+    public int fill(FluidStack resource, FluidAction action) {
+        if (resource == null) {
+            return 0;
+        }
+        FluidStack f = getFluid();
+        if (!f.isFluidEqual(resource)) {
+            return 0;
+        }
+        if (canFillFluidType(resource)) {
+            return getTank().fill(resource, action);
+        }
+        return 0;
+    }
+
+    @Nonnull
+    @Override
+    public FluidStack drain(FluidStack resource, FluidAction doDrain) {
+        FluidStack f = getFluid();
+        if (resource == null || !resource.isFluidEqual(f)) {
+            return FluidStack.EMPTY;
+        }
+        return drain(resource.getAmount(), doDrain);
+    }
+
+    @Nonnull
+    @Override
+    public FluidStack drain(int maxDrain, FluidAction doDrain) {
+        FluidStack f = getFluid();
+        if (!canDrainFluidType(f)) {
+            return FluidStack.EMPTY;
         }
         return getTank().drain(maxDrain, doDrain);
     }
 
-    @Nullable
+    @Nonnull
     @Override
+    @SuppressWarnings("all")
     public FluidStack getFluid() {
         FluidStack tankStack = getTank().getFluid();
-        return tankStack == null ? null : tankStack.copy();
+        return tankStack == null ? FluidStack.EMPTY : tankStack.copy();
     }
 
     @Override
@@ -113,11 +134,6 @@ public abstract class FluidTankWrapper implements IFluidHandler, IFluidTank, INB
     @Override
     public int getCapacity() {
         return getTank().getCapacity();
-    }
-
-    @Override
-    public FluidTankInfo getInfo() {
-        return getTank().getInfo();
     }
 
     protected boolean canFill() {
@@ -137,18 +153,18 @@ public abstract class FluidTankWrapper implements IFluidHandler, IFluidTank, INB
     }
 
     @Override
-    public NBTTagCompound serializeNBT() {
+    public CompoundNBT serializeNBT() {
         if (getTank() instanceof FluidTankWrapper) {
             return ((FluidTankWrapper) getTank()).serializeNBT();
         } else if (getTank() instanceof FluidTank) {
-            return ((FluidTank) getTank()).writeToNBT(new NBTTagCompound());
+            return ((FluidTank) getTank()).writeToNBT(new CompoundNBT());
         } else {
             throw new UnsupportedOperationException();
         }
     }
 
     @Override
-    public void deserializeNBT(NBTTagCompound nbt) {
+    public void deserializeNBT(CompoundNBT nbt) {
         if (getTank() instanceof FluidTankWrapper) {
             ((FluidTankWrapper) getTank()).deserializeNBT(nbt);
         } else if (getTank() instanceof FluidTank) {
@@ -156,48 +172,6 @@ public abstract class FluidTankWrapper implements IFluidHandler, IFluidTank, INB
         } else {
             throw new UnsupportedOperationException();
         }
-    }
-
-    private class Properties implements IFluidTankProperties {
-
-        private Properties(FluidTankWrapper tank) {
-            this.tank = tank;
-        }
-
-        private final FluidTankWrapper tank;
-
-        @Nullable
-        @Override
-        public FluidStack getContents() {
-            FluidStack stack = tank.getTank().getFluid();
-            return stack == null ? null : stack.copy();
-        }
-
-        @Override
-        public int getCapacity() {
-            return tank.getTank().getCapacity();
-        }
-
-        @Override
-        public boolean canFill() {
-            return tank.canFill();
-        }
-
-        @Override
-        public boolean canDrain() {
-            return tank.canDrain();
-        }
-
-        @Override
-        public boolean canFillFluidType(FluidStack fluidStack) {
-            return tank.canFillFluidType(fluidStack);
-        }
-
-        @Override
-        public boolean canDrainFluidType(FluidStack fluidStack) {
-            return tank.canDrainFluidType(fluidStack);
-        }
-
     }
 
 }

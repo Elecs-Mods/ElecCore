@@ -3,7 +3,7 @@ package elec332.core.api.client.model.template;
 import net.minecraft.client.renderer.Vector3f;
 import net.minecraft.client.renderer.model.ModelRotation;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 
 /**
  * Created by Elec332 on 29-10-2016.
@@ -16,7 +16,7 @@ public interface IMutableQuadTemplate extends IQuadTemplate {
 
     public IMutableQuadTemplate setTexture(TextureAtlasSprite texture);
 
-    public IMutableQuadTemplate setSide(EnumFacing side);
+    public IMutableQuadTemplate setSide(Direction side);
 
     public IMutableQuadTemplate setRotation(ModelRotation rotation);
 

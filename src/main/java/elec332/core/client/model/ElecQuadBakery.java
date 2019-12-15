@@ -8,12 +8,12 @@ import elec332.core.api.client.model.IElecQuadBakery;
 import elec332.core.api.client.model.model.IQuadProvider;
 import elec332.core.api.client.model.template.IQuadTemplate;
 import elec332.core.api.client.model.template.IQuadTemplateSidedMap;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.BlockState;
 import net.minecraft.client.renderer.Vector3f;
 import net.minecraft.client.renderer.model.*;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.model.ItemLayerModel;
@@ -63,7 +63,7 @@ public class ElecQuadBakery implements IElecQuadBakery {
     @Override
     public IQuadProvider bakeQuads(IQuadTemplateSidedMap from, ITransformation rotation) {
         SidedMap ret = new SidedMap();
-        for (EnumFacing facing : EnumFacing.values()) {
+        for (Direction facing : Direction.values()) {
             ret.setQuadsForSide(rotation == null ? facing : rotation.rotate(facing), bakeQuads(from.getForSide(facing), rotation));
         }
         return ret;
@@ -97,17 +97,17 @@ public class ElecQuadBakery implements IElecQuadBakery {
     }
 
     @Override
-    public BakedQuad bakeQuad(Vector3f v1, Vector3f v2, TextureAtlasSprite texture, EnumFacing facing) {
+    public BakedQuad bakeQuad(Vector3f v1, Vector3f v2, TextureAtlasSprite texture, Direction facing) {
         return bakeQuad(v1, v2, texture, facing, ModelRotation.X0_Y0);
     }
 
     @Override
-    public BakedQuad bakeQuad(Vector3f v1, Vector3f v2, TextureAtlasSprite texture, EnumFacing facing, ITransformation rotation) {
+    public BakedQuad bakeQuad(Vector3f v1, Vector3f v2, TextureAtlasSprite texture, Direction facing, ITransformation rotation) {
         return bakeQuad(v1, v2, texture, facing, rotation, 0, 0, 16, 16);
     }
 
     @Override
-    public BakedQuad bakeQuad(Vector3f v1, Vector3f v2, TextureAtlasSprite texture, EnumFacing facing, ITransformation rotation, float f1, float f2, float f3, float f4) {
+    public BakedQuad bakeQuad(Vector3f v1, Vector3f v2, TextureAtlasSprite texture, Direction facing, ITransformation rotation, float f1, float f2, float f3, float f4) {
         return bakeQuad(v1, v2, texture, facing, rotation, f1, f2, f3, f4, -1);
     }
 
@@ -122,13 +122,13 @@ public class ElecQuadBakery implements IElecQuadBakery {
     }
 
     @Override
-    public BakedQuad bakeQuad(Vector3f v1, Vector3f v2, TextureAtlasSprite texture, EnumFacing facing, ITransformation rotation, IQuadTemplate.IUVData uvData, int tint) {
+    public BakedQuad bakeQuad(Vector3f v1, Vector3f v2, TextureAtlasSprite texture, Direction facing, ITransformation rotation, IQuadTemplate.IUVData uvData, int tint) {
         return bakeQuad(v1, v2, texture, facing, rotation, uvData.getUMin(), uvData.getVMin(), uvData.getUMax(), uvData.getVMax(), tint);
     }
 
     @SuppressWarnings("ConstantConditions")
     @Override
-    public BakedQuad bakeQuad(Vector3f v1, Vector3f v2, TextureAtlasSprite texture, EnumFacing facing, ITransformation rotation, float f1, float f2, float f3, float f4, int tint) {
+    public BakedQuad bakeQuad(Vector3f v1, Vector3f v2, TextureAtlasSprite texture, Direction facing, ITransformation rotation, float f1, float f2, float f3, float f4, int tint) {
         BlockFaceUV bfuv = new BlockFaceUV(new float[]{f1, f2, f3, f4}, 0);
         BlockPartFace bpf = new BlockPartFace(rotation.rotate(facing), tint, null, bfuv);
         return faceBakery.makeBakedQuad(v1, v2, bpf, texture, facing, rotation, null, false, true);
@@ -158,21 +158,21 @@ public class ElecQuadBakery implements IElecQuadBakery {
     private class SidedMap implements IQuadProvider {
 
         private SidedMap() {
-            this(Maps.newEnumMap(EnumFacing.class));
+            this(Maps.newEnumMap(Direction.class));
         }
 
-        private SidedMap(EnumMap<EnumFacing, List<BakedQuad>> quads) {
+        private SidedMap(EnumMap<Direction, List<BakedQuad>> quads) {
             this.quads = quads;
         }
 
-        private final EnumMap<EnumFacing, List<BakedQuad>> quads;
+        private final EnumMap<Direction, List<BakedQuad>> quads;
 
-        public void setQuadsForSide(EnumFacing side, List<BakedQuad> newQuads) {
+        public void setQuadsForSide(Direction side, List<BakedQuad> newQuads) {
             quads.put(side, newQuads);
         }
 
         @Override
-        public List<BakedQuad> getBakedQuads(@Nullable IBlockState state, EnumFacing side, Random random) {
+        public List<BakedQuad> getBakedQuads(@Nullable BlockState state, Direction side, Random random) {
             List<BakedQuad> ret = quads.get(side);
             if (ret == null) {
                 ret = EMPTY_LIST;

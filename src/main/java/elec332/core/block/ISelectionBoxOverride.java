@@ -1,7 +1,7 @@
 package elec332.core.block;
 
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.block.BlockState;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.shapes.VoxelShape;
@@ -12,7 +12,7 @@ import net.minecraft.world.IWorld;
  */
 public interface ISelectionBoxOverride {
 
-    default public VoxelShape getSelectionBox(IBlockState state, IWorld world, BlockPos pos, EntityPlayer player, RayTraceResult hit) {
+    default public VoxelShape getSelectionBox(BlockState state, IWorld world, BlockPos pos, PlayerEntity player, RayTraceResult hit) {
         return state.getShape(world, pos);
     }
 

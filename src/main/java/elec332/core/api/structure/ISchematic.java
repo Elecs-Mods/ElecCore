@@ -2,8 +2,8 @@ package elec332.core.api.structure;
 
 import elec332.core.api.util.Area;
 import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.block.BlockState;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.math.BlockPos;
 
 /**
@@ -42,7 +42,7 @@ public interface ISchematic {
      * @param z Coordinate z within the local schematic coordinates.
      * @return The data from the tile entity located at the specified local schematic coordinates, or null if not found.
      */
-    public NBTTagCompound getTileData(int x, int y, int z, int worldX, int worldY, int worldZ);
+    public CompoundNBT getTileData(int x, int y, int z, int worldX, int worldY, int worldZ);
 
     /**
      * Gets the data for the tile entity at the specified coordinates, ranging from 0 to the width (x), height (y) and length (z).
@@ -53,21 +53,21 @@ public interface ISchematic {
      * @param z Coordinate z within the local schematic coordinates.
      * @return The data from the tile entity located at the specified local schematic coordinates, or null if not found.
      */
-    public NBTTagCompound getTileData(int x, int y, int z);
+    public CompoundNBT getTileData(int x, int y, int z);
 
     /**
-     * Gets the {@link IBlockState} at the specified coordinates, ranging from 0 to the width (x), height (y) and
+     * Gets the {@link BlockState} at the specified coordinates, ranging from 0 to the width (x), height (y) and
      * length (z). 0 is inclusive, the width, height and length values are exclusive.
      *
      * @param pos Coordinate within the local schematic coordinates.
      * @return The metadata for the block at the specified local schematic coordinates.
      */
-    default public IBlockState getBlockState(BlockPos pos) {
+    default public BlockState getBlockState(BlockPos pos) {
         return getBlockState(pos.getX(), pos.getY(), pos.getZ());
     }
 
     /**
-     * Gets the {@link IBlockState} at the specified coordinates, ranging from 0 to the width (x), height (y) and
+     * Gets the {@link BlockState} at the specified coordinates, ranging from 0 to the width (x), height (y) and
      * length (z). 0 is inclusive, the width, height and length values are exclusive.
      *
      * @param x Coordinate x within the local schematic coordinates.
@@ -75,7 +75,7 @@ public interface ISchematic {
      * @param z Coordinate z within the local schematic coordinates.
      * @return The metadata for the block at the specified local schematic coordinates.
      */
-    public IBlockState getBlockState(int x, int y, int z);
+    public BlockState getBlockState(int x, int y, int z);
 
     public short getBlockLength();
 

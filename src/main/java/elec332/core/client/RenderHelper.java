@@ -24,10 +24,10 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
@@ -58,7 +58,7 @@ public class RenderHelper {
     private static final ITessellator tessellator;
     private static final Minecraft mc;
     private static final Map<BufferBuilder, ITessellator> worldRenderTessellators;
-    private static final Map<EnumFacing, ITransformation[]> rotateAroundMap;
+    private static final Map<Direction, ITransformation[]> rotateAroundMap;
     private static IBakedModel nullModel;
 
     @Nonnull
@@ -131,7 +131,7 @@ public class RenderHelper {
         return aabb.grow(BB_EXPAND_NUMBER);
     }
 
-    public static void drawSelectionBox(EntityPlayer player, World world, BlockPos pos, VoxelShape shapeOverride, float partialTicks) {
+    public static void drawSelectionBox(PlayerEntity player, World world, BlockPos pos, VoxelShape shapeOverride, float partialTicks) {
         if (world.getWorldBorder().contains(pos)) {
             GlStateManager.enableBlend();
             GlStateManager.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
@@ -161,7 +161,7 @@ public class RenderHelper {
         return TRSRTransformation.blockCenterToCorner(new TRSRTransformation(null, TRSRTransformation.quatFromXYZDegrees(new Vector3f(MathHelper.normalizeAngle(x, 360), MathHelper.normalizeAngle(y, 360), z)), null, null));
     }
 
-    public static ITransformation[] getTranformationsFor(EnumFacing axis) {
+    public static ITransformation[] getTranformationsFor(Direction axis) {
         return rotateAroundMap.get(axis);
     }
 
@@ -180,7 +180,7 @@ public class RenderHelper {
     }
 
     @Nonnull
-    public static ModelRotation getDefaultRotationFromFacing(EnumFacing facing) {
+    public static ModelRotation getDefaultRotationFromFacing(Direction facing) {
         switch (facing) {
             case EAST:
                 return ModelRotation.X0_Y90;
@@ -199,7 +199,7 @@ public class RenderHelper {
 
     @Nonnull
     public static Vec3d getPlayerVec(float partialTicks) {
-        EntityPlayer player = ElecCore.proxy.getClientPlayer();
+        PlayerEntity player = ElecCore.proxy.getClientPlayer();
         double dX = player.lastTickPosX + (player.posX - player.lastTickPosX) * partialTicks;
         double dY = player.lastTickPosY + (player.posY - player.lastTickPosY) * partialTicks;
         double dZ = player.lastTickPosZ + (player.posZ - player.lastTickPosZ) * partialTicks;
@@ -213,7 +213,7 @@ public class RenderHelper {
 
     @Nonnull
     public static Vec3d getPlayerVec() {
-        EntityPlayer player = ElecCore.proxy.getClientPlayer();
+        PlayerEntity player = ElecCore.proxy.getClientPlayer();
         return new Vec3d(player.posX, player.posY, player.posZ);
     }
 
@@ -299,8 +299,8 @@ public class RenderHelper {
         mc = Minecraft.getInstance();
         worldRenderTessellators = Maps.newHashMap();
         worldRenderTessellators.put(mcTessellator.getBuffer(), tessellator);
-        rotateAroundMap = Maps.newEnumMap(EnumFacing.class);
-        for (EnumFacing facing : EnumFacing.values()) {
+        rotateAroundMap = Maps.newEnumMap(Direction.class);
+        for (Direction facing : Direction.values()) {
             switch (facing) {
                 case NORTH:
                     rotateAroundMap.put(facing, new ITransformation[]{RenderHelper.getTransformation(0, 0, 0), RenderHelper.getTransformation(0, 0, 90), RenderHelper.getTransformation(0, 0, 180), RenderHelper.getTransformation(0, 0, 270)});

@@ -9,8 +9,8 @@ import elec332.core.inventory.window.IWidgetContainer;
 import elec332.core.inventory.window.Window;
 import elec332.core.network.packets.PacketSyncWidget;
 import elec332.core.network.packets.PacketWidgetDataToServer;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -78,16 +78,16 @@ public class Widget implements IWidget {
     public void updateProgressbar(int value) {
     }
 
-    public final void sendNBTChangesToPlayer(EntityPlayerMP player, NBTTagCompound tagCompound) {
+    public final void sendNBTChangesToPlayer(ServerPlayerEntity player, CompoundNBT tagCompound) {
         ElecCore.networkHandler.sendTo(new PacketSyncWidget(tagCompound, container, this), player);
     }
 
-    public final void sendNBTChangesToServer(NBTTagCompound tagCompound) {
+    public final void sendNBTChangesToServer(CompoundNBT tagCompound) {
         ElecCore.networkHandler.sendToServer(new PacketWidgetDataToServer(tagCompound, container, this));
     }
 
     @Override
-    public final void readNBTChangesFromPacket(NBTTagCompound tagCompound, LogicalSide receiver) {
+    public final void readNBTChangesFromPacket(CompoundNBT tagCompound, LogicalSide receiver) {
         if (receiver == LogicalSide.CLIENT) {
             readNBTChangesFromPacket(tagCompound);
         } else {
@@ -95,10 +95,10 @@ public class Widget implements IWidget {
         }
     }
 
-    public void readNBTChangesFromPacket(NBTTagCompound tagCompound) {
+    public void readNBTChangesFromPacket(CompoundNBT tagCompound) {
     }
 
-    public void readNBTChangesFromPacketServerSide(NBTTagCompound tagCompound) {
+    public void readNBTChangesFromPacketServerSide(CompoundNBT tagCompound) {
     }
 
     @Override

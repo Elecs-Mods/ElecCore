@@ -15,7 +15,7 @@ import elec332.core.util.FieldPointer;
 import elec332.core.util.ServerHelper;
 import io.netty.buffer.ByteBuf;
 import it.unimi.dsi.fastutil.shorts.Short2ObjectArrayMap;
-import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraftforge.fml.network.NetworkDirection;
@@ -152,7 +152,7 @@ class DefaultNetworkHandler implements IElecNetworkHandler, DefaultByteBufFactor
     }
 
     @Override
-    public void sendTo(IMessage message, EntityPlayerMP player) {
+    public void sendTo(IMessage message, ServerPlayerEntity player) {
         networkWrapper.sendTo(message, player.connection.netManager, NetworkDirection.PLAY_TO_CLIENT);
     }
 
@@ -167,7 +167,7 @@ class DefaultNetworkHandler implements IElecNetworkHandler, DefaultByteBufFactor
     }
 
     @Override
-    public void sendTo(ISimplePacket message, EntityPlayerMP player) {
+    public void sendTo(ISimplePacket message, ServerPlayerEntity player) {
         simpleNetworkPacketManager.sendTo(message, player);
     }
 
@@ -192,7 +192,7 @@ class DefaultNetworkHandler implements IElecNetworkHandler, DefaultByteBufFactor
     }
 
     @Override
-    public void sendTo(ISimplePacket message, ISimplePacketHandler packetHandler, EntityPlayerMP player) {
+    public void sendTo(ISimplePacket message, ISimplePacketHandler packetHandler, ServerPlayerEntity player) {
         simpleNetworkPacketManager.sendTo(message, packetHandler, player);
     }
 
@@ -217,7 +217,7 @@ class DefaultNetworkHandler implements IElecNetworkHandler, DefaultByteBufFactor
     }
 
     @Override
-    public void sendTo(ByteBuf data, ISimplePacketHandler packetHandler, EntityPlayerMP player) {
+    public void sendTo(ByteBuf data, ISimplePacketHandler packetHandler, ServerPlayerEntity player) {
         simpleNetworkPacketManager.sendTo(data, packetHandler, player);
     }
 

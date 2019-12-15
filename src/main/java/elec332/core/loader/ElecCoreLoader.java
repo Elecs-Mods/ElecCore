@@ -7,7 +7,7 @@ import elec332.core.world.FeaturePlacers;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.gen.GenerationStage;
-import net.minecraft.world.gen.IChunkGenSettings;
+import net.minecraft.world.gen.GenerationSettings;
 import net.minecraft.world.gen.IChunkGenerator;
 import net.minecraft.world.gen.feature.CompositeFeature;
 import net.minecraft.world.gen.feature.Feature;
@@ -70,7 +70,7 @@ public class ElecCoreLoader {
         RegistryHelper.getBiomeRegistry().forEach(biome -> biome.addFeature(GenerationStage.Decoration.values()[GenerationStage.Decoration.values().length - 1], new CompositeFeature<>(new Feature<NoFeatureConfig>() {
 
             @Override
-            public boolean place(@Nonnull IWorld world, @Nonnull IChunkGenerator<? extends IChunkGenSettings> chunkGenerator, @Nonnull Random random, @Nonnull BlockPos pos, @Nonnull NoFeatureConfig noop) {
+            public boolean place(@Nonnull IWorld world, @Nonnull IChunkGenerator<? extends GenerationSettings> chunkGenerator, @Nonnull Random random, @Nonnull BlockPos pos, @Nonnull NoFeatureConfig noop) {
                 return WorldGenManager.INSTANCE.legacyPopulateChunk(world, chunkGenerator, random, pos);
             }
 

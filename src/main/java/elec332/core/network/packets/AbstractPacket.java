@@ -2,7 +2,7 @@ package elec332.core.network.packets;
 
 import elec332.core.ElecCore;
 import elec332.core.api.network.IExtendedMessageContext;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
@@ -13,14 +13,14 @@ import java.util.function.Supplier;
 public abstract class AbstractPacket extends AbstractMessage implements BiConsumer<AbstractPacket, Supplier<IExtendedMessageContext>> {
 
     public AbstractPacket() {
-        super((NBTTagCompound) null);
+        super((CompoundNBT) null);
     }
 
-    public AbstractPacket(Supplier<NBTTagCompound> dataSupplier) {
+    public AbstractPacket(Supplier<CompoundNBT> dataSupplier) {
         super(dataSupplier);
     }
 
-    public AbstractPacket(NBTTagCompound b) {
+    public AbstractPacket(CompoundNBT b) {
         super(b);
     }
 
@@ -30,6 +30,6 @@ public abstract class AbstractPacket extends AbstractMessage implements BiConsum
         ElecCore.tickHandler.registerCall(() -> onMessageThreadSafe(abstractPacket.networkPackageObject, messageContext), messageContext.getReceptionSide());
     }
 
-    public abstract void onMessageThreadSafe(NBTTagCompound message, IExtendedMessageContext ctx);
+    public abstract void onMessageThreadSafe(CompoundNBT message, IExtendedMessageContext ctx);
 
 }

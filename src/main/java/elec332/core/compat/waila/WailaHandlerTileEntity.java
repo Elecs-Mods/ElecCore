@@ -9,13 +9,13 @@ import mcp.mobius.waila.api.IDataAccessor;
 import mcp.mobius.waila.api.IPluginConfig;
 import mcp.mobius.waila.api.IServerDataProvider;
 import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.block.BlockState;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
@@ -32,12 +32,12 @@ import java.util.List;
 public class WailaHandlerTileEntity implements IComponentProvider, IServerDataProvider<TileEntity> {
 
     @Override
-    public void appendServerData(NBTTagCompound data, EntityPlayerMP player, World world, TileEntity te) {
+    public void appendServerData(CompoundNBT data, ServerPlayerEntity player, World world, TileEntity te) {
         if (data == null) {
-            data = new NBTTagCompound();
+            data = new CompoundNBT();
         }
         final BlockPos pos = te.getPos();
-        final NBTTagCompound tag = data;
+        final CompoundNBT tag = data;
         final RayTraceResult rtr = RayTraceHelper.retraceBlock(world, pos, player);
         if (rtr == null) {
             tag.putBoolean("_nope_", true);
@@ -45,11 +45,11 @@ public class WailaHandlerTileEntity implements IComponentProvider, IServerDataPr
         }
         InformationHandler.INSTANCE.getInfoNBTData(tag, te, player, new IInfoDataAccessorBlock() {
 
-            private IBlockState ibs;
+            private BlockState ibs;
 
             @Nonnull
             @Override
-            public EntityPlayer getPlayer() {
+            public PlayerEntity getPlayer() {
                 return player;
             }
 
@@ -67,7 +67,7 @@ public class WailaHandlerTileEntity implements IComponentProvider, IServerDataPr
 
             @Nonnull
             @Override
-            public NBTTagCompound getData() {
+            public CompoundNBT getData() {
                 return tag;
             }
 
@@ -78,13 +78,13 @@ public class WailaHandlerTileEntity implements IComponentProvider, IServerDataPr
 
             @Nonnull
             @Override
-            public EnumFacing getSide() {
+            public Direction getSide() {
                 return getRayTraceResult().sideHit;
             }
 
             @Nonnull
             @Override
-            public IBlockState getBlockState() {
+            public BlockState getBlockState() {
                 if (ibs == null) {
                     ibs = WorldHelper.getBlockState(getWorld(), getPos());
                 }
@@ -118,13 +118,13 @@ public class WailaHandlerTileEntity implements IComponentProvider, IServerDataPr
 
     @Override
     public void appendBody(final List<ITextComponent> tooltip, final IDataAccessor accessor, IPluginConfig config) {
-        final NBTTagCompound tag = accessor.getServerData();
+        final CompoundNBT tag = accessor.getServerData();
         if (tag != null && !tag.getBoolean("_nope_")) {
             InformationHandler.INSTANCE.addInformation(new WailaInformationType(tooltip), new IInfoDataAccessorBlock() {
 
                 @Nonnull
                 @Override
-                public EntityPlayer getPlayer() {
+                public PlayerEntity getPlayer() {
                     return accessor.getPlayer();
                 }
 
@@ -142,13 +142,13 @@ public class WailaHandlerTileEntity implements IComponentProvider, IServerDataPr
 
                 @Nonnull
                 @Override
-                public NBTTagCompound getData() {
+                public CompoundNBT getData() {
                     return tag;
                 }
 
                 @Nonnull
                 @Override
-                public EnumFacing getSide() {
+                public Direction getSide() {
                     return accessor.getSide();
                 }
 
@@ -159,7 +159,7 @@ public class WailaHandlerTileEntity implements IComponentProvider, IServerDataPr
 
                 @Nonnull
                 @Override
-                public IBlockState getBlockState() {
+                public BlockState getBlockState() {
                     return accessor.getBlockState();
                 }
 

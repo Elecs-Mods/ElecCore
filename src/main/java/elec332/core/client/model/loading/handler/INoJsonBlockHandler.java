@@ -4,7 +4,7 @@ import elec332.core.api.client.model.loading.IBlockModelHandler;
 import elec332.core.api.client.model.loading.ModelHandler;
 import elec332.core.client.model.loading.INoJsonBlock;
 import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.BlockState;
 import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.client.renderer.model.ModelResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
@@ -23,7 +23,7 @@ public class INoJsonBlockHandler implements IBlockModelHandler {
     }
 
     @Override
-    public IBakedModel getModelFor(IBlockState state, String identifier, ModelResourceLocation fullResourceLocation) {
+    public IBakedModel getModelFor(BlockState state, String identifier, ModelResourceLocation fullResourceLocation) {
         return ((INoJsonBlock) state.getBlock()).getBlockModel(state);
     }
 

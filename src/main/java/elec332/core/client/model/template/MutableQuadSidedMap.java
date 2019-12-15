@@ -4,7 +4,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import elec332.core.api.client.model.template.IQuadTemplate;
 import elec332.core.api.client.model.template.IQuadTemplateSidedMap;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -20,39 +20,39 @@ public class MutableQuadSidedMap implements IQuadTemplateSidedMap {
 
     @Nonnull
     public static MutableQuadSidedMap newQuadSidedMap() {
-        EnumMap<EnumFacing, List<IQuadTemplate>> param = Maps.newEnumMap(EnumFacing.class);
-        for (EnumFacing facing : EnumFacing.values()) {
+        EnumMap<Direction, List<IQuadTemplate>> param = Maps.newEnumMap(Direction.class);
+        for (Direction facing : Direction.values()) {
             param.put(facing, Lists.<IQuadTemplate>newArrayList());
         }
         return new MutableQuadSidedMap(param);
     }
 
-    private MutableQuadSidedMap(EnumMap<EnumFacing, List<IQuadTemplate>> quads) {
+    private MutableQuadSidedMap(EnumMap<Direction, List<IQuadTemplate>> quads) {
         this.quads = quads;
     }
 
-    private EnumMap<EnumFacing, List<IQuadTemplate>> quads;
+    private EnumMap<Direction, List<IQuadTemplate>> quads;
 
     @Override
-    public void setQuadsForSide(EnumFacing side, @Nonnull List<IQuadTemplate> newQuads) {
+    public void setQuadsForSide(Direction side, @Nonnull List<IQuadTemplate> newQuads) {
         quads.put(side, newQuads);
     }
 
     @Override
-    public void addQuadsForSide(EnumFacing side, List<IQuadTemplate> toAdd) {
+    public void addQuadsForSide(Direction side, List<IQuadTemplate> toAdd) {
         for (IQuadTemplate template : toAdd) {
             addQuadForSide(side, template);
         }
     }
 
     @Override
-    public void addQuadForSide(EnumFacing side, IQuadTemplate toAdd) {
+    public void addQuadForSide(Direction side, IQuadTemplate toAdd) {
         getForSide(side).add(toAdd);
     }
 
     @Nonnull
     @Override
-    public List<IQuadTemplate> getForSide(EnumFacing side) {
+    public List<IQuadTemplate> getForSide(Direction side) {
         List<IQuadTemplate> ret = quads.get(side);
         if (ret == null) {
             ret = Lists.newArrayList();

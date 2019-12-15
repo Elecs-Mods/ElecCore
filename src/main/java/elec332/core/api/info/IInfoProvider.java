@@ -1,7 +1,7 @@
 package elec332.core.api.info;
 
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
 
 import javax.annotation.Nonnull;
@@ -14,6 +14,6 @@ public interface IInfoProvider {
     public void addInformation(@Nonnull IInformation information, @Nonnull IInfoDataAccessorBlock hitData);
 
     @Nonnull
-    public NBTTagCompound getInfoNBTData(@Nonnull NBTTagCompound tag, TileEntity tile, @Nonnull EntityPlayerMP player, @Nonnull IInfoDataAccessorBlock hitData);
+    public CompoundNBT getInfoNBTData(@Nonnull CompoundNBT tag, TileEntity tile, @Nonnull ServerPlayerEntity player, @Nonnull IInfoDataAccessorBlock hitData);
 
 }

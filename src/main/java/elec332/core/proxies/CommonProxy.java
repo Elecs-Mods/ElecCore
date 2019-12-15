@@ -1,6 +1,6 @@
 package elec332.core.proxies;
 
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
@@ -30,7 +30,7 @@ public class CommonProxy {
         return null;
     }
 
-    public EntityPlayer getClientPlayer() {
+    public PlayerEntity getClientPlayer() {
         return null;
     }
 

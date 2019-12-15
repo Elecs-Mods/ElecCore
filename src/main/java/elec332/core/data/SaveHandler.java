@@ -8,9 +8,9 @@ import elec332.core.api.annotations.StaticLoad;
 import elec332.core.api.data.IExternalSaveHandler;
 import elec332.core.util.FMLHelper;
 import elec332.core.world.WorldHelper;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.world.IWorld;
-import net.minecraft.world.WorldServer;
+import net.minecraft.world.server.ServerWorld;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.storage.ISaveHandler;
 import net.minecraft.world.storage.WorldInfo;
@@ -39,12 +39,12 @@ public enum SaveHandler {
             }
 
             @Override
-            public NBTTagCompound getDataForWriting(net.minecraft.world.storage.SaveHandler handler, WorldInfo info) {
+            public CompoundNBT getDataForWriting(net.minecraft.world.storage.SaveHandler handler, WorldInfo info) {
                 return SaveHandler.this.save(handler, info);
             }
 
             @Override
-            public void readData(net.minecraft.world.storage.SaveHandler handler, WorldInfo info, NBTTagCompound tag) {
+            public void readData(net.minecraft.world.storage.SaveHandler handler, WorldInfo info, CompoundNBT tag) {
                 SaveHandler.this.load(handler, info, tag);
             }
 
@@ -63,9 +63,9 @@ public enum SaveHandler {
         return true;
     }
 
-    private void load(ISaveHandler save, WorldInfo worldInfo, NBTTagCompound base) {
+    private void load(ISaveHandler save, WorldInfo worldInfo, CompoundNBT base) {
         System.out.println("Load " + worldInfo.getDimension());
-        NBTTagCompound tag;
+        CompoundNBT tag;
         Preconditions.checkNotNull(save);
         Preconditions.checkNotNull(worldInfo);
         for (ModContainer mc : saveHandlers.keySet()) {
@@ -79,21 +79,21 @@ public enum SaveHandler {
         this.loaded = true;
     }
 
-    private NBTTagCompound save(ISaveHandler save, WorldInfo worldInfo) {
+    private CompoundNBT save(ISaveHandler save, WorldInfo worldInfo) {
         if (!this.loaded && !ElecCore.suppressSpongeIssues) {
             ElecCore.logger.error("World is unloading before data has been loaded, skipping data saving...");
             ElecCore.logger.error("This probably happened due to a crash in EG worldgen.");
             ElecCore.logger.error("All external data will be lost.");
-            return new NBTTagCompound();
+            return new CompoundNBT();
         }
         Preconditions.checkNotNull(save);
         Preconditions.checkNotNull(worldInfo);
-        NBTTagCompound main = new NBTTagCompound();
-        NBTTagCompound tag;
+        CompoundNBT main = new CompoundNBT();
+        CompoundNBT tag;
         for (ModContainer mc : saveHandlers.keySet()) {
-            tag = new NBTTagCompound();
+            tag = new CompoundNBT();
             for (IExternalSaveHandler saveHandler : saveHandlers.get(mc)) {
-                NBTTagCompound n = saveHandler.save(save, worldInfo);
+                CompoundNBT n = saveHandler.save(save, worldInfo);
                 if (n != null) {
                     tag.put(saveHandler.getName(), n);
                 }
@@ -122,7 +122,7 @@ public enum SaveHandler {
         }
 
         private boolean isOverworld(IWorld world) {
-            return !world.isRemote() && WorldHelper.getDimID(world) == DimensionType.OVERWORLD && world.getClass() == WorldServer.class;
+            return !world.isRemote() && WorldHelper.getDimID(world) == DimensionType.OVERWORLD && world.getClass() == ServerWorld.class;
         }
 
     }

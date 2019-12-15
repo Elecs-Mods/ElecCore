@@ -1,10 +1,10 @@
 package elec332.core.util;
 
 import com.google.common.base.Preconditions;
-import net.minecraft.item.EnumDyeColor;
-import net.minecraft.nbt.INBTBase;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
+import net.minecraft.item.DyeColor;
+import net.minecraft.nbt.INBT;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.ListNBT;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
@@ -20,24 +20,24 @@ import java.util.function.Supplier;
 /**
  * Created by Elec332 on 27-7-2018
  * <p>
- * Builder for {@link NBTTagCompound}
- * Can be used to chain writes to a {@link NBTTagCompound}
+ * Builder for {@link CompoundNBT}
+ * Can be used to chain writes to a {@link CompoundNBT}
  */
-public class NBTBuilder implements INBTSerializable<NBTTagCompound>, Supplier<NBTTagCompound> {
+public class NBTBuilder implements INBTSerializable<CompoundNBT>, Supplier<CompoundNBT> {
 
-    public static NBTBuilder from(NBTTagCompound tag) {
+    public static NBTBuilder from(CompoundNBT tag) {
         return new NBTBuilder(tag);
     }
 
     public NBTBuilder() {
-        this(new NBTTagCompound());
+        this(new CompoundNBT());
     }
 
-    public NBTBuilder(NBTTagCompound tag) {
+    public NBTBuilder(CompoundNBT tag) {
         this.tag = Preconditions.checkNotNull(tag);
     }
 
-    private NBTTagCompound tag;
+    private CompoundNBT tag;
 
     /////////////////////////////
 
@@ -60,7 +60,7 @@ public class NBTBuilder implements INBTSerializable<NBTTagCompound>, Supplier<NB
         return this;
     }
 
-    public NBTBuilder setColor(String name, @Nullable EnumDyeColor color) {
+    public NBTBuilder setColor(String name, @Nullable DyeColor color) {
         if (color != null) {
             setInteger(name, color.getId());
         }
@@ -83,7 +83,7 @@ public class NBTBuilder implements INBTSerializable<NBTTagCompound>, Supplier<NB
         return setTag(name, tag.serializeNBT());
     }
 
-    public NBTBuilder setTag(String name, INBTBase tag) {
+    public NBTBuilder setTag(String name, INBT tag) {
         this.tag.put(name, tag);
         return this;
     }
@@ -156,11 +156,11 @@ public class NBTBuilder implements INBTSerializable<NBTTagCompound>, Supplier<NB
         return new Vec3d(getDouble(name + "_vecx"), getDouble(name + "_vecy"), getDouble(name + "_vecz"));
     }
 
-    public EnumDyeColor getColor(String name) {
+    public DyeColor getColor(String name) {
         if (!contains(name)) {
             return null;
         }
-        return EnumDyeColor.byId(getInteger(name));
+        return DyeColor.byId(getInteger(name));
     }
 
     public ResourceLocation getResourceLocation(String name) {
@@ -176,15 +176,15 @@ public class NBTBuilder implements INBTSerializable<NBTTagCompound>, Supplier<NB
     }
 
     @SuppressWarnings("unchecked")
-    public <N extends INBTBase> void getDeserialized(String name, INBTSerializable<N> serializable) {
+    public <N extends INBT> void getDeserialized(String name, INBTSerializable<N> serializable) {
         serializable.deserializeNBT((N) getTag(name));
     }
 
-    public INBTBase getTag(String name) {
+    public INBT getTag(String name) {
         return this.tag.get(name);
     }
 
-    public NBTTagCompound getCompound(String name) {
+    public CompoundNBT getCompound(String name) {
         return this.tag.getCompound(name);
     }
 
@@ -224,7 +224,7 @@ public class NBTBuilder implements INBTSerializable<NBTTagCompound>, Supplier<NB
         return this.tag.getIntArray(name);
     }
 
-    public NBTTagList getTagList(String name, int type) {
+    public ListNBT getTagList(String name, int type) {
         return this.tag.getList(name, type);
     }
 
@@ -266,12 +266,12 @@ public class NBTBuilder implements INBTSerializable<NBTTagCompound>, Supplier<NB
     /////////////////////////////
 
     @Override
-    public NBTTagCompound serializeNBT() {
+    public CompoundNBT serializeNBT() {
         return tag;
     }
 
     @Override
-    public void deserializeNBT(NBTTagCompound nbt) {
+    public void deserializeNBT(CompoundNBT nbt) {
         if (this.tag.isEmpty()) {
             this.tag = nbt;
         } else {
@@ -280,7 +280,7 @@ public class NBTBuilder implements INBTSerializable<NBTTagCompound>, Supplier<NB
     }
 
     @Override
-    public NBTTagCompound get() {
+    public CompoundNBT get() {
         return serializeNBT();
     }
 

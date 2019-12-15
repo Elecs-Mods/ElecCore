@@ -1,7 +1,7 @@
 package elec332.core.explosion;
 
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
@@ -76,7 +76,7 @@ public abstract class AbstractExplosion extends Explosion {
             BlockPos maxCoord = new BlockPos(location);
             maxCoord.add(maxR, maxR, maxR);
             @SuppressWarnings("unchecked")
-            List<EntityLiving> allEntities = world.getEntitiesWithinAABB(EntityLiving.class, new AxisAlignedBB(minCoord, maxCoord));
+            List<LivingEntity> allEntities = world.getEntitiesWithinAABB(LivingEntity.class, new AxisAlignedBB(minCoord, maxCoord));
             allEntities.sort((Comparator<Entity>) (o1, o2) -> (int) (getDistance(o1) - getDistance(o2)));
             for (Entity entity : allEntities) {
                 double distance = getDistance(entity) / radius;

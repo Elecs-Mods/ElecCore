@@ -8,7 +8,7 @@ import elec332.core.util.NBTBuilder;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 
@@ -69,7 +69,7 @@ public class WidgetButton extends Widget {
     }
 
     @Override
-    public void readNBTChangesFromPacketServerSide(NBTTagCompound tagCompound) {
+    public void readNBTChangesFromPacketServerSide(CompoundNBT tagCompound) {
         if (tagCompound.getInt("id") == 1) {
             onButtonClicked(tagCompound.getInt("mbi"));
         }

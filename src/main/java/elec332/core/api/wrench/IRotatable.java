@@ -1,6 +1,6 @@
 package elec332.core.api.wrench;
 
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -9,8 +9,8 @@ import net.minecraft.world.World;
  */
 public interface IRotatable {
 
-    public EnumFacing getFacing();
+    public Direction getFacing();
 
-    public boolean rotateBlock(World world, BlockPos pos, EnumFacing sideHit);
+    public boolean rotateBlock(World world, BlockPos pos, Direction sideHit);
 
 }

@@ -6,7 +6,7 @@ import elec332.core.inventory.tooltip.ToolTip;
 import elec332.core.inventory.widget.Widget;
 import elec332.core.inventory.window.Window;
 import elec332.core.util.ItemStackHelper;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
@@ -40,7 +40,7 @@ public class WidgetSlot extends Widget {
     private final int slotIndex;
 
     @Override
-    public void onWindowClosed(EntityPlayer player) {
+    public void onWindowClosed(PlayerEntity player) {
         //inventory.closeInventory(player);
     }
 
@@ -72,7 +72,7 @@ public class WidgetSlot extends Widget {
     }
 
     @Nonnull
-    public ItemStack onTake(EntityPlayer player, @Nonnull ItemStack stack) {
+    public ItemStack onTake(PlayerEntity player, @Nonnull ItemStack stack) {
         this.onSlotChanged();
         return stack;
     }
@@ -184,7 +184,7 @@ public class WidgetSlot extends Widget {
     /**
      * Return whether this slot's stack can be taken from this slot.
      */
-    public boolean canTakeStack(EntityPlayer playerIn) {
+    public boolean canTakeStack(PlayerEntity playerIn) {
         return !isHidden() && ItemStackHelper.isStackValid(this.inventory.extractItem(getSlotIndex(), 1, true));
     }
 

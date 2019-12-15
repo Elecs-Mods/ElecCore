@@ -3,7 +3,7 @@ package elec332.core.inventory;
 import elec332.core.util.InventoryHelper;
 import elec332.core.util.ItemStackHelper;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.NonNullList;
 import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.items.IItemHandlerModifiable;
@@ -16,7 +16,7 @@ import javax.annotation.Nonnull;
  * <p>
  * Simple (serializable) implementation of {@link IItemHandlerModifiable}
  */
-public class BasicItemHandler implements IItemHandlerModifiable, INBTSerializable<NBTTagCompound> {
+public class BasicItemHandler implements IItemHandlerModifiable, INBTSerializable<CompoundNBT> {
 
     public BasicItemHandler() {
         this(1);
@@ -135,19 +135,19 @@ public class BasicItemHandler implements IItemHandlerModifiable, INBTSerializabl
 
 
     @Override
-    public NBTTagCompound serializeNBT() {
-        return writeToNBT(new NBTTagCompound());
+    public CompoundNBT serializeNBT() {
+        return writeToNBT(new CompoundNBT());
     }
 
     @Override
-    public void deserializeNBT(NBTTagCompound nbt) {
+    public void deserializeNBT(CompoundNBT nbt) {
         setSize(nbt.contains("Size", net.minecraftforge.common.util.Constants.NBT.TAG_INT) ? nbt.getInt("Size") : stacks.size());
         InventoryHelper.readItemsFromNBT(nbt, stacks);
         onLoad();
     }
 
-    public NBTTagCompound writeToNBT(NBTTagCompound compound) {
-        NBTTagCompound tag = InventoryHelper.writeItemsToNBT(compound, stacks);
+    public CompoundNBT writeToNBT(CompoundNBT compound) {
+        CompoundNBT tag = InventoryHelper.writeItemsToNBT(compound, stacks);
         tag.putInt("Size", stacks.size());
         return tag;
     }

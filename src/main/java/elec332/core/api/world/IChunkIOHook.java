@@ -1,6 +1,6 @@
 package elec332.core.api.world;
 
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.world.chunk.IChunk;
 
 /**
@@ -8,8 +8,8 @@ import net.minecraft.world.chunk.IChunk;
  */
 public interface IChunkIOHook {
 
-    public void chunkLoadedFromDisk(IChunk chunk, NBTTagCompound data, IWorldGenManager worldGenManager);
+    public void chunkLoadedFromDisk(IChunk chunk, CompoundNBT data, IWorldGenManager worldGenManager);
 
-    public void chunkSavedToDisk(IChunk chunk, NBTTagCompound data, IWorldGenManager worldGenManager);
+    public void chunkSavedToDisk(IChunk chunk, CompoundNBT data, IWorldGenManager worldGenManager);
 
 }

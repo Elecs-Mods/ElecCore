@@ -1,11 +1,11 @@
 package elec332.core.util;
 
 import elec332.core.world.WorldHelper;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
+import net.minecraft.util.Direction;
+import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockReader;
 import net.minecraftforge.common.util.LazyOptional;
@@ -30,7 +30,7 @@ public class FluidHelper {
      * @return The {@link IFluidHandler} at the specified location, if it exists
      */
     @Nullable
-    public static IFluidHandler getFluidHandler(IBlockReader iba, BlockPos pos, EnumFacing facing) {
+    public static IFluidHandler getFluidHandler(IBlockReader iba, BlockPos pos, Direction facing) {
         TileEntity tile = WorldHelper.getTileAt(iba, pos);
         return tile.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, facing).orElse(null);
     }
@@ -43,7 +43,7 @@ public class FluidHelper {
      * @param tank   The tank being clicked
      * @return Whether something happened
      */
-    public static boolean onTankActivated(EntityPlayer player, EnumHand hand, IFluidTank tank) {
+    public static boolean onTankActivated(PlayerEntity player, Hand hand, IFluidTank tank) {
         IFluidHandler fluidHandler = FluidTankWrapper.of(tank);
         return tryDrainItem(player, hand, fluidHandler, tank.getCapacity()) || tryFillItem(player, hand, fluidHandler, tank.getCapacity());
     }
@@ -57,7 +57,7 @@ public class FluidHelper {
      * @param tankCapacity The internal capacity of the {@link IFluidHandler}
      * @return Whether something happened
      */
-    public static boolean onTankActivated(EntityPlayer player, EnumHand hand, IFluidHandler fluidHandler, int tankCapacity) {
+    public static boolean onTankActivated(PlayerEntity player, Hand hand, IFluidHandler fluidHandler, int tankCapacity) {
         return tryDrainItem(player, hand, fluidHandler, tankCapacity) || tryFillItem(player, hand, fluidHandler, tankCapacity);
     }
 
@@ -69,7 +69,7 @@ public class FluidHelper {
      * @param tank   the tank to be filled
      * @return Whether something happened
      */
-    public static boolean tryDrainItem(EntityPlayer player, EnumHand hand, IFluidTank tank) {
+    public static boolean tryDrainItem(PlayerEntity player, Hand hand, IFluidTank tank) {
         return tryDrainItem(player, hand, tank instanceof IFluidHandler ? (IFluidHandler) tank : FluidTankWrapper.of(tank), tank.getCapacity());
     }
 
@@ -82,7 +82,7 @@ public class FluidHelper {
      * @param capacity     The internal capacity of the {@link IFluidHandler}
      * @return Whether something happened
      */
-    public static boolean tryDrainItem(EntityPlayer player, EnumHand hand, IFluidHandler fluidHandler, int capacity) {
+    public static boolean tryDrainItem(PlayerEntity player, Hand hand, IFluidHandler fluidHandler, int capacity) {
         if (fluidHandler == null) {
             return false;
         }
@@ -97,16 +97,16 @@ public class FluidHelper {
         }
         if (ofh.isPresent()) {
             IFluidHandler item = ofh.orElseThrow(NullPointerException::new);
-            FluidStack stack1 = item.drain(capacity, false);
-            if (stack1 == null) {
+            FluidStack stack1 = item.drain(capacity, IFluidHandler.FluidAction.SIMULATE);
+            if (stack1 == null || stack1.isEmpty()) {
                 return false;
             }
-            int i = fluidHandler.fill(stack1, false);
+            int i = fluidHandler.fill(stack1, IFluidHandler.FluidAction.SIMULATE);
             if (i > 0) {
                 if (player.getEntityWorld().isRemote) {
                     return true;
                 }
-                fluidHandler.fill(item.drain(i, !PlayerHelper.isPlayerInCreative(player)), true);
+                fluidHandler.fill(item.drain(i, PlayerHelper.isPlayerInCreative(player) ? IFluidHandler.FluidAction.SIMULATE : IFluidHandler.FluidAction.EXECUTE), IFluidHandler.FluidAction.EXECUTE);
                 return true;
             }
         }
@@ -121,7 +121,7 @@ public class FluidHelper {
      * @param tank   the tank to be drained
      * @return Whether something happened
      */
-    public static boolean tryFillItem(EntityPlayer player, EnumHand hand, IFluidTank tank) {
+    public static boolean tryFillItem(PlayerEntity player, Hand hand, IFluidTank tank) {
         return tryFillItem(player, hand, tank instanceof IFluidHandler ? (IFluidHandler) tank : FluidTankWrapper.of(tank), tank.getCapacity());
     }
 
@@ -134,7 +134,7 @@ public class FluidHelper {
      * @param capacity     The internal capacity of the {@link IFluidHandler}
      * @return Whether something happened
      */
-    public static boolean tryFillItem(EntityPlayer player, EnumHand hand, IFluidHandler fluidHandler, int capacity) {
+    public static boolean tryFillItem(PlayerEntity player, Hand hand, IFluidHandler fluidHandler, int capacity) {
         if (fluidHandler == null) {
             return false;
         }
@@ -149,16 +149,16 @@ public class FluidHelper {
         }
         if (ofh.isPresent()) {
             IFluidHandler item = ofh.orElseThrow(NullPointerException::new);
-            FluidStack fluid = fluidHandler.drain(capacity, false);
-            if (fluid == null) {
+            FluidStack fluid = fluidHandler.drain(capacity, IFluidHandler.FluidAction.SIMULATE);
+            if (fluid == null || fluid.isEmpty()) {
                 return false;
             }
-            int i = item.fill(fluid, false);
+            int i = item.fill(fluid, IFluidHandler.FluidAction.SIMULATE);
             if (i > 0) {
                 if (player.getEntityWorld().isRemote) {
                     return true;
                 }
-                item.fill(fluidHandler.drain(capacity, !PlayerHelper.isPlayerInCreative(player)), true);
+                item.fill(fluidHandler.drain(capacity, PlayerHelper.isPlayerInCreative(player) ? IFluidHandler.FluidAction.SIMULATE : IFluidHandler.FluidAction.EXECUTE), IFluidHandler.FluidAction.EXECUTE);
                 return true;
             }
         }

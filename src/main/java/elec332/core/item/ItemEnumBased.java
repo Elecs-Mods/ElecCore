@@ -10,10 +10,10 @@ import elec332.core.client.RenderHelper;
 import elec332.core.client.model.loading.INoJsonItem;
 import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
@@ -98,7 +98,7 @@ public class ItemEnumBased<E extends Enum<E> & IEnumItem> extends AbstractItem i
     }
 
     @Override
-    public IBakedModel getItemModel(ItemStack stack, World world, EntityLivingBase entity) {
+    public IBakedModel getItemModel(ItemStack stack, World world, LivingEntity entity) {
         int i = getOrdinal(stack);
         E e = get(i);
         if (e == null) {
@@ -130,14 +130,14 @@ public class ItemEnumBased<E extends Enum<E> & IEnumItem> extends AbstractItem i
 
     private int getOrdinal(ItemStack stack) {
         if (!stack.hasTag()) {
-            stack.setTag(new NBTTagCompound());
+            stack.setTag(new CompoundNBT());
         }
         return Preconditions.checkNotNull(stack.getTag()).getInt("elenord");
     }
 
     private void putOrdinal(ItemStack stack, E val) {
         if (!stack.hasTag()) {
-            stack.setTag(new NBTTagCompound());
+            stack.setTag(new CompoundNBT());
         }
         Preconditions.checkNotNull(stack.getTag()).putInt("elenord", val.ordinal());
     }

@@ -2,7 +2,7 @@ package elec332.core.client.model.loading;
 
 import elec332.core.api.client.model.IModelAndTextureLoader;
 import net.minecraft.client.renderer.model.IBakedModel;
-import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
@@ -14,6 +14,6 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 public interface INoJsonItem extends IModelAndTextureLoader {
 
     @OnlyIn(Dist.CLIENT)
-    public IBakedModel getItemModel(ItemStack stack, World world, EntityLivingBase entity);
+    public IBakedModel getItemModel(ItemStack stack, World world, LivingEntity entity);
 
 }

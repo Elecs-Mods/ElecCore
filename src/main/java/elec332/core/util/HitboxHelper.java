@@ -1,6 +1,6 @@
 package elec332.core.util;
 
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.shapes.VoxelShape;
@@ -35,14 +35,14 @@ public class HitboxHelper {
         return shapes.reduce(VoxelShapes.empty(), VoxelShapes::or);
     }
 
-    public static VoxelShape rotateFromDown(VoxelShape shape, final EnumFacing facing) {
+    public static VoxelShape rotateFromDown(VoxelShape shape, final Direction facing) {
         final ObjectReference<VoxelShape> shapeRef = ObjectReference.of(VoxelShapes.empty());
         shape.forEachBox((x1, y1, z1, x2, y2, z2) -> shapeRef.set(VoxelShapes.or(shapeRef.get(), VoxelShapes.create(HitboxHelper.rotateFromDown(new AxisAlignedBB(x1, y1, z1, x2, y2, z2), facing)))));
         return shapeRef.get();
     }
 
     @SuppressWarnings("all")
-    public static AxisAlignedBB rotateFromDown(AxisAlignedBB aabb, EnumFacing facing) {
+    public static AxisAlignedBB rotateFromDown(AxisAlignedBB aabb, Direction facing) {
         switch (facing) {
             case UP:
                 return new AxisAlignedBB(aabb.minX, 1 - aabb.minY, 1 - aabb.minZ, aabb.maxX, 1 - aabb.maxY, 1 - aabb.maxZ);

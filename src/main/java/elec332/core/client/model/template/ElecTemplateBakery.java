@@ -5,7 +5,7 @@ import elec332.core.api.IAPIHandler;
 import elec332.core.api.client.model.IElecTemplateBakery;
 import elec332.core.api.client.model.template.*;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -59,13 +59,13 @@ public final class ElecTemplateBakery implements IElecTemplateBakery {
     }
 
     @Nonnull
-    public IMutableQuadTemplate templateQuadForTexture(EnumFacing side, TextureAtlasSprite texture) {
+    public IMutableQuadTemplate templateQuadForTexture(Direction side, TextureAtlasSprite texture) {
         return MutableQuadTemplate.templateForTexture(side, texture);
     }
 
     @Nonnull
     @Override
-    public IMutableQuadTemplate newQuadTemplate(EnumFacing side) {
+    public IMutableQuadTemplate newQuadTemplate(Direction side) {
         return MutableQuadTemplate.newTemplate(side);
     }
 
@@ -103,7 +103,7 @@ public final class ElecTemplateBakery implements IElecTemplateBakery {
     @Override
     public IQuadTemplateSidedMap newQuadSidedMap(TextureAtlasSprite texture) {
         IQuadTemplateSidedMap ret = newQuadSidedMap();
-        for (EnumFacing facing : EnumFacing.values()) {
+        for (Direction facing : Direction.values()) {
             ret.addQuadForSide(facing, templateQuadForTexture(facing, texture));
         }
         return ret;
@@ -112,11 +112,11 @@ public final class ElecTemplateBakery implements IElecTemplateBakery {
     @Nonnull
     @Override
     public IQuadTemplateSidedMap newQuadSidedMap(TextureAtlasSprite... textures) {
-        if (textures.length != EnumFacing.values().length)
+        if (textures.length != Direction.values().length)
             throw new IllegalArgumentException();
         IQuadTemplateSidedMap ret = newQuadSidedMap();
         for (int i = 0; i < textures.length; i++) {
-            ret.addQuadForSide(EnumFacing.values()[i], templateQuadForTexture(EnumFacing.values()[i], textures[i]));
+            ret.addQuadForSide(Direction.values()[i], templateQuadForTexture(Direction.values()[i], textures[i]));
         }
         return ret;
     }

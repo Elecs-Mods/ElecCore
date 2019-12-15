@@ -1,7 +1,7 @@
 package elec332.core.grid;
 
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.util.LazyOptional;
@@ -19,7 +19,7 @@ public interface ITileEntityLink extends IPositionable, ICapabilityProvider {
 
     @Nonnull
     @Override
-    <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable EnumFacing side);
+    <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side);
 
     @Nullable
     default public Class getInformationType() {

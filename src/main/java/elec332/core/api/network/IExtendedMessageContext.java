@@ -1,6 +1,6 @@
 package elec332.core.api.network;
 
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.network.PacketDispatcher;
@@ -12,7 +12,7 @@ public interface IExtendedMessageContext {
 
     public LogicalSide getReceptionSide();
 
-    public EntityPlayer getSender();
+    public PlayerEntity getSender();
 
     public World getWorld();
 

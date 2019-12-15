@@ -18,6 +18,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.client.renderer.model.ModelManager;
 import net.minecraft.client.renderer.model.ModelResourceLocation;
+import net.minecraft.client.renderer.texture.AtlasTexture;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
@@ -209,16 +210,17 @@ public final class RenderingRegistry implements IElecRenderingRegistry {
             this.textureMap = event.getMap();
         }
 
-        private final TextureMap textureMap;
+        private final AtlasTexture textureMap;
 
         @Override
         public TextureAtlasSprite registerSprite(ResourceLocation location) {
+            textureMap.loadTexture();
             textureMap.registerSprite(Minecraft.getInstance().getResourceManager(), location);
             return textureMap.getAtlasSprite(location.toString());
         }
 
         @Override
-        public TextureMap getTextureMap() {
+        public AtlasTexture getTextureMap() {
             return this.textureMap;
         }
 

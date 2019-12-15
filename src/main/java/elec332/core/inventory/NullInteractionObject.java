@@ -1,9 +1,9 @@
 package elec332.core.inventory;
 
 import com.google.common.base.Preconditions;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.inventory.Container;
+import net.minecraft.inventory.container.Container;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.IInteractionObject;
@@ -24,7 +24,7 @@ public abstract class NullInteractionObject implements IInteractionObject {
 
     @Nonnull
     @Override
-    public abstract Container createContainer(@Nonnull InventoryPlayer inventoryPlayer, @Nonnull EntityPlayer entityPlayer);
+    public abstract Container createContainer(@Nonnull InventoryPlayer inventoryPlayer, @Nonnull PlayerEntity PlayerEntity);
 
     @Nonnull
     @Override

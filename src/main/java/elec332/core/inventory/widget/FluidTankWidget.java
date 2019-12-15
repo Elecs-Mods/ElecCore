@@ -6,8 +6,8 @@ import elec332.core.inventory.tooltip.ToolTip;
 import elec332.core.inventory.window.Window;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.IFluidTank;
@@ -34,13 +34,13 @@ public class FluidTankWidget extends Widget {
     public void detectAndSendChanges(Iterable<IWidgetListener> crafters) {
         if (capacity != tank.getCapacity() || fluidStack != null && !fluidStack.isFluidStackIdentical(tank.getFluid()) || tank.getFluid() != null) {
             for (IWidgetListener iCrafting : crafters) {
-                if (iCrafting instanceof EntityPlayerMP) {
-                    NBTTagCompound tag = new NBTTagCompound();
+                if (iCrafting instanceof ServerPlayerEntity) {
+                    CompoundNBT tag = new CompoundNBT();
                     if (tank.getFluid() != null) {
                         tank.getFluid().writeToNBT(tag);
                     }
                     tag.putInt("capacity_TANK", tank.getCapacity());
-                    sendNBTChangesToPlayer((EntityPlayerMP) iCrafting, tag);
+                    sendNBTChangesToPlayer((ServerPlayerEntity) iCrafting, tag);
                 }
             }
             this.capacity = tank.getCapacity();
@@ -56,7 +56,7 @@ public class FluidTankWidget extends Widget {
     }
 
     @Override
-    public void readNBTChangesFromPacket(NBTTagCompound tagCompound) {
+    public void readNBTChangesFromPacket(CompoundNBT tagCompound) {
         this.fluidStack = FluidStack.loadFluidStackFromNBT(tagCompound);
         this.capacity = tagCompound.getInt("capacity_TANK");
     }

@@ -1,8 +1,8 @@
 package elec332.core.grid.internal;
 
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.particles.IParticleData;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
@@ -22,7 +22,7 @@ public enum WorldEventHandler implements IWorldEventListener {
     INSTANCE;
 
     @Override
-    public void notifyBlockUpdate(IBlockReader worldIn, BlockPos pos, IBlockState oldState, IBlockState newState, int flags) {
+    public void notifyBlockUpdate(IBlockReader worldIn, BlockPos pos, BlockState oldState, BlockState newState, int flags) {
         if (!(worldIn instanceof IWorld)) {
             throw new RuntimeException();
         }
@@ -38,7 +38,7 @@ public enum WorldEventHandler implements IWorldEventListener {
     }
 
     @Override
-    public void playSoundToAllNearExcept(@Nullable EntityPlayer player, SoundEvent soundIn, SoundCategory category, double x, double y, double z, float volume, float pitch) {
+    public void playSoundToAllNearExcept(@Nullable PlayerEntity player, SoundEvent soundIn, SoundCategory category, double x, double y, double z, float volume, float pitch) {
     }
 
     @Override
@@ -58,7 +58,7 @@ public enum WorldEventHandler implements IWorldEventListener {
     }
 
     @Override
-    public void playEvent(EntityPlayer player, int type, BlockPos blockPosIn, int data) {
+    public void playEvent(PlayerEntity player, int type, BlockPos blockPosIn, int data) {
     }
 
     @Override

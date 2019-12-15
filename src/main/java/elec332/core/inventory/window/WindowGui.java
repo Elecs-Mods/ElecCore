@@ -8,7 +8,7 @@ import net.minecraft.client.MouseHelper;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.ClickType;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
@@ -22,7 +22,7 @@ import java.util.List;
  */
 public final class WindowGui extends GuiContainer {
 
-    public WindowGui(EntityPlayer player, Window window) {
+    public WindowGui(PlayerEntity player, Window window) {
         this(new WindowContainer(player, window));
     }
 

@@ -1,10 +1,10 @@
 package elec332.core.inventory.window;
 
 import elec332.core.inventory.widget.slot.WidgetSlot;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.ClickType;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -25,7 +25,7 @@ public interface IWindowContainer {
 
     public void detectAndSendChanges();
 
-    public EntityPlayer getPlayer();
+    public PlayerEntity getPlayer();
 
     public List<IWindowListener> getListeners();
 
@@ -34,9 +34,9 @@ public interface IWindowContainer {
 
     public boolean mergeItemStackDefault(ItemStack stack, int startIndex, int endIndex, boolean reverseDirection);
 
-    public ItemStack slotClickDefault(int slotId, int dragType, ClickType clickTypeIn, EntityPlayer player);
+    public ItemStack slotClickDefault(int slotId, int dragType, ClickType clickTypeIn, PlayerEntity player);
 
-    public void sendPacket(NBTTagCompound tag);
+    public void sendPacket(CompoundNBT tag);
 
     public int getWindowID();
 

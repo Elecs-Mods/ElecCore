@@ -4,8 +4,8 @@ import com.google.common.base.Preconditions;
 import elec332.core.ElecCore;
 import elec332.core.util.FMLHelper;
 import elec332.core.util.NBTBuilder;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.block.BlockState;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorld;
@@ -23,7 +23,7 @@ import java.lang.ref.WeakReference;
  * <p>
  * A position which includes the dimension it is located in
  */
-public final class DimensionCoordinate implements INBTSerializable<NBTTagCompound> {
+public final class DimensionCoordinate implements INBTSerializable<CompoundNBT> {
 
     public DimensionCoordinate(DimensionCoordinate dim) {
         this(dim.dim, dim.pos, dim.worldRef);
@@ -87,12 +87,12 @@ public final class DimensionCoordinate implements INBTSerializable<NBTTagCompoun
     }
 
     @Nullable
-    public IBlockState getBlockState() {
+    public BlockState getBlockState() {
         return getBlockState(getWorld());
     }
 
     @Nullable
-    public IBlockState getBlockState(IWorld world) {
+    public BlockState getBlockState(IWorld world) {
         if (loaded(world)) {
             return WorldHelper.getBlockState(world, pos);
         }
@@ -108,16 +108,16 @@ public final class DimensionCoordinate implements INBTSerializable<NBTTagCompoun
     }
 
     @Override
-    public NBTTagCompound serializeNBT() {
+    public CompoundNBT serializeNBT() {
         return new NBTBuilder().setBlockPos(pos).setResourceLocation("dim", Preconditions.checkNotNull(DimensionType.getKey(dim))).serializeNBT();
     }
 
     @Override
-    public void deserializeNBT(NBTTagCompound nbt) {
+    public void deserializeNBT(CompoundNBT nbt) {
         throw new UnsupportedOperationException();
     }
 
-    public static DimensionCoordinate fromNBT(NBTTagCompound tag) {
+    public static DimensionCoordinate fromNBT(CompoundNBT tag) {
         NBTBuilder nbt = new NBTBuilder(tag);
         return new DimensionCoordinate(DimensionType.byName(nbt.getResourceLocation("dim")), nbt.getBlockPos());
     }

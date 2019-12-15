@@ -1,13 +1,13 @@
 package elec332.core.client.model;
 
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.BlockState;
 import net.minecraft.client.renderer.model.BakedQuad;
 import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.client.renderer.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.model.ItemCameraTransforms.TransformType;
 import net.minecraft.client.renderer.model.ItemOverrideList;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nonnull;
@@ -30,7 +30,7 @@ public abstract class WrappedModel implements IBakedModel {
 
     @Nonnull
     @Override
-    public abstract List<BakedQuad> getQuads(IBlockState state, @Nullable EnumFacing side, @Nonnull Random rand);
+    public abstract List<BakedQuad> getQuads(BlockState state, @Nullable Direction side, @Nonnull Random rand);
 
     @Override
     public boolean isAmbientOcclusion() {

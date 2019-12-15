@@ -2,16 +2,11 @@ import com.google.common.base.Strings;
 
 buildscript {
     repositories {
-        mavenLocal()
         jcenter()
         mavenCentral()
         maven {
             name = "forge"
             url = "http://files.minecraftforge.net/maven"
-        }
-        maven {
-            name = "sonatype"
-            url = "https://oss.sonatype.org/content/repositories/snapshots/"
         }
     }
     dependencies {
@@ -50,23 +45,47 @@ version = config.mod_version
 group= "nl.elec332.core" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "ElecCore"
 
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
+sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8'
 
 minecraft {
 
 	accessTransformer = file 'src/main/resources/META-INF/accesstransformer.cfg'
 
-    setMappings config.mappings
+    mappings channel: 'snapshot', version: config.mappings
 
     runs {
-        client = {
-            workingDirectory project.file('run').canonicalPath
-            source sourceSets.main
+        client {
+            workingDirectory project.file('run')
+
+            mods {
+                eleccore {
+                    source sourceSets.main
+                }
+            }
         }
-        server = {
-            workingDirectory project.file('run').canonicalPath
+
+        server {
+            workingDirectory project.file('run')
+
+            mods {
+                eleccore {
+                    source sourceSets.main
+                }
+            }
         }
+
+        data {
+            workingDirectory project.file('run')
+
+            args '--mod', 'eleccore', '--all', '--output', file('src/generated/resources/')
+
+            mods {
+                eleccore {
+                    source sourceSets.main
+                }
+            }
+        }
+
     }
 
 }
@@ -76,7 +95,7 @@ dependencies {
 	minecraft 'net.minecraftforge:forge:' + config.minecraft_version + "-" + config.forge_version
 
 	//WAILA
-    compile fg.deobf("mcp.mobius.waila:Hwyla:${config.WAILA_version}")
+    //compile fg.deobf("mcp.mobius.waila:Hwyla:${config.WAILA_version}")
 	//deobfCompile "mcp.mobius.waila:Hwyla:${config.WAILA_version}"
 	
 	//JEI

@@ -2,7 +2,7 @@ package elec332.core.client.util;
 
 import elec332.core.block.ISelectionBoxOverride;
 import elec332.core.client.RenderHelper;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
@@ -26,7 +26,7 @@ public class ClientEventHandler {
         World world = Minecraft.getInstance().world;
         if (event.getSubID() == 0 && hit.type == RayTraceResult.Type.BLOCK) {
             BlockPos pos = hit.getBlockPos();
-            IBlockState state = world.getBlockState(pos);
+            BlockState state = world.getBlockState(pos);
             if (!state.isAir(world, pos) && state.getBlock() instanceof ISelectionBoxOverride) {
                 VoxelShape shape = ((ISelectionBoxOverride) state.getBlock()).getSelectionBox(state, world, pos, event.getPlayer(), event.getTarget());
                 if (shape != null) {

@@ -6,7 +6,7 @@ import elec332.core.client.RenderHelper;
 import net.minecraft.client.renderer.Vector3f;
 import net.minecraft.client.renderer.model.ModelRotation;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -19,19 +19,19 @@ import javax.annotation.Nonnull;
 public class MutableQuadTemplate implements IMutableQuadTemplate {
 
     @Nonnull
-    public static MutableQuadTemplate templateForTexture(EnumFacing side, TextureAtlasSprite texture) {
+    public static MutableQuadTemplate templateForTexture(Direction side, TextureAtlasSprite texture) {
         return newTemplate(side).setTexture(texture);
     }
 
     @Nonnull
-    public static MutableQuadTemplate newTemplate(EnumFacing side) {
+    public static MutableQuadTemplate newTemplate(Direction side) {
         return new MutableQuadTemplate(side);
     }
 
     @Nonnull
     public static MutableQuadTemplate copyOf(IQuadTemplate template) {
         if (template == null)
-            return newTemplate(EnumFacing.UP);
+            return newTemplate(Direction.UP);
         MutableQuadTemplate ret = new MutableQuadTemplate(template.getSide());
         ret.v1 = new Vector3f(template.getV1());
         ret.v2 = new Vector3f(template.getV2());
@@ -41,7 +41,7 @@ public class MutableQuadTemplate implements IMutableQuadTemplate {
         return ret;
     }
 
-    private MutableQuadTemplate(EnumFacing side) {
+    private MutableQuadTemplate(Direction side) {
         this.uvData = DEFAULT_UV;
         this.rotation = ModelRotation.X0_Y0;
         this.side = side;
@@ -54,7 +54,7 @@ public class MutableQuadTemplate implements IMutableQuadTemplate {
     private static final IQuadTemplate.IUVData DEFAULT_UV;
     private Vector3f v1, v2;
     private TextureAtlasSprite texture;
-    private EnumFacing side;
+    private Direction side;
     private ModelRotation rotation;
     private IQuadTemplate.IUVData uvData;
     private int tintIndex;
@@ -78,7 +78,7 @@ public class MutableQuadTemplate implements IMutableQuadTemplate {
     }
 
     @Override
-    public MutableQuadTemplate setSide(EnumFacing side) {
+    public MutableQuadTemplate setSide(Direction side) {
         this.side = side;
         return this;
     }
@@ -119,7 +119,7 @@ public class MutableQuadTemplate implements IMutableQuadTemplate {
     }
 
     @Override
-    public EnumFacing getSide() {
+    public Direction getSide() {
         return side;
     }
 

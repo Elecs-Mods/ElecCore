@@ -13,11 +13,13 @@ import elec332.core.util.FieldPointer;
 import elec332.core.util.ObjectReference;
 import elec332.core.util.RegistryHelper;
 import elec332.core.util.function.FuncHelper;
+import net.minecraft.block.Block;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.registries.IForgeRegistry;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -113,11 +115,11 @@ public class TileEntityAnnotationProcessor implements IObjectRegister<TileEntity
         }
     }
 
-    private class TileType<T extends TileEntity> extends TileEntityType<T> {
+    private static class TileType<T extends TileEntity> extends TileEntityType<T> {
 
         @SuppressWarnings("all")
         private TileType(Supplier<? extends T> factoryIn, Class<T> clazz) {
-            super(factoryIn, null);
+            super(factoryIn, null, null);
             this.clazz = clazz;
         }
 
@@ -125,6 +127,11 @@ public class TileEntityAnnotationProcessor implements IObjectRegister<TileEntity
 
         private Class<T> getTileType() {
             return clazz;
+        }
+
+        @Override
+        public boolean isValidBlock(@Nonnull Block block) {
+            return true;
         }
 
     }

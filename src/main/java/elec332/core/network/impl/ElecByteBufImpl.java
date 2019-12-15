@@ -5,7 +5,7 @@ import elec332.core.api.network.ElecByteBuf;
 import elec332.core.util.ItemStackHelper;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import org.apache.commons.lang3.Validate;
@@ -30,14 +30,14 @@ class ElecByteBufImpl extends ElecByteBuf {
     private ByteBuf buf;
 
     @Override
-    public ElecByteBuf writeNBTTagCompoundToBuffer(@Nullable NBTTagCompound tag) {
+    public ElecByteBuf writeCompoundNBTToBuffer(@Nullable CompoundNBT tag) {
         writeCompoundTag(tag);
         return this;
     }
 
     @Nullable
     @Override
-    public NBTTagCompound readNBTTagCompoundFromBuffer() {
+    public CompoundNBT readCompoundNBTFromBuffer() {
         return readCompoundTag();
     }
 

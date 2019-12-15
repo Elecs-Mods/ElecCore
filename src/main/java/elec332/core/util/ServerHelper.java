@@ -5,12 +5,12 @@ import com.google.common.collect.ImmutableList;
 import elec332.core.api.network.IMessage;
 import elec332.core.api.network.INetworkHandler;
 import elec332.core.world.WorldHelper;
-import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.management.PlayerChunkMap;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldServer;
+import net.minecraft.world.server.ServerWorld;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
 
@@ -27,7 +27,7 @@ public class ServerHelper {
     /**
      * @return All online players
      */
-    public static List<EntityPlayerMP> getOnlinePlayers() {
+    public static List<ServerPlayerEntity> getOnlinePlayers() {
         return getMinecraftServer().getPlayerList().getPlayers();
     }
 
@@ -38,19 +38,19 @@ public class ServerHelper {
      * @return Whether the specified player is online
      */
     public static boolean isPlayerOnline(UUID uuid) {
-        return getOnlinePlayers().stream().anyMatch((Predicate<EntityPlayerMP>) player -> PlayerHelper.getPlayerUUID(player).equals(uuid));
+        return getOnlinePlayers().stream().anyMatch((Predicate<ServerPlayerEntity>) player -> PlayerHelper.getPlayerUUID(player).equals(uuid));
     }
 
     /**
-     * Gets a {@link EntityPlayerMP} by its UUID, returns null if the player is offline/not found
+     * Gets a {@link ServerPlayerEntity} by its UUID, returns null if the player is offline/not found
      *
      * @param uuid The player UUID
      * @return The player whose UUID matches the one provided, can be null
      */
     @Nullable
-    public static EntityPlayerMP getPlayer(UUID uuid) {
+    public static ServerPlayerEntity getPlayer(UUID uuid) {
         return getOnlinePlayers().stream()
-                .filter((Predicate<EntityPlayerMP>) player -> PlayerHelper.getPlayerUUID(player).equals(uuid))
+                .filter((Predicate<ServerPlayerEntity>) player -> PlayerHelper.getPlayerUUID(player).equals(uuid))
                 .findFirst() //The returned stream is lazy, so this is perfectly fine
                 .orElse(null);
     }
@@ -63,7 +63,7 @@ public class ServerHelper {
      * @param pos   The position
      * @return All players who need to be notified of chenges to the specified location
      */
-    public static List<EntityPlayerMP> getAllPlayersWatchingBlock(World world, BlockPos pos) {
+    public static List<ServerPlayerEntity> getAllPlayersWatchingBlock(World world, BlockPos pos) {
         return getAllPlayersWatchingBlock(world, pos.getX(), pos.getZ());
     }
 
@@ -76,11 +76,11 @@ public class ServerHelper {
      * @param z     The z coordinate
      * @return All players who need to be notified of chenges to the specified location
      */
-    public static List<EntityPlayerMP> getAllPlayersWatchingBlock(World world, int x, int z) {
-        if (world instanceof WorldServer) {
-            PlayerChunkMap playerManager = ((WorldServer) world).getPlayerChunkMap();
+    public static List<ServerPlayerEntity> getAllPlayersWatchingBlock(World world, int x, int z) {
+        if (world instanceof ServerWorld) {
+            PlayerChunkMap playerManager = ((ServerWorld) world).getPlayerChunkMap();
             return getOnlinePlayers().stream()
-                    .filter((Predicate<EntityPlayerMP>) player -> playerManager.isPlayerWatchingChunk(player, x >> 4, z >> 4))
+                    .filter((Predicate<ServerPlayerEntity>) player -> playerManager.isPlayerWatchingChunk(player, x >> 4, z >> 4))
                     .collect(Collectors.toList());
         }
         return ImmutableList.of();
@@ -105,9 +105,9 @@ public class ServerHelper {
      * @param dimension The dimension ID
      * @return All players in the provided dimension
      */
-    public static List<EntityPlayerMP> getAllPlayersInDimension(final DimensionType dimension) {
+    public static List<ServerPlayerEntity> getAllPlayersInDimension(final DimensionType dimension) {
         return getOnlinePlayers().stream()
-                .filter((Predicate<EntityPlayerMP>) player -> WorldHelper.getDimID(player.getEntityWorld()) == dimension)
+                .filter((Predicate<ServerPlayerEntity>) player -> WorldHelper.getDimID(player.getEntityWorld()) == dimension)
                 .collect(Collectors.toList());
     }
 

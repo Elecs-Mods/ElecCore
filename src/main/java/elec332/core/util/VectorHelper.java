@@ -1,7 +1,7 @@
 package elec332.core.util;
 
 import com.google.common.base.Preconditions;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
 
@@ -25,30 +25,30 @@ public class VectorHelper {
     private static final Vec3d[] zeroOnAxisS;
     private static final Vec3d[] oneOnAxisS;
 
-    public static Vec3d zeroOnAxis(EnumFacing side) {
+    public static Vec3d zeroOnAxis(Direction side) {
         return zeroOnAxis(Preconditions.checkNotNull(side).getAxis());
     }
 
-    public static Vec3d zeroOnAxis(EnumFacing.Axis axis) {
+    public static Vec3d zeroOnAxis(Direction.Axis axis) {
         return zeroOnAxisS[Preconditions.checkNotNull(axis).ordinal()];
     }
 
-    public static Vec3d oneOnAxis(EnumFacing side) {
+    public static Vec3d oneOnAxis(Direction side) {
         return oneOnAxis(Preconditions.checkNotNull(side).getAxis());
     }
 
-    public static Vec3d oneOnAxis(EnumFacing.Axis axis) {
+    public static Vec3d oneOnAxis(Direction.Axis axis) {
         return oneOnAxisS[Preconditions.checkNotNull(axis).ordinal()];
     }
 
     static {
-        int max = EnumFacing.Axis.values().length;
+        int max = Direction.Axis.values().length;
         zeroOnAxisS = new Vec3d[max];
         oneOnAxisS = new Vec3d[max];
         for (int i = 0; i < max; i++) {
-            EnumFacing.Axis axis = EnumFacing.Axis.values()[i];
-            zeroOnAxisS[i] = new Vec3d(axis == EnumFacing.Axis.X ? 0 : 1, axis == EnumFacing.Axis.Y ? 0 : 1, axis == EnumFacing.Axis.Z ? 0 : 1);
-            oneOnAxisS[i] = new Vec3d(axis == EnumFacing.Axis.X ? 1 : 0, axis == EnumFacing.Axis.Y ? 1 : 0, axis == EnumFacing.Axis.Z ? 1 : 0);
+            Direction.Axis axis = Direction.Axis.values()[i];
+            zeroOnAxisS[i] = new Vec3d(axis == Direction.Axis.X ? 0 : 1, axis == Direction.Axis.Y ? 0 : 1, axis == Direction.Axis.Z ? 0 : 1);
+            oneOnAxisS[i] = new Vec3d(axis == Direction.Axis.X ? 1 : 0, axis == Direction.Axis.Y ? 1 : 0, axis == Direction.Axis.Z ? 1 : 0);
 
         }
     }

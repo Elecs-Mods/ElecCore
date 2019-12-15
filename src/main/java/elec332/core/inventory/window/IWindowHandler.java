@@ -1,7 +1,7 @@
 package elec332.core.inventory.window;
 
 import elec332.core.api.network.ElecByteBuf;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.world.World;
 
 /**
@@ -9,6 +9,6 @@ import net.minecraft.world.World;
  */
 public interface IWindowHandler {
 
-    public Window createWindow(EntityPlayer player, World world, ElecByteBuf data);
+    public Window createWindow(PlayerEntity player, World world, ElecByteBuf data);
 
 }

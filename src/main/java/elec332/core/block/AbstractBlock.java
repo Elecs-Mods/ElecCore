@@ -3,13 +3,13 @@ package elec332.core.block;
 import elec332.core.tile.ITileWithDrops;
 import elec332.core.world.WorldHelper;
 import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.block.BlockState;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.IFluidState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
+import net.minecraft.util.Direction;
+import net.minecraft.util.Hand;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
@@ -43,35 +43,35 @@ public abstract class AbstractBlock extends Block implements IAbstractBlock {
 
     /**
      * Shape used for entity collision
-     * (Usually redirects to {@link #getShape(IBlockState, IBlockReader, BlockPos)}, returns empty shape when it doesn't block movement)
+     * (Usually redirects to {@link #getShape(BlockState, IBlockReader, BlockPos)}, returns empty shape when it doesn't block movement)
      */
     @Nonnull
     @Override
     @SuppressWarnings("deprecation")
-    public VoxelShape getCollisionShape(@Nonnull IBlockState state, @Nonnull IBlockReader world, @Nonnull BlockPos pos) {
+    public VoxelShape getCollisionShape(@Nonnull BlockState state, @Nonnull IBlockReader world, @Nonnull BlockPos pos) {
         return super.getCollisionShape(state, world, pos);
     }
 
     /**
      * Shape used for secondary raytracing.
-     * If there was a valid {@link RayTraceResult} on {@link #getShape(IBlockState, IBlockReader, BlockPos)},
+     * If there was a valid {@link RayTraceResult} on {@link #getShape(BlockState, IBlockReader, BlockPos)},
      * then raytracing will also be performed on this shape, to maybe correct the {@link RayTraceResult#sideHit}
      */
     @Nonnull
     @Override
     @SuppressWarnings("deprecation")
-    public VoxelShape getRaytraceShape(@Nonnull IBlockState state, @Nonnull IBlockReader world, @Nonnull BlockPos pos) {
+    public VoxelShape getRaytraceShape(@Nonnull BlockState state, @Nonnull IBlockReader world, @Nonnull BlockPos pos) {
         return super.getRaytraceShape(state, world, pos);
     }
 
     /**
-     * -Shape used for checking whether the block is opaque when {@link IBlockState#isSolid()} is false
+     * -Shape used for checking whether the block is opaque when {@link BlockState#isSolid()} is false
      * -Shape used for checking if a side of this block is solid (for rendering)
      */
     @Nonnull
     @Override
     @SuppressWarnings("deprecation")
-    public VoxelShape getRenderShape(@Nonnull IBlockState state, @Nonnull IBlockReader world, @Nonnull BlockPos pos) {
+    public VoxelShape getRenderShape(@Nonnull BlockState state, @Nonnull IBlockReader world, @Nonnull BlockPos pos) {
         return super.getRenderShape(state, world, pos);
     }
 
@@ -83,34 +83,34 @@ public abstract class AbstractBlock extends Block implements IAbstractBlock {
     @Nonnull
     @Override
     @SuppressWarnings("deprecation")
-    public VoxelShape getShape(@Nonnull IBlockState state, @Nonnull IBlockReader world, @Nonnull BlockPos pos) {
+    public VoxelShape getShape(@Nonnull BlockState state, @Nonnull IBlockReader world, @Nonnull BlockPos pos) {
         return super.getShape(state, world, pos);
     }
 
     @Override
     @SuppressWarnings("deprecation")
-    public boolean onBlockActivated(IBlockState state, World world, BlockPos pos, EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
+    public boolean onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, Direction facing, float hitX, float hitY, float hitZ) {
         return BlockMethods.onBlockActivated(state, world, pos, player, hand, facing, hitX, hitY, hitZ, this);
     }
 
     @Override
-    public boolean removedByPlayer(@Nonnull IBlockState state, World world, @Nonnull BlockPos pos, @Nonnull EntityPlayer player, boolean willHarvest, IFluidState fluid) {
+    public boolean removedByPlayer(@Nonnull BlockState state, World world, @Nonnull BlockPos pos, @Nonnull PlayerEntity player, boolean willHarvest, IFluidState fluid) {
         return BlockMethods.removedByPlayer(state, world, pos, player, willHarvest, fluid, this);
     }
 
     @Nullable
     @Override //Old collisionRayTrace
-    public RayTraceResult getRayTraceResult(IBlockState state, World world, BlockPos pos, Vec3d start, Vec3d end, RayTraceResult original) {
+    public RayTraceResult getRayTraceResult(BlockState state, World world, BlockPos pos, Vec3d start, Vec3d end, RayTraceResult original) {
         return BlockMethods.collisionRayTrace(state, world, pos, start, end, this);
     }
 
     @Override
-    public void getDrops(IBlockState state, NonNullList<ItemStack> drops, World world, BlockPos pos, int fortune) {
+    public void getDrops(BlockState state, NonNullList<ItemStack> drops, World world, BlockPos pos, int fortune) {
         getOriginalDrops(state, drops, world, pos, fortune);
         getTileDrops(drops, world, pos, fortune);
     }
 
-    public void getOriginalDrops(IBlockState state, NonNullList<ItemStack> drops, World world, BlockPos pos, int fortune) {
+    public void getOriginalDrops(BlockState state, NonNullList<ItemStack> drops, World world, BlockPos pos, int fortune) {
         super.getDrops(state, drops, world, pos, fortune);
     }
 
@@ -124,7 +124,7 @@ public abstract class AbstractBlock extends Block implements IAbstractBlock {
     /*
     //@Override
     @SuppressWarnings("deprecation")
-    public void addCollisionBoxToList(IBlockState state, @Nonnull World world, @Nonnull BlockPos pos, @Nonnull AxisAlignedBB entityBox, @Nonnull List<AxisAlignedBB> collidingBoxes, Entity entityIn, boolean isActualState) {
+    public void addCollisionBoxToList(BlockState state, @Nonnull World world, @Nonnull BlockPos pos, @Nonnull AxisAlignedBB entityBox, @Nonnull List<AxisAlignedBB> collidingBoxes, Entity entityIn, boolean isActualState) {
         BlockMethods.addCollisionBoxToList(state, world, pos, entityBox, collidingBoxes, entityIn, isActualState, this);
     }
 
@@ -132,7 +132,7 @@ public abstract class AbstractBlock extends Block implements IAbstractBlock {
     @OnlyIn(Dist.CLIENT)
     //@Override
     @SuppressWarnings("deprecation")
-    public AxisAlignedBB getSelectedBoundingBox(IBlockState state, @Nonnull World world, @Nonnull BlockPos pos) {
+    public AxisAlignedBB getSelectedBoundingBox(BlockState state, @Nonnull World world, @Nonnull BlockPos pos) {
         return BlockMethods.getSelectedBoundingBox(state, world, pos, this);
     }
     */

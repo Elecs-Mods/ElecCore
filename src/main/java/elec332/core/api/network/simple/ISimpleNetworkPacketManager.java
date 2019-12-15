@@ -2,7 +2,7 @@ package elec332.core.api.network.simple;
 
 import elec332.core.api.network.IPacketDispatcher;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.dimension.DimensionType;
 
@@ -55,7 +55,7 @@ public interface ISimpleNetworkPacketManager {
      * @param message The message to send
      * @param player  The player to send it to
      */
-    public void sendTo(ISimplePacket message, EntityPlayerMP player);
+    public void sendTo(ISimplePacket message, ServerPlayerEntity player);
 
     /**
      * Send this message to the specified player.
@@ -65,7 +65,7 @@ public interface ISimpleNetworkPacketManager {
      * @param packetHandler The packet-handler the client has to use
      * @param player        The player to send it to
      */
-    public void sendTo(ISimplePacket message, ISimplePacketHandler packetHandler, EntityPlayerMP player);
+    public void sendTo(ISimplePacket message, ISimplePacketHandler packetHandler, ServerPlayerEntity player);
 
     /**
      * Send the data provided in the provided {@link ByteBuf} to the specified player.
@@ -75,7 +75,7 @@ public interface ISimpleNetworkPacketManager {
      * @param packetHandler The packet-handler the client has to use
      * @param player        The player to send it to
      */
-    public void sendTo(ByteBuf data, ISimplePacketHandler packetHandler, EntityPlayerMP player);
+    public void sendTo(ByteBuf data, ISimplePacketHandler packetHandler, ServerPlayerEntity player);
 
 
     /**

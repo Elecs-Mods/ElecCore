@@ -1,7 +1,7 @@
 package elec332.core.api.client.model.loading;
 
 import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.BlockState;
 import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.client.renderer.model.ModelResourceLocation;
 
@@ -22,12 +22,12 @@ public interface IBlockModelHandler {
 
     /**
      * Notifies this {@link IBlockModelHandler} of the
-     * {@link ModelResourceLocation} of the provided {@link IBlockState}
+     * {@link ModelResourceLocation} of the provided {@link BlockState}
      *
-     * @param state         The {@link IBlockState}
-     * @param modelLocation The location of the provided {@link IBlockState}
+     * @param state         The {@link BlockState}
+     * @param modelLocation The location of the provided {@link BlockState}
      */
-    default public void notifyModelLocation(IBlockState state, ModelResourceLocation modelLocation) {
+    default public void notifyModelLocation(BlockState state, ModelResourceLocation modelLocation) {
     }
 
     /**
@@ -38,6 +38,6 @@ public interface IBlockModelHandler {
      * @param fullResourceLocation The full ModelResourceLocation for this model
      * @return The model for this {@param state}
      */
-    public IBakedModel getModelFor(IBlockState state, String identifier, ModelResourceLocation fullResourceLocation);
+    public IBakedModel getModelFor(BlockState state, String identifier, ModelResourceLocation fullResourceLocation);
 
 }

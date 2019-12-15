@@ -10,11 +10,11 @@ import elec332.core.api.client.model.model.IQuadProvider;
 import elec332.core.api.client.model.template.IModelTemplate;
 import elec332.core.api.client.model.template.IQuadTemplate;
 import elec332.core.api.client.model.template.IQuadTemplateSidedMap;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.BlockState;
 import net.minecraft.client.renderer.Vector3f;
 import net.minecraft.client.renderer.model.*;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -82,7 +82,7 @@ public class ElecModelBakery implements IElecModelBakery {
 
             @Nonnull
             @Override
-            public List<BakedQuad> getQuads(IBlockState state, EnumFacing facing, Random rand) {
+            public List<BakedQuad> getQuads(BlockState state, Direction facing, Random rand) {
                 return quadProvider.getBakedQuads(state, facing, rand);
             }
 
@@ -95,7 +95,7 @@ public class ElecModelBakery implements IElecModelBakery {
 
             @Nonnull
             @Override
-            public List<BakedQuad> getQuads(IBlockState state, EnumFacing facing, Random rand) {
+            public List<BakedQuad> getQuads(BlockState state, Direction facing, Random rand) {
                 return quadProvider.getBakedQuads(state, facing, rand);
             }
 
@@ -174,7 +174,7 @@ public class ElecModelBakery implements IElecModelBakery {
 
         @Override
         @Nonnull
-        public List<BakedQuad> getQuads(IBlockState state, EnumFacing facing, Random rand) {
+        public List<BakedQuad> getQuads(BlockState state, Direction facing, Random rand) {
             return facing == null ? generalQuads : sidedQuads == null ? EMPTY_LIST : sidedQuads.getBakedQuads(state, facing, rand);
         }
 

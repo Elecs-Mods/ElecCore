@@ -8,7 +8,7 @@ import elec332.core.api.client.model.template.IQuadTemplateSidedMap;
 import elec332.core.client.model.ElecModelBakery;
 import net.minecraft.client.renderer.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -50,7 +50,7 @@ public class MutableModelTemplate implements IMutableModelTemplate {
             ret.generalQuads.add(MutableQuadTemplate.copyOf(quadTemplate));
         }
         ret.sidedQuads = MutableQuadSidedMap.newQuadSidedMap();
-        for (EnumFacing facing : EnumFacing.values()) {
+        for (Direction facing : Direction.values()) {
             List<IQuadTemplate> toAdd = Lists.newArrayList();
             for (IQuadTemplate quadTemplate : template.getSidedQuads().getForSide(facing)) {
                 toAdd.add(MutableQuadTemplate.copyOf(quadTemplate));

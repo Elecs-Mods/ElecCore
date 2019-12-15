@@ -15,11 +15,13 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.color.IBlockColor;
 import net.minecraft.client.renderer.color.IItemColor;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemBlock;
+import net.minecraft.item.BlockItem;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
@@ -36,7 +38,7 @@ public class ClientProxy extends CommonProxy {
     }
 
     private final Minecraft minecraft;
-    private static final IItemColor COLORED_ITEM, COLORED_ITEMBLOCK;
+    private static final IItemColor COLORED_ITEM, COLORED_BlockItem;
     private static final IBlockColor COLORED_BLOCK;
 
     public boolean isClient() {
@@ -55,12 +57,12 @@ public class ClientProxy extends CommonProxy {
             if (item instanceof IColoredItem) {
                 RenderHelper.getItemColors().register(COLORED_ITEM, item);
             }
-            if (item instanceof ItemBlock) {
-                Block block = ((ItemBlock) item).getBlock();
+            if (item instanceof BlockItem) {
+                Block block = ((BlockItem) item).getBlock();
                 if (block instanceof IColoredItem) {
                     RenderHelper.getItemColors().register(COLORED_ITEM, block);
                 } else if (block instanceof IColoredBlock) {
-                    RenderHelper.getItemColors().register(COLORED_ITEMBLOCK, item);
+                    RenderHelper.getItemColors().register(COLORED_BlockItem, item);
                 }
             }
         }
@@ -73,7 +75,7 @@ public class ClientProxy extends CommonProxy {
 
     @Override
     public void addPersonalMessageToPlayer(String s) {
-        getClientPlayer().sendMessage(new TextComponentString(s));
+        getClientPlayer().sendMessage(new StringTextComponent(s));
     }
 
     @Override
@@ -82,7 +84,7 @@ public class ClientProxy extends CommonProxy {
     }
 
     @Override
-    public EntityPlayer getClientPlayer() {
+    public PlayerEntity getClientPlayer() {
         return Minecraft.getInstance().player;
     }
 
@@ -96,8 +98,8 @@ public class ClientProxy extends CommonProxy {
 
         COLORED_ITEM = (stack, tintIndex) -> ((IColoredItem) stack.getItem()).getColorFromItemStack(stack, tintIndex);
 
-        COLORED_ITEMBLOCK = (stack, tintIndex) -> {
-            Block block = ((ItemBlock) stack.getItem()).getBlock();
+        COLORED_BlockItem = (stack, tintIndex) -> {
+            Block block = ((BlockItem) stack.getItem()).getBlock();
             return ((IColoredBlock) block).colorMultiplier(block.getDefaultState(), null, null, tintIndex);
         };
 

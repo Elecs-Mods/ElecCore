@@ -12,7 +12,7 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
-import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.dimension.DimensionType;
@@ -54,7 +54,7 @@ class DefaultSimpleNetworkHandler implements ISimpleNetworkPacketManager, BiCons
     }
 
     @Override
-    public void sendTo(ISimplePacket message, EntityPlayerMP player) {
+    public void sendTo(ISimplePacket message, ServerPlayerEntity player) {
         packetDispatcher.sendTo(from(message), player);
     }
 
@@ -79,7 +79,7 @@ class DefaultSimpleNetworkHandler implements ISimpleNetworkPacketManager, BiCons
     }
 
     @Override
-    public void sendTo(ISimplePacket message, ISimplePacketHandler packetHandler, EntityPlayerMP player) {
+    public void sendTo(ISimplePacket message, ISimplePacketHandler packetHandler, ServerPlayerEntity player) {
         packetDispatcher.sendTo(from(message, packetHandler), player);
     }
 
@@ -104,7 +104,7 @@ class DefaultSimpleNetworkHandler implements ISimpleNetworkPacketManager, BiCons
     }
 
     @Override
-    public void sendTo(ByteBuf data, ISimplePacketHandler packetHandler, EntityPlayerMP player) {
+    public void sendTo(ByteBuf data, ISimplePacketHandler packetHandler, ServerPlayerEntity player) {
         packetDispatcher.sendTo(from(data, packetHandler), player);
     }
 

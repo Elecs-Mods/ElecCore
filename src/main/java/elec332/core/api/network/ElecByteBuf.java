@@ -2,7 +2,7 @@ package elec332.core.api.network;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
@@ -34,15 +34,15 @@ public abstract class ElecByteBuf extends PacketBuffer {
     }
 
     /**
-     * Writes a compressed NBTTagCompound to this buffer
+     * Writes a compressed CompoundNBT to this buffer
      */
-    public abstract ElecByteBuf writeNBTTagCompoundToBuffer(@Nullable NBTTagCompound tag);
+    public abstract ElecByteBuf writeCompoundNBTToBuffer(@Nullable CompoundNBT tag);
 
     /**
-     * Reads a compressed NBTTagCompound from this buffer
+     * Reads a compressed CompoundNBT from this buffer
      */
     @Nullable
-    public abstract NBTTagCompound readNBTTagCompoundFromBuffer();
+    public abstract CompoundNBT readCompoundNBTFromBuffer();
 
     /**
      * Writes a ItemStack to this buffer

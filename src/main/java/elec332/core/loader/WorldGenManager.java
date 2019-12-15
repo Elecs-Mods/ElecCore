@@ -14,10 +14,10 @@ import elec332.core.util.FMLHelper;
 import elec332.core.util.RegistryHelper;
 import elec332.core.world.FeaturePlacers;
 import elec332.core.world.WorldHelper;
-import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EnumCreatureType;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.IWorld;
@@ -26,8 +26,8 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.IChunk;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.gen.GenerationStage;
-import net.minecraft.world.gen.IChunkGenSettings;
-import net.minecraft.world.gen.IChunkGenerator;
+import net.minecraft.world.gen.GenerationSettings;
+import net.minecraft.world.gen.ChunkGenerator;
 import net.minecraft.world.gen.carver.WorldCarver;
 import net.minecraft.world.gen.carver.WorldCarverWrapper;
 import net.minecraft.world.gen.feature.CompositeFeature;
@@ -35,7 +35,7 @@ import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.IFeatureConfig;
 import net.minecraft.world.gen.feature.NoFeatureConfig;
 import net.minecraft.world.gen.feature.structure.Structure;
-import net.minecraft.world.gen.placement.BasePlacement;
+import net.minecraft.world.gen.placement.Placement;
 import net.minecraft.world.gen.placement.IPlacementConfig;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.world.ChunkDataEvent;
@@ -152,7 +152,7 @@ enum WorldGenManager implements ISingleObjectRegistry<IWorldGenHook>, IWorldGenM
         });
     }
 
-    boolean legacyPopulateChunk(IWorld world, IChunkGenerator<? extends IChunkGenSettings> chunkGenerator, Random random, BlockPos chunkXYWorld) {
+    boolean legacyPopulateChunk(IWorld world, IChunkGenerator<? extends GenerationSettings> chunkGenerator, Random random, BlockPos chunkXYWorld) {
         ChunkPos pos = WorldHelper.chunkPosFromBlockPos(chunkXYWorld);
         boolean b = false;
         for (IWorldGenHook wgh : set_) {
@@ -164,7 +164,7 @@ enum WorldGenManager implements ISingleObjectRegistry<IWorldGenHook>, IWorldGenM
     @SubscribeEvent
     public void chunkLoadFromDisk(ChunkDataEvent.Load event) {
         IChunk chunk = event.getChunk();
-        NBTTagCompound tag = event.getData().getCompound(KEY);
+        CompoundNBT tag = event.getData().getCompound(KEY);
         for (IChunkIOHook wgh : chunkHooks) {
             wgh.chunkLoadedFromDisk(chunk, tag, this);
         }
@@ -173,7 +173,7 @@ enum WorldGenManager implements ISingleObjectRegistry<IWorldGenHook>, IWorldGenM
     @SubscribeEvent
     public void chunkSaveToDisk(ChunkDataEvent.Save event) {
         IChunk chunk = event.getChunk();
-        NBTTagCompound tag = new NBTTagCompound();
+        CompoundNBT tag = new CompoundNBT();
         for (IChunkIOHook wgh : chunkHooks) {
             wgh.chunkSavedToDisk(chunk, tag, this);
         }
@@ -278,8 +278,8 @@ enum WorldGenManager implements ISingleObjectRegistry<IWorldGenHook>, IWorldGenM
         }
 
         @Override
-        public void chunkLoadedFromDisk(IChunk chunk, NBTTagCompound data, IWorldGenManager worldGenManager) {
-            NBTTagCompound tag = data.getCompound(owner);
+        public void chunkLoadedFromDisk(IChunk chunk, CompoundNBT data, IWorldGenManager worldGenManager) {
+            CompoundNBT tag = data.getCompound(owner);
             boolean b = tag.contains(chunkPopulator.getName());
             if ((!b || !chunkPopulator.getGenKey().equals(tag.getString(chunkPopulator.getName()))) && chunkPopulator.shouldRegen(b)) {
                 worldGenManager.registerForRetroGen(Preconditions.checkNotNull(chunk.getWorldForge()), chunk.getPos(), this);
@@ -289,8 +289,8 @@ enum WorldGenManager implements ISingleObjectRegistry<IWorldGenHook>, IWorldGenM
         }
 
         @Override
-        public void chunkSavedToDisk(IChunk chunk, NBTTagCompound data, IWorldGenManager worldGenManager) {
-            NBTTagCompound tag = data.getCompound(owner);
+        public void chunkSavedToDisk(IChunk chunk, CompoundNBT data, IWorldGenManager worldGenManager) {
+            CompoundNBT tag = data.getCompound(owner);
             if (!Strings.isNullOrEmpty(this.lastKey)) {
                 tag.putString(chunkPopulator.getName(), this.lastKey);
             }
@@ -320,12 +320,12 @@ enum WorldGenManager implements ISingleObjectRegistry<IWorldGenHook>, IWorldGenM
         }
 
         @Override
-        public <FC extends IFeatureConfig, PC extends IPlacementConfig> void addFeature(GenerationStage.Decoration decorationStage, IFeatureGenerator<FC> feature, FC fc, BasePlacement<PC> placement, PC pc) {
+        public <FC extends IFeatureConfig, PC extends IPlacementConfig> void addFeature(GenerationStage.Decoration decorationStage, IFeatureGenerator<FC> feature, FC fc, Placement<PC> placement, PC pc) {
             addFeature(decorationStage, new FeatureWrapper<>(feature), fc, placement, pc);
         }
 
         @Override
-        public <FC extends IFeatureConfig, PC extends IPlacementConfig> void addFeature(GenerationStage.Decoration decorationStage, Feature<FC> feature, FC fc, BasePlacement<PC> placement, PC pc) {
+        public <FC extends IFeatureConfig, PC extends IPlacementConfig> void addFeature(GenerationStage.Decoration decorationStage, Feature<FC> feature, FC fc, Placement<PC> placement, PC pc) {
             addFeature(decorationStage, new CompositeFeature<>(feature, fc, placement, pc));
         }
 
@@ -341,7 +341,7 @@ enum WorldGenManager implements ISingleObjectRegistry<IWorldGenHook>, IWorldGenM
                 if (!retroGennableNames.add(cName)) {
                     throw new IllegalArgumentException("Feature generation name is already in use: " + cName);
                 }
-                feature = new RetroGenCapableCompositeFeature(feature.getFeature(), (IRetroGenFeatureConfig) feature.featureConfig, feature.basePlacement, feature.placementConfig, name);
+                feature = new RetroGenCapableCompositeFeature(feature.getFeature(), (IRetroGenFeatureConfig) feature.featureConfig, feature.Placement, feature.placementConfig, name);
                 register((IChunkIOHook) feature);
             }
             biome.addFeature(decorationStage, feature);
@@ -368,7 +368,7 @@ enum WorldGenManager implements ISingleObjectRegistry<IWorldGenHook>, IWorldGenM
         }
 
         @Override
-        public void addSpawn(EnumCreatureType type, EntityType<? extends EntityLiving> entityType, int weight, int minGroupCount, int maxGroupCount) {
+        public void addSpawn(EnumCreatureType type, EntityType<? extends LivingEntity> entityType, int weight, int minGroupCount, int maxGroupCount) {
             addSpawn(type, new Biome.SpawnListEntry(entityType, weight, maxGroupCount, maxGroupCount));
         }
 
@@ -381,7 +381,7 @@ enum WorldGenManager implements ISingleObjectRegistry<IWorldGenHook>, IWorldGenM
 
     private class RetroGenCapableCompositeFeature<C extends IRetroGenFeatureConfig, P extends IPlacementConfig> extends CompositeFeature<C, P> implements IChunkIOHook, ILegacyFeatureGenerator {
 
-        private RetroGenCapableCompositeFeature(Feature<C> feature, C fc, BasePlacement<P> placement, P pc, String owner) {
+        private RetroGenCapableCompositeFeature(Feature<C> feature, C fc, Placement<P> placement, P pc, String owner) {
             super(feature, fc, placement, pc);
             Feature<C> rf;
             if (feature instanceof FeatureWrapper) {
@@ -400,7 +400,7 @@ enum WorldGenManager implements ISingleObjectRegistry<IWorldGenHook>, IWorldGenM
         private String lastKey;
 
         @Override
-        public boolean place(IWorld world, IChunkGenerator<? extends IChunkGenSettings> chunkGenerator, Random random, BlockPos blockPos, NoFeatureConfig noop) {
+        public boolean place(IWorld world, IChunkGenerator<? extends GenerationSettings> chunkGenerator, Random random, BlockPos blockPos, NoFeatureConfig noop) {
             boolean b = super.place(world, chunkGenerator, random, blockPos, noop);
             this.lastKey = config.getGenKey();
             return b;
@@ -412,8 +412,8 @@ enum WorldGenManager implements ISingleObjectRegistry<IWorldGenHook>, IWorldGenM
         }
 
         @Override
-        public void chunkLoadedFromDisk(IChunk chunk, NBTTagCompound data, IWorldGenManager worldGenManager) {
-            NBTTagCompound tag = data.getCompound(owner);
+        public void chunkLoadedFromDisk(IChunk chunk, CompoundNBT data, IWorldGenManager worldGenManager) {
+            CompoundNBT tag = data.getCompound(owner);
             boolean b = tag.contains(config.getName());
             if ((!b || !config.getGenKey().equals(tag.getString(config.getName()))) && config.shouldRetroGen(b)) {
                 worldGenManager.registerForRetroGen(Preconditions.checkNotNull(chunk.getWorldForge()), chunk.getPos(), this);
@@ -423,8 +423,8 @@ enum WorldGenManager implements ISingleObjectRegistry<IWorldGenHook>, IWorldGenM
         }
 
         @Override
-        public void chunkSavedToDisk(IChunk chunk, NBTTagCompound data, IWorldGenManager worldGenManager) {
-            NBTTagCompound tag = data.getCompound(owner);
+        public void chunkSavedToDisk(IChunk chunk, CompoundNBT data, IWorldGenManager worldGenManager) {
+            CompoundNBT tag = data.getCompound(owner);
             if (!Strings.isNullOrEmpty(this.lastKey)) {
                 tag.putString(config.getName(), this.lastKey);
             }
@@ -459,7 +459,7 @@ enum WorldGenManager implements ISingleObjectRegistry<IWorldGenHook>, IWorldGenM
 
 
         @Override
-        public boolean place(IWorld world, IChunkGenerator<? extends IChunkGenSettings> chunkGenerator, Random random, BlockPos pos, C config) {
+        public boolean place(IWorld world, ChunkGenerator<? extends GenerationSettings> chunkGenerator, Random random, BlockPos pos, C config) {
             return feature.generateFeature(world, pos, chunkGenerator, random, config, retroGen);
         }
 

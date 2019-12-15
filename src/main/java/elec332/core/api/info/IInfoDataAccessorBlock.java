@@ -1,12 +1,12 @@
 package elec332.core.api.info;
 
 import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.block.BlockState;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
@@ -21,7 +21,7 @@ public interface IInfoDataAccessorBlock extends IInfoDataAccessor {
 
     @Nonnull
     @Override
-    public EntityPlayer getPlayer();
+    public PlayerEntity getPlayer();
 
     @Nonnull
     @Override
@@ -32,16 +32,16 @@ public interface IInfoDataAccessorBlock extends IInfoDataAccessor {
 
     @Nonnull
     @Override
-    public NBTTagCompound getData();
+    public CompoundNBT getData();
 
     @Override
     public Vec3d getHitVec();
 
     @Nonnull
-    public EnumFacing getSide();
+    public Direction getSide();
 
     @Nonnull
-    public IBlockState getBlockState();
+    public BlockState getBlockState();
 
     @Nonnull
     public Block getBlock();

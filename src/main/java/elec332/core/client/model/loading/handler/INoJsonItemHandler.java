@@ -6,15 +6,15 @@ import elec332.core.api.client.model.loading.ModelHandler;
 import elec332.core.client.RenderHelper;
 import elec332.core.client.model.loading.IBlockModelItemLink;
 import elec332.core.client.model.loading.INoJsonItem;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.model.*;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemBlock;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -33,15 +33,15 @@ public class INoJsonItemHandler implements IItemModelHandler {
 
     public INoJsonItemHandler() {
         modelItemLink = new LinkedItemModel();
-        modelItemBlockLink = new LinkedItemBlockModel();
-        modelLinkedItemBlock = new LinkedItemBlockModel2();
+        modelBlockItemLink = new LinkedBlockItemModel();
+        modelLinkedBlockItem = new LinkedBlockItemModel2();
     }
 
-    private final IBakedModel modelItemLink, modelItemBlockLink, modelLinkedItemBlock;
+    private final IBakedModel modelItemLink, modelBlockItemLink, modelLinkedBlockItem;
 
     @Override
     public boolean handleItem(Item item) {
-        return item instanceof INoJsonItem || (item instanceof ItemBlock && (((ItemBlock) item).getBlock() instanceof INoJsonItem || (((ItemBlock) item).getBlock() instanceof IBlockModelItemLink) && ((IBlockModelItemLink) ((ItemBlock) item).getBlock()).itemInheritsModel()));
+        return item instanceof INoJsonItem || (item instanceof BlockItem && (((BlockItem) item).getBlock() instanceof INoJsonItem || (((BlockItem) item).getBlock() instanceof IBlockModelItemLink) && ((IBlockModelItemLink) ((BlockItem) item).getBlock()).itemInheritsModel()));
     }
 
     @Override
@@ -51,18 +51,18 @@ public class INoJsonItemHandler implements IItemModelHandler {
 
     @Override
     public IBakedModel getModelFor(Item item, String identifier, ModelResourceLocation fullResourceLocation) {
-        return item instanceof INoJsonItem ? modelItemLink : ((ItemBlock) item).getBlock() instanceof INoJsonItem ? modelItemBlockLink : modelLinkedItemBlock;
+        return item instanceof INoJsonItem ? modelItemLink : ((BlockItem) item).getBlock() instanceof INoJsonItem ? modelBlockItemLink : modelLinkedBlockItem;
     }
 
-    private class LinkedItemBlockModel2 extends NullModel {
+    private class LinkedBlockItemModel2 extends NullModel {
 
-        private LinkedItemBlockModel2() {
+        private LinkedBlockItemModel2() {
             super(new NoJsonItemOverrideList(null) {
 
                 @Nonnull
                 @Override
-                public IBakedModel getModelWithOverrides(@Nonnull IBakedModel originalModel, ItemStack stack, @Nullable World world, @Nullable EntityLivingBase entity) {
-                    IBlockModelItemLink b = (IBlockModelItemLink) ((ItemBlock) stack.getItem()).getBlock();
+                public IBakedModel getModelWithOverrides(@Nonnull IBakedModel originalModel, ItemStack stack, @Nullable World world, @Nullable LivingEntity entity) {
+                    IBlockModelItemLink b = (IBlockModelItemLink) ((BlockItem) stack.getItem()).getBlock();
                     IBakedModel ret = Minecraft.getInstance().getBlockRendererDispatcher().getModelForState(b.getRenderState(stack));
                     ItemOverrideList iol = ret.getOverrides();
                     if (iol != null) {
@@ -83,7 +83,7 @@ public class INoJsonItemHandler implements IItemModelHandler {
 
                 @Override
                 @Nonnull
-                public IBakedModel getModelWithOverrides(@Nonnull IBakedModel originalModel, ItemStack stack, @Nullable World world, @Nullable EntityLivingBase entity) {
+                public IBakedModel getModelWithOverrides(@Nonnull IBakedModel originalModel, ItemStack stack, @Nullable World world, @Nullable LivingEntity entity) {
                     IBakedModel ret = ((INoJsonItem) stack.getItem()).getItemModel(stack, world, entity);
                     ItemOverrideList iol = ret.getOverrides();
                     if (iol != null) {
@@ -97,15 +97,15 @@ public class INoJsonItemHandler implements IItemModelHandler {
 
     }
 
-    private class LinkedItemBlockModel extends NullModel {
+    private class LinkedBlockItemModel extends NullModel {
 
-        private LinkedItemBlockModel() {
+        private LinkedBlockItemModel() {
             super(new NoJsonItemOverrideList(null) {
 
                 @Override
                 @Nonnull
-                public IBakedModel getModelWithOverrides(@Nonnull IBakedModel originalModel, ItemStack stack, @Nullable World world, @Nullable EntityLivingBase entity) {
-                    IBakedModel ret = ((INoJsonItem) (((ItemBlock) stack.getItem()).getBlock())).getItemModel(stack, world, entity);
+                public IBakedModel getModelWithOverrides(@Nonnull IBakedModel originalModel, ItemStack stack, @Nullable World world, @Nullable LivingEntity entity) {
+                    IBakedModel ret = ((INoJsonItem) (((BlockItem) stack.getItem()).getBlock())).getItemModel(stack, world, entity);
                     ItemOverrideList iol = ret.getOverrides();
                     if (iol != null) {
                         ret = iol.getModelWithOverrides(ret, stack, world, entity);
@@ -129,7 +129,7 @@ public class INoJsonItemHandler implements IItemModelHandler {
 
         @Override
         @Nonnull
-        public IBakedModel getModelWithOverrides(@Nonnull IBakedModel originalModel, ItemStack stack, @Nullable World world, @Nullable EntityLivingBase entity) {
+        public IBakedModel getModelWithOverrides(@Nonnull IBakedModel originalModel, ItemStack stack, @Nullable World world, @Nullable LivingEntity entity) {
             return item.getItemModel(stack, world, entity);
         }
 
@@ -144,7 +144,7 @@ public class INoJsonItemHandler implements IItemModelHandler {
         private final ItemOverrideList iol;
 
         @Override
-        public List<BakedQuad> getQuads(@Nullable IBlockState state, @Nullable EnumFacing side, Random rand) {
+        public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, Random rand) {
             throw new UnsupportedOperationException();
         }
 

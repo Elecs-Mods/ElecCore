@@ -4,7 +4,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import elec332.core.world.DimensionCoordinate;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 
@@ -27,7 +27,7 @@ public class DefaultTileEntityLink implements ITileEntityLink {
 
     protected final TileEntity tile;
     protected final DimensionCoordinate coord;
-    protected final Map<Capability<?>, Map<EnumFacing, LazyOptional<?>>> capCache;
+    protected final Map<Capability<?>, Map<Direction, LazyOptional<?>>> capCache;
 
     @Nullable
     @Override
@@ -43,11 +43,11 @@ public class DefaultTileEntityLink implements ITileEntityLink {
 
     @Nonnull
     @Override
-    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable EnumFacing side) {
+    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
         if (!coord.isLoaded() || tile == null) {
             return LazyOptional.empty();
         }
-        Map<EnumFacing, LazyOptional<?>> capC1 = capCache.computeIfAbsent(cap, c -> Maps.newIdentityHashMap());
+        Map<Direction, LazyOptional<?>> capC1 = capCache.computeIfAbsent(cap, c -> Maps.newIdentityHashMap());
         if (capC1.containsKey(side)) {
             LazyOptional<?> cret = capC1.get(side);
             if (cret.isPresent()) {

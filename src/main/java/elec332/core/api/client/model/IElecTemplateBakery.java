@@ -2,7 +2,7 @@ package elec332.core.api.client.model;
 
 import elec332.core.api.client.model.template.*;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 
 import javax.annotation.Nonnull;
 
@@ -30,10 +30,10 @@ public interface IElecTemplateBakery {
     public IMutableModelTemplate copyOf(IModelTemplate template);
 
     @Nonnull
-    public IMutableQuadTemplate templateQuadForTexture(EnumFacing side, TextureAtlasSprite texture);
+    public IMutableQuadTemplate templateQuadForTexture(Direction side, TextureAtlasSprite texture);
 
     @Nonnull
-    public IMutableQuadTemplate newQuadTemplate(EnumFacing side);
+    public IMutableQuadTemplate newQuadTemplate(Direction side);
 
     @Nonnull
     public IMutableQuadTemplate copyOf(@Nonnull IQuadTemplate template);

@@ -1,8 +1,8 @@
 package elec332.core.api.info;
 
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
@@ -14,7 +14,7 @@ import javax.annotation.Nonnull;
 public interface IInfoDataAccessorEntity extends IInfoDataAccessor {
 
     @Nonnull
-    public EntityPlayer getPlayer();
+    public PlayerEntity getPlayer();
 
     @Nonnull
     public Entity getEntity();
@@ -23,7 +23,7 @@ public interface IInfoDataAccessorEntity extends IInfoDataAccessor {
     public World getWorld();
 
     @Nonnull
-    public NBTTagCompound getData();
+    public CompoundNBT getData();
 
     public Vec3d getHitVec();
 

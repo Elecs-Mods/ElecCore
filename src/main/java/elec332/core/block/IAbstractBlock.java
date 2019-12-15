@@ -1,9 +1,9 @@
 package elec332.core.block;
 
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.block.BlockState;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumHand;
+import net.minecraft.util.Hand;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
@@ -17,15 +17,15 @@ import java.util.List;
  */
 public interface IAbstractBlock {
 
-    default public void addSelectionBoxes(IBlockState state, World world, BlockPos pos, List<AxisAlignedBB> boxes) {
+    default public void addSelectionBoxes(BlockState state, World world, BlockPos pos, List<AxisAlignedBB> boxes) {
         boxes.add(state.getShape(world, pos).getBoundingBox());
     }
 
-    default public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, RayTraceResult hit) {
+    default public boolean onBlockActivated(World world, BlockPos pos, BlockState state, PlayerEntity player, Hand hand, RayTraceResult hit) {
         return false;
     }
 
-    default public boolean canBreak(World world, BlockPos pos, EntityPlayer player) {
+    default public boolean canBreak(World world, BlockPos pos, PlayerEntity player) {
         return true;
     }
 

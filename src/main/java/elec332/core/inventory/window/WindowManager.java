@@ -9,10 +9,10 @@ import elec332.core.util.FMLHelper;
 import elec332.core.world.WorldHelper;
 import io.netty.buffer.Unpooled;
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.inventory.Container;
+import net.minecraft.inventory.container.Container;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
@@ -39,7 +39,7 @@ public enum WindowManager {
     }
 
     private final BiMap<ResourceLocation, IWindowHandler> lookup;
-    public static final ThreadLocal<EntityPlayer> currentOpeningPlayer = new ThreadLocal<>();
+    public static final ThreadLocal<PlayerEntity> currentOpeningPlayer = new ThreadLocal<>();
 
     private static final ResourceLocation GUI_NAME = new ResourceLocation(ElecCore.MODID, "window_gui");
     private static final ResourceLocation TILE_WINDOW_HANDLER = new ResourceLocation(ElecCore.MODID, "tile");
@@ -68,39 +68,39 @@ public enum WindowManager {
         Minecraft.getInstance().displayGuiScreen(new WindowGui(ElecCore.proxy.getClientPlayer(), window));
     }
 
-    public static void openTileWindow(@Nonnull EntityPlayer player, BlockPos pos) {
+    public static void openTileWindow(@Nonnull PlayerEntity player, BlockPos pos) {
         openWindow(player, INSTANCE.get(TILE_WINDOW_HANDLER), bb -> bb.writeBlockPos(pos));
     }
 
-    public static void openWindow(@Nonnull EntityPlayer player, IWindowHandler windowHandler, World world, Consumer<ElecByteBuf> dataSupplier) {
+    public static void openWindow(@Nonnull PlayerEntity player, IWindowHandler windowHandler, World world, Consumer<ElecByteBuf> dataSupplier) {
         ElecByteBuf data = ElecByteBuf.of(Unpooled.buffer());
         dataSupplier.accept(data);
         openWindow(player, windowHandler, world, data);
     }
 
-    public static void openWindow(@Nonnull EntityPlayer player, IWindowHandler windowHandler, Consumer<ElecByteBuf> dataSupplier) {
+    public static void openWindow(@Nonnull PlayerEntity player, IWindowHandler windowHandler, Consumer<ElecByteBuf> dataSupplier) {
         ElecByteBuf data = ElecByteBuf.of(Unpooled.buffer());
         dataSupplier.accept(data);
         openWindow(player, windowHandler, data);
     }
 
-    public static void openWindow(@Nonnull EntityPlayer player, IWindowHandler windowHandler, ElecByteBuf data) {
+    public static void openWindow(@Nonnull PlayerEntity player, IWindowHandler windowHandler, ElecByteBuf data) {
         openWindow(player, windowHandler, player.getEntityWorld(), data);
     }
 
-    public static void openWindow(@Nonnull EntityPlayer player, IWindowHandler windowHandler, World world, ElecByteBuf data) {
-        if (player instanceof EntityPlayerMP) {
+    public static void openWindow(@Nonnull PlayerEntity player, IWindowHandler windowHandler, World world, ElecByteBuf data) {
+        if (player instanceof ServerPlayerEntity) {
             ResourceLocation name = INSTANCE.lookup.inverse().get(windowHandler);
             if (name == null) {
                 throw new IllegalArgumentException();
             }
             ElecByteBuf cdata = ElecByteBuf.of(Unpooled.wrappedBuffer(data));
-            NetworkHooks.openGui((EntityPlayerMP) player, new NullInteractionObject(GUI_NAME) {
+            NetworkHooks.openGui((ServerPlayerEntity) player, new NullInteractionObject(GUI_NAME) {
 
                 @Nonnull
                 @Override
-                public Container createContainer(@Nonnull InventoryPlayer inventoryPlayer, @Nonnull EntityPlayer entityPlayer) {
-                    return INSTANCE.getServerGuiElement(entityPlayer, world, cdata, windowHandler);
+                public Container createContainer(@Nonnull InventoryPlayer inventoryPlayer, @Nonnull PlayerEntity PlayerEntity) {
+                    return INSTANCE.getServerGuiElement(PlayerEntity, world, cdata, windowHandler);
                 }
 
             }, allData -> {
@@ -113,7 +113,7 @@ public enum WindowManager {
         throw new IllegalArgumentException();
     }
 
-    public synchronized WindowContainer getServerGuiElement(EntityPlayer player, World world, ElecByteBuf data, IWindowHandler windowHandler) {
+    public synchronized WindowContainer getServerGuiElement(PlayerEntity player, World world, ElecByteBuf data, IWindowHandler windowHandler) {
         currentOpeningPlayer.set(player);
         WindowContainer ret = new WindowContainer(player, windowHandler.createWindow(player, world, data));
         currentOpeningPlayer.remove();
@@ -121,7 +121,7 @@ public enum WindowManager {
     }
 
     @Nullable
-    public static Window getOpenWindow(EntityPlayer player) {
+    public static Window getOpenWindow(PlayerEntity player) {
         Container container = player.openContainer;
         if (container instanceof WindowContainer) {
             return ((WindowContainer) container).getWindow();
@@ -130,7 +130,7 @@ public enum WindowManager {
     }
 
     @Nullable
-    public static Window getOpenWindow(EntityPlayer player, int windowID) {
+    public static Window getOpenWindow(PlayerEntity player, int windowID) {
         Window window = getOpenWindow(player);
         if (window != null && window.getWindowID() == windowID) {
             return window;

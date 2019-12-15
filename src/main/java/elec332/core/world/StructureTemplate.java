@@ -7,9 +7,9 @@ import elec332.core.api.structure.ISchematic;
 import elec332.core.api.util.Area;
 import elec332.core.world.schematic.Schematic;
 import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.init.Blocks;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
@@ -82,14 +82,14 @@ public class StructureTemplate {
                             BlockPos schematicPos = new BlockPos(x, y, z);
                             BlockPos worldPos = new BlockPos(worldX, worldY, worldZ);
                             Block block = schematic.getBlock(schematicPos);
-                            IBlockState state = schematic.getBlockState(schematicPos);
+                            BlockState state = schematic.getBlockState(schematicPos);
 
                             if (block != null) {
                                 WorldHelper.setBlockState(world, worldPos, Blocks.AIR.getDefaultState(), 2);
                                 if (!block.isAir(state, world, worldPos)) {
                                     WorldHelper.setBlockState(world, worldPos, state, 2);
                                     if (block.hasTileEntity(state)) {
-                                        NBTTagCompound tileData = schematic.getTileData(x, y, z, worldX, worldY, worldZ);
+                                        CompoundNBT tileData = schematic.getTileData(x, y, z, worldX, worldY, worldZ);
                                         if (tileData != null) {
                                             WorldHelper.getTileAt(world, worldPos).read(tileData);
                                             WorldHelper.markBlockForUpdate(world, worldPos);

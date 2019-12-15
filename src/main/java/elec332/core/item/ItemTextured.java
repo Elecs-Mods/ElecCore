@@ -8,7 +8,7 @@ import elec332.core.api.client.model.IElecTemplateBakery;
 import elec332.core.client.model.loading.INoJsonItem;
 import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
@@ -32,7 +32,7 @@ public class ItemTextured extends AbstractItem implements INoJsonItem {
 
     @Override
     @OnlyIn(Dist.CLIENT)
-    public IBakedModel getItemModel(ItemStack stack, World world, EntityLivingBase entity) {
+    public IBakedModel getItemModel(ItemStack stack, World world, LivingEntity entity) {
         return model;
     }
 

@@ -1,7 +1,7 @@
 package elec332.core.item;
 
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemBlock;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
 
 import javax.annotation.Nonnull;
@@ -13,8 +13,8 @@ public class ItemMethods {
 
     @SuppressWarnings("all")
     public static <I extends Item & IAbstractItem> String createUnlocalizedName(I item) {
-        if (item instanceof ItemBlock) {
-            return ((ItemBlock) item).getBlock().getTranslationKey();
+        if (item instanceof BlockItem) {
+            return ((BlockItem) item).getBlock().getTranslationKey();
         }
         return "item." + item.getRegistryName().toString().replace(":", ".").toLowerCase();
     }

@@ -2,7 +2,7 @@ package elec332.core.util;
 
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -35,12 +35,12 @@ public class ItemStackHelper {
     }
 
     /**
-     * loads an {@link ItemStack} from the provided {@link NBTTagCompound}
+     * loads an {@link ItemStack} from the provided {@link CompoundNBT}
      *
      * @param tag The NBT data
-     * @return The {@link ItemStack} loaded from the provided {@link NBTTagCompound}
+     * @return The {@link ItemStack} loaded from the provided {@link CompoundNBT}
      */
-    public static ItemStack loadItemStackFromNBT(NBTTagCompound tag) {
+    public static ItemStack loadItemStackFromNBT(CompoundNBT tag) {
         return ItemStack.read(tag);
     }
 

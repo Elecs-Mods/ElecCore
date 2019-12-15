@@ -12,7 +12,7 @@ import elec332.core.client.model.loading.INoBlockStateJsonBlock;
 import elec332.core.client.model.loading.INoJsonBlock;
 import elec332.core.loader.client.RenderingRegistry;
 import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BlockModelShapes;
 import net.minecraft.client.renderer.model.*;
@@ -22,7 +22,7 @@ import net.minecraft.client.renderer.vertex.VertexFormat;
 import net.minecraft.resources.IResource;
 import net.minecraft.resources.IResourceManager;
 import net.minecraft.state.IProperty;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.model.*;
 import net.minecraftforge.common.MinecraftForge;
@@ -69,7 +69,7 @@ public class BlockVariantModelHandler implements IModelHandler {
         });
     }
 
-    private final Map<ModelResourceLocation, IBlockState> blockResourceLocations;
+    private final Map<ModelResourceLocation, BlockState> blockResourceLocations;
     private final Map<ModelResourceLocation, IUnbakedModel> models;
     private final Set<ResourceLocation> uniqueNames;
 
@@ -145,7 +145,7 @@ public class BlockVariantModelHandler implements IModelHandler {
                 throw new RuntimeException();
             }
             Gson gson = new GsonBuilder().setPrettyPrinting().create();
-            IBlockState ibs = blockResourceLocations.get(modelLocation);
+            BlockState ibs = blockResourceLocations.get(modelLocation);
             if (ibs == null) {
                 throw new IllegalStateException();
             }
@@ -285,10 +285,10 @@ public class BlockVariantModelHandler implements IModelHandler {
             }
             return new IBakedModel() {
 
-                Map<IBlockState, IBakedModel> cache = new WeakHashMap<>();
+                Map<BlockState, IBakedModel> cache = new WeakHashMap<>();
 
                 @Override
-                public List<BakedQuad> getQuads(@Nullable IBlockState blockState, @Nullable EnumFacing side, Random rand) {
+                public List<BakedQuad> getQuads(@Nullable BlockState blockState, @Nullable Direction side, Random rand) {
                     if (blockState == null) {
                         return base.getQuads(null, side, rand);
                     }
@@ -346,7 +346,7 @@ public class BlockVariantModelHandler implements IModelHandler {
     }
 
     @SuppressWarnings("all")
-    private Map<String, String> addNormalProperties(IBlockState state, Map<String, String> data) {
+    private Map<String, String> addNormalProperties(BlockState state, Map<String, String> data) {
         for (IProperty prop : state.getProperties()) {
             data.put(prop.getName(), prop.getName(state.get(prop)));
         }

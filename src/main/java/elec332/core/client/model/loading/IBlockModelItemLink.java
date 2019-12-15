@@ -1,6 +1,6 @@
 package elec332.core.client.model.loading;
 
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.BlockState;
 import net.minecraft.item.ItemStack;
 
 /**
@@ -8,7 +8,7 @@ import net.minecraft.item.ItemStack;
  */
 public interface IBlockModelItemLink {
 
-    public IBlockState getRenderState(ItemStack s);
+    public BlockState getRenderState(ItemStack s);
 
     default public boolean itemInheritsModel() {
         return true;

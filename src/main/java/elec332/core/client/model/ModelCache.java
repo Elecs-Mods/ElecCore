@@ -5,16 +5,16 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.model.BakedQuad;
 import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.client.renderer.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.model.ItemOverrideList;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorldReader;
@@ -46,7 +46,7 @@ public abstract class ModelCache<K> implements IBakedModel {
 
             @Override
             @Nonnull
-            public IBakedModel getModelWithOverrides(@Nonnull IBakedModel originalModel, @Nonnull ItemStack stack, @Nullable World world, @Nullable EntityLivingBase entity) {
+            public IBakedModel getModelWithOverrides(@Nonnull IBakedModel originalModel, @Nonnull ItemStack stack, @Nullable World world, @Nullable LivingEntity entity) {
                 return getModel(stack);
             }
 
@@ -54,21 +54,21 @@ public abstract class ModelCache<K> implements IBakedModel {
         debug = false;
     }
 
-    private final Cache<K, Map<EnumFacing, List<BakedQuad>>> quads;
+    private final Cache<K, Map<Direction, List<BakedQuad>>> quads;
     private final Cache<K, IBakedModel> itemModels;
     private final ItemOverrideList iol;
     protected boolean debug;
 
-    protected abstract K get(IBlockState state, IModelData modelState);
+    protected abstract K get(BlockState state, IModelData modelState);
 
     protected abstract K get(ItemStack stack);
 
-    protected abstract void bakeQuads(List<BakedQuad> quads, EnumFacing side, K key);
+    protected abstract void bakeQuads(List<BakedQuad> quads, Direction side, K key);
 
-    private Map<EnumFacing, List<BakedQuad>> getQuads(K key) {
-        Callable<Map<EnumFacing, List<BakedQuad>>> loader = () -> {
-            Map<EnumFacing, List<BakedQuad>> ret = Maps.newHashMap();
-            for (EnumFacing f : EnumFacing.values()) {
+    private Map<Direction, List<BakedQuad>> getQuads(K key) {
+        Callable<Map<Direction, List<BakedQuad>>> loader = () -> {
+            Map<Direction, List<BakedQuad>> ret = Maps.newHashMap();
+            for (Direction f : Direction.values()) {
                 List<BakedQuad> q = Lists.newArrayList();
                 bakeQuads(q, f, key);
                 ret.put(f, ImmutableList.copyOf(q));
@@ -89,11 +89,11 @@ public abstract class ModelCache<K> implements IBakedModel {
         K key = get(stack);
         Callable<IBakedModel> loader = () -> new WrappedModel(ModelCache.this) {
 
-            Map<EnumFacing, List<BakedQuad>> quads = ModelCache.this.getQuads(key);
+            Map<Direction, List<BakedQuad>> quads = ModelCache.this.getQuads(key);
 
             @Nonnull
             @Override
-            public List<BakedQuad> getQuads(IBlockState state, EnumFacing side, @Nonnull Random rand) {
+            public List<BakedQuad> getQuads(BlockState state, Direction side, @Nonnull Random rand) {
                 return quads.get(side);
             }
 
@@ -108,11 +108,11 @@ public abstract class ModelCache<K> implements IBakedModel {
     public final IBakedModel getModel(K key) {
         Callable<IBakedModel> loader = () -> new WrappedModel(ModelCache.this) {
 
-            Map<EnumFacing, List<BakedQuad>> quads = ModelCache.this.getQuads(key);
+            Map<Direction, List<BakedQuad>> quads = ModelCache.this.getQuads(key);
 
             @Nonnull
             @Override
-            public List<BakedQuad> getQuads(IBlockState state, EnumFacing side, @Nonnull Random rand) {
+            public List<BakedQuad> getQuads(BlockState state, Direction side, @Nonnull Random rand) {
                 return quads.get(side);
             }
 
@@ -126,13 +126,13 @@ public abstract class ModelCache<K> implements IBakedModel {
 
     @Nonnull
     @Override
-    public final List<BakedQuad> getQuads(@Nullable IBlockState state, @Nullable EnumFacing side, @Nonnull Random rand, @Nonnull IModelData extraData) {
+    public final List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, @Nonnull Random rand, @Nonnull IModelData extraData) {
         return getQuads(get(state, extraData)).get(side);
     }
 
     @Nonnull
     @Override
-    public List<BakedQuad> getQuads(@Nullable IBlockState state, @Nullable EnumFacing side, @Nonnull Random rand) {
+    public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, @Nonnull Random rand) {
         if (needsModelData()){
             throw new UnsupportedOperationException();
         }
@@ -145,7 +145,7 @@ public abstract class ModelCache<K> implements IBakedModel {
 
     @Nonnull
     @Override
-    public IModelData getModelData(@Nonnull IWorldReader world, @Nonnull BlockPos pos, @Nonnull IBlockState state, @Nonnull IModelData tileData) {
+    public IModelData getModelData(@Nonnull IWorldReader world, @Nonnull BlockPos pos, @Nonnull BlockState state, @Nonnull IModelData tileData) {
         if (tileData == EmptyModelData.INSTANCE){
             tileData = new ModelDataMap.Builder().build();
         }
@@ -153,7 +153,7 @@ public abstract class ModelCache<K> implements IBakedModel {
         return tileData;
     }
 
-    public void addModelData(@Nonnull IWorldReader world, @Nonnull BlockPos pos, @Nonnull IBlockState state, @Nonnull IModelData modelData) {
+    public void addModelData(@Nonnull IWorldReader world, @Nonnull BlockPos pos, @Nonnull BlockState state, @Nonnull IModelData modelData) {
 
     }
 

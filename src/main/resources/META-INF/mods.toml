@@ -27,20 +27,19 @@ description="Provides core functionality for Elec's Mods" #mandatory
     ordering="NONE"
     side="BOTH"
 
-#[[dependencies.eleccore]]
-#    modId="forge"
-#    mandatory=true
-#    #versionRange="[${forgeversion})"
-#    versionRange="[24.0,)"
-#    ordering="NONE"
-#    side="BOTH"
+[[dependencies.eleccore]]
+    modId="forge"
+    mandatory=true
+    versionRange="[${forgeversion},)"
+    ordering="NONE"
+    side="BOTH"
 
-#[[dependencies.eleccore]]
-#    modId="forestry"
-#    mandatory=false
- #   versionRange="(,1,)" #Accepts anything (hopefully)
-#    ordering="AFTER"
-#    side="BOTH"
+[[dependencies.eleccore]]
+    modId="forestry"
+    mandatory=false
+    versionRange="(,1,)" #Accepts anything (hopefully)
+    ordering="AFTER"
+    side="BOTH"
 
 [[mods]] #mandatory
 modId="eleccoreloader" #mandatory

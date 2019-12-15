@@ -1,7 +1,7 @@
 package elec332.core.api.info;
 
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
@@ -38,7 +38,7 @@ public abstract class AbstractInfoProviderCapability<O> implements IInfoProvider
 
     @Nonnull
     @Override
-    public final NBTTagCompound getInfoNBTData(@Nonnull NBTTagCompound tag, TileEntity tile, @Nonnull EntityPlayerMP player, @Nonnull IInfoDataAccessorBlock hitData) {
+    public final CompoundNBT getInfoNBTData(@Nonnull CompoundNBT tag, TileEntity tile, @Nonnull ServerPlayerEntity player, @Nonnull IInfoDataAccessorBlock hitData) {
         if (tile != null) {
             LazyOptional<O> cap = tile.getCapability(capability, hitData.getSide());
             if (cap != null) {
@@ -54,6 +54,6 @@ public abstract class AbstractInfoProviderCapability<O> implements IInfoProvider
     public abstract void addInformation(@Nonnull IInformation information, @Nonnull IInfoDataAccessorBlock hitData, O capability);
 
     @Nonnull
-    public abstract NBTTagCompound getNBTData(@Nonnull NBTTagCompound tag, TileEntity tile, O capability, @Nonnull EntityPlayerMP player, @Nonnull IInfoDataAccessorBlock hitData);
+    public abstract CompoundNBT getNBTData(@Nonnull CompoundNBT tag, TileEntity tile, O capability, @Nonnull ServerPlayerEntity player, @Nonnull IInfoDataAccessorBlock hitData);
 
 }

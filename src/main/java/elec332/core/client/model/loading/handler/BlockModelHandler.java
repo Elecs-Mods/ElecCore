@@ -9,7 +9,7 @@ import elec332.core.api.client.model.loading.IModelHandler;
 import elec332.core.api.client.model.loading.ModelHandler;
 import elec332.core.loader.client.RenderingRegistry;
 import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.BlockState;
 import net.minecraft.client.renderer.BlockModelShapes;
 import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.client.renderer.model.ModelResourceLocation;
@@ -34,7 +34,7 @@ public class BlockModelHandler implements IModelHandler {
     }
 
     private List<IBlockModelHandler> blockModelHandlers;
-    private Map<IBlockState, ModelResourceLocation> blockResourceLocations;
+    private Map<BlockState, ModelResourceLocation> blockResourceLocations;
     private Set<ResourceLocation> handledBlocks;
 
     @Override
@@ -68,7 +68,7 @@ public class BlockModelHandler implements IModelHandler {
     @Nonnull
     public Map<ModelResourceLocation, IBakedModel> registerBakedModels(Function<ModelResourceLocation, IBakedModel> modelGetter) {
         Map<ModelResourceLocation, IBakedModel> ret = Maps.newHashMap();
-        for (Map.Entry<IBlockState, ModelResourceLocation> entry : blockResourceLocations.entrySet()) {
+        for (Map.Entry<BlockState, ModelResourceLocation> entry : blockResourceLocations.entrySet()) {
             ModelResourceLocation mrl = entry.getValue();
             for (IBlockModelHandler handler : blockModelHandlers) {
                 if (handler.handleBlock(entry.getKey().getBlock())) {

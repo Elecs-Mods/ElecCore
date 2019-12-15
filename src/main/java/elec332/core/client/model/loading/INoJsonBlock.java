@@ -1,7 +1,7 @@
 package elec332.core.client.model.loading;
 
 import elec332.core.api.client.model.IModelAndTextureLoader;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.BlockState;
 import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -19,6 +19,6 @@ public interface INoJsonBlock extends IModelAndTextureLoader {
      * @return The model to render for this block for the given arguments.
      */
     @OnlyIn(Dist.CLIENT)
-    public IBakedModel getBlockModel(IBlockState state);
+    public IBakedModel getBlockModel(BlockState state);
 
 }

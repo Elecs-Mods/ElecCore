@@ -3,7 +3,7 @@ package elec332.core.inventory.window;
 import elec332.core.inventory.widget.slot.WidgetSlot;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
@@ -48,7 +48,7 @@ class WrappedWidgetSlot extends WidgetSlot {
 
     @Nonnull
     @Override
-    public ItemStack onTake(EntityPlayer player, @Nonnull ItemStack stack) {
+    public ItemStack onTake(PlayerEntity player, @Nonnull ItemStack stack) {
         slot.onTake(player, stack);
         return stack;
     }
@@ -101,7 +101,7 @@ class WrappedWidgetSlot extends WidgetSlot {
     }
 
     @Override
-    public boolean canTakeStack(EntityPlayer playerIn) {
+    public boolean canTakeStack(PlayerEntity playerIn) {
         return slot.canTakeStack(playerIn);
     }
 

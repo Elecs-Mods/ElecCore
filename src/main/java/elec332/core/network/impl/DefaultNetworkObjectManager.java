@@ -8,8 +8,8 @@ import elec332.core.api.util.IEntityFilter;
 import elec332.core.util.FMLHelper;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.dimension.DimensionType;
@@ -125,7 +125,7 @@ class DefaultNetworkObjectManager implements INetworkObjectManager, BiConsumer<D
         }
 
         @Override
-        public void sendTo(int id, IEntityFilter<EntityPlayerMP> playerFilter, MinecraftServer server) {
+        public void sendTo(int id, IEntityFilter<ServerPlayerEntity> playerFilter, MinecraftServer server) {
             ByteBuf buf = Unpooled.buffer();
             if (getNetworkObjectSender() != null) {
                 getNetworkObjectSender().writePacket(id, new ElecByteBufImpl(buf));
@@ -134,7 +134,7 @@ class DefaultNetworkObjectManager implements INetworkObjectManager, BiConsumer<D
         }
 
         @Override
-        public void sendTo(int id, List<EntityPlayerMP> players) {
+        public void sendTo(int id, List<ServerPlayerEntity> players) {
             ByteBuf buf = Unpooled.buffer();
             if (getNetworkObjectSender() != null) {
                 getNetworkObjectSender().writePacket(id, new ElecByteBufImpl(buf));
@@ -143,7 +143,7 @@ class DefaultNetworkObjectManager implements INetworkObjectManager, BiConsumer<D
         }
 
         @Override
-        public void sendTo(int id, EntityPlayerMP player) {
+        public void sendTo(int id, ServerPlayerEntity player) {
             ByteBuf buf = Unpooled.buffer();
             if (getNetworkObjectSender() != null) {
                 getNetworkObjectSender().writePacket(id, new ElecByteBufImpl(buf));
@@ -179,37 +179,37 @@ class DefaultNetworkObjectManager implements INetworkObjectManager, BiConsumer<D
         }
 
         @Override
-        public void sendToAll(int id, NBTTagCompound data) {
+        public void sendToAll(int id, CompoundNBT data) {
             sendToAll(id, fromTag(data));
         }
 
         @Override
-        public void sendTo(int id, NBTTagCompound data, IEntityFilter<EntityPlayerMP> playerFilter, MinecraftServer server) {
+        public void sendTo(int id, CompoundNBT data, IEntityFilter<ServerPlayerEntity> playerFilter, MinecraftServer server) {
             sendTo(id, fromTag(data), playerFilter, server);
         }
 
         @Override
-        public void sendTo(int id, NBTTagCompound data, List<EntityPlayerMP> players) {
+        public void sendTo(int id, CompoundNBT data, List<ServerPlayerEntity> players) {
             sendTo(id, fromTag(data), players);
         }
 
         @Override
-        public void sendTo(int id, NBTTagCompound data, EntityPlayerMP player) {
+        public void sendTo(int id, CompoundNBT data, ServerPlayerEntity player) {
             sendTo(id, fromTag(data), player);
         }
 
         @Override
-        public void sendToAllAround(int id, NBTTagCompound data, IPacketDispatcher.TargetPoint point) {
+        public void sendToAllAround(int id, CompoundNBT data, IPacketDispatcher.TargetPoint point) {
             sendToAllAround(id, fromTag(data), point);
         }
 
         @Override
-        public void sendToDimension(int id, NBTTagCompound data, DimensionType dimensionId) {
+        public void sendToDimension(int id, CompoundNBT data, DimensionType dimensionId) {
             sendToDimension(id, fromTag(data), dimensionId);
         }
 
         @Override
-        public void sendToServer(int id, NBTTagCompound data) {
+        public void sendToServer(int id, CompoundNBT data) {
             sendToServer(id, fromTag(data));
         }
 
@@ -219,7 +219,7 @@ class DefaultNetworkObjectManager implements INetworkObjectManager, BiConsumer<D
         }
 
         @Override
-        public void sendTo(int id, ByteBuf data, EntityPlayerMP player) {
+        public void sendTo(int id, ByteBuf data, ServerPlayerEntity player) {
             packetDispatcher.sendTo(new PacketNetworkObject(b, (byte) id, data), player);
         }
 
@@ -244,9 +244,9 @@ class DefaultNetworkObjectManager implements INetworkObjectManager, BiConsumer<D
             return obj;
         }
 
-        private ByteBuf fromTag(NBTTagCompound tag) {
+        private ByteBuf fromTag(CompoundNBT tag) {
             ElecByteBuf buf = new ElecByteBufImpl(Unpooled.buffer());
-            buf.writeNBTTagCompoundToBuffer(tag);
+            buf.writeCompoundNBTToBuffer(tag);
             return buf;
         }
 

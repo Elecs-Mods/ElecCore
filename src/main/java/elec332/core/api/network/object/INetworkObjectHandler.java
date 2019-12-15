@@ -4,8 +4,8 @@ import elec332.core.api.network.ElecByteBuf;
 import elec332.core.api.network.IPacketDispatcher;
 import elec332.core.api.util.IEntityFilter;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.dimension.DimensionType;
 
@@ -19,11 +19,11 @@ public interface INetworkObjectHandler<N extends INetworkObjectSender> extends E
 
     public void sendToAll(int id);
 
-    public void sendTo(int id, IEntityFilter<EntityPlayerMP> playerFilter, MinecraftServer server);
+    public void sendTo(int id, IEntityFilter<ServerPlayerEntity> playerFilter, MinecraftServer server);
 
-    public void sendTo(int id, List<EntityPlayerMP> players);
+    public void sendTo(int id, List<ServerPlayerEntity> players);
 
-    public void sendTo(int id, EntityPlayerMP player);
+    public void sendTo(int id, ServerPlayerEntity player);
 
     public void sendToAllAround(int id, IPacketDispatcher.TargetPoint point);
 
@@ -31,35 +31,35 @@ public interface INetworkObjectHandler<N extends INetworkObjectSender> extends E
 
     public void sendToServer(int id);
 
-    public void sendToAll(int id, NBTTagCompound data);
+    public void sendToAll(int id, CompoundNBT data);
 
-    public void sendTo(int id, NBTTagCompound data, IEntityFilter<EntityPlayerMP> playerFilter, MinecraftServer server);
+    public void sendTo(int id, CompoundNBT data, IEntityFilter<ServerPlayerEntity> playerFilter, MinecraftServer server);
 
-    public void sendTo(int id, NBTTagCompound data, List<EntityPlayerMP> players);
+    public void sendTo(int id, CompoundNBT data, List<ServerPlayerEntity> players);
 
-    public void sendTo(int id, NBTTagCompound data, EntityPlayerMP player);
+    public void sendTo(int id, CompoundNBT data, ServerPlayerEntity player);
 
-    public void sendToAllAround(int id, NBTTagCompound data, IPacketDispatcher.TargetPoint point);
+    public void sendToAllAround(int id, CompoundNBT data, IPacketDispatcher.TargetPoint point);
 
-    public void sendToDimension(int id, NBTTagCompound data, DimensionType dimensionId);
+    public void sendToDimension(int id, CompoundNBT data, DimensionType dimensionId);
 
-    public void sendToServer(int id, NBTTagCompound data);
+    public void sendToServer(int id, CompoundNBT data);
 
     public void sendToAll(int id, ByteBuf data);
 
-    default public void sendTo(int id, ByteBuf data, IEntityFilter<EntityPlayerMP> playerFilter, MinecraftServer server) {
-        for (EntityPlayerMP player : playerFilter.filterEntities(server.getPlayerList().getPlayers())) {
+    default public void sendTo(int id, ByteBuf data, IEntityFilter<ServerPlayerEntity> playerFilter, MinecraftServer server) {
+        for (ServerPlayerEntity player : playerFilter.filterEntities(server.getPlayerList().getPlayers())) {
             sendTo(id, data, player);
         }
     }
 
-    default public void sendTo(int id, ByteBuf data, List<EntityPlayerMP> players) {
-        for (EntityPlayerMP player : players) {
+    default public void sendTo(int id, ByteBuf data, List<ServerPlayerEntity> players) {
+        for (ServerPlayerEntity player : players) {
             sendTo(id, data, player);
         }
     }
 
-    public void sendTo(int id, ByteBuf data, EntityPlayerMP player);
+    public void sendTo(int id, ByteBuf data, ServerPlayerEntity player);
 
     public void sendToAllAround(int id, ByteBuf data, IPacketDispatcher.TargetPoint point);
 

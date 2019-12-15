@@ -2,9 +2,9 @@ package elec332.core.util;
 
 import elec332.core.world.WorldHelper;
 import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.block.BlockState;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.*;
 import net.minecraft.world.World;
 import org.apache.commons.lang3.tuple.Pair;
@@ -26,7 +26,7 @@ public class RayTraceHelper {
      * @return The {@link RayTraceResult} from the raytrace
      */
     @Nullable
-    public static RayTraceResult retraceBlock(World world, BlockPos pos, EntityPlayer player) {
+    public static RayTraceResult retraceBlock(World world, BlockPos pos, PlayerEntity player) {
         return retraceBlock(WorldHelper.getBlockState(world, pos), world, pos, player);
     }
 
@@ -42,7 +42,7 @@ public class RayTraceHelper {
      * @return The player's raytrace vectors
      */
     @Nonnull
-    public static Pair<Vec3d, Vec3d> getRayTraceVectors(EntityPlayer player) {
+    public static Pair<Vec3d, Vec3d> getRayTraceVectors(PlayerEntity player) {
         //player.getLookVec()
         //Vec3d startPos = new Vec3d(entity.posX, entity.posY + entity.getEyeHeight(), entity.posZ);
         //Vec3d endPos = startPos.add(new Vec3d(entity.getLookVec().x * length, entity.getLookVec().y * length, entity.getLookVec().z * length));
@@ -66,7 +66,7 @@ public class RayTraceHelper {
      */
     @Nullable
     @SuppressWarnings("all")
-    public static RayTraceResult retraceBlock(IBlockState blockState, World world, BlockPos pos, EntityPlayer player) {
+    public static RayTraceResult retraceBlock(BlockState blockState, World world, BlockPos pos, PlayerEntity player) {
         Pair<Vec3d, Vec3d> rayTraceVectors = getRayTraceVectors(player);
         return Block.collisionRayTrace(blockState, world, pos, rayTraceVectors.getLeft(), rayTraceVectors.getRight());
     }
@@ -78,7 +78,7 @@ public class RayTraceHelper {
      * @param distance The maximum raytracing distance
      * @return The {@link RayTraceResult} from the raytrace
      */
-    public static RayTraceResult rayTrace(EntityLivingBase player, double distance) {
+    public static RayTraceResult rayTrace(LivingEntity player, double distance) {
         Vec3d vec3d = new Vec3d(player.posX, player.posY + player.getEyeHeight(), player.posZ);
         Vec3d vec3d1 = getVectorForRotation(player.rotationPitch, player.rotationYawHead);
         Vec3d vec3d2 = vec3d.add(vec3d1.x * distance, vec3d1.y * distance, vec3d1.z * distance);

@@ -5,12 +5,13 @@ import elec332.core.util.FMLHelper;
 import elec332.core.util.ItemStackHelper;
 import elec332.core.util.PlayerHelper;
 import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.BlockState;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.effect.EntityLightningBolt;
-import net.minecraft.entity.item.EntityItem;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.SoundEvents;
+import net.minecraft.entity.effect.LightningBoltEntity;
+import net.minecraft.entity.item.ItemEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.SoundEvents;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.SoundCategory;
@@ -22,9 +23,10 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.EmptyChunk;
 import net.minecraft.world.chunk.IChunk;
-import net.minecraft.world.chunk.IChunkProvider;
+import net.minecraft.world.chunk.AbstractChunkProvider;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.gen.ChunkProviderServer;
+import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.BiomeDictionary;
 import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.fml.LogicalSide;
@@ -91,7 +93,7 @@ public class WorldHelper {
      * @return Whether the entity has been spawned in the world
      */
     public static boolean spawnEntityInWorld(IWorldWriter world, Entity entity) {
-        return world.spawnEntity(entity);
+        return world.addEntity(entity);
     }
 
     /*
@@ -105,7 +107,7 @@ public class WorldHelper {
      * @param entity             The entity placing the block
      * @return Whether the block can actually be placed at the specified location
      *
-    public static boolean canBlockBePlaced(World world, Block block, BlockPos pos, boolean skipCollisionCheck, EnumFacing facing, @Nullable Entity entity) {
+    public static boolean canBlockBePlaced(World world, Block block, BlockPos pos, boolean skipCollisionCheck, Direction facing, @Nullable Entity entity) {
         return world.mayPlace(block, pos, skipCollisionCheck, facing, entity);
     }*/
 
@@ -162,18 +164,18 @@ public class WorldHelper {
     }
 
     /**
-     * Sets the {@link IBlockState} at the provided position to the one given in {@param state}
+     * Sets the {@link BlockState} at the provided position to the one given in {@param state}
      * in the provided world
      *
-     * @param world The world in which to chenge the {@link IBlockState}
-     * @param pos   The pos at which to change the {@link IBlockState}
-     * @param state The new {@link IBlockState}
+     * @param world The world in which to chenge the {@link BlockState}
+     * @param pos   The pos at which to change the {@link BlockState}
+     * @param state The new {@link BlockState}
      * @param flags Placement flags, can be {@link WorldHelper#PLACEBLOCK_NOTHING} or any combination of
      *              {@link WorldHelper#PLACEBLOCK_UPDATE}, {@link WorldHelper#PLACEBLOCK_SENDCHANGE}, {@link WorldHelper#PLACEBLOCK_NO_RERENDER}, {@link WorldHelper#PLACEBLOCK_RENDERMAIN},
      *              {@link WorldHelper#PLACEBLOCK_NO_NEIGHBOR_REACTION}, {@link WorldHelper#PLACEBLOCK_NO_NEIGHBOR_REACTION_DROPS}, {@link WorldHelper#PLACEBLOCK_BLOCK_BEING_MOVED}
      *              (flags can be added together)
      */
-    public static void setBlockState(IWorldWriter world, BlockPos pos, IBlockState state, int flags) {
+    public static void setBlockState(IWorldWriter world, BlockPos pos, BlockState state, int flags) {
         world.setBlockState(pos, state, flags);
     }
 
@@ -185,7 +187,7 @@ public class WorldHelper {
      */
     public static void markBlockForUpdate(World world, BlockPos pos) {
         if (!world.isRemote) {
-            ((WorldServer) world).getPlayerChunkMap().markBlockForUpdate(pos);
+            ((ServerWorld) world).getPlayerChunkMap().markBlockForUpdate(pos);
         } else {
             world.markBlockRangeForRenderUpdate(pos, pos);
         }
@@ -200,7 +202,7 @@ public class WorldHelper {
      */
     public static boolean chunkLoaded(IWorld world, BlockPos pos) {
         ChunkPos cp = chunkPosFromBlockPos(pos);
-        IChunkProvider chunkProvider = world.getChunkProvider();
+        AbstractChunkProvider chunkProvider = world.getChunkProvider();
         boolean b1;
         Chunk chunk = chunkProvider.getChunk(cp.x, cp.z, false, false);
         if (chunk == null) {
@@ -319,9 +321,9 @@ public class WorldHelper {
             double d0 = (double) (world.rand.nextFloat() * f) + (double) (1.0F - f) * 0.5D;
             double d1 = (double) (world.rand.nextFloat() * f) + (double) (1.0F - f) * 0.5D;
             double d2 = (double) (world.rand.nextFloat() * f) + (double) (1.0F - f) * 0.5D;
-            EntityItem entityitem = new EntityItem(world, (double) x + d0, (double) y + d1, (double) z + d2, itemStack);
-            entityitem.setDefaultPickupDelay();
-            return WorldHelper.spawnEntityInWorld(world, entityitem);
+            ItemEntity ItemEntity = new ItemEntity(world, (double) x + d0, (double) y + d1, (double) z + d2, itemStack);
+            ItemEntity.setDefaultPickupDelay();
+            return WorldHelper.spawnEntityInWorld(world, ItemEntity);
         }
         return false;
     }
@@ -356,7 +358,7 @@ public class WorldHelper {
      * @return The dimension-ID of the specified world.
      */
     @SuppressWarnings("all")
-    public static DimensionType getDimID(IWorldReaderBase world) {
+    public static DimensionType getDimID(IWorldReader world) {
         if (world == null) {
             throw new IllegalArgumentException("Cannot fetch the Dimension-ID from a null world!");
         }
@@ -383,7 +385,7 @@ public class WorldHelper {
     }
 
     @SuppressWarnings("all")
-    public static WorldServer getServerWorldDirect(DimensionType type) {
+    public static ServerWorld getServerWorldDirect(DimensionType type) {
         return ElecCore.proxy.getServer().getWorld(type);
     }
 
@@ -399,12 +401,12 @@ public class WorldHelper {
     }
 
     /**
-     * Gets the metadata value of the specified {@link IBlockState}
+     * Gets the metadata value of the specified {@link BlockState}
      *
-     * @param state The {@link IBlockState}
-     * @return The metadata value of the specified {@link IBlockState}
+     * @param state The {@link BlockState}
+     * @return The metadata value of the specified {@link BlockState}
      *
-    public static int getBlockMeta(IBlockState state) {
+    public static int getBlockMeta(BlockState state) {
         return state.getBlock().getMetaFromState(state);
     }*/
 
@@ -431,13 +433,13 @@ public class WorldHelper {
     }
 
     /**
-     * Gets the {@link IBlockState} at the specified location
+     * Gets the {@link BlockState} at the specified location
      *
      * @param world The world
      * @param pos   The position
-     * @return The {@link IBlockState} at the specified location
+     * @return The {@link BlockState} at the specified location
      */
-    public static IBlockState getBlockState(IBlockReader world, BlockPos pos) {
+    public static BlockState getBlockState(IBlockReader world, BlockPos pos) {
         return world.getBlockState(pos);
     }
 
@@ -447,7 +449,7 @@ public class WorldHelper {
      * @param player The player
      * @param range  The maximum raytracing range
      */
-    public static void spawnLightningAtLookVec(EntityPlayer player, Double range) {
+    public static void spawnLightningAtLookVec(PlayerEntity player, Double range) {
         RayTraceResult position = PlayerHelper.getPosPlayerIsLookingAt(player, range);
         spawnLightningAt(player.getEntityWorld(), position.getBlockPos());
     }
@@ -475,7 +477,7 @@ public class WorldHelper {
         //world.playSoundEffect(x, y, z,"random.explode", 10000.0F, 0.8F);
         world.playSound(x, y, z, SoundEvents.ENTITY_LIGHTNING_BOLT_THUNDER, SoundCategory.WEATHER, 10000.0F, 0.8F, true);
         world.playSound(x, y, z, SoundEvents.ENTITY_GENERIC_EXPLODE, SoundCategory.WEATHER, 10000.0F, 0.8F, true);
-        WorldHelper.spawnEntityInWorld(world, new EntityLightningBolt(world, x, y, z, false));
+        WorldHelper.spawnEntityInWorld(world, new LightningBoltEntity(world, x, y, z, false));
     }
 
 }

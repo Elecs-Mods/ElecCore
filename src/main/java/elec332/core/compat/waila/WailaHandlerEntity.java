@@ -3,8 +3,8 @@ package elec332.core.compat.waila;
 import mcp.mobius.waila.api.IEntityComponentProvider;
 import mcp.mobius.waila.api.IServerDataProvider;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.world.World;
 
 /**
@@ -13,7 +13,7 @@ import net.minecraft.world.World;
 public class WailaHandlerEntity implements IEntityComponentProvider, IServerDataProvider<Entity> {
 
     @Override
-    public void appendServerData(NBTTagCompound data, EntityPlayerMP player, World world, Entity entity) {
+    public void appendServerData(CompoundNBT data, ServerPlayerEntity player, World world, Entity entity) {
 
     }
 

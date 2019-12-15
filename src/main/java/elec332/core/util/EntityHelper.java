@@ -1,7 +1,7 @@
 package elec332.core.util;
 
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.ResourceLocation;
@@ -33,7 +33,7 @@ public class EntityHelper {
      * @param source The cause of death
      * @param target The entity that will be dead very soon
      */
-    public static void smiteEntity(DamageSource source, EntityLivingBase target) {  //non-buggy version by InfinityRaider
+    public static void smiteEntity(DamageSource source, LivingEntity target) {  //non-buggy version by InfinityRaider
         target.setHealth(0);
         target.onDeath(source);
         //target.setDead();

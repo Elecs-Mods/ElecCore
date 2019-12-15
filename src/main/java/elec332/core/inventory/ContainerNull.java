@@ -1,7 +1,7 @@
 package elec332.core.inventory;
 
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.Container;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.container.Container;
 
 import javax.annotation.Nonnull;
 
@@ -13,7 +13,7 @@ import javax.annotation.Nonnull;
 public final class ContainerNull extends Container {
 
     @Override
-    public boolean canInteractWith(@Nonnull EntityPlayer player) {
+    public boolean canInteractWith(@Nonnull PlayerEntity player) {
         return false;
     }
 

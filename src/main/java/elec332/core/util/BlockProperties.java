@@ -2,13 +2,13 @@ package elec332.core.util;
 
 import net.minecraft.state.EnumProperty;
 import net.minecraft.state.properties.BlockStateProperties;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 
 /**
  * Created by Elec332 on 7-12-2015.
  */
 public final class BlockProperties {
 
-    public static final EnumProperty<EnumFacing> FACING_NORMAL = BlockStateProperties.FACING;
+    public static final EnumProperty<Direction> FACING_NORMAL = BlockStateProperties.FACING;
 
 }

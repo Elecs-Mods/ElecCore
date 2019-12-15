@@ -7,7 +7,7 @@ import com.google.common.collect.Sets;
 import elec332.core.grid.IStructureWorldEventHandler;
 import elec332.core.handler.ElecCoreRegistrar;
 import elec332.core.world.DimensionCoordinate;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.BlockState;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorld;
@@ -36,7 +36,7 @@ public enum GridEventInputHandler {
     private final Map<IStructureWorldEventHandler, Set<DimensionCoordinate>> chunkAdd, chunkRemove;
 
 
-    public void worldBlockUpdate(IWorld world, BlockPos pos, IBlockState oldState, IBlockState newState) {
+    public void worldBlockUpdate(IWorld world, BlockPos pos, BlockState oldState, BlockState newState) {
         if (!world.isRemote() && (newState.getBlock().hasTileEntity(newState)) || oldState.getBlock().hasTileEntity(oldState)) {
             bud.add(new DimensionCoordinate(world, pos));
         }
@@ -49,7 +49,7 @@ public enum GridEventInputHandler {
      * @param pos   The pos of the block that changed state
      * @param state The new state
      */
-    public void onBlockNotify(IWorld world, BlockPos pos, IBlockState state) {
+    public void onBlockNotify(IWorld world, BlockPos pos, BlockState state) {
         if (!world.isRemote()) {
             if (!state.getBlock().hasTileEntity(state)) {
                 return;

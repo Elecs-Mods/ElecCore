@@ -3,8 +3,8 @@ package elec332.core.inventory.widget;
 import elec332.core.inventory.tooltip.ToolTip;
 import elec332.core.inventory.window.IWidgetContainer;
 import elec332.core.inventory.window.Window;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.LogicalSide;
@@ -27,7 +27,7 @@ public interface IWidget {
 
     public void updateProgressbar(int value);
 
-    public void readNBTChangesFromPacket(NBTTagCompound tagCompound, LogicalSide receiver);
+    public void readNBTChangesFromPacket(CompoundNBT tagCompound, LogicalSide receiver);
 
     public boolean isMouseOver(double mouseX, double mouseY);
 
@@ -49,7 +49,7 @@ public interface IWidget {
     public default void modifyTooltip(List<String> tooltip, int mouseX, int mouseY) {
     }
 
-    default public void onWindowClosed(EntityPlayer player) {
+    default public void onWindowClosed(PlayerEntity player) {
     }
 
 }

@@ -2,7 +2,7 @@ package elec332.core.util;
 
 import elec332.core.ElecCore;
 import net.minecraft.nbt.CompressedStreamTools;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.loading.FMLPaths;
 import org.apache.commons.io.FileUtils;
@@ -36,7 +36,7 @@ public class IOHelper {
         return FMLPaths.CONFIGDIR.get();
     }
 
-    public static final IObjectIO<NBTTagCompound> NBT_IO, NBT_COMPRESSED_IO;
+    public static final IObjectIO<CompoundNBT> NBT_IO, NBT_COMPRESSED_IO;
 
     /**
      * Gets the {@link InputStream} from the provided {@link ResourceLocation},
@@ -194,40 +194,40 @@ public class IOHelper {
     }
 
     static {
-        NBT_IO = new IObjectIO<NBTTagCompound>() {
+        NBT_IO = new IObjectIO<CompoundNBT>() {
 
             @Override
-            public void write(File file, NBTTagCompound obj) throws IOException {
+            public void write(File file, CompoundNBT obj) throws IOException {
                 CompressedStreamTools.write(obj, file);
             }
 
             @Override
-            public NBTTagCompound read(File file) throws IOException {
+            public CompoundNBT read(File file) throws IOException {
                 return CompressedStreamTools.read(file);
             }
 
             @Override
-            public NBTTagCompound returnOnReadFail() {
-                return new NBTTagCompound();
+            public CompoundNBT returnOnReadFail() {
+                return new CompoundNBT();
             }
 
         };
 
-        NBT_COMPRESSED_IO = new IObjectIO<NBTTagCompound>() {
+        NBT_COMPRESSED_IO = new IObjectIO<CompoundNBT>() {
 
             @Override
-            public void write(File file, NBTTagCompound obj) throws IOException {
+            public void write(File file, CompoundNBT obj) throws IOException {
                 CompressedStreamTools.writeCompressed(obj, new FileOutputStream(file));
             }
 
             @Override
-            public NBTTagCompound read(File file) throws IOException {
+            public CompoundNBT read(File file) throws IOException {
                 return CompressedStreamTools.readCompressed(new FileInputStream(file));
             }
 
             @Override
-            public NBTTagCompound returnOnReadFail() {
-                return new NBTTagCompound();
+            public CompoundNBT returnOnReadFail() {
+                return new CompoundNBT();
             }
 
         };

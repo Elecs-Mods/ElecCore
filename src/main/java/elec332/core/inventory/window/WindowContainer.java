@@ -8,11 +8,12 @@ import elec332.core.inventory.widget.slot.WidgetSlot;
 import elec332.core.network.packets.PacketWindowData;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.*;
+import net.minecraft.inventory.container.Container;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextComponentString;
@@ -29,7 +30,7 @@ import java.util.Map;
  */
 public final class WindowContainer extends Container {
 
-    public WindowContainer(EntityPlayer player, Window window) {
+    public WindowContainer(PlayerEntity player, Window window) {
         this.listeners = Lists.newArrayList();
         this.thePlayer = player;
         this.window = window;
@@ -42,7 +43,7 @@ public final class WindowContainer extends Container {
     }
 
     private final Window window;
-    private final EntityPlayer thePlayer;
+    private final PlayerEntity thePlayer;
     private final List<IWindowListener> listeners;
     private final Map<WidgetSlot, Slot> slotStuff;
     private final Map<Slot, WidgetSlot> externalSlots;
@@ -85,12 +86,12 @@ public final class WindowContainer extends Container {
 
     @Nonnull
     @Override
-    public ItemStack transferStackInSlot(EntityPlayer playerIn, int index) {
+    public ItemStack transferStackInSlot(PlayerEntity playerIn, int index) {
         return window.transferStackInSlot(playerIn, index);
     }
 
     @Override
-    public void onContainerClosed(EntityPlayer player) {
+    public void onContainerClosed(PlayerEntity player) {
         window.onWindowClosed(player);
         super.onContainerClosed(player);
     }
@@ -102,7 +103,7 @@ public final class WindowContainer extends Container {
 
     @Nonnull
     @Override
-    public ItemStack slotClick(int slotId, int dragType, ClickType clickTypeIn, EntityPlayer player) {
+    public ItemStack slotClick(int slotId, int dragType, ClickType clickTypeIn, PlayerEntity player) {
         return window.slotClick(slotId, dragType, clickTypeIn, player);
     }
 
@@ -121,17 +122,17 @@ public final class WindowContainer extends Container {
     }
 
     @Override
-    public boolean getCanCraft(@Nonnull EntityPlayer player) {
+    public boolean getCanCraft(@Nonnull PlayerEntity player) {
         return window.getCanCraft(player);
     }
 
     @Override
-    public void setCanCraft(@Nonnull EntityPlayer player, boolean canCraft) {
+    public void setCanCraft(@Nonnull PlayerEntity player, boolean canCraft) {
         window.setCanCraft(player, canCraft);
     }
 
     @Override
-    public boolean canInteractWith(@Nonnull EntityPlayer player) {
+    public boolean canInteractWith(@Nonnull PlayerEntity player) {
         return window.canInteractWith(player);
     }
 
@@ -217,7 +218,7 @@ public final class WindowContainer extends Container {
 
         @Override
         @Nonnull
-        public ItemStack onTake(@Nonnull EntityPlayer thePlayer, @Nonnull ItemStack stack) {
+        public ItemStack onTake(@Nonnull PlayerEntity thePlayer, @Nonnull ItemStack stack) {
             return widget.onTake(thePlayer, stack);
         }
 
@@ -276,7 +277,7 @@ public final class WindowContainer extends Container {
         }
 
         @Override
-        public boolean canTakeStack(EntityPlayer playerIn) {
+        public boolean canTakeStack(PlayerEntity playerIn) {
             return widget.canTakeStack(playerIn);
         }
 
@@ -366,7 +367,7 @@ public final class WindowContainer extends Container {
         }
 
         @Override
-        public EntityPlayer getPlayer() {
+        public PlayerEntity getPlayer() {
             return WindowContainer.this.thePlayer;
         }
 
@@ -391,15 +392,15 @@ public final class WindowContainer extends Container {
         }
 
         @Override
-        public ItemStack slotClickDefault(int slotId, int dragType, ClickType clickTypeIn, EntityPlayer player) {
+        public ItemStack slotClickDefault(int slotId, int dragType, ClickType clickTypeIn, PlayerEntity player) {
             return WindowContainer.super.slotClick(slotId, dragType, clickTypeIn, player);
         }
 
         @Override
-        public void sendPacket(NBTTagCompound tag) {
+        public void sendPacket(CompoundNBT tag) {
             PacketWindowData packet = new PacketWindowData(WindowContainer.this, tag);
             if (!thePlayer.getEntityWorld().isRemote) {
-                ElecCore.networkHandler.sendTo(packet, (EntityPlayerMP) thePlayer);
+                ElecCore.networkHandler.sendTo(packet, (ServerPlayerEntity) thePlayer);
             } else {
                 ElecCore.networkHandler.sendToServer(packet);
             }

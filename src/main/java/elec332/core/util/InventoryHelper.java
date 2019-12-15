@@ -2,11 +2,11 @@ package elec332.core.util;
 
 import com.google.common.collect.Lists;
 import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.ListNBT;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
@@ -35,7 +35,7 @@ public class InventoryHelper {
      * @return The tooltip for the provided {@link ItemStack}
      */
     @OnlyIn(Dist.CLIENT)
-    public static List<String> getTooltip(ItemStack stack, @Nullable EntityPlayer playerIn, boolean advanced) {
+    public static List<String> getTooltip(ItemStack stack, @Nullable PlayerEntity playerIn, boolean advanced) {
         return stack.getTooltip(playerIn, advanced ? ITooltipFlag.TooltipFlags.ADVANCED : ITooltipFlag.TooltipFlags.NORMAL).stream()
                 .map(ITextComponent::getFormattedText)
                 .collect(Collectors.toList());
@@ -63,16 +63,16 @@ public class InventoryHelper {
      * @param items Inventory representation
      */
     @SuppressWarnings("all")
-    public static void readItemsFromNBT(@Nonnull NBTTagCompound data, @Nonnull List<ItemStack> items) {
+    public static void readItemsFromNBT(@Nonnull CompoundNBT data, @Nonnull List<ItemStack> items) {
         items.clear();
-        NBTTagList nbttaglist = data.getList("Items", 10);
+        ListNBT ListNBT = data.getList("Items", 10);
 
-        for (int i = 0; i < nbttaglist.size(); ++i) {
-            NBTTagCompound nbttagcompound = nbttaglist.getCompound(i);
-            int j = nbttagcompound.getByte("Slot") & 255;
+        for (int i = 0; i < ListNBT.size(); ++i) {
+            CompoundNBT CompoundNBT = ListNBT.getCompound(i);
+            int j = CompoundNBT.getByte("Slot") & 255;
 
             if (j >= 0 && j < items.size()) {
-                items.set(j, ItemStackHelper.loadItemStackFromNBT(nbttagcompound));
+                items.set(j, ItemStackHelper.loadItemStackFromNBT(CompoundNBT));
             }
         }
     }
@@ -83,8 +83,8 @@ public class InventoryHelper {
      * @param items Inventory representation
      * @return The NBT tag with the inventory data
      */
-    public static NBTTagCompound writeItemsToNBT(@Nonnull List<ItemStack> items) {
-        return writeItemsToNBT(new NBTTagCompound(), items);
+    public static CompoundNBT writeItemsToNBT(@Nonnull List<ItemStack> items) {
+        return writeItemsToNBT(new CompoundNBT(), items);
     }
 
     /**
@@ -94,7 +94,7 @@ public class InventoryHelper {
      * @param items Inventory representation
      * @return The original NBT tag with the inventory data added
      */
-    public static NBTTagCompound writeItemsToNBT(@Nonnull NBTTagCompound tag, @Nonnull List<ItemStack> items) {
+    public static CompoundNBT writeItemsToNBT(@Nonnull CompoundNBT tag, @Nonnull List<ItemStack> items) {
         NonNullList<ItemStack> wrap = NonNullList.withSize(items.size(), ItemStackHelper.NULL_STACK);
         for (int i = 0; i < items.size(); i++) {
             wrap.set(i, items.get(i));
@@ -109,7 +109,7 @@ public class InventoryHelper {
      * @param items Inventory representation
      * @return The original NBT tag with the inventory data added
      */
-    public static NBTTagCompound writeItemsToNBT(@Nonnull NBTTagCompound tag, @Nonnull NonNullList<ItemStack> items) {
+    public static CompoundNBT writeItemsToNBT(@Nonnull CompoundNBT tag, @Nonnull NonNullList<ItemStack> items) {
         net.minecraft.inventory.ItemStackHelper.saveAllItems(tag, items);
         return tag;
     }

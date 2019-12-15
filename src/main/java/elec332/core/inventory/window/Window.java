@@ -13,12 +13,12 @@ import elec332.core.inventory.widget.slot.WidgetSlot;
 import elec332.core.inventory.widget.slot.WidgetSlotOutput;
 import elec332.core.util.ItemStackHelper;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.ClickType;
-import net.minecraft.inventory.Container;
+import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -86,7 +86,7 @@ public class Window implements IWidgetContainer {
 
     private final List<IWidget> widgets, widgets_;
     private final Map<IWidget, Integer> map;
-    private final Set<EntityPlayer> playerList;
+    private final Set<PlayerEntity> playerList;
     private IWindowContainer windowContainer;
     private ResourceLocation background;
     private int offset;
@@ -161,7 +161,7 @@ public class Window implements IWidgetContainer {
     }
 
     @Nonnull
-    protected ItemStack transferStackInSlot(EntityPlayer player, int slotID) {
+    protected ItemStack transferStackInSlot(PlayerEntity player, int slotID) {
         ItemStack itemstack = ItemStackHelper.NULL_STACK;
         WidgetSlot slot = windowContainer.getSlot(slotID);
         if (slot != null && slot.getHasStack()) {
@@ -215,7 +215,7 @@ public class Window implements IWidgetContainer {
     }
 
     @Nonnull
-    public ItemStack slotClick(int slotId, int dragType, ClickType clickTypeIn, EntityPlayer player) {
+    public ItemStack slotClick(int slotId, int dragType, ClickType clickTypeIn, PlayerEntity player) {
         return slotClickDefault(slotId, dragType, clickTypeIn, player);
     }
 
@@ -230,14 +230,14 @@ public class Window implements IWidgetContainer {
     /**
      * gets whether or not the player can craft in this inventory or not
      */
-    public boolean getCanCraft(@Nonnull EntityPlayer player) {
+    public boolean getCanCraft(@Nonnull PlayerEntity player) {
         return !this.playerList.contains(player);
     }
 
     /**
      * sets whether the player can craft in this inventory or not
      */
-    public void setCanCraft(@Nonnull EntityPlayer player, boolean canCraft) {
+    public void setCanCraft(@Nonnull PlayerEntity player, boolean canCraft) {
         if (canCraft) {
             this.playerList.remove(player);
         } else {
@@ -304,7 +304,7 @@ public class Window implements IWidgetContainer {
         }
     }
 
-    public void onWindowClosed(EntityPlayer playerIn) {
+    public void onWindowClosed(PlayerEntity playerIn) {
         for (IWidget widget : widgets_) {
             widget.onWindowClosed(playerIn);
         }
@@ -317,7 +317,7 @@ public class Window implements IWidgetContainer {
         this.detectAndSendChanges();
     }
 
-    public boolean canInteractWith(@Nonnull EntityPlayer playerIn) {
+    public boolean canInteractWith(@Nonnull PlayerEntity playerIn) {
         return true;
     }
 
@@ -328,7 +328,7 @@ public class Window implements IWidgetContainer {
         windowContainer.getSlot(slotID).putStack(stack);
     }
 
-    public void onPacket(NBTTagCompound tag, LogicalSide receiver) {
+    public void onPacket(CompoundNBT tag, LogicalSide receiver) {
     }
 
     public void modifyTooltip(List<String> tooltip, WidgetSlot slot, ItemStack stack, int x, int y) {
@@ -472,7 +472,7 @@ public class Window implements IWidgetContainer {
         windowContainer.detectAndSendChanges();
     }
 
-    public final EntityPlayer getPlayer() {
+    public final PlayerEntity getPlayer() {
         return windowContainer == null ? WindowManager.currentOpeningPlayer.get() : windowContainer.getPlayer();
     }
 
@@ -485,11 +485,11 @@ public class Window implements IWidgetContainer {
     }
 
     @Nonnull
-    protected final ItemStack slotClickDefault(int slotId, int dragType, ClickType clickTypeIn, EntityPlayer player) {
+    protected final ItemStack slotClickDefault(int slotId, int dragType, ClickType clickTypeIn, PlayerEntity player) {
         return windowContainer.slotClickDefault(slotId, dragType, clickTypeIn, player);
     }
 
-    protected final void sendPacket(NBTTagCompound tag) {
+    protected final void sendPacket(CompoundNBT tag) {
         windowContainer.sendPacket(tag);
     }
 

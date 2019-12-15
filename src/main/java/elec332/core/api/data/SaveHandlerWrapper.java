@@ -1,6 +1,6 @@
 package elec332.core.api.data;
 
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.world.storage.ISaveHandler;
 import net.minecraft.world.storage.WorldInfo;
 
@@ -29,7 +29,7 @@ public class SaveHandlerWrapper implements IExternalSaveHandler {
     }
 
     @Override
-    public void load(ISaveHandler saveHandler, WorldInfo info, NBTTagCompound tag) {
+    public void load(ISaveHandler saveHandler, WorldInfo info, CompoundNBT tag) {
         for (IExternalSaveHandler saveHandler1 : saveHandlers) {
             saveHandler1.load(saveHandler, info, tag.getCompound(saveHandler1.getName()));
         }
@@ -37,10 +37,10 @@ public class SaveHandlerWrapper implements IExternalSaveHandler {
 
     @Nullable
     @Override
-    public NBTTagCompound save(ISaveHandler saveHandler, WorldInfo info) {
-        NBTTagCompound ret = new NBTTagCompound();
+    public CompoundNBT save(ISaveHandler saveHandler, WorldInfo info) {
+        CompoundNBT ret = new CompoundNBT();
         for (IExternalSaveHandler saveHandler1 : saveHandlers) {
-            NBTTagCompound tag = saveHandler1.save(saveHandler, info);
+            CompoundNBT tag = saveHandler1.save(saveHandler, info);
             if (tag != null) {
                 ret.put(saveHandler1.getName(), tag);
             }
