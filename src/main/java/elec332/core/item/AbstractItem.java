@@ -37,4 +37,5 @@ public abstract class AbstractItem extends Item implements IAbstractItem {
     public void fillItemGroup(ItemGroup p_150895_1_, NonNullList<ItemStack> p_150895_2_) {
         super.fillItemGroup(p_150895_1_, p_150895_2_);
     }
+
 }

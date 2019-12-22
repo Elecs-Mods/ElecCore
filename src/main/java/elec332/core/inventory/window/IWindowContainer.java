@@ -2,7 +2,7 @@ package elec332.core.inventory.window;
 
 import elec332.core.inventory.widget.slot.WidgetSlot;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.ClickType;
+import net.minecraft.inventory.container.ClickType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraftforge.api.distmarker.Dist;

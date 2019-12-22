@@ -6,26 +6,31 @@ import elec332.core.util.ItemStackHelper;
 import elec332.core.util.PlayerHelper;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityClassification;
 import net.minecraft.entity.effect.LightningBoltEntity;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.SoundEvents;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.SoundCategory;
+import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.*;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.chunk.AbstractChunkProvider;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.EmptyChunk;
 import net.minecraft.world.chunk.IChunk;
-import net.minecraft.world.chunk.AbstractChunkProvider;
 import net.minecraft.world.dimension.DimensionType;
-import net.minecraft.world.gen.ChunkProviderServer;
+import net.minecraft.world.gen.feature.ConfiguredFeature;
+import net.minecraft.world.gen.feature.Feature;
+import net.minecraft.world.gen.feature.IFeatureConfig;
+import net.minecraft.world.server.ChunkHolder;
+import net.minecraft.world.server.ServerChunkProvider;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.BiomeDictionary;
 import net.minecraftforge.common.DimensionManager;
@@ -63,6 +68,48 @@ public class WorldHelper {
     public static final int PLACEBLOCK_NO_NEIGHBOR_REACTION = 16;
     public static final int PLACEBLOCK_NO_NEIGHBOR_REACTION_DROPS = 32;
     public static final int PLACEBLOCK_BLOCK_BEING_MOVED = 64;
+
+    public static ChunkHolder.IPlayerProvider getPlayerManager(ServerWorld world) {
+        return world.getChunkProvider().chunkManager;
+    }
+
+    public static void enqueueChunkRelightChecks(Chunk chunk) {
+        chunk.getWorld().getChunkProvider().getLightManager().func_215571_a(chunk.getPos(), true);
+        //chunk.enqueueRelightChecks();
+    }
+
+    /**
+     * Adds a spawn entry to the specified biome
+     *
+     * @param biome          The biome
+     * @param type           The Entity type
+     * @param spawnListEntry The spawn entry
+     */
+    public static void addBiomeSpawnEntry(Biome biome, EntityClassification type, Biome.SpawnListEntry spawnListEntry) {
+        biome.getSpawns(type).add(spawnListEntry);
+    }
+
+    /**
+     * Gets the internal feature of this feature configuration
+     *
+     * @param configuredFeature The configured feature
+     * @param <T>               The configuration type
+     * @return The internal feature of this feature configuration
+     */
+    public static <T extends IFeatureConfig> Feature<T> getFeature(ConfiguredFeature<T> configuredFeature) {
+        return configuredFeature.feature;
+    }
+
+    /**
+     * Gets the internal configuration of this feature configuration
+     *
+     * @param configuredFeature The configured feature
+     * @param <T>               The configuration type
+     * @return The internal configuration of this feature configuration
+     */
+    public static <T extends IFeatureConfig> T getFeatureConfiguration(ConfiguredFeature<T> configuredFeature) {
+        return configuredFeature.config;
+    }
 
     /**
      * Gets the biome types opf the provided biome
@@ -187,9 +234,11 @@ public class WorldHelper {
      */
     public static void markBlockForUpdate(World world, BlockPos pos) {
         if (!world.isRemote) {
-            ((ServerWorld) world).getPlayerChunkMap().markBlockForUpdate(pos);
+            ((ServerWorld) world).getChunkProvider().markBlockChanged(pos);
+            //((ServerWorld) world).getPlayerChunkMap().markBlockForUpdate(pos);
         } else {
-            world.markBlockRangeForRenderUpdate(pos, pos);
+            markBlockForRenderUpdate(world, pos);
+            //world.markBlockRangeForRenderUpdate(pos, pos);
         }
     }
 
@@ -203,17 +252,20 @@ public class WorldHelper {
     public static boolean chunkLoaded(IWorld world, BlockPos pos) {
         ChunkPos cp = chunkPosFromBlockPos(pos);
         AbstractChunkProvider chunkProvider = world.getChunkProvider();
+        if (!chunkProvider.isChunkLoaded(cp)) {
+            return false;
+        }
         boolean b1;
-        Chunk chunk = chunkProvider.getChunk(cp.x, cp.z, false, false);
+        Chunk chunk = chunkProvider.getChunk(cp.x, cp.z, false);
         if (chunk == null) {
             return false;
         }
-        if (chunkProvider instanceof ChunkProviderServer) {
-            b1 = ((ChunkProviderServer) chunkProvider).chunkExists(cp.x, cp.z);
+        if (chunkProvider instanceof ServerChunkProvider) {
+            b1 = ((ServerChunkProvider) chunkProvider).chunkExists(cp.x, cp.z);
         } else {
             b1 = chunk instanceof EmptyChunk;
         }
-        return b1 && chunk.isLoaded();
+        return b1;// && chunk.isLoaded();
     }
 
     /**
@@ -224,7 +276,10 @@ public class WorldHelper {
      * @param pos   The position
      */
     public static void markBlockForRenderUpdate(World world, BlockPos pos) {
-        world.markBlockRangeForRenderUpdate(pos, pos);
+        if (world.isRemote) {
+            world.notifyBlockUpdate(pos, null, null, PLACEBLOCK_RENDERMAIN);
+        }
+        //world.markBlockRangeForRenderUpdate(pos, pos);
     }
 
     /**
@@ -237,7 +292,7 @@ public class WorldHelper {
      * @param force    The force of the explosion
      */
     public static void spawnExplosion(World worldObj, double xCoord, double yCoord, double zCoord, float force) {
-        worldObj.createExplosion(null, xCoord, yCoord, zCoord, force * 4, true);
+        worldObj.createExplosion(null, xCoord, yCoord, zCoord, force * 4, Explosion.Mode.DESTROY);
     }
 
     /**
@@ -316,7 +371,7 @@ public class WorldHelper {
      * @param itemStack The {@link ItemStack} to be dropped
      */
     public static boolean dropStack(World world, int x, int y, int z, ItemStack itemStack) {
-        if (!world.isRemote() && world.getGameRules().getBoolean("doTileDrops")) {
+        if (!world.isRemote() && world.getGameRules().getBoolean(GameRules.DO_TILE_DROPS)) {
             float f = 0.7F;
             double d0 = (double) (world.rand.nextFloat() * f) + (double) (1.0F - f) * 0.5D;
             double d1 = (double) (world.rand.nextFloat() * f) + (double) (1.0F - f) * 0.5D;
@@ -451,7 +506,17 @@ public class WorldHelper {
      */
     public static void spawnLightningAtLookVec(PlayerEntity player, Double range) {
         RayTraceResult position = PlayerHelper.getPosPlayerIsLookingAt(player, range);
-        spawnLightningAt(player.getEntityWorld(), position.getBlockPos());
+        spawnLightningAt(player.getEntityWorld(), position.getHitVec());
+    }
+
+    /**
+     * Spawns a lightning bolt at the specified location.
+     *
+     * @param world The world
+     * @param vec   The position
+     */
+    public static void spawnLightningAt(World world, Vec3d vec) {
+        spawnLightningAt(world, vec.x, vec.y, vec.z);
     }
 
     /**

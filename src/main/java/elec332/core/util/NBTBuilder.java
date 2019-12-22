@@ -2,8 +2,8 @@ package elec332.core.util;
 
 import com.google.common.base.Preconditions;
 import net.minecraft.item.DyeColor;
-import net.minecraft.nbt.INBT;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.INBT;
 import net.minecraft.nbt.ListNBT;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;

@@ -10,9 +10,8 @@ import elec332.core.util.FMLHelper;
 import elec332.core.world.WorldHelper;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.world.IWorld;
-import net.minecraft.world.server.ServerWorld;
 import net.minecraft.world.dimension.DimensionType;
-import net.minecraft.world.storage.ISaveHandler;
+import net.minecraft.world.server.ServerWorld;
 import net.minecraft.world.storage.WorldInfo;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.world.WorldEvent;
@@ -63,8 +62,8 @@ public enum SaveHandler {
         return true;
     }
 
-    private void load(ISaveHandler save, WorldInfo worldInfo, CompoundNBT base) {
-        System.out.println("Load " + worldInfo.getDimension());
+    private void load(net.minecraft.world.storage.SaveHandler save, WorldInfo worldInfo, CompoundNBT base) {
+        System.out.println("Load " + worldInfo.getWorldName());
         CompoundNBT tag;
         Preconditions.checkNotNull(save);
         Preconditions.checkNotNull(worldInfo);
@@ -79,7 +78,7 @@ public enum SaveHandler {
         this.loaded = true;
     }
 
-    private CompoundNBT save(ISaveHandler save, WorldInfo worldInfo) {
+    private CompoundNBT save(net.minecraft.world.storage.SaveHandler save, WorldInfo worldInfo) {
         if (!this.loaded && !ElecCore.suppressSpongeIssues) {
             ElecCore.logger.error("World is unloading before data has been loaded, skipping data saving...");
             ElecCore.logger.error("This probably happened due to a crash in EG worldgen.");

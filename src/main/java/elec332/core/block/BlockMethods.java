@@ -8,12 +8,8 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.IFluidState;
-import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.*;
 import net.minecraft.world.World;
 
 import javax.annotation.Nonnull;
@@ -37,12 +33,11 @@ public final class BlockMethods {
             if (hit != null && box instanceof IndexedAABB) {
                 hit.subHit = ((IndexedAABB) box).index;
             }
-            return prev != null && (hit == null || start.squareDistanceTo(prev.hitVec) < start.squareDistanceTo(hit.hitVec)) ? prev : hit;
+            return prev != null && (hit == null || start.squareDistanceTo(prev.getHitVec()) < start.squareDistanceTo(hit.getHitVec())) ? prev : hit;
         }, (a, b) -> b);
     }
 
-    public static <B extends Block & IAbstractBlock> boolean onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, Direction facing, float hitX, float hitY, float hitZ, B block) {
-        RayTraceResult hit = RayTraceHelper.retraceBlock(state, world, pos, player);
+    public static <B extends Block & IAbstractBlock> boolean onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult hit, B block) {
         return hit != null && block.onBlockActivated(world, pos, state, player, hand, hit);
     }
 

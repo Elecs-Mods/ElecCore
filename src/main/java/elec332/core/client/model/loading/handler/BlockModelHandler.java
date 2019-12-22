@@ -14,6 +14,7 @@ import net.minecraft.client.renderer.BlockModelShapes;
 import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.client.renderer.model.ModelResourceLocation;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.client.model.ModelLoader;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -66,7 +67,7 @@ public class BlockModelHandler implements IModelHandler {
 
     @Override
     @Nonnull
-    public Map<ModelResourceLocation, IBakedModel> registerBakedModels(Function<ModelResourceLocation, IBakedModel> modelGetter) {
+    public Map<ModelResourceLocation, IBakedModel> registerBakedModels(Function<ModelResourceLocation, IBakedModel> modelGetter, ModelLoader modelLoader) {
         Map<ModelResourceLocation, IBakedModel> ret = Maps.newHashMap();
         for (Map.Entry<BlockState, ModelResourceLocation> entry : blockResourceLocations.entrySet()) {
             ModelResourceLocation mrl = entry.getValue();

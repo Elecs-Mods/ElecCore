@@ -418,5 +418,6 @@ enum AnnotationDataHandler {
                     + " Method name:" + (isMethod() ? getMethodName() : "-")
                     + " Annotation data:" + getAnnotationInfo();
         }
+
     }
 }

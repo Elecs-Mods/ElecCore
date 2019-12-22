@@ -4,22 +4,23 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import elec332.core.ElecCore;
 import elec332.core.api.network.ElecByteBuf;
-import elec332.core.inventory.NullInteractionObject;
 import elec332.core.util.FMLHelper;
 import elec332.core.world.WorldHelper;
 import io.netty.buffer.Unpooled;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.container.Container;
+import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.fml.DefaultModContainers;
 import net.minecraftforge.fml.ModContainer;
 import net.minecraftforge.fml.network.NetworkHooks;
 
@@ -41,12 +42,11 @@ public enum WindowManager {
     private final BiMap<ResourceLocation, IWindowHandler> lookup;
     public static final ThreadLocal<PlayerEntity> currentOpeningPlayer = new ThreadLocal<>();
 
-    private static final ResourceLocation GUI_NAME = new ResourceLocation(ElecCore.MODID, "window_gui");
     private static final ResourceLocation TILE_WINDOW_HANDLER = new ResourceLocation(ElecCore.MODID, "tile");
 
     public void register(IWindowHandler windowHandler) {
         ModContainer mc = FMLHelper.getActiveModContainer();
-        if (mc == null || mc == DefaultModContainers.MINECRAFT) {
+        if (mc == null || mc == FMLHelper.getMinecraftModContainer()) {
             throw new RuntimeException();
         }
         register(windowHandler, new ResourceLocation(FMLHelper.getActiveModContainer().getModId(), windowHandler.getClass().getCanonicalName()));
@@ -65,7 +65,7 @@ public enum WindowManager {
 
     @OnlyIn(Dist.CLIENT)
     public static void openClientWindow(Window window) {
-        Minecraft.getInstance().displayGuiScreen(new WindowGui(ElecCore.proxy.getClientPlayer(), window));
+        Minecraft.getInstance().displayGuiScreen(new WindowGui(-1, ElecCore.proxy.getClientPlayer(), window));
     }
 
     public static void openTileWindow(@Nonnull PlayerEntity player, BlockPos pos) {
@@ -95,12 +95,18 @@ public enum WindowManager {
                 throw new IllegalArgumentException();
             }
             ElecByteBuf cdata = ElecByteBuf.of(Unpooled.wrappedBuffer(data));
-            NetworkHooks.openGui((ServerPlayerEntity) player, new NullInteractionObject(GUI_NAME) {
+            NetworkHooks.openGui((ServerPlayerEntity) player, new INamedContainerProvider() {
 
                 @Nonnull
                 @Override
-                public Container createContainer(@Nonnull InventoryPlayer inventoryPlayer, @Nonnull PlayerEntity PlayerEntity) {
-                    return INSTANCE.getServerGuiElement(PlayerEntity, world, cdata, windowHandler);
+                public ITextComponent getDisplayName() {
+                    return new StringTextComponent("window");
+                }
+
+                @Nonnull
+                @Override
+                public Container createMenu(int i, @Nonnull PlayerInventory playerInventory, @Nonnull PlayerEntity playerEntity) {
+                    return INSTANCE.getServerGuiElement(i, playerEntity, world, cdata, windowHandler);
                 }
 
             }, allData -> {
@@ -113,9 +119,9 @@ public enum WindowManager {
         throw new IllegalArgumentException();
     }
 
-    public synchronized WindowContainer getServerGuiElement(PlayerEntity player, World world, ElecByteBuf data, IWindowHandler windowHandler) {
+    public synchronized WindowContainer getServerGuiElement(int containerId, PlayerEntity player, World world, ElecByteBuf data, IWindowHandler windowHandler) {
         currentOpeningPlayer.set(player);
-        WindowContainer ret = new WindowContainer(player, windowHandler.createWindow(player, world, data));
+        WindowContainer ret = new WindowContainer(player, windowHandler.createWindow(player, world, data), containerId);
         currentOpeningPlayer.remove();
         return ret;
     }

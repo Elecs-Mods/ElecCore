@@ -1,23 +1,11 @@
 package elec332.core.grid.internal;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.particles.IParticleData;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.SoundEvent;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.IWorld;
-import net.minecraft.world.IWorldEventListener;
-
-import javax.annotation.Nullable;
-
 /**
  * Created by Elec332 on 23-7-2016.
  */
+
 @SuppressWarnings("all")
-public enum WorldEventHandler implements IWorldEventListener {
+public enum WorldEventHandler {}/*implements IWorldEventListener {
 
     INSTANCE;
 
@@ -76,3 +64,4 @@ public enum WorldEventHandler implements IWorldEventListener {
     }
 
 }
+*/

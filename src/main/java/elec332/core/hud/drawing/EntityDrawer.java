@@ -1,11 +1,11 @@
 package elec332.core.hud.drawing;
 
+import com.mojang.blaze3d.platform.GLX;
+import com.mojang.blaze3d.platform.GlStateManager;
 import elec332.core.hud.position.Alignment;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.client.renderer.entity.EntityRendererManager;
 import net.minecraft.entity.Entity;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -51,7 +51,7 @@ public class EntityDrawer implements IDrawer<Entity> {
         RenderHelper.enableStandardItemLighting();
         GlStateManager.rotatef(-135.0F, 0.0F, 1.0F, 0.0F);
         GlStateManager.translatef(0.0F, 0.0F, 0.0F);
-        RenderManager rendermanager = mc.getRenderManager();
+        EntityRendererManager rendermanager = mc.getRenderManager();
         rendermanager.setPlayerViewY(180);
         rendermanager.setRenderShadow(false);
         rendermanager.renderEntity(drawable, 0.0D, 0.0D, 0.0D, 0.0F, 1.0F, false);
@@ -59,10 +59,10 @@ public class EntityDrawer implements IDrawer<Entity> {
         GlStateManager.popMatrix();
         RenderHelper.disableStandardItemLighting();
         GlStateManager.disableRescaleNormal();
-        GlStateManager.activeTexture(OpenGlHelper.GL_TEXTURE1);
-        GlStateManager.disableTexture2D();
-        GlStateManager.activeTexture(OpenGlHelper.GL_TEXTURE0);
-        return (int) drawable.width;
+        GlStateManager.activeTexture(GLX.GL_TEXTURE1);
+        GlStateManager.disableTexture();
+        GlStateManager.activeTexture(GLX.GL_TEXTURE0);
+        return (int) drawable.getWidth();
     }
 
 }

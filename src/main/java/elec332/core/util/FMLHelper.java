@@ -12,7 +12,6 @@ import net.minecraftforge.fml.common.thread.EffectiveSide;
 import net.minecraftforge.fml.event.lifecycle.ModLifecycleEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.javafmlmod.FMLModContainer;
-import net.minecraftforge.fml.loading.DefaultModInfos;
 import net.minecraftforge.fml.loading.FMLLoader;
 import net.minecraftforge.fml.loading.moddiscovery.ModInfo;
 import net.minecraftforge.forgespi.language.ModFileScanData;
@@ -48,6 +47,11 @@ public class FMLHelper {
         );
     }
 
+    @Nonnull
+    public static ModContainer getMinecraftModContainer() {
+        return getModList().getModContainerById("minecraft").orElseThrow(IllegalStateException::new);
+    }
+
     /**
      * Loads a class with the FML classloader
      *
@@ -68,11 +72,12 @@ public class FMLHelper {
     public static String getOwnerName(Class<?> clazz) {
         String cn = Type.getType(clazz).getClassName();
         if (cn.startsWith("net.minecraft.")) {
-            return DefaultModInfos.minecraftModInfo.getModId();
+            return getMinecraftModContainer().getModId();
         }
         return getModList().getMods()
                 .stream()
-                .filter(mi -> mi != DefaultModInfos.minecraftModInfo) //The minecraft mod-info has a null file
+                //todo: check with 1.14
+                //.filter(mi -> mi != DefaultModInfos.minecraftModInfo) //The minecraft mod-info has a null file
                 .filter(mi -> mi.getOwningFile().getFile().getScanResult().getClasses().stream()
                         .anyMatch(cd -> classOwner.get(cd).getClassName().equals(cn)))
                 .findFirst() //Cannot account for multiple mods in 1 jar (yet...)
@@ -117,7 +122,7 @@ public class FMLHelper {
      * @return The current MC version
      */
     public static String getMcVersion() {
-        return DefaultModContainers.MINECRAFT.getModInfo().getVersion().toString();//(String) FMLInjectionData.data()[4];
+        return getMinecraftModContainer().getModInfo().getVersion().toString();//(String) FMLInjectionData.data()[4];
     }
 
     /**

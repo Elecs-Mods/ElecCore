@@ -3,15 +3,14 @@ package elec332.core.client.util;
 import elec332.core.client.RenderHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -22,33 +21,39 @@ public class GuiDraw {
 
     private static final GuiDrawGui gui;
     public static final Minecraft mc;
+    private static final int zLevel = 0;
 
     public static void drawRect(int left, int top, int right, int bottom, int color) {
-        Gui.drawRect(left, top, right, bottom, color);
+        Screen.fill(left, top, right, bottom, color);
     }
 
-    public static void drawModalRectWithCustomSizedTexture(int x, int y, float u, float v, int width, int height, float textureWidth, float textureHeight) {
-        Gui.drawModalRectWithCustomSizedTexture(x, y, u, v, width, height, textureWidth, textureHeight);
+    public static void drawModalRectWithCustomSizedTexture(int x, int y, float u, float v, int width, int height, int textureWidth, int textureHeight) {
+        Screen.blit(x, y, u, v, width, height, textureWidth, textureHeight);
+        //Gui.drawModalRectWithCustomSizedTexture(x, y, u, v, width, height, textureWidth, textureHeight);
     }
 
-    public static void drawScaledCustomSizeModalRect(int x, int y, float u, float v, int uWidth, int vHeight, int width, int height, float tileWidth, float tileHeight) {
-        Gui.drawScaledCustomSizeModalRect(x, y, u, v, uWidth, vHeight, width, height, tileWidth, tileHeight);
+    public static void drawScaledCustomSizeModalRect(int x, int y, int u, int v, int uWidth, int vHeight, int width, int height, int tileWidth, int tileHeight) {
+        Screen.blit(x, y, u, v, uWidth, vHeight, width, height, tileWidth, tileHeight);
+        //Gui.drawScaledCustomSizeModalRect(x, y, u, v, uWidth, vHeight, width, height, tileWidth, tileHeight);
     }
 
     public static void drawTexturedModalRect(int x, int y, int textureX, int textureY, int width, int height) {
-        gui.drawTexturedModalRect(x, y, textureX, textureY, width, height);
+        gui.blit(x, y, textureX, textureY, width, height);
+        //gui.drawTexturedModalRect(x, y, textureX, textureY, width, height);
     }
 
-    public static void drawTexturedModalRect(float xCoord, float yCoord, int minU, int minV, int maxU, int maxV) {
-        gui.drawTexturedModalRect(xCoord, yCoord, minU, minV, maxU, maxV);
-    }
+    //public static void drawTexturedModalRect(float xCoord, float yCoord, int minU, int minV, int maxU, int maxV) {
+    //gui.blit(xCoord, yCoord, minU, minV, maxU, maxV);
+    //gui.drawTexturedModalRect(xCoord, yCoord, minU, minV, maxU, maxV);
+    //}
 
     public static void drawTexturedModalRect(int xCoord, int yCoord, TextureAtlasSprite textureSprite, int widthIn, int heightIn) {
-        gui.drawTexturedModalRect(xCoord, yCoord, textureSprite, widthIn, heightIn);
+        Screen.blit(xCoord, yCoord, zLevel, widthIn, heightIn, textureSprite);
+        //gui.drawTexturedModalRect(xCoord, yCoord, textureSprite, widthIn, heightIn);
     }
 
     public static void drawGradientRect(int left, int top, int right, int bottom, int startColor, int endColor) {
-        gui.drawGradientRect(left, top, right, bottom, startColor, endColor);
+        gui.fillGradient(left, top, right, bottom, startColor, endColor);
     }
 
     public static void drawCenteredString(FontRenderer fontRenderer, String text, int x, int y, int color) {
@@ -60,36 +65,36 @@ public class GuiDraw {
     }
 
     public static void drawHoveringText(List<String> textLines, int x, int y) {
-        gui.drawHoveringText(textLines, x, y, RenderHelper.getMCFontrenderer());
+        gui.renderTooltip(textLines, x, y, RenderHelper.getMCFontrenderer());
     }
 
     public static void drawHoveringText(List<String> textLines, int x, int y, @Nullable FontRenderer fontrenderer) {
-        gui.drawHoveringText(textLines, x, y, fontrenderer == null ? RenderHelper.getMCFontrenderer() : fontrenderer);
+        gui.renderTooltip(textLines, x, y, fontrenderer == null ? RenderHelper.getMCFontrenderer() : fontrenderer);
     }
 
     public static void drawHoveringText(String text, int x, int y) {
-        gui.drawHoveringText(text, x, y);
+        gui.renderTooltip(Collections.singletonList(text), x, y, gui.getFont());
     }
 
     public static List<String> getItemToolTip(ItemStack stack) {
-        return gui.getItemToolTip(stack);
+        return gui.getTooltipFromItem(stack);
     }
 
     public static void drawDefaultBackground() {
         if (mc.currentScreen != null) {
-            mc.currentScreen.drawDefaultBackground();
+            mc.currentScreen.renderBackground();
         } else {
             gui.width = mc.mainWindow.getScaledWidth();
             gui.height = mc.mainWindow.getScaledHeight();
-            gui.drawDefaultBackground();
+            gui.renderBackground();
         }
     }
 
     public static void renderToolTip(ItemStack stack, int x, int y) {
-        gui.renderToolTip(stack, x, y);
+        gui.renderTooltip(getItemToolTip(stack), x, y);
     }
 
-    public static GuiScreen getGui() {
+    public static Screen getGui() {
         return gui;
     }
 
@@ -98,26 +103,21 @@ public class GuiDraw {
         mc = Minecraft.getInstance();
     }
 
-    private static class GuiDrawGui extends GuiScreen {
+    private static class GuiDrawGui extends Screen {
 
         private GuiDrawGui() {
-            zLevel = 0.0F;
-            mc = Minecraft.getInstance();
+            super(null);
+            //zLevel = 0.0F;
+            minecraft = Minecraft.getInstance();
+        }
+
+        private FontRenderer getFont() {
+            return font;
         }
 
         @Override
-        public void drawGradientRect(int left, int top, int right, int bottom, int startColor, int endColor) {
-            super.drawGradientRect(left, top, right, bottom, startColor, endColor);
-        }
-
-        @Override
-        public void drawHoveringText(List<String> textLines, int x, int y, @Nonnull FontRenderer font) {
-            super.drawHoveringText(textLines, x, y, font);
-        }
-
-        @Override
-        public void renderToolTip(ItemStack stack, int x, int y) {
-            super.renderToolTip(stack, x, y);
+        public void fillGradient(int p_fillGradient_1_, int p_fillGradient_2_, int p_fillGradient_3_, int p_fillGradient_4_, int p_fillGradient_5_, int p_fillGradient_6_) {
+            super.fillGradient(p_fillGradient_1_, p_fillGradient_2_, p_fillGradient_3_, p_fillGradient_4_, p_fillGradient_5_, p_fillGradient_6_);
         }
 
     }

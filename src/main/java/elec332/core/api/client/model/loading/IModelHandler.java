@@ -3,6 +3,7 @@ package elec332.core.api.client.model.loading;
 import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.client.renderer.model.ModelResourceLocation;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.client.model.ModelLoader;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -43,10 +44,11 @@ public interface IModelHandler {
      * a getter for fetching already existing/loaded models is provided
      *
      * @param bakedModelGetter The getter for fetching already existing/loaded models
+     * @param modelLoader      The model loader
      * @return A Non-null map with the models that need to be registered
      */
     @Nonnull
-    public Map<ModelResourceLocation, IBakedModel> registerBakedModels(Function<ModelResourceLocation, IBakedModel> bakedModelGetter);
+    public Map<ModelResourceLocation, IBakedModel> registerBakedModels(Function<ModelResourceLocation, IBakedModel> bakedModelGetter, ModelLoader modelLoader);
 
     /**
      * Can be used to remove exceptions from being displayed in the logs,

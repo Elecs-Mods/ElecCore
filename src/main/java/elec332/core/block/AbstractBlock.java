@@ -1,25 +1,32 @@
 package elec332.core.block;
 
+import com.google.common.base.Preconditions;
 import elec332.core.tile.ITileWithDrops;
 import elec332.core.world.WorldHelper;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.enchantment.Enchantments;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.IFluidState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
-import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
+import net.minecraft.world.storage.loot.LootContext;
+import net.minecraft.world.storage.loot.LootParameters;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.List;
 
 /**
  * Created by Elec332 on 26-11-2016.
@@ -43,19 +50,19 @@ public abstract class AbstractBlock extends Block implements IAbstractBlock {
 
     /**
      * Shape used for entity collision
-     * (Usually redirects to {@link #getShape(BlockState, IBlockReader, BlockPos)}, returns empty shape when it doesn't block movement)
+     * (Usually redirects to {@link #getShape(BlockState, IBlockReader, BlockPos, ISelectionContext)}, returns empty shape when it doesn't block movement)
      */
     @Nonnull
     @Override
     @SuppressWarnings("deprecation")
-    public VoxelShape getCollisionShape(@Nonnull BlockState state, @Nonnull IBlockReader world, @Nonnull BlockPos pos) {
-        return super.getCollisionShape(state, world, pos);
+    public VoxelShape getCollisionShape(@Nonnull BlockState state, @Nonnull IBlockReader world, @Nonnull BlockPos pos, ISelectionContext selectionContext) {
+        return super.getCollisionShape(state, world, pos, selectionContext);
     }
 
     /**
      * Shape used for secondary raytracing.
-     * If there was a valid {@link RayTraceResult} on {@link #getShape(BlockState, IBlockReader, BlockPos)},
-     * then raytracing will also be performed on this shape, to maybe correct the {@link RayTraceResult#sideHit}
+     * If there was a valid {@link RayTraceResult} on {@link #getShape(BlockState, IBlockReader, BlockPos, ISelectionContext)},
+     * then raytracing will also be performed on this shape, to maybe correct the {@link BlockRayTraceResult#getFace()}
      */
     @Nonnull
     @Override
@@ -83,14 +90,14 @@ public abstract class AbstractBlock extends Block implements IAbstractBlock {
     @Nonnull
     @Override
     @SuppressWarnings("deprecation")
-    public VoxelShape getShape(@Nonnull BlockState state, @Nonnull IBlockReader world, @Nonnull BlockPos pos) {
-        return super.getShape(state, world, pos);
+    public VoxelShape getShape(@Nonnull BlockState state, @Nonnull IBlockReader world, @Nonnull BlockPos pos, ISelectionContext selectionContext) {
+        return super.getShape(state, world, pos, selectionContext);
     }
 
     @Override
     @SuppressWarnings("deprecation")
-    public boolean onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, Direction facing, float hitX, float hitY, float hitZ) {
-        return BlockMethods.onBlockActivated(state, world, pos, player, hand, facing, hitX, hitY, hitZ, this);
+    public boolean onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult hit) {
+        return BlockMethods.onBlockActivated(state, world, pos, player, hand, hit, this);
     }
 
     @Override
@@ -104,17 +111,22 @@ public abstract class AbstractBlock extends Block implements IAbstractBlock {
         return BlockMethods.collisionRayTrace(state, world, pos, start, end, this);
     }
 
+    @Nonnull
     @Override
-    public void getDrops(BlockState state, NonNullList<ItemStack> drops, World world, BlockPos pos, int fortune) {
-        getOriginalDrops(state, drops, world, pos, fortune);
-        getTileDrops(drops, world, pos, fortune);
+    public List<ItemStack> getDrops(@Nonnull BlockState state, @Nonnull LootContext.Builder builder) {
+        List<ItemStack> f = getOriginalDrops(state, builder);
+        Entity entity = Preconditions.checkNotNull(builder.get(LootParameters.THIS_ENTITY));
+        BlockPos pos = Preconditions.checkNotNull(builder.get(LootParameters.POSITION));
+        ItemStack stack = Preconditions.checkNotNull(builder.get(LootParameters.TOOL));
+        getTileDrops(f, entity.world, pos, EnchantmentHelper.getEnchantmentLevel(Enchantments.FORTUNE, stack));
+        return f;
     }
 
-    public void getOriginalDrops(BlockState state, NonNullList<ItemStack> drops, World world, BlockPos pos, int fortune) {
-        super.getDrops(state, drops, world, pos, fortune);
+    public List<ItemStack> getOriginalDrops(BlockState state, LootContext.Builder builder) {
+        return super.getDrops(state, builder);
     }
 
-    public void getTileDrops(NonNullList<ItemStack> drops, World world, BlockPos pos, int fortune) {
+    public void getTileDrops(List<ItemStack> drops, World world, BlockPos pos, int fortune) {
         TileEntity tile = WorldHelper.getTileAt(world, pos);
         if (tile instanceof ITileWithDrops) {
             ((ITileWithDrops) tile).getDrops(drops, fortune);

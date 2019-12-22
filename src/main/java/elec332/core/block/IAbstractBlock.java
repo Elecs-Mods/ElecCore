@@ -6,7 +6,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 
@@ -21,7 +21,7 @@ public interface IAbstractBlock {
         boxes.add(state.getShape(world, pos).getBoundingBox());
     }
 
-    default public boolean onBlockActivated(World world, BlockPos pos, BlockState state, PlayerEntity player, Hand hand, RayTraceResult hit) {
+    default public boolean onBlockActivated(World world, BlockPos pos, BlockState state, PlayerEntity player, Hand hand, BlockRayTraceResult hit) {
         return false;
     }
 

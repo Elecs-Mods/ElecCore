@@ -1,7 +1,7 @@
 package elec332.core.api.data;
 
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.world.storage.ISaveHandler;
+import net.minecraft.world.storage.SaveHandler;
 import net.minecraft.world.storage.WorldInfo;
 
 import javax.annotation.Nullable;
@@ -16,7 +16,7 @@ public interface IExternalSaveHandler {
     /**
      * Invoked when the save-data should be loaded from the disk.
      */
-    public void load(ISaveHandler saveHandler, WorldInfo info, CompoundNBT tag);
+    public void load(SaveHandler saveHandler, WorldInfo info, CompoundNBT tag);
 
     /**
      * Invoked when the save-data should be written to the disk.
@@ -24,7 +24,7 @@ public interface IExternalSaveHandler {
      * @return The version at which the data was saved
      */
     @Nullable
-    public CompoundNBT save(ISaveHandler saveHandler, WorldInfo info);
+    public CompoundNBT save(SaveHandler saveHandler, WorldInfo info);
 
     default public void nullifyData() {
     }

@@ -1,21 +1,23 @@
 package elec332.core.api.world;
 
 import elec332.core.api.registration.IWorldGenRegister;
-import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.EntityClassification;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.EnumCreatureType;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.GenerationStage;
+import net.minecraft.world.gen.carver.ConfiguredCarver;
+import net.minecraft.world.gen.carver.ICarverConfig;
 import net.minecraft.world.gen.carver.WorldCarver;
-import net.minecraft.world.gen.carver.WorldCarverWrapper;
-import net.minecraft.world.gen.feature.CompositeFeature;
+import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.IFeatureConfig;
 import net.minecraft.world.gen.feature.NoFeatureConfig;
 import net.minecraft.world.gen.feature.structure.Structure;
-import net.minecraft.world.gen.placement.Placement;
+import net.minecraft.world.gen.placement.ConfiguredPlacement;
 import net.minecraft.world.gen.placement.IPlacementConfig;
 import net.minecraft.world.gen.placement.NoPlacementConfig;
+import net.minecraft.world.gen.placement.Placement;
 
 /**
  * Created by Elec332 on 1-1-2019
@@ -52,7 +54,9 @@ public interface IBiomeGenWrapper {
 
     public <FC extends IFeatureConfig, PC extends IPlacementConfig> void addFeature(GenerationStage.Decoration decorationStage, Feature<FC> feature, FC fc, Placement<PC> placement, PC pc);
 
-    public void addFeature(GenerationStage.Decoration decorationStage, CompositeFeature<?, ?> feature);
+    public <FC extends IFeatureConfig, PC extends IPlacementConfig> void addFeature(GenerationStage.Decoration decorationStage, ConfiguredFeature<FC> configuredFeature, ConfiguredPlacement<PC> placement);
+
+    public void addFeature(GenerationStage.Decoration decorationStage, ConfiguredFeature<? extends IFeatureConfig> feature);
 
     default public <C extends IFeatureConfig> void addStructure(Structure<C> structure, C config) {
         addStructure(structure, config, structure.toString());
@@ -60,12 +64,12 @@ public interface IBiomeGenWrapper {
 
     public <C extends IFeatureConfig> void addStructure(Structure<C> structure, C config, String name);
 
-    public <C extends IFeatureConfig> void addCarver(GenerationStage.Carving stage, WorldCarver<C> carver, C carverConfig);
+    public <C extends ICarverConfig> void addCarver(GenerationStage.Carving stage, WorldCarver<C> carver, C carverConfig);
 
-    public <C extends IFeatureConfig> void addCarver(GenerationStage.Carving stage, WorldCarverWrapper<C> carver);
+    public <C extends ICarverConfig> void addCarver(GenerationStage.Carving stage, ConfiguredCarver<C> carver);
 
-    public void addSpawn(EnumCreatureType type, EntityType<? extends LivingEntity> entityType, int weight, int minGroupCount, int maxGroupCount);
+    public void addSpawn(EntityClassification type, EntityType<? extends LivingEntity> entityType, int weight, int minGroupCount, int maxGroupCount);
 
-    public void addSpawn(EnumCreatureType type, Biome.SpawnListEntry spawnListEntry);
+    public void addSpawn(EntityClassification type, Biome.SpawnListEntry spawnListEntry);
 
 }

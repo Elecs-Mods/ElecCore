@@ -3,8 +3,10 @@ package elec332.core.api.client.model;
 import elec332.core.api.annotations.StaticLoad;
 import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.client.renderer.model.ModelResourceLocation;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.eventbus.api.Event;
 
 import javax.annotation.Nonnull;
@@ -37,7 +39,7 @@ public class ModelLoadEvent extends Event {
         throw new UnsupportedOperationException();
     }
 
-    public void registerModel(ModelResourceLocation mrl, IBakedModel model) {
+    public void registerModel(ResourceLocation mrl, IBakedModel model) {
         throw new UnsupportedOperationException();
     }
 
@@ -48,6 +50,11 @@ public class ModelLoadEvent extends Event {
 
     @Nonnull
     public IBakedModel getMissingModel() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Nonnull
+    public ModelLoader getModelLoader() {
         throw new UnsupportedOperationException();
     }
 

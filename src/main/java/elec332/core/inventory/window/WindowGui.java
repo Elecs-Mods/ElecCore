@@ -1,17 +1,19 @@
 package elec332.core.inventory.window;
 
+import com.google.common.base.Preconditions;
+import com.mojang.blaze3d.platform.GlStateManager;
 import elec332.core.ElecCore;
 import elec332.core.util.InventoryHelper;
 import net.minecraft.client.MainWindow;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.MouseHelper;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.ClickType;
-import net.minecraft.inventory.Slot;
+import net.minecraft.inventory.container.ClickType;
+import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 
 import javax.annotation.Nonnull;
@@ -20,14 +22,14 @@ import java.util.List;
 /**
  * Created by Elec332 on 28-11-2016.
  */
-public final class WindowGui extends GuiContainer {
+public final class WindowGui extends ContainerScreen<WindowContainer> {
 
-    public WindowGui(PlayerEntity player, Window window) {
-        this(new WindowContainer(player, window));
+    public WindowGui(int windowId, PlayerEntity player, Window window) {
+        this(new WindowContainer(player, window, windowId));
     }
 
     public WindowGui(WindowContainer container) {
-        super(container);
+        super(container, container.getPlayer().inventory, new StringTextComponent("window"));
         container.windowContainerHandler.windowGui = this;
         this.window = container.getWindow();
         this.xSize = window.xSize;
@@ -38,17 +40,16 @@ public final class WindowGui extends GuiContainer {
     private boolean init = false;
 
     /**
-     * In 1.13 {@link net.minecraft.client.gui.GuiScreen#setWorldAndResolution(Minecraft, int, int)}
+     * In 1.13+ {@link net.minecraft.client.gui.screen.Screen#init(Minecraft, int, int)}
      * can be called multiple times
      */
-
     @Override
-    public void setWorldAndResolution(Minecraft mc, int width, int height) {
+    public void init(Minecraft mc, int width, int height) {
         window.width = width;
         window.height = height;
         window.guiLeft = (width - this.xSize) / 2;
         window.guiTop = (height - this.ySize) / 2;
-        super.setWorldAndResolution(mc, width, height);
+        super.init(mc, width, height);
         if (!init) {
             window.initWindow_();
             init = true;
@@ -56,8 +57,8 @@ public final class WindowGui extends GuiContainer {
     }
 
     @Override
-    public void onResize(Minecraft mc, int width, int height) {
-        super.setWorldAndResolution(mc, width, height);
+    public void setSize(int width, int height) {
+        super.setSize(width, height);
         window.width = width;
         window.height = height;
         window.guiLeft = (this.width - this.xSize) / 2;
@@ -65,7 +66,7 @@ public final class WindowGui extends GuiContainer {
     }
 
     @Override
-    public boolean doesGuiPauseGame() {
+    public boolean isPauseScreen() {
         return window.doesWindowPauseGame();
     }
 
@@ -80,7 +81,7 @@ public final class WindowGui extends GuiContainer {
     }
 
     @Override
-    public boolean mouseScrolled(double wheel) {
+    public boolean mouseScrolled(double dafuq1, double dafuq2, double wheel) {
         boolean b = false;
         if (wheel != 0) {
             MouseHelper mh = Minecraft.getInstance().mouseHelper;
@@ -89,7 +90,7 @@ public final class WindowGui extends GuiContainer {
             double mouseY = height - mh.getMouseY() * height / (mw.getFramebufferHeight() - 1); //Minecraft.getInstance().displayHeight
             b = window.handleMouseWheel(wheel, window.translatedMouseX(mouseX), window.translatedMouseY(mouseY));
         }
-        return b || super.mouseScrolled(wheel);
+        return b || super.mouseScrolled(dafuq1, dafuq2, wheel);
     }
 
     @Override
@@ -120,8 +121,8 @@ public final class WindowGui extends GuiContainer {
     }
 
     @Override
-    protected void renderToolTip(ItemStack stack, int x, int y) {
-        List<String> list = InventoryHelper.getTooltip(stack, ElecCore.proxy.getClientPlayer(), this.mc.gameSettings.advancedItemTooltips);
+    protected void renderTooltip(ItemStack stack, int x, int y) {
+        List<String> list = InventoryHelper.getTooltip(stack, ElecCore.proxy.getClientPlayer(), Preconditions.checkNotNull(minecraft).gameSettings.advancedItemTooltips);
         window.modifyTooltip(list, ((WindowContainer.WidgetLinkedSlot) hoveredSlot).widget, stack, x, y);
         for (int i = 0; i < list.size(); ++i) {
             if (i == 0) {
@@ -133,7 +134,7 @@ public final class WindowGui extends GuiContainer {
 
         FontRenderer font = stack.getItem().getFontRenderer(stack);
         net.minecraftforge.fml.client.config.GuiUtils.preItemToolTip(stack);
-        this.drawHoveringText(list, x, y, (font == null ? fontRenderer : font));
+        this.renderTooltip(list, x, y, (font == null ? this.font : font));
         net.minecraftforge.fml.client.config.GuiUtils.postItemToolTip();
 
     }

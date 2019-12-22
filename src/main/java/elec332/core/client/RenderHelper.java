@@ -1,6 +1,7 @@
 package elec332.core.client;
 
 import com.google.common.collect.Maps;
+import com.mojang.blaze3d.platform.GlStateManager;
 import elec332.core.ElecCore;
 import elec332.core.api.client.ITessellator;
 import elec332.core.client.util.ElecTessellator;
@@ -10,7 +11,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.client.renderer.color.BlockColors;
@@ -19,12 +19,14 @@ import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.culling.ICamera;
 import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.client.renderer.model.ModelRotation;
+import net.minecraft.client.renderer.texture.AtlasTexture;
 import net.minecraft.client.renderer.texture.MissingTextureSprite;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.fluid.Fluid;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
@@ -39,7 +41,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.model.ITransformation;
 import net.minecraftforge.common.model.TRSRTransformation;
-import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidAttributes;
 
 import javax.annotation.Nonnull;
 import javax.vecmath.Vector3f;
@@ -131,12 +133,12 @@ public class RenderHelper {
         return aabb.grow(BB_EXPAND_NUMBER);
     }
 
-    public static void drawSelectionBox(PlayerEntity player, World world, BlockPos pos, VoxelShape shapeOverride, float partialTicks) {
+    public static void drawSelectionBox(Entity player, World world, BlockPos pos, VoxelShape shapeOverride, float partialTicks) {
         if (world.getWorldBorder().contains(pos)) {
             GlStateManager.enableBlend();
             GlStateManager.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
             GlStateManager.lineWidth(Math.max(2.5F, (float) mc.mainWindow.getFramebufferWidth() / 1920.0F * 2.5F));
-            GlStateManager.disableTexture2D();
+            GlStateManager.disableTexture();
             GlStateManager.depthMask(false);
             GlStateManager.matrixMode(5889);
             GlStateManager.pushMatrix();
@@ -148,7 +150,7 @@ public class RenderHelper {
             GlStateManager.popMatrix();
             GlStateManager.matrixMode(5888);
             GlStateManager.depthMask(true);
-            GlStateManager.enableTexture2D();
+            GlStateManager.enableTexture();
             GlStateManager.disableBlend();
         }
     }
@@ -258,23 +260,30 @@ public class RenderHelper {
 
     @Nonnull
     public static TextureAtlasSprite getFluidTexture(Fluid fluid, boolean flowing) {
-        if (fluid == null)
+        if (fluid == null) {
             return getMissingTextureIcon();
-        return checkIcon(flowing ? getIconFrom(fluid.getFlowing()) : getIconFrom(fluid.getStill()));
+        }
+        FluidAttributes fluidAttributes = fluid.getDefaultState().getFluid().getAttributes();
+        return checkIcon((flowing ? getIconFrom(fluidAttributes.getFlowingTexture()) : getIconFrom(fluidAttributes.getStillTexture())));
     }
 
     @Nonnull
     public static TextureAtlasSprite getMissingTextureIcon() {
-        return MissingTextureSprite.getSprite();//mc.getTextureMap().getMissingSprite();//((TextureMap) Minecraft.getInstance().getTextureManager().getTexture(getBlocksResourceLocation())).getAtlasSprite("missingno");
+        return MissingTextureSprite.func_217790_a();//.getSprite();//mc.getTextureMap().getMissingSprite();//((TextureMap) Minecraft.getInstance().getTextureManager().getTexture(getBlocksResourceLocation())).getAtlasSprite("missingno");
     }
 
     public static TextureAtlasSprite getIconFrom(ResourceLocation rl) {
-        return mc.getTextureMap().getAtlasSprite(rl.toString());
+        return mc.getTextureMap().getSprite(rl);
     }
+
+    public static TextureAtlasSprite getIconFrom(String rl) {
+        return mc.getTextureMap().getAtlasSprite(rl);
+    }
+
 
     @Nonnull
     public static ResourceLocation getBlocksResourceLocation() {
-        return TextureMap.LOCATION_BLOCKS_TEXTURE;
+        return AtlasTexture.LOCATION_BLOCKS_TEXTURE;
     }
 
     public void spawnParticle(Particle particle) {

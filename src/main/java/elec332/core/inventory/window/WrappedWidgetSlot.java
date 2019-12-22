@@ -1,11 +1,10 @@
 package elec332.core.inventory.window;
 
 import elec332.core.inventory.widget.slot.WidgetSlot;
+import net.minecraft.client.renderer.texture.AtlasTexture;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.inventory.Slot;
+import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.items.IItemHandler;
@@ -96,11 +95,6 @@ class WrappedWidgetSlot extends WidgetSlot {
     }
 
     @Override
-    public boolean isHere(IInventory inv, int slotIn) {
-        return slot.isHere(inv, slotIn);
-    }
-
-    @Override
     public boolean canTakeStack(PlayerEntity playerIn) {
         return slot.canTakeStack(playerIn);
     }
@@ -133,7 +127,7 @@ class WrappedWidgetSlot extends WidgetSlot {
 
     @Nonnull
     @Override
-    public TextureMap getBackgroundMap() {
+    public AtlasTexture getBackgroundMap() {
         throw new UnsupportedOperationException();
     }
 

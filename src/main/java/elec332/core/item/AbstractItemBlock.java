@@ -9,9 +9,9 @@ import javax.annotation.Nonnull;
 /**
  * Created by Elec332 on 26-11-2016.
  */
-public abstract class AbstractBlockItem extends BlockItem implements IAbstractItem {
+public abstract class AbstractItemBlock extends BlockItem implements IAbstractItem {
 
-    public AbstractBlockItem(Block block, Properties itemBuilder) {
+    public AbstractItemBlock(Block block, Properties itemBuilder) {
         super(block, itemBuilder);
     }
 

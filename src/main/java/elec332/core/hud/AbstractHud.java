@@ -10,13 +10,13 @@ import elec332.core.hud.position.HorizontalStartingPoint;
 import elec332.core.hud.position.IStartingPoint;
 import elec332.core.hud.position.VerticalStartingPoint;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.PlayerEntitySP;
+import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 import javax.annotation.Nonnull;
 
@@ -109,7 +109,7 @@ public abstract class AbstractHud implements IConfigurableElement {
     @OnlyIn(Dist.CLIENT)
     @SubscribeEvent
     public final void onRenderTick(TickEvent.RenderTickEvent event) {
-        PlayerEntitySP player = (PlayerEntitySP) ElecCore.proxy.getClientPlayer();
+        ClientPlayerEntity player = (ClientPlayerEntity) ElecCore.proxy.getClientPlayer();
         if (player != null && Minecraft.getInstance().isGameFocused() && shouldRenderHud(player, event.renderTickTime, event.phase)) {
             Minecraft mc = Minecraft.getInstance();
 
@@ -122,14 +122,14 @@ public abstract class AbstractHud implements IConfigurableElement {
         }
     }
 
-    protected boolean shouldRenderHud(@Nonnull PlayerEntitySP player, float partialTicks, TickEvent.Phase phase) {
+    protected boolean shouldRenderHud(@Nonnull ClientPlayerEntity player, float partialTicks, TickEvent.Phase phase) {
         return phase == TickEvent.Phase.END;
     }
 
     public abstract int getHudHeight();
 
     @OnlyIn(Dist.CLIENT)
-    public abstract void renderHud(@Nonnull PlayerEntitySP player, @Nonnull World world, @Nonnull Alignment alignment, int startX, int startY, float partialTicks);
+    public abstract void renderHud(@Nonnull ClientPlayerEntity player, @Nonnull World world, @Nonnull Alignment alignment, int startX, int startY, float partialTicks);
 
     static {
         a = new String[Alignment.values().length];

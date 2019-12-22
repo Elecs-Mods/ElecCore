@@ -1,10 +1,10 @@
 package elec332.core.inventory.widget;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import elec332.core.client.RenderHelper;
 import elec332.core.inventory.window.Window;
 import elec332.core.util.StatCollector;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -27,7 +27,7 @@ public class WidgetText extends Widget {
         this.txt = () -> text;
     }
 
-    private int txtSize = -1;
+    private float txtSize = 1;
     private boolean center, centerWindow;
     private Supplier<String> txt;
 
@@ -37,7 +37,12 @@ public class WidgetText extends Widget {
     }
 
     public WidgetText setTextSize(int txtSize) {
-        this.txtSize = txtSize;
+        this.txtSize = (float) txtSize / RenderHelper.getMCFontrenderer().FONT_HEIGHT;
+        return this;
+    }
+
+    public WidgetText setTextScale(float scale) {
+        this.txtSize = scale;
         return this;
     }
 
@@ -47,15 +52,11 @@ public class WidgetText extends Widget {
         GlStateManager.pushMatrix();
         GlStateManager.translatef(guiX, guiY, 0);
         FontRenderer font = RenderHelper.getMCFontrenderer();
-        int oH = font.FONT_HEIGHT;
         String txt = StatCollector.translateToLocal(this.txt.get());
-        if (txtSize > 0) {
-            font.FONT_HEIGHT = txtSize;
-        }
+        GlStateManager.scalef(txtSize, txtSize, txtSize);
         int xN = centerWindow ? window.xSize / 2 : x;
-        font.drawString(txt, center ? (xN - font.getStringWidth(txt) / 2) : xN, y, 4210752);
+        font.drawString(txt, center ? (xN - font.getStringWidth(txt) / 2f) : xN, y, 4210752);
         GlStateManager.color4f(1, 1, 1, 1);
-        font.FONT_HEIGHT = oH;
         GlStateManager.popMatrix();
     }
 

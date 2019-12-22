@@ -1,7 +1,8 @@
 package elec332.core.tile;
 
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.NonNullList;
+
+import java.util.List;
 
 /**
  * Created by Elec332 on 7-2-2019
@@ -10,6 +11,6 @@ import net.minecraft.util.NonNullList;
  */
 public interface ITileWithDrops {
 
-    public void getDrops(NonNullList<ItemStack> items, int fortune);
+    public void getDrops(List<ItemStack> items, int fortune);
 
 }

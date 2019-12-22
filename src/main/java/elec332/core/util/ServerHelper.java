@@ -7,11 +7,11 @@ import elec332.core.api.network.INetworkHandler;
 import elec332.core.world.WorldHelper;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.management.PlayerChunkMap;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraft.world.server.ServerWorld;
 import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.world.server.ChunkHolder;
+import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
 
 import javax.annotation.Nullable;
@@ -78,9 +78,8 @@ public class ServerHelper {
      */
     public static List<ServerPlayerEntity> getAllPlayersWatchingBlock(World world, int x, int z) {
         if (world instanceof ServerWorld) {
-            PlayerChunkMap playerManager = ((ServerWorld) world).getPlayerChunkMap();
-            return getOnlinePlayers().stream()
-                    .filter((Predicate<ServerPlayerEntity>) player -> playerManager.isPlayerWatchingChunk(player, x >> 4, z >> 4))
+            ChunkHolder.IPlayerProvider playerManager = WorldHelper.getPlayerManager((ServerWorld) world);
+            return playerManager.getTrackingPlayers(WorldHelper.chunkPosFromBlockPos(new BlockPos(x, 0, z)), false)
                     .collect(Collectors.toList());
         }
         return ImmutableList.of();

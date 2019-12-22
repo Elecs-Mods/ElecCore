@@ -13,6 +13,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
 public @interface SidedProxy {
+
     /**
      * The full name of the client side class to load and populate.
      * Defaults to the nested class named "ClientProxy" in the current class.
@@ -30,4 +31,5 @@ public @interface SidedProxy {
      * Or there is no other way to determine the mod this annotation belongs to. When in doubt, add this value.
      */
     String modId() default "";
+
 }

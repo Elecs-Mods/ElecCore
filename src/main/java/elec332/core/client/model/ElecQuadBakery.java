@@ -11,15 +11,18 @@ import elec332.core.api.client.model.template.IQuadTemplateSidedMap;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.renderer.Vector3f;
 import net.minecraft.client.renderer.model.*;
+import net.minecraft.client.renderer.texture.ISprite;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.Direction;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.model.ItemLayerModel;
+import net.minecraftforge.common.model.IModelState;
 import net.minecraftforge.common.model.ITransformation;
 import net.minecraftforge.common.model.TRSRTransformation;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.EnumMap;
 import java.util.List;
@@ -64,7 +67,7 @@ public class ElecQuadBakery implements IElecQuadBakery {
     public IQuadProvider bakeQuads(IQuadTemplateSidedMap from, ITransformation rotation) {
         SidedMap ret = new SidedMap();
         for (Direction facing : Direction.values()) {
-            ret.setQuadsForSide(rotation == null ? facing : rotation.rotate(facing), bakeQuads(from.getForSide(facing), rotation));
+            ret.setQuadsForSide(rotation == null ? facing : rotation.rotateTransform(facing), bakeQuads(from.getForSide(facing), rotation));
         }
         return ret;
     }
@@ -130,8 +133,16 @@ public class ElecQuadBakery implements IElecQuadBakery {
     @Override
     public BakedQuad bakeQuad(Vector3f v1, Vector3f v2, TextureAtlasSprite texture, Direction facing, ITransformation rotation, float f1, float f2, float f3, float f4, int tint) {
         BlockFaceUV bfuv = new BlockFaceUV(new float[]{f1, f2, f3, f4}, 0);
-        BlockPartFace bpf = new BlockPartFace(rotation.rotate(facing), tint, null, bfuv);
-        return faceBakery.makeBakedQuad(v1, v2, bpf, texture, facing, rotation, null, false, true);
+        BlockPartFace bpf = new BlockPartFace(rotation.rotateTransform(facing), tint, null, bfuv);
+        return faceBakery.makeBakedQuad(v1, v2, bpf, texture, facing, new ISprite() {
+
+            @Nonnull
+            @Override
+            public IModelState getState() {
+                return (something) -> Optional.of(new TRSRTransformation(rotation.getMatrixVec()));
+            }
+
+        }, null, true);
     }
 
     /**
@@ -155,7 +166,7 @@ public class ElecQuadBakery implements IElecQuadBakery {
         apiHandler.inject(instance, IElecQuadBakery.class);
     }
 
-    private class SidedMap implements IQuadProvider {
+    private static class SidedMap implements IQuadProvider {
 
         private SidedMap() {
             this(Maps.newEnumMap(Direction.class));

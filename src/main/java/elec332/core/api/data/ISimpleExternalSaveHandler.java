@@ -1,7 +1,7 @@
 package elec332.core.api.data;
 
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.world.storage.ISaveHandler;
+import net.minecraft.world.storage.SaveHandler;
 import net.minecraft.world.storage.WorldInfo;
 
 import java.io.File;
@@ -12,12 +12,12 @@ import java.io.File;
 public interface ISimpleExternalSaveHandler extends IExternalSaveHandler {
 
     @Override
-    default public void load(ISaveHandler handler, WorldInfo info, CompoundNBT tag) {
+    default public void load(SaveHandler handler, WorldInfo info, CompoundNBT tag) {
         load(handler.getWorldDirectory());
     }
 
     @Override
-    default public CompoundNBT save(ISaveHandler handler, WorldInfo info) {
+    default public CompoundNBT save(SaveHandler handler, WorldInfo info) {
         save(handler.getWorldDirectory());
         return null;
     }

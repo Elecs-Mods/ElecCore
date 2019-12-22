@@ -3,7 +3,7 @@ package elec332.core.api.data;
 import com.google.common.base.Preconditions;
 import elec332.core.api.util.IClearable;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.world.storage.ISaveHandler;
+import net.minecraft.world.storage.SaveHandler;
 import net.minecraft.world.storage.WorldInfo;
 import net.minecraftforge.common.util.INBTSerializable;
 
@@ -30,13 +30,13 @@ public class NBTSerializableSaveHandler implements IExternalSaveHandler {
     }
 
     @Override
-    public void load(ISaveHandler saveHandler, WorldInfo info, CompoundNBT tag) {
+    public void load(SaveHandler saveHandler, WorldInfo info, CompoundNBT tag) {
         nbtSerializable.deserializeNBT(tag);
     }
 
     @Nullable
     @Override
-    public CompoundNBT save(ISaveHandler saveHandler, WorldInfo info) {
+    public CompoundNBT save(SaveHandler saveHandler, WorldInfo info) {
         return nbtSerializable.serializeNBT();
     }
 

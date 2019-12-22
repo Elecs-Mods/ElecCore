@@ -95,7 +95,7 @@ dependencies {
 	minecraft 'net.minecraftforge:forge:' + config.minecraft_version + "-" + config.forge_version
 
 	//WAILA
-    //compile fg.deobf("mcp.mobius.waila:Hwyla:${config.WAILA_version}")
+    compile fg.deobf("mcp.mobius.waila:Hwyla:${config.WAILA_version}")
 	//deobfCompile "mcp.mobius.waila:Hwyla:${config.WAILA_version}"
 	
 	//JEI

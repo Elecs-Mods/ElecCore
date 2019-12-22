@@ -16,6 +16,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BlockModelShapes;
 import net.minecraft.client.renderer.model.*;
+import net.minecraft.client.renderer.texture.ISprite;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.renderer.vertex.VertexFormat;
@@ -118,11 +119,11 @@ public class BlockVariantModelHandler implements IModelHandler {
 
     @Override
     @Nonnull
-    public Map<ModelResourceLocation, IBakedModel> registerBakedModels(Function<ModelResourceLocation, IBakedModel> bakedModelGetter) {
+    public Map<ModelResourceLocation, IBakedModel> registerBakedModels(Function<ModelResourceLocation, IBakedModel> bakedModelGetter, ModelLoader modelLoader) {
         return models.entrySet().stream()
                 .collect(Collectors.toMap(Map.Entry::getKey, e -> {
                     IUnbakedModel model = MoreObjects.firstNonNull(e.getValue(), ModelLoaderRegistry.getMissingModel());
-                    return model.bake(ModelLoader.defaultModelGetter(), ModelLoader.defaultTextureGetter(), model.getDefaultState(), false, DefaultVertexFormats.BLOCK);
+                    return Preconditions.checkNotNull(model.bake(modelLoader, ModelLoader.defaultTextureGetter(), new BasicState(model.getDefaultState(), false), DefaultVertexFormats.BLOCK));
                 }));
         //return ImmutableMap.of();
     }
@@ -238,7 +239,7 @@ public class BlockVariantModelHandler implements IModelHandler {
 
                 @Nullable
                 @Override
-                public IBakedModel bake(@Nonnull Function<ResourceLocation, IUnbakedModel> modelGetter, @Nonnull Function<ResourceLocation, TextureAtlasSprite> spriteGetter, @Nonnull IModelState state, boolean uvlock, @Nonnull VertexFormat format) {
+                public IBakedModel bake(@Nonnull ModelBakery modelGetter, @Nonnull Function<ResourceLocation, TextureAtlasSprite> spriteGetter, @Nonnull ISprite sprite, @Nonnull VertexFormat format) {
                     if (!Attributes.moreSpecific(format, Attributes.DEFAULT_BAKED_FORMAT)) {
                         throw new IllegalArgumentException("Can't bake vanilla weighted models to the format that doesn't fit into the default one: " + format);
                     }
@@ -248,7 +249,7 @@ public class BlockVariantModelHandler implements IModelHandler {
                         if (texOv != null && texOv.containsProperty(props.keySet())) {
                             spriteGetter = new TextureOverride(texOv.process(props), spriteGetter);
                         }
-                        return bakeModel(model, modelGetter, spriteGetter, MultiModelState.getPartState(state, model, 0), uvlock, format, texOv);
+                        return bakeModel(model, modelGetter, spriteGetter, MultiModelState.getPartState(sprite.getState(), model, 0), sprite.isUvLock(), format, texOv);
                     }
                     WeightedBakedModel.Builder builder = new WeightedBakedModel.Builder();
                     for (int i = 0; i < variants.size(); i++) {
@@ -257,7 +258,7 @@ public class BlockVariantModelHandler implements IModelHandler {
                         if (texOv != null && texOv.containsProperty(props.keySet())) {
                             spriteGetter = new TextureOverride(texOv.process(props), spriteGetter);
                         }
-                        IBakedModel bModel = bakeModel(model, modelGetter, spriteGetter, MultiModelState.getPartState(state, model, i), uvlock, format, texOv);
+                        IBakedModel bModel = bakeModel(model, modelGetter, spriteGetter, MultiModelState.getPartState(sprite.getState(), model, i), sprite.isUvLock(), format, texOv);
                         builder.add(bModel, variants.get(i).getWeight());
                     }
                     return builder.build();
@@ -277,9 +278,9 @@ public class BlockVariantModelHandler implements IModelHandler {
         }
 
         @SuppressWarnings("all")
-        private IBakedModel bakeModel(IModel model, @Nonnull Function<ResourceLocation, IUnbakedModel> modelGetter, @Nonnull Function<ResourceLocation, TextureAtlasSprite> spriteGetter, @Nonnull IModelState state, boolean uvlock, @Nonnull VertexFormat format, @Nullable TextureOverrideData tovd) {
+        private IBakedModel bakeModel(IModel model, @Nonnull ModelBakery modelGetter, @Nonnull Function<ResourceLocation, TextureAtlasSprite> spriteGetter, @Nonnull IModelState state, boolean uvlock, @Nonnull VertexFormat format, @Nullable TextureOverrideData tovd) {
 
-            IBakedModel base = model.bake(modelGetter, spriteGetter, state, uvlock, format);
+            IBakedModel base = model.bake(modelGetter, spriteGetter, new BasicState(state, uvlock), format);
             if (tovd == null) {
                 return base;
             }
@@ -301,7 +302,7 @@ public class BlockVariantModelHandler implements IModelHandler {
                         cache.put(blockState, base);
                     }
                     IBakedModel ret;
-                    cache.put(blockState, ret = model.bake(modelGetter, new TextureOverride(tovd.process(data), spriteGetter), state, uvlock, format));
+                    cache.put(blockState, ret = model.bake(modelGetter, new TextureOverride(tovd.process(data), spriteGetter), new BasicState(state, uvlock), format));
                     return ret.getQuads(blockState, side, rand);
                 }
 

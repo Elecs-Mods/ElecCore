@@ -1,10 +1,10 @@
 package elec332.core.inventory.widget;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import elec332.core.client.RenderHelper;
 import elec332.core.client.util.GuiDraw;
 import elec332.core.inventory.tooltip.ToolTip;
 import elec332.core.inventory.window.Window;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
@@ -50,8 +50,8 @@ public class FluidTankWidget extends Widget {
 
     @Override
     public ToolTip getToolTip(double mouseX, double mouseY) {
-        String fluid = (fluidStack == null || fluidStack.getFluid() == null) ? null : fluidStack.getFluid().getName();
-        int amount = fluidStack == null ? 0 : fluidStack.amount;
+        String fluid = (fluidStack == null || fluidStack.getFluid() == null) ? null : fluidStack.getFluid().getRegistryName().getNamespace();
+        int amount = fluidStack == null ? 0 : fluidStack.getAmount();
         return new ToolTip(new ToolTip.ColouredString("Fluid: " + fluid + "  Amount: " + amount));
     }
 
@@ -69,7 +69,7 @@ public class FluidTankWidget extends Widget {
         GL11.glColor4f(1, 1, 1, 1);
         int rH = height - 11 + 1; //First pixel
         int p = rH % 6;
-        float scale = fluidStack.amount / (float) capacity;
+        float scale = fluidStack.getAmount() / (float) capacity;
         if (p == 0) {
             GuiDraw.drawTexturedModalRect(guiX + x, guiY + y, 180, 70, width > 12 ? 12 : width, height <= 46 ? height : 46);
             int i = height - 46;
@@ -100,7 +100,7 @@ public class FluidTankWidget extends Widget {
         if (capacity == 0) {
             return;
         }
-        if (fluidStack == null || fluidStack.getFluid() == null || fluidStack.amount <= 0) {
+        if (fluidStack == null || fluidStack.getFluid() == null || fluidStack.getAmount() <= 0) {
             return;
         }
         TextureAtlasSprite fluidIcon = RenderHelper.getFluidTexture(fluidStack.getFluid(), false);

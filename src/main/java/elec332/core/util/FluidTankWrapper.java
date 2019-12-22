@@ -3,9 +3,9 @@ package elec332.core.util;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.templates.FluidTank;
 import net.minecraftforge.fluids.IFluidTank;
 import net.minecraftforge.fluids.capability.IFluidHandler;
+import net.minecraftforge.fluids.capability.templates.FluidTank;
 
 import javax.annotation.Nonnull;
 import java.util.function.Supplier;
@@ -56,7 +56,7 @@ public abstract class FluidTankWrapper implements IFluidHandler, IFluidTank, INB
     @Nonnull
     @Override
     public FluidStack getFluidInTank(int tank) {
-        if (tank == 0){
+        if (tank == 0) {
             return getFluid();
         }
         return FluidStack.EMPTY;
@@ -64,7 +64,7 @@ public abstract class FluidTankWrapper implements IFluidHandler, IFluidTank, INB
 
     @Override
     public int getTankCapacity(int tank) {
-        if (tank == 0){
+        if (tank == 0) {
             return getCapacity();
         }
         return 0;
@@ -72,7 +72,7 @@ public abstract class FluidTankWrapper implements IFluidHandler, IFluidTank, INB
 
     @Override
     public boolean isFluidValid(int tank, @Nonnull FluidStack stack) {
-        if (tank == 0){
+        if (tank == 0) {
             return isFluidValid(stack);
         }
         return false;

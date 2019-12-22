@@ -58,6 +58,7 @@ public @interface ElecModule {
     @Retention(RetentionPolicy.RUNTIME)
     @Target(ElementType.METHOD)
     public @interface EventHandler {
+
     }
 
     @Retention(RetentionPolicy.RUNTIME)

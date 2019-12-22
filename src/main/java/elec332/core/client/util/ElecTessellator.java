@@ -98,4 +98,5 @@ public class ElecTessellator implements ITessellator {
     private void drawColor() {
         worldRenderer.color(color1, color2, color3, color4);
     }
+
 }

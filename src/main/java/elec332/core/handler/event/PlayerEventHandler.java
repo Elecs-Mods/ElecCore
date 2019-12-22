@@ -1,6 +1,7 @@
 package elec332.core.handler.event;
 
 import elec332.core.api.util.IRightClickCancel;
+import elec332.core.util.RayTraceHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUseContext;
 import net.minecraft.util.Hand;
@@ -18,7 +19,7 @@ public class PlayerEventHandler {
     public void onItemRightClick(PlayerInteractEvent.RightClickBlock event) {
         ItemStack stack;
         if (event.getHand() == Hand.OFF_HAND) {
-            stack = event.getPlayerEntity().getHeldItem(Hand.MAIN_HAND);
+            stack = event.getPlayer().getHeldItem(Hand.MAIN_HAND);
             if (stack != null && stack.getItem() instanceof IRightClickCancel && ((IRightClickCancel) stack.getItem()).cancelInteraction(stack)) {
                 event.setCanceled(true);
                 return;
@@ -27,7 +28,7 @@ public class PlayerEventHandler {
         stack = event.getItemStack();
         if (stack != null && stack.getItem() instanceof IRightClickCancel && ((IRightClickCancel) stack.getItem()).cancelInteraction(stack)) {
             event.setCanceled(true);
-            ItemUseContext iuc = new ItemUseContext(event.getPlayerEntity(), event.getItemStack(), event.getPos(), event.getFace(), (float) event.getHitVec().x, (float) event.getHitVec().y, (float) event.getHitVec().z);
+            ItemUseContext iuc = new ItemUseContext(event.getPlayer(), event.getHand(), RayTraceHelper.retraceBlock(event.getWorld(), event.getPos(), event.getPlayer()));
             stack.getItem().onItemUse(iuc);
         }
     }

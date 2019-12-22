@@ -6,17 +6,21 @@ import com.google.common.collect.Maps;
 import elec332.core.ElecCore;
 import elec332.core.inventory.widget.slot.WidgetSlot;
 import elec332.core.network.packets.PacketWindowData;
+import elec332.core.proxies.CommonProxy;
+import net.minecraft.client.renderer.texture.AtlasTexture;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.inventory.*;
+import net.minecraft.inventory.IInventory;
+import net.minecraft.inventory.Inventory;
+import net.minecraft.inventory.container.ClickType;
 import net.minecraft.inventory.container.Container;
+import net.minecraft.inventory.container.IContainerListener;
+import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -30,7 +34,8 @@ import java.util.Map;
  */
 public final class WindowContainer extends Container {
 
-    public WindowContainer(PlayerEntity player, Window window) {
+    public WindowContainer(PlayerEntity player, Window window, int containerId) {
+        super(CommonProxy.WINDOW_CONTAINER_TYPE, containerId);
         this.listeners = Lists.newArrayList();
         this.thePlayer = player;
         this.window = window;
@@ -53,6 +58,10 @@ public final class WindowContainer extends Container {
 
     public Window getWindow() {
         return window;
+    }
+
+    PlayerEntity getPlayer() {
+        return thePlayer;
     }
 
     @Override
@@ -187,7 +196,7 @@ public final class WindowContainer extends Container {
 
     }
 
-    class WidgetLinkedSlot extends Slot {
+    static class WidgetLinkedSlot extends Slot {
 
         private WidgetLinkedSlot(WidgetSlot widget) {
             super(NULL_INVENTORY, widget.getSlotIndex(), widget.x, widget.y);
@@ -272,11 +281,6 @@ public final class WindowContainer extends Container {
         }
 
         @Override
-        public boolean isHere(IInventory inv, int slotIn) {
-            return widget.isHere(inv, slotIn);
-        }
-
-        @Override
         public boolean canTakeStack(PlayerEntity playerIn) {
             return widget.canTakeStack(playerIn);
         }
@@ -307,8 +311,6 @@ public final class WindowContainer extends Container {
 
         @OnlyIn(Dist.CLIENT)
         @Override
-        //@Nonnull
-        @SuppressWarnings("all")
         public TextureAtlasSprite getBackgroundSprite() {
             return widget.getBackgroundSprite();
         }
@@ -316,7 +318,7 @@ public final class WindowContainer extends Container {
         @Nonnull
         @OnlyIn(Dist.CLIENT)
         @Override
-        protected TextureMap getBackgroundMap() {
+        protected AtlasTexture getBackgroundMap() {
             return widget.getBackgroundMap();
         }
 
@@ -414,7 +416,7 @@ public final class WindowContainer extends Container {
     }
 
     static {
-        NULL_INVENTORY = new InventoryBasic(new TextComponentString("NULL"), 0);
+        NULL_INVENTORY = new Inventory(0);
     }
 
 }

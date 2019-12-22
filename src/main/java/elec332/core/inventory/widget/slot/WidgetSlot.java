@@ -7,7 +7,6 @@ import elec332.core.inventory.widget.Widget;
 import elec332.core.inventory.window.Window;
 import elec332.core.util.ItemStackHelper;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
@@ -21,7 +20,6 @@ import javax.annotation.Nullable;
 /**
  * Created by Elec332 on 28-11-2016.
  */
-@SuppressWarnings("WeakerAccess")
 public class WidgetSlot extends Widget {
 
     public WidgetSlot(IItemHandler inventory, int index, int x, int y) {
@@ -175,13 +173,6 @@ public class WidgetSlot extends Widget {
     }
 
     /**
-     * returns true if the slot exists in the given inventory and location
-     */
-    public boolean isHere(IInventory inv, int slotIn) {
-        return !isHidden() && inv == this.inventory && slotIn == getSlotIndex();
-    }
-
-    /**
      * Return whether this slot's stack can be taken from this slot.
      */
     public boolean canTakeStack(PlayerEntity playerIn) {
@@ -209,7 +200,7 @@ public class WidgetSlot extends Widget {
     @OnlyIn(Dist.CLIENT)
     @Nonnull
     public ResourceLocation getBackgroundLocation() {
-        return (backgroundLocation == null ? net.minecraft.client.renderer.texture.TextureMap.LOCATION_BLOCKS_TEXTURE : backgroundLocation);
+        return (backgroundLocation == null ? net.minecraft.client.renderer.texture.AtlasTexture.LOCATION_BLOCKS_TEXTURE : backgroundLocation);
     }
 
     /**
@@ -239,11 +230,11 @@ public class WidgetSlot extends Widget {
 
     @Nonnull
     @OnlyIn(Dist.CLIENT)
-    public net.minecraft.client.renderer.texture.TextureMap getBackgroundMap() {
+    public net.minecraft.client.renderer.texture.AtlasTexture getBackgroundMap() {
         if (backgroundMap == null) {
             backgroundMap = net.minecraft.client.Minecraft.getInstance().getTextureMap();
         }
-        return (net.minecraft.client.renderer.texture.TextureMap) backgroundMap;
+        return (net.minecraft.client.renderer.texture.AtlasTexture) backgroundMap;
     }
 
     /**

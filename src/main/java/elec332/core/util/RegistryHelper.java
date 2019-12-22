@@ -5,24 +5,24 @@ import net.minecraft.block.Block;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.merchant.villager.VillagerProfession;
+import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.item.Item;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.IRecipeSerializer;
-import net.minecraft.item.crafting.RecipeSerializers;
+import net.minecraft.item.crafting.SpecialRecipeSerializer;
 import net.minecraft.nbt.INBT;
 import net.minecraft.potion.Effect;
 import net.minecraft.potion.Potion;
-import net.minecraft.potion.PotionType;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.gen.feature.Feature;
 import net.minecraftforge.common.ModDimension;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityManager;
-import net.minecraftforge.fml.common.registry.VillagerRegistry;
 import net.minecraftforge.registries.*;
 
 import javax.annotation.Nonnull;
@@ -118,6 +118,18 @@ public class RegistryHelper {
         return (ForgeRegistry<ModDimension>) ForgeRegistries.MOD_DIMENSIONS;
     }
 
+    public static ForgeRegistry<IRecipeSerializer<?>> getRecipeSerializers() {
+        return (ForgeRegistry<IRecipeSerializer<?>>) ForgeRegistries.RECIPE_SERIALIZERS;
+    }
+
+    public static ForgeRegistry<ContainerType<?>> getContainers() {
+        return (ForgeRegistry<ContainerType<?>>) ForgeRegistries.CONTAINERS;
+    }
+
+    public static ForgeRegistry<Feature<?>> getFeatures() {
+        return (ForgeRegistry<Feature<?>>) ForgeRegistries.FEATURES;
+    }
+
     public static <T extends TileEntity> TileEntityType<T> registerTileEntity(ResourceLocation id, Supplier<T> builder) {
         return registerTileEntity(id, new TileEntityType<T>(builder, null, null) {
 
@@ -134,12 +146,12 @@ public class RegistryHelper {
         return type;
     }
 
-    public static <T extends IRecipe> void registerUnmodifiableRecipeType(@Nonnull ResourceLocation id, @Nonnull Function<ResourceLocation, T> factory) {
-        registerRecipeType(new RecipeSerializers.SimpleSerializer<>(id.toString(), factory));
+    public static <T extends IRecipe<?>> void registerUnmodifiableRecipeType(@Nonnull ResourceLocation id, @Nonnull Function<ResourceLocation, T> factory) {
+        registerRecipeType(new SpecialRecipeSerializer<>(factory).setRegistryName(id));
     }
 
-    public static <T extends IRecipe> void registerRecipeType(IRecipeSerializer<T> serializer) {
-        RecipeSerializers.register(serializer);
+    public static <T extends IRecipe<?>> void registerRecipeType(IRecipeSerializer<T> serializer) {
+        getRecipeSerializers().register(serializer);
     }
 
     public static Map<Block, Item> getBlockItemMap() {

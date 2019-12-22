@@ -21,6 +21,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.ModelRegistryEvent;
+import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.fml.ModLoadingStage;
@@ -77,7 +78,7 @@ enum ElecModelManager implements IAnnotationDataProcessor {
         }
     }
 
-    Set<ModelResourceLocation> registerBakedModels(Map<ModelResourceLocation, IBakedModel> registry, Function<ModelResourceLocation, IBakedModel> modelGetter) {
+    Set<ModelResourceLocation> registerBakedModels(Map<ResourceLocation, IBakedModel> registry, Function<ModelResourceLocation, IBakedModel> modelGetter, ModelLoader modelLoader) {
         ElecCore.logger.info("Handling models");
         Set<ModelResourceLocation> ret = Sets.newHashSet();
         IBakedModel missingModel = Preconditions.checkNotNull(registry.get(ModelBakery.MODEL_MISSING));
@@ -85,7 +86,7 @@ enum ElecModelManager implements IAnnotationDataProcessor {
         Map<ModelResourceLocation, IBakedModel> models = Maps.newHashMap();
 
         for (IModelHandler modelHandler : modelHandlers) {
-            models.putAll(modelHandler.registerBakedModels(modelGetter));
+            models.putAll(modelHandler.registerBakedModels(modelGetter, modelLoader));
         }
 
         for (Map.Entry<ModelResourceLocation, IBakedModel> entry : models.entrySet()) {

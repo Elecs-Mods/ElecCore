@@ -1,15 +1,14 @@
 package elec332.core.loader;
 
-import elec332.core.api.registration.IWorldGenRegister;
 import elec332.core.util.FMLHelper;
 import elec332.core.util.RegistryHelper;
-import elec332.core.world.FeaturePlacers;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorld;
-import net.minecraft.world.gen.GenerationStage;
+import net.minecraft.world.gen.ChunkGenerator;
 import net.minecraft.world.gen.GenerationSettings;
-import net.minecraft.world.gen.IChunkGenerator;
-import net.minecraft.world.gen.feature.CompositeFeature;
+import net.minecraft.world.gen.GenerationStage;
+import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.NoFeatureConfig;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -67,14 +66,17 @@ public class ElecCoreLoader {
     }
 
     private void postInit(InterModProcessEvent event) {
-        RegistryHelper.getBiomeRegistry().forEach(biome -> biome.addFeature(GenerationStage.Decoration.values()[GenerationStage.Decoration.values().length - 1], new CompositeFeature<>(new Feature<NoFeatureConfig>() {
+        Feature<NoFeatureConfig> featureHook = new Feature<NoFeatureConfig>(NoFeatureConfig::deserialize) {
 
             @Override
-            public boolean place(@Nonnull IWorld world, @Nonnull IChunkGenerator<? extends GenerationSettings> chunkGenerator, @Nonnull Random random, @Nonnull BlockPos pos, @Nonnull NoFeatureConfig noop) {
+            public boolean place(@Nonnull IWorld world, @Nonnull ChunkGenerator<? extends GenerationSettings> chunkGenerator, @Nonnull Random random, @Nonnull BlockPos pos, @Nonnull NoFeatureConfig noop) {
                 return WorldGenManager.INSTANCE.legacyPopulateChunk(world, chunkGenerator, random, pos);
             }
 
-        }, IWorldGenRegister.EMPTY_FEATURE_CONFIG, FeaturePlacers.PASSTHROUGH, IWorldGenRegister.EMPTY_PLACEMENT_CONFIG)));
+        };
+        featureHook.setRegistryName(new ResourceLocation("eleccoreloader", "featurehook"));
+        RegistryHelper.getFeatures().register(featureHook);
+        RegistryHelper.getBiomeRegistry().forEach(biome -> biome.addFeature(GenerationStage.Decoration.values()[GenerationStage.Decoration.values().length - 1], new ConfiguredFeature<>(featureHook, NoFeatureConfig.NO_FEATURE_CONFIG)));
         FMLHelper.runLater(() -> {
             annotationDataHandler.process(ModLoadingStage.PROCESS_IMC);
             ElecCoreLoader.lastStage = FMLHelper.getStageFrom(event);

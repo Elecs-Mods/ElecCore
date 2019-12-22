@@ -1,11 +1,11 @@
 package elec332.core.hud.position;
 
 import com.google.common.base.Strings;
+import com.mojang.blaze3d.platform.GlStateManager;
 import elec332.core.client.RenderHelper;
 import elec332.core.client.util.GuiDraw;
 import elec332.core.hud.drawing.IDrawer;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.renderer.GlStateManager;
 
 import javax.annotation.Nullable;
 import java.awt.*;

@@ -12,6 +12,10 @@ import javax.annotation.Nonnull;
  */
 public final class ContainerNull extends Container {
 
+    protected ContainerNull() {
+        super(null, -1);
+    }
+
     @Override
     public boolean canInteractWith(@Nonnull PlayerEntity player) {
         return false;

@@ -17,7 +17,7 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
@@ -38,7 +38,7 @@ public class WailaHandlerTileEntity implements IComponentProvider, IServerDataPr
         }
         final BlockPos pos = te.getPos();
         final CompoundNBT tag = data;
-        final RayTraceResult rtr = RayTraceHelper.retraceBlock(world, pos, player);
+        final BlockRayTraceResult rtr = RayTraceHelper.retraceBlock(world, pos, player);
         if (rtr == null) {
             tag.putBoolean("_nope_", true);
             return;
@@ -73,13 +73,13 @@ public class WailaHandlerTileEntity implements IComponentProvider, IServerDataPr
 
             @Override
             public Vec3d getHitVec() {
-                return getRayTraceResult().hitVec;
+                return getRayTraceResult().getHitVec();
             }
 
             @Nonnull
             @Override
             public Direction getSide() {
-                return getRayTraceResult().sideHit;
+                return getRayTraceResult().getFace();
             }
 
             @Nonnull
@@ -108,7 +108,7 @@ public class WailaHandlerTileEntity implements IComponentProvider, IServerDataPr
             }
 
             @Override
-            public RayTraceResult getRayTraceResult() {
+            public BlockRayTraceResult getRayTraceResult() {
                 return rtr;
             }
 
@@ -154,7 +154,7 @@ public class WailaHandlerTileEntity implements IComponentProvider, IServerDataPr
 
                 @Override
                 public Vec3d getHitVec() {
-                    return accessor.getHitResult() == null ? null : accessor.getHitResult().hitVec;
+                    return accessor.getHitResult() == null ? null : accessor.getHitResult().getHitVec();
                 }
 
                 @Nonnull
@@ -181,8 +181,8 @@ public class WailaHandlerTileEntity implements IComponentProvider, IServerDataPr
                 }
 
                 @Override
-                public RayTraceResult getRayTraceResult() {
-                    return accessor.getHitResult();
+                public BlockRayTraceResult getRayTraceResult() {
+                    return (BlockRayTraceResult) accessor.getHitResult();
                 }
 
             });

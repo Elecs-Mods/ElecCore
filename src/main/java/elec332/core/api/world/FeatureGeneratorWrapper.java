@@ -2,7 +2,7 @@ package elec332.core.api.world;
 
 import elec332.core.api.config.IConfigurableElement;
 import net.minecraft.world.IWorld;
-import net.minecraft.world.gen.IChunkGenerator;
+import net.minecraft.world.gen.ChunkGenerator;
 import net.minecraftforge.common.ForgeConfigSpec;
 
 import javax.annotation.Nonnull;
@@ -39,7 +39,7 @@ public class FeatureGeneratorWrapper implements IAdvancedChunkPopulator, IConfig
     }
 
     @Override
-    public boolean populateChunk(IChunkGenerator chunkGenerator, IWorld world, Random random, int chunkX, int chunkZ) {
+    public boolean populateChunk(ChunkGenerator chunkGenerator, IWorld world, Random random, int chunkX, int chunkZ) {
         return generator.generateFeature(world, chunkX, chunkZ, random, false);
     }
 

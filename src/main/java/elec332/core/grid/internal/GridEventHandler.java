@@ -3,14 +3,15 @@ package elec332.core.grid.internal;
 import elec332.core.api.annotations.StaticLoad;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
+import net.minecraft.world.server.ServerChunkProvider;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.event.world.ChunkEvent;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.LogicalSide;
-import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 /**
  * Created by Elec332 on 23-7-2016.
@@ -70,8 +71,12 @@ class GridEventHandler {
         }
         World world = (World) event.getWorld();
         if (!world.isRemote()) {
-            world.removeEventListener(WorldEventHandler.INSTANCE);
-            world.addEventListener(WorldEventHandler.INSTANCE);
+            //world.removeEventListener(WorldEventHandler.INSTANCE);
+            //world.addEventListener(WorldEventHandler.INSTANCE);
+            ServerChunkProvider scp = (ServerChunkProvider) world.getChunkProvider();
+            if (!(scp instanceof WrappedServerChunkProvider)) {
+                world.chunkProvider = new WrappedServerChunkProvider(scp);
+            }
         }
     }
 

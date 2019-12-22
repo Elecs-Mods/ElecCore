@@ -2,13 +2,10 @@ package elec332.core.util;
 
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.MutableBoundingBox;
 import net.minecraft.util.math.Vec3d;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 public class IndexedAABB extends AxisAlignedBB {
 
@@ -32,7 +29,10 @@ public class IndexedAABB extends AxisAlignedBB {
         this.index = index;
     }
 
-    @OnlyIn(Dist.CLIENT)
+    public IndexedAABB(MutableBoundingBox mutableBoundingBox, int index) {
+        this(AxisAlignedBB.func_216363_a(mutableBoundingBox), index);
+    }
+
     public IndexedAABB(Vec3d min, Vec3d max, int index) {
         super(min, max);
         this.index = index;
@@ -105,6 +105,10 @@ public class IndexedAABB extends AxisAlignedBB {
         return new IndexedAABB(super.shrink(value), index);
     }
 
+    /*
+
+    Static now, ffs
+
     @Nullable
     @Override
     public RayTraceResult calculateIntercept(@Nonnull Vec3d vecA, @Nonnull Vec3d vecB, @Nullable BlockPos pos) {
@@ -114,6 +118,7 @@ public class IndexedAABB extends AxisAlignedBB {
         }
         return ret;
     }
+    */
 
     @Override
     public boolean equals(Object o) {

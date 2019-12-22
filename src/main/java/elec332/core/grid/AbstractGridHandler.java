@@ -43,6 +43,7 @@ public abstract class AbstractGridHandler<T extends IPositionable> implements IS
         this.add = Sets.newHashSet();
         this.changeCallbacks = Sets.newHashSet();
         registerChangeCallback(new PositionedObjectHolder.ChangeCallback<T>() {
+
             @Override
             public void onChange(T objectU, BlockPos pos, boolean add) {
                 if (objectU == null) {

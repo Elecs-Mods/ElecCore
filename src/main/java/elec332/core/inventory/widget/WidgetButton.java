@@ -1,13 +1,13 @@
 package elec332.core.inventory.widget;
 
 import com.google.common.collect.Lists;
+import com.mojang.blaze3d.platform.GLX;
+import com.mojang.blaze3d.platform.GlStateManager;
 import elec332.core.client.RenderHelper;
 import elec332.core.client.util.GuiDraw;
 import elec332.core.inventory.window.Window;
 import elec332.core.util.NBTBuilder;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
@@ -89,7 +89,7 @@ public class WidgetButton extends Widget {
             boolean hovering = isMouseOver(mouseX, mouseY);
             int k = this.getHoverState(hovering);
             GL11.glEnable(GL11.GL_BLEND);
-            OpenGlHelper.glBlendFuncSeparate(770, 771, 1, 0);
+            GLX.glBlendFuncSeparate(770, 771, 1, 0);
             GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
             //Left half
             GuiDraw.drawTexturedModalRect(guiX + this.x, guiY + this.y, 0, 46 + k * 20, this.width / 2, this.height / 2);
@@ -152,4 +152,5 @@ public class WidgetButton extends Widget {
         public void onButtonClicked(WidgetButton button);
 
     }
+
 }

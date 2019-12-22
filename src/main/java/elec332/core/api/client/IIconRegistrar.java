@@ -1,7 +1,7 @@
 package elec332.core.api.client;
 
+import net.minecraft.client.renderer.texture.AtlasTexture;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.util.ResourceLocation;
 
 /**
@@ -20,8 +20,8 @@ public interface IIconRegistrar {
     public TextureAtlasSprite registerSprite(ResourceLocation location);
 
     /**
-     * @return The underlying {@link TextureMap}
+     * @return The underlying {@link AtlasTexture}
      */
-    public TextureMap getTextureMap();
+    public AtlasTexture getTextureMap();
 
 }

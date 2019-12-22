@@ -53,4 +53,5 @@ public class WidgetProgressArrow extends Widget {
             GuiDraw.drawTexturedModalRect(guiX + x, guiY + y, 23, 0, 23 - fullArrow, height);
         }
     }
+
 }

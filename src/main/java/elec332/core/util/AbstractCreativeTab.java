@@ -34,6 +34,7 @@ public abstract class AbstractCreativeTab extends ItemGroup {
     @Nonnull
     private static ItemGroup createTab(int index, String label, Supplier<ItemStack> icon) {
         return new AbstractCreativeTab(index, label, icon) {
+
         };
     }
 

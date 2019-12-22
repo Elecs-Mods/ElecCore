@@ -14,13 +14,11 @@ import elec332.core.util.ObjectReference;
 import elec332.core.util.ReflectionHelper;
 import elec332.core.util.RegistryHelper;
 import net.minecraft.block.Block;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.client.renderer.model.ModelManager;
 import net.minecraft.client.renderer.model.ModelResourceLocation;
 import net.minecraft.client.renderer.texture.AtlasTexture;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;
@@ -28,6 +26,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.ModelBakeEvent;
 import net.minecraftforge.client.event.TextureStitchEvent;
+import net.minecraftforge.client.model.BasicState;
 import net.minecraftforge.client.model.IModel;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.client.model.ModelLoaderRegistry;
@@ -36,9 +35,11 @@ import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 /**
@@ -158,7 +159,7 @@ public final class RenderingRegistry implements IElecRenderingRegistry {
             IBakedModel model;
             try {
                 IModel model_ = ModelLoaderRegistry.getModel(new ResourceLocation(mrl.getNamespace(), mrl.getPath()));
-                model = model_.bake(ModelLoader.defaultModelGetter(), ModelLoader.defaultTextureGetter(), model_.getDefaultState(), false, DefaultVertexFormats.ITEM);
+                model = model_.bake(event.getModelLoader(), ModelLoader.defaultTextureGetter(), new BasicState(model_.getDefaultState(), false), DefaultVertexFormats.ITEM);
             } catch (Exception e) {
                 model = RenderHelper.getMissingModel();
                 ElecCore.logger.error("Exception loading blockstate for the variant {}: ", new ResourceLocation(mrl.getNamespace(), mrl.getPath()), e);
@@ -181,7 +182,7 @@ public final class RenderingRegistry implements IElecRenderingRegistry {
     }
 
     @SuppressWarnings("all")
-    void removeJsonErrors(ModelLoader modelLoader, ModelManager modelManager, Map<ModelResourceLocation, IBakedModel> modelRegistry) {
+    void removeJsonErrors(ModelLoader modelLoader, ModelManager modelManager, Map<ResourceLocation, IBakedModel> modelRegistry) {
         ElecCore.logger.info("Cleaning up internal Json stuff...");
         try {
             Set<ModelResourceLocation> set = (Set<ModelResourceLocation>) ReflectionHelper.makeFinalFieldModifiable(ModelLoader.class.getDeclaredField("missingVariants")).get(modelLoader);
@@ -189,7 +190,7 @@ public final class RenderingRegistry implements IElecRenderingRegistry {
             //if (ElecCore.removeJSONErrors){
             //    exceptionMap.clear();
             //}
-            for (ModelResourceLocation rl : getValidLocations(modelManager, modelRegistry)) {
+            for (ModelResourceLocation rl : getValidLocations(modelManager, modelRegistry, modelLoader)) {
                 set.remove(rl);
                 exceptionMap.remove(rl);
             }
@@ -200,23 +201,28 @@ public final class RenderingRegistry implements IElecRenderingRegistry {
         ElecCore.logger.info("Finished cleaning up internal Json stuff.");
     }
 
-    private Set<ModelResourceLocation> getValidLocations(ModelManager modelLoader, Map<ModelResourceLocation, IBakedModel> modelRegistry) {
-        return ElecModelManager.INSTANCE.registerBakedModels(modelRegistry, modelLoader::getModel);
+    private Set<ModelResourceLocation> getValidLocations(ModelManager modelManager, Map<ResourceLocation, IBakedModel> modelRegistry, ModelLoader modelLoader) {
+        return ElecModelManager.INSTANCE.registerBakedModels(modelRegistry, modelManager::getModel, modelLoader);
     }
 
-    private class IconRegistrar implements IIconRegistrar {
+    private static class IconRegistrar implements IIconRegistrar {
 
         private IconRegistrar(TextureStitchEvent event) {
             this.textureMap = event.getMap();
+            this.register = event instanceof TextureStitchEvent.Pre ? ((TextureStitchEvent.Pre) event)::addSprite : null;
         }
 
         private final AtlasTexture textureMap;
+        @Nullable
+        private final Consumer<ResourceLocation> register;
 
         @Override
         public TextureAtlasSprite registerSprite(ResourceLocation location) {
-            textureMap.loadTexture();
-            textureMap.registerSprite(Minecraft.getInstance().getResourceManager(), location);
-            return textureMap.getAtlasSprite(location.toString());
+            if (register != null) {
+                register.accept(location);
+            }
+            //textureMap.registerSprite(Minecraft.getInstance().getResourceManager(), location);
+            return textureMap.getSprite(location);
         }
 
         @Override
@@ -265,7 +271,7 @@ public final class RenderingRegistry implements IElecRenderingRegistry {
             @OnlyIn(Dist.CLIENT)
             public void bakeModels(ModelBakeEvent event) {
                 instance().missingModel.set(event.getModelManager().getMissingModel());
-                MinecraftForge.EVENT_BUS.post(new ModelLoadEventImpl(instance().quadBakery, instance().modelBakery, instance.templateBakery, event.getModelRegistry(), event.getModelManager()::getModel));
+                MinecraftForge.EVENT_BUS.post(new ModelLoadEventImpl(instance().quadBakery, instance().modelBakery, instance.templateBakery, event.getModelRegistry(), event.getModelManager()::getModel, event.getModelLoader()));
             }
 
         });

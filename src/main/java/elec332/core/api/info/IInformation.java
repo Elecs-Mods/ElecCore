@@ -1,7 +1,7 @@
 package elec332.core.api.info;
 
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.StringTextComponent;
 
 import javax.annotation.Nonnull;
 
@@ -16,7 +16,7 @@ public interface IInformation {
     public InfoMod getProviderType();
 
     default public void addInformation(String line) {
-        addInformation(new TextComponentString(line));
+        addInformation(new StringTextComponent(line));
     }
 
     public void addInformation(ITextComponent text);

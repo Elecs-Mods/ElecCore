@@ -17,7 +17,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IWorldReader;
+import net.minecraft.world.IEnviromentBlockReader;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -133,27 +133,27 @@ public abstract class ModelCache<K> implements IBakedModel {
     @Nonnull
     @Override
     public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, @Nonnull Random rand) {
-        if (needsModelData()){
+        if (needsModelData()) {
             throw new UnsupportedOperationException();
         }
         return getQuads(state, side, rand, EmptyModelData.INSTANCE);
     }
 
-    protected boolean needsModelData(){
+    protected boolean needsModelData() {
         return false;
     }
 
     @Nonnull
     @Override
-    public IModelData getModelData(@Nonnull IWorldReader world, @Nonnull BlockPos pos, @Nonnull BlockState state, @Nonnull IModelData tileData) {
-        if (tileData == EmptyModelData.INSTANCE){
+    public IModelData getModelData(@Nonnull IEnviromentBlockReader world, @Nonnull BlockPos pos, @Nonnull BlockState state, @Nonnull IModelData tileData) {
+        if (tileData == EmptyModelData.INSTANCE) {
             tileData = new ModelDataMap.Builder().build();
         }
         addModelData(world, pos, state, tileData);
         return tileData;
     }
 
-    public void addModelData(@Nonnull IWorldReader world, @Nonnull BlockPos pos, @Nonnull BlockState state, @Nonnull IModelData modelData) {
+    public void addModelData(@Nonnull IEnviromentBlockReader world, @Nonnull BlockPos pos, @Nonnull BlockState state, @Nonnull IModelData modelData) {
 
     }
 
