@@ -212,6 +212,17 @@ public class FMLHelper {
     }
 
     /**
+     * Helper method for getting the name of a mod before the modloader has initialized
+     *
+     * @param modId The modid to fetch the name from
+     * @return The modname for the provided modid
+     */
+    public static String getModNameEarly(String modId) {
+        //Jap, this works...
+        return FMLHelper.getModList().getMods().stream().filter(mi -> mi.getModId().equals(modId)).findFirst().orElseThrow(RuntimeException::new).getDisplayName();
+    }
+
+    /**
      * @return All currently loaded mods
      */
     public static Collection<ModContainer> getMods() {

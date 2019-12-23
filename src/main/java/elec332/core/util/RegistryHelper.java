@@ -1,6 +1,7 @@
 package elec332.core.util;
 
 import com.google.common.base.Preconditions;
+import elec332.core.handler.annotations.TileEntityAnnotationProcessor;
 import net.minecraft.block.Block;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.EntityType;
@@ -19,6 +20,7 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraftforge.common.ModDimension;
 import net.minecraftforge.common.capabilities.Capability;
@@ -118,6 +120,10 @@ public class RegistryHelper {
         return (ForgeRegistry<ModDimension>) ForgeRegistries.MOD_DIMENSIONS;
     }
 
+    public static ForgeRegistry<DimensionType> getDimensionTypes() {
+        return (ForgeRegistry<DimensionType>) RegistryManager.ACTIVE.getRegistry(DimensionType.class);
+    }
+
     public static ForgeRegistry<IRecipeSerializer<?>> getRecipeSerializers() {
         return (ForgeRegistry<IRecipeSerializer<?>>) ForgeRegistries.RECIPE_SERIALIZERS;
     }
@@ -139,6 +145,10 @@ public class RegistryHelper {
             }
 
         });
+    }
+
+    public static <T extends TileEntity> TileEntityType<T> registerTileEntity(Class<T> clazz, ResourceLocation rl) {
+        return TileEntityAnnotationProcessor.registerTileEntity(clazz, rl);
     }
 
     public static <T extends TileEntity> TileEntityType<T> registerTileEntity(ResourceLocation id, TileEntityType<T> type) {

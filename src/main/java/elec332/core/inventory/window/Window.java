@@ -354,6 +354,9 @@ public class Window implements IWidgetContainer {
         return false;
     }
 
+    public void mouseMoved(double mouseX, double mouseY) {
+    }
+
     @OnlyIn(Dist.CLIENT)
     protected boolean keyTyped(char typedChar, int keyCode) {
         for (IWidget widget : getWidgets()) {

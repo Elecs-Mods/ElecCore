@@ -4,7 +4,10 @@ import elec332.core.api.client.ITextureLoader;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.client.renderer.model.ModelResourceLocation;
+import net.minecraft.client.renderer.tileentity.ItemStackTileEntityRenderer;
+import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import net.minecraft.item.Item;
+import net.minecraft.tileentity.TileEntity;
 
 import javax.annotation.Nonnull;
 import java.util.function.Supplier;
@@ -34,5 +37,11 @@ public interface IElecRenderingRegistry {
 
     @Nonnull
     public Supplier<IBakedModel> missingModelGetter();
+
+    public void setItemRenderer(Item item, Class<? extends TileEntity> renderer);
+
+    public void setItemRenderer(Item item, TileEntityRenderer<?> renderer);
+
+    public void setItemRenderer(Item item, ItemStackTileEntityRenderer renderer);
 
 }

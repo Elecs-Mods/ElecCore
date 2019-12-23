@@ -75,33 +75,7 @@ public class TileEntityAnnotationProcessor implements IObjectRegister<TileEntity
             ref.set(RegistryHelper.getTileEntities().getValue(new ResourceLocation(name)));
 
             if (ref.get() == null) {
-                Supplier<? extends TileEntity> s = null;
-                try {
-                    Constructor<? extends TileEntity> c = clazz.getDeclaredConstructor(TileEntityType.class);
-                    s = FuncHelper.safeSupplier(() -> c.newInstance(ref.get()));
-                } catch (Exception e) {
-                    //
-                }
-                if (s == null) {
-                    try {
-                        Constructor<? extends TileEntity> c = clazz.getDeclaredConstructor();
-                        s = FuncHelper.safeSupplier(() -> {
-                            TileEntity ret = c.newInstance();
-                            if (ret instanceof RegisteredTileEntity.TypeSetter) {
-                                ((RegisteredTileEntity.TypeSetter) ret).setTileEntityType(ref.get());
-                            }
-                            return ret;
-                        });
-                    } catch (Exception e) {
-                        //
-                    }
-                }
-                if (s == null) {
-                    throw new RuntimeException();
-                }
-                TileEntityType tt = new TileType(s, clazz);
-                typeReference.put(clazz, tt);
-                ref.set(RegistryHelper.registerTileEntity(new ResourceLocation(name), tt));
+                registerTileEntity(clazz, new ResourceLocation(name), ref);
             }
             if (f != null) {
                 TileEntityType<?> type = ref.get();
@@ -113,6 +87,42 @@ public class TileEntityAnnotationProcessor implements IObjectRegister<TileEntity
         } catch (Exception e) {
             ElecCore.logger.error("Error registering tile: " + name, e);
         }
+    }
+
+    public static <T extends TileEntity> TileEntityType<T> registerTileEntity(Class<T> clazz, ResourceLocation rl) {
+        return registerTileEntity(clazz, rl, new ObjectReference<>());
+    }
+
+    private static <T extends TileEntity> TileEntityType<T> registerTileEntity(Class<T> clazz, ResourceLocation rl, ObjectReference<TileEntityType<?>> ref) {
+        Supplier s = null;
+        try {
+            Constructor<? extends TileEntity> c = clazz.getDeclaredConstructor(TileEntityType.class);
+            s = FuncHelper.safeSupplier(() -> c.newInstance(ref.get()));
+        } catch (Exception e) {
+            //
+        }
+        if (s == null) {
+            try {
+                Constructor<? extends TileEntity> c = clazz.getDeclaredConstructor();
+                s = FuncHelper.safeSupplier(() -> {
+                    TileEntity ret = c.newInstance();
+                    if (ret instanceof RegisteredTileEntity.TypeSetter) {
+                        ((RegisteredTileEntity.TypeSetter) ret).setTileEntityType(ref.get());
+                    }
+                    return ret;
+                });
+            } catch (Exception e) {
+                //
+            }
+        }
+        if (s == null) {
+            throw new RuntimeException();
+        }
+        @SuppressWarnings("unchecked")
+        TileEntityType<T> tt = new TileType<>(s, clazz);
+        typeReference.put(clazz, tt);
+        ref.set(tt);
+        return RegistryHelper.registerTileEntity(rl, tt);
     }
 
     private static class TileType<T extends TileEntity> extends TileEntityType<T> {

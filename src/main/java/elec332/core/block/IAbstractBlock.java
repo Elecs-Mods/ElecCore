@@ -1,7 +1,9 @@
 package elec332.core.block;
 
 import net.minecraft.block.BlockState;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -9,7 +11,9 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
+import net.minecraft.world.storage.loot.LootContext;
 
+import javax.annotation.Nonnull;
 import java.util.List;
 
 /**
@@ -36,6 +40,10 @@ public interface IAbstractBlock {
 
     default public <T extends TileEntity> T getTileEntity(IBlockReader world, BlockPos pos, Class<T> type) {
         return getTileEntity(world, pos);
+    }
+
+    default public List<ItemStack> getDrops(List<ItemStack> drops, @Nonnull LootContext.Builder builder, Entity entity, World world, BlockPos pos, @Nonnull BlockState state, ItemStack stack) {
+        return drops;
     }
 
 }

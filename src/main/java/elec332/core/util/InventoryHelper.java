@@ -181,7 +181,7 @@ public class InventoryHelper {
      * @param second ItemStack 2
      * @return Whether the stacks are the same, ignoring NBT data and stack size
      */
-    private static boolean areEqualNoSizeNoNBT(ItemStack first, ItemStack second) {
+    public static boolean areEqualNoSizeNoNBT(ItemStack first, ItemStack second) {
         if (first == null || second == null) {
             return first == second;
         }

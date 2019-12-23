@@ -12,7 +12,7 @@ import javax.annotation.Nonnull;
  */
 public final class ContainerNull extends Container {
 
-    protected ContainerNull() {
+    public ContainerNull() {
         super(null, -1);
     }
 

@@ -7,9 +7,12 @@ import elec332.core.api.APIHandlerInject;
 import elec332.core.api.IAPIHandler;
 import elec332.core.api.annotations.StaticLoad;
 import elec332.core.api.client.IIconRegistrar;
+import elec332.core.api.client.ITESRItem;
 import elec332.core.api.client.ITextureLoader;
 import elec332.core.api.client.model.*;
 import elec332.core.client.RenderHelper;
+import elec332.core.client.util.AbstractTileEntityItemStackRenderer;
+import elec332.core.util.FieldPointer;
 import elec332.core.util.ObjectReference;
 import elec332.core.util.ReflectionHelper;
 import elec332.core.util.RegistryHelper;
@@ -19,8 +22,13 @@ import net.minecraft.client.renderer.model.ModelManager;
 import net.minecraft.client.renderer.model.ModelResourceLocation;
 import net.minecraft.client.renderer.texture.AtlasTexture;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.renderer.tileentity.ItemStackTileEntityRenderer;
+import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
+import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -54,6 +62,7 @@ public final class RenderingRegistry implements IElecRenderingRegistry {
     }
 
     private static final RenderingRegistry instance;
+    private static final FieldPointer<Item, Supplier<ItemStackTileEntityRenderer>> teisrField;
 
     private RenderingRegistry() {
         modelLoaders = Sets.newHashSet();
@@ -174,6 +183,33 @@ public final class RenderingRegistry implements IElecRenderingRegistry {
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public void afterAllModelsBaked(ModelBakeEvent event) {
         removeJsonErrors(event.getModelLoader(), event.getModelManager(), event.getModelRegistry());
+        for (Item item : instance().getAllValidItems()) {
+            if (item instanceof ITESRItem) {
+                setItemRenderer(item, new LinkedISTESR((ITESRItem) item));
+            }
+        }
+    }
+
+    @Override
+    public void setItemRenderer(Item item, Class<? extends TileEntity> renderer) {
+        setItemRenderer(item, TileEntityRendererDispatcher.instance.getRenderer(renderer));
+    }
+
+    @Override
+    public void setItemRenderer(Item item, TileEntityRenderer<?> renderer) {
+        setItemRenderer(item, new AbstractTileEntityItemStackRenderer() {
+
+            @Override
+            protected void renderItem(ItemStack stack) {
+                renderer.render(null, 0, 0, 0, 0, 0);
+            }
+
+        });
+    }
+
+    @Override
+    public void setItemRenderer(Item item, final ItemStackTileEntityRenderer renderer) {
+        teisrField.set(item, () -> renderer);
     }
 
     @APIHandlerInject
@@ -203,6 +239,21 @@ public final class RenderingRegistry implements IElecRenderingRegistry {
 
     private Set<ModelResourceLocation> getValidLocations(ModelManager modelManager, Map<ResourceLocation, IBakedModel> modelRegistry, ModelLoader modelLoader) {
         return ElecModelManager.INSTANCE.registerBakedModels(modelRegistry, modelManager::getModel, modelLoader);
+    }
+
+    private static class LinkedISTESR extends AbstractTileEntityItemStackRenderer {
+
+        private LinkedISTESR(ITESRItem itesrItem) {
+            this.itesrItem = itesrItem;
+        }
+
+        private final ITESRItem itesrItem;
+
+        @Override
+        protected void renderItem(ItemStack stack) {
+            itesrItem.renderItem(stack);
+        }
+
     }
 
     private static class IconRegistrar implements IIconRegistrar {
@@ -275,6 +326,7 @@ public final class RenderingRegistry implements IElecRenderingRegistry {
             }
 
         });
+        teisrField = new FieldPointer<>(Item.class, "teisr");
     }
 
 }

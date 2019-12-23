@@ -60,7 +60,7 @@ public class ItemEnumBased<E extends Enum<E> & IEnumItem> extends AbstractItem i
     }
 
     @Override
-    public void fillItemGroup(ItemGroup creativeTab, NonNullList<ItemStack> subItems) {
+    public void fillItemGroup(@Nonnull ItemGroup creativeTab, @Nonnull NonNullList<ItemStack> subItems) {
         if (!isInGroup(creativeTab)) {
             return;
         }

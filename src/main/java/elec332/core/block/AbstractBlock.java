@@ -95,38 +95,48 @@ public abstract class AbstractBlock extends Block implements IAbstractBlock {
     }
 
     @Override
+    @Deprecated
     @SuppressWarnings("deprecation")
     public boolean onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult hit) {
         return BlockMethods.onBlockActivated(state, world, pos, player, hand, hit, this);
     }
 
     @Override
+    @Deprecated
     public boolean removedByPlayer(@Nonnull BlockState state, World world, @Nonnull BlockPos pos, @Nonnull PlayerEntity player, boolean willHarvest, IFluidState fluid) {
         return BlockMethods.removedByPlayer(state, world, pos, player, willHarvest, fluid, this);
     }
 
     @Nullable
     @Override //Old collisionRayTrace
+    @Deprecated
     public RayTraceResult getRayTraceResult(BlockState state, World world, BlockPos pos, Vec3d start, Vec3d end, RayTraceResult original) {
         return BlockMethods.collisionRayTrace(state, world, pos, start, end, this);
     }
 
     @Nonnull
     @Override
+    @Deprecated
+    @SuppressWarnings("deprecation")
     public List<ItemStack> getDrops(@Nonnull BlockState state, @Nonnull LootContext.Builder builder) {
-        List<ItemStack> f = getOriginalDrops(state, builder);
         Entity entity = Preconditions.checkNotNull(builder.get(LootParameters.THIS_ENTITY));
         BlockPos pos = Preconditions.checkNotNull(builder.get(LootParameters.POSITION));
         ItemStack stack = Preconditions.checkNotNull(builder.get(LootParameters.TOOL));
-        getTileDrops(f, entity.world, pos, EnchantmentHelper.getEnchantmentLevel(Enchantments.FORTUNE, stack));
-        return f;
+        return getDrops(getOriginalDrops(state, builder), builder, entity, entity.world, pos, state, stack);
     }
 
-    public List<ItemStack> getOriginalDrops(BlockState state, LootContext.Builder builder) {
+    @Override
+    public List<ItemStack> getDrops(List<ItemStack> drops, @Nonnull LootContext.Builder builder, Entity entity, World world, BlockPos pos, @Nonnull BlockState state, ItemStack stack) {
+        getTileDrops(drops, world, pos, EnchantmentHelper.getEnchantmentLevel(Enchantments.FORTUNE, stack));
+        return drops;
+    }
+
+    @SuppressWarnings("deprecation")
+    public final List<ItemStack> getOriginalDrops(BlockState state, LootContext.Builder builder) {
         return super.getDrops(state, builder);
     }
 
-    public void getTileDrops(List<ItemStack> drops, World world, BlockPos pos, int fortune) {
+    public final void getTileDrops(List<ItemStack> drops, World world, BlockPos pos, int fortune) {
         TileEntity tile = WorldHelper.getTileAt(world, pos);
         if (tile instanceof ITileWithDrops) {
             ((ITileWithDrops) tile).getDrops(drops, fortune);

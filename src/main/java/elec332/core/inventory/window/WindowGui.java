@@ -103,6 +103,11 @@ public final class WindowGui extends ContainerScreen<WindowContainer> {
     }
 
     @Override
+    public void mouseMoved(double mouseX, double mouseY) {
+        window.mouseMoved(mouseX, mouseY);
+    }
+
+    @Override
     public void render(int mouseX, int mouseY, float partialTicks) {
         GlStateManager.pushMatrix();
         window.drawScreenPre(mouseX, mouseY, partialTicks);

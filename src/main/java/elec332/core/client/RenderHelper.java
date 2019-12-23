@@ -280,7 +280,6 @@ public class RenderHelper {
         return mc.getTextureMap().getAtlasSprite(rl);
     }
 
-
     @Nonnull
     public static ResourceLocation getBlocksResourceLocation() {
         return AtlasTexture.LOCATION_BLOCKS_TEXTURE;

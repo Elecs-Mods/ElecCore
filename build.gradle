@@ -42,7 +42,7 @@ configFile.withReader {
 }
 
 version = config.mod_version
-group= "nl.elec332.core" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
+group = "nl.elec332.core" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "ElecCore"
 
 sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8'
@@ -95,7 +95,8 @@ dependencies {
 	minecraft 'net.minecraftforge:forge:' + config.minecraft_version + "-" + config.forge_version
 
 	//WAILA
-    compile fg.deobf("mcp.mobius.waila:Hwyla:${config.WAILA_version}")
+    compile "mcp.mobius.waila:Hwyla:${config.WAILA_version}"
+    //compile fg.deobf("mcp.mobius.waila:Hwyla:${config.WAILA_version}")
 	//deobfCompile "mcp.mobius.waila:Hwyla:${config.WAILA_version}"
 	
 	//JEI
@@ -123,7 +124,7 @@ processResources {
                 
         // replace version and mcversion
         expand 'version': modVersion, 'mcversion': config.minecraft_version, 'loaderversion': config.minecraft_version.replace('1.', '')
-        expand 'forgeversion':config.forge_version
+        expand 'forgeversion': config.forge_version
     }
         
     // copy everything else, thats not the mcmod.info

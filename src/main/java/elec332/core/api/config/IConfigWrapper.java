@@ -55,7 +55,7 @@ public interface IConfigWrapper {
     @Nonnull
     public IConfigWrapper setCategoryData(String category, String description);
 
-    public void bake();
+    public void register();
 
     /**
      * Function to check whether this {@link IConfigWrapper} has already been loaded from/saved to disk

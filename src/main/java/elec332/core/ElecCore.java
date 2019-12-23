@@ -57,8 +57,7 @@ public class ElecCore implements IModuleController, IElecCoreMod {
     }
 
     public static final String MODID = "eleccore";
-    //Jap, this works...
-    public static final String MODNAME = FMLHelper.getModList().getMods().stream().filter(mi -> mi.getModId().equals(MODID)).findFirst().orElseThrow(RuntimeException::new).getDisplayName();
+    public static final String MODNAME = FMLHelper.getModNameEarly(MODID);
 
     @SidedProxy(clientSide = "elec332.core.proxies.ClientProxy", serverSide = "elec332.core.proxies.CommonProxy")
     public static CommonProxy proxy;

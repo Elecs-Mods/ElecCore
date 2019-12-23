@@ -64,11 +64,10 @@ public class ConfigWrapper implements IConfigWrapper {
     private FileConfig file = null;
     private static List<IConfigElementSerializer> serializers;
 
-
     @Override
     public void registerConfig(Object o) {
         if (hasBeenLoaded()) {
-            throw new RuntimeException("Cannot register configs after baking!");
+            throw new RuntimeException("Cannot register configs after registering!");
         }
         if (instances.contains(o)) {
             return;
@@ -167,7 +166,7 @@ public class ConfigWrapper implements IConfigWrapper {
     @Override
     public ConfigWrapper setCategoryData(String category, String description) {
         if (hasBeenLoaded()) {
-            throw new RuntimeException("Cannot set category data after baking!");
+            throw new RuntimeException("Cannot set category data after registering!");
         }
         int i = configuration.depth;
         if (!Strings.isNullOrEmpty(description)) {
@@ -189,7 +188,7 @@ public class ConfigWrapper implements IConfigWrapper {
     }
 
     @Override
-    public void bake() {
+    public void register() {
         configurableElements.forEach(ce -> ce.reconfigure(configuration));
         configurableElements = null;
         blockLoad = true;
@@ -230,7 +229,7 @@ public class ConfigWrapper implements IConfigWrapper {
     @Override
     public void registerConfigurableElement(IConfigurableElement configurableElement) {
         if (hasBeenLoaded()) {
-            throw new RuntimeException("Cannot register config elements after baking!");
+            throw new RuntimeException("Cannot register config elements after registering!");
         }
         this.configurableElements.add(configurableElement);
         checkReloadListener(configurableElement);
@@ -239,7 +238,7 @@ public class ConfigWrapper implements IConfigWrapper {
     @Override
     public void configureNow(IConfigurableElement configurableElement) {
         if (hasBeenLoaded()) {
-            throw new RuntimeException("Cannot register config elements after baking!");
+            throw new RuntimeException("Cannot register config elements after registering!");
         }
         configurableElement.reconfigure(configuration);
         checkReloadListener(configurableElement);
