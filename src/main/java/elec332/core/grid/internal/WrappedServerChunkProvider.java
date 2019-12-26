@@ -4,6 +4,7 @@ import com.mojang.datafixers.util.Either;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.IPacket;
+import net.minecraft.util.concurrent.DelegatedTaskExecutor;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.SectionPos;
@@ -25,6 +26,7 @@ import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 import java.util.function.BooleanSupplier;
 
 /**
@@ -33,7 +35,11 @@ import java.util.function.BooleanSupplier;
 public class WrappedServerChunkProvider extends ServerChunkProvider {
 
     public WrappedServerChunkProvider(ServerChunkProvider spr) {
-        super(spr.world, new File("noop"), null, null, null, spr.generator, -1, null, null);
+        super(spr.world, new File("noop"), null, null, command -> {
+            if (command instanceof DelegatedTaskExecutor){
+                command.run();
+            }
+        }, spr.generator, -1, null, null);
         this.chunkManager = spr.chunkManager;
         this.scp = spr;
     }
@@ -103,6 +109,9 @@ public class WrappedServerChunkProvider extends ServerChunkProvider {
 
     @Override
     public ChunkGenerator<?> getChunkGenerator() {
+        if (scp == null){
+            return null;
+        }
         return scp.getChunkGenerator();
     }
 

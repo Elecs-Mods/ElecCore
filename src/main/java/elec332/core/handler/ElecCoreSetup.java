@@ -27,6 +27,8 @@ import net.minecraftforge.fml.ModContainer;
 import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
 import net.minecraftforge.fml.javafmlmod.FMLModContainer;
 
+import java.lang.reflect.AnnotatedParameterizedType;
+import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Arrays;
@@ -98,16 +100,17 @@ public class ElecCoreSetup {
                 @SuppressWarnings("all")
                 public void registerStuff(RegistryEvent.Register event1) {
                     for (IObjectRegister register : list) {
-                        Type ty = Arrays.stream(register.getClass().getAnnotatedInterfaces())
-                                .filter(annotatedType -> annotatedType.getType() instanceof ParameterizedType)
-                                .filter(annotatedType -> ((ParameterizedType) register.getClass().getAnnotatedInterfaces()[0].getType()).getRawType().equals(IObjectRegister.class))
+                        Type ty = (Type) Arrays.stream(register.getClass().getAnnotatedInterfaces())
+                                .filter(annotatedType -> annotatedType.getType() instanceof ParameterizedType || (annotatedType.getType() instanceof Class && IObjectRegister.class.isAssignableFrom((Class<?>) annotatedType.getType())))
+                                .map(obj -> obj instanceof AnnotatedParameterizedType ? obj : (((Class) obj.getType()).getAnnotatedInterfaces()[0]))
+                                .map(apt -> ((AnnotatedParameterizedType) apt).getAnnotatedActualTypeArguments()[0].getType())
                                 .findFirst()
-                                .get()
-                                .getType();
-                        ty = ((ParameterizedType) ty).getActualTypeArguments()[0];
-                        if (ty instanceof ParameterizedType) { //TileEntityType also has parameters...
-                            ty = ((ParameterizedType) ty).getRawType();
-                        }
+                                .get();
+                        ty = ((ParameterizedType) ty).getRawType();
+                        //ty = ((ParameterizedType) ty).getActualTypeArguments()[0];
+                        //if (ty instanceof ParameterizedType) { //TileEntityType also has parameters...
+                        //    ty = ((ParameterizedType) ty).getRawType();
+                        //}
                         if (ty.equals(event1.getGenericType())) {
                             register.preRegister();
                             register.register(event1.getRegistry());

@@ -53,29 +53,31 @@ enum AnnotationDataHandler {
             if (o1.contains(o2)) {
                 return -1;
             }
-            return 0;
+            return o1.compareTo(o2);
         });
 
+        ModContainer mcC = FMLHelper.getMinecraftModContainer();
+
         FMLHelper.getMods().forEach(mc -> {
-            if (mc.getMod() != null) {
+            if (mc.getMod() != null && mc != mcC) {
                 String pack = mc.getMod().getClass().getCanonicalName();
                 pack = pack.substring(0, pack.lastIndexOf("."));
                 pck.put(pack, mc);
-                if (pack.lastIndexOf(".") != -1) {
-                    pack = pack.substring(0, pack.lastIndexOf("."));
-
-                    pck.put(pack, mc);
-                }
+//                if (pack.lastIndexOf(".") != -1) {
+//                    pack = pack.substring(0, pack.lastIndexOf("."));
+//                    System.out.println(pack);
+//                    pck.put(pack, mc);
+//                }
             }
         });
 
         FMLHelper.getMods().forEach(mc -> {
-            if (mc.getMod() != null) {
+            if (mc.getMod() != null && mc != mcC) {
                 String pack = mc.getMod().getClass().getCanonicalName();
                 pack = pack.substring(0, pack.lastIndexOf("."));
                 if (pack.lastIndexOf(".") != -1) {
                     pack = pack.substring(0, pack.lastIndexOf("."));
-                    if (!pck.containsKey(pack)) {
+                    if (!(Sets.newHashSet(pck.keySet())).contains(pack) && pack.lastIndexOf(".") >= 0) {
                         pck.put(pack, mc);
                     }
                 }
@@ -88,8 +90,8 @@ enum AnnotationDataHandler {
         packageOwners = pck2::get;
 
         Function<IAnnotationData, ModContainer> modSearcher = annotationData -> {
-            if (annotationData.getClassName().startsWith("net.minecraft.") || annotationData.getClassName().startsWith("mcp.")) {
-                return null;//FMLHelper.getModList().getModContainerById(DefaultModInfos.minecraftModInfo.getModId()).orElseThrow(NullPointerException::new);
+            if (annotationData.getClassName().startsWith("net.minecraft.") || (annotationData.getClassName().startsWith("mcp.") && !annotationData.getClassName().contains("mobius"))) {
+                return FMLHelper.getMinecraftModContainer();//FMLHelper.getModList().getModContainerById(DefaultModInfos.minecraftModInfo.getModId()).orElseThrow(NullPointerException::new);
             }
             ModFile owner = annotationData.getFile();
             if (owner.getModInfos().size() == 1) {

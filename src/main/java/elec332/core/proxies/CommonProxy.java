@@ -12,6 +12,8 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.event.server.FMLServerAboutToStartEvent;
 import net.minecraftforge.fml.network.IContainerFactory;
 
@@ -29,8 +31,12 @@ public class CommonProxy {
         return false;
     }
 
-    public void preInitRendering() {
+    @SubscribeEvent
+    public void registerWindow(RegistryEvent.Register<ContainerType<?>> event){
         RegistryHelper.getContainers().register(WINDOW_CONTAINER_TYPE.setRegistryName(GUI_NAME));
+    }
+
+    public void preInitRendering() {
     }
 
     public void postInitRendering() {

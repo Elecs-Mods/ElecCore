@@ -63,7 +63,7 @@ public enum SaveHandler {
     }
 
     private void load(net.minecraft.world.storage.SaveHandler save, WorldInfo worldInfo, CompoundNBT base) {
-        System.out.println("Load " + worldInfo.getWorldName());
+        ElecCore.logger.info("Loading world data for: " + worldInfo.getWorldName());
         CompoundNBT tag;
         Preconditions.checkNotNull(save);
         Preconditions.checkNotNull(worldInfo);

@@ -2,6 +2,7 @@ package elec332.core.loader;
 
 import elec332.core.util.FMLHelper;
 import elec332.core.util.RegistryHelper;
+import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorld;
@@ -11,6 +12,7 @@ import net.minecraft.world.gen.GenerationStage;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.NoFeatureConfig;
+import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.ModLoadingStage;
 import net.minecraftforge.fml.common.Mod;
@@ -31,6 +33,7 @@ public class ElecCoreLoader {
     public ElecCoreLoader() {
         annotationDataHandler = AnnotationDataHandler.INSTANCE; //Static load
         IEventBus eventBus = FMLHelper.getActiveModEventBus();
+        eventBus.addGenericListener(Item.class, this::registerObjects);
         eventBus.addListener(this::preInit);
         eventBus.addListener(this::init);
         eventBus.addListener(this::postInit);
@@ -49,6 +52,20 @@ public class ElecCoreLoader {
 
     private AnnotationDataHandler annotationDataHandler;
 
+    private void registerObjects(RegistryEvent.Register<Item> noop){
+        Feature<NoFeatureConfig> featureHook = new Feature<NoFeatureConfig>(NoFeatureConfig::deserialize) {
+
+            @Override
+            public boolean place(@Nonnull IWorld world, @Nonnull ChunkGenerator<? extends GenerationSettings> chunkGenerator, @Nonnull Random random, @Nonnull BlockPos pos, @Nonnull NoFeatureConfig noop) {
+                return WorldGenManager.INSTANCE.legacyPopulateChunk(world, chunkGenerator, random, pos);
+            }
+
+        };
+        featureHook.setRegistryName(new ResourceLocation("eleccoreloader", "featurehook"));
+        RegistryHelper.getFeatures().register(featureHook);
+        RegistryHelper.getBiomeRegistry().forEach(biome -> biome.addFeature(GenerationStage.Decoration.values()[GenerationStage.Decoration.values().length - 1], new ConfiguredFeature<>(featureHook, NoFeatureConfig.NO_FEATURE_CONFIG)));
+    }
+
     private void preInit(FMLCommonSetupEvent event) {
         FMLHelper.runLater(() -> {
             annotationDataHandler.process(ModLoadingStage.COMMON_SETUP);
@@ -66,17 +83,6 @@ public class ElecCoreLoader {
     }
 
     private void postInit(InterModProcessEvent event) {
-        Feature<NoFeatureConfig> featureHook = new Feature<NoFeatureConfig>(NoFeatureConfig::deserialize) {
-
-            @Override
-            public boolean place(@Nonnull IWorld world, @Nonnull ChunkGenerator<? extends GenerationSettings> chunkGenerator, @Nonnull Random random, @Nonnull BlockPos pos, @Nonnull NoFeatureConfig noop) {
-                return WorldGenManager.INSTANCE.legacyPopulateChunk(world, chunkGenerator, random, pos);
-            }
-
-        };
-        featureHook.setRegistryName(new ResourceLocation("eleccoreloader", "featurehook"));
-        RegistryHelper.getFeatures().register(featureHook);
-        RegistryHelper.getBiomeRegistry().forEach(biome -> biome.addFeature(GenerationStage.Decoration.values()[GenerationStage.Decoration.values().length - 1], new ConfiguredFeature<>(featureHook, NoFeatureConfig.NO_FEATURE_CONFIG)));
         FMLHelper.runLater(() -> {
             annotationDataHandler.process(ModLoadingStage.PROCESS_IMC);
             ElecCoreLoader.lastStage = FMLHelper.getStageFrom(event);

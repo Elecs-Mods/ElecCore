@@ -7,14 +7,12 @@ import elec332.core.ElecCore;
 import elec332.core.api.client.model.loading.IItemModelHandler;
 import elec332.core.api.client.model.loading.IModelHandler;
 import elec332.core.api.client.model.loading.ModelHandler;
+import elec332.core.client.ClientHelper;
 import elec332.core.loader.client.RenderingRegistry;
-import elec332.core.util.FieldPointer;
 import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.client.renderer.model.ModelResourceLocation;
 import net.minecraft.item.Item;
 import net.minecraftforge.client.model.ModelLoader;
-import net.minecraftforge.registries.IRegistryDelegate;
-import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -36,9 +34,7 @@ public class ItemModelHandler implements IModelHandler {
     private List<IItemModelHandler> itemModelHandlers;
     private Map<Item, ModelResourceLocation> itemResourceLocations;
 
-    //Temp until Forge restores this functionality
-    private static final FieldPointer<ModelLoader, Map<Pair<IRegistryDelegate<Item>, Integer>, ModelResourceLocation>> field = new FieldPointer<>(ModelLoader.class, "customModels");
-    private static final BiConsumer<Item, ModelResourceLocation> itemModelRegistry = (item, modelResourceLocation) -> field.get(null).put(Pair.of(item.delegate, 0), modelResourceLocation);
+    private static final BiConsumer<Item, ModelResourceLocation> itemModelRegistry = (item, modelResourceLocation) -> ClientHelper.getMinecraft().getItemRenderer().getItemModelMesher().register(item, modelResourceLocation);
 
     @Override
     public void getModelHandlers(List<?> list) {

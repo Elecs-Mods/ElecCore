@@ -1,5 +1,6 @@
 package elec332.core.loader.client;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import elec332.core.ElecCore;
@@ -12,10 +13,7 @@ import elec332.core.api.client.ITextureLoader;
 import elec332.core.api.client.model.*;
 import elec332.core.client.RenderHelper;
 import elec332.core.client.util.AbstractTileEntityItemStackRenderer;
-import elec332.core.util.FieldPointer;
-import elec332.core.util.ObjectReference;
-import elec332.core.util.ReflectionHelper;
-import elec332.core.util.RegistryHelper;
+import elec332.core.util.*;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.client.renderer.model.ModelManager;
@@ -41,6 +39,7 @@ import net.minecraftforge.client.model.ModelLoaderRegistry;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.javafmlmod.FMLModContainer;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -70,7 +69,7 @@ public final class RenderingRegistry implements IElecRenderingRegistry {
         extraItems = Lists.newArrayList();
         extraBlocks = Lists.newArrayList();
         extraModels = Lists.newArrayList();
-        MinecraftForge.EVENT_BUS.register(this);
+        Preconditions.checkNotNull(((FMLModContainer) FMLHelper.findMod("eleccoreloader"))).getEventBus().register(this);
         missingModel = new ObjectReference<>();
     }
 
@@ -192,12 +191,13 @@ public final class RenderingRegistry implements IElecRenderingRegistry {
 
     @Override
     public void setItemRenderer(Item item, Class<? extends TileEntity> renderer) {
-        setItemRenderer(item, TileEntityRendererDispatcher.instance.getRenderer(renderer));
+        setItemRenderer(item, Preconditions.checkNotNull(TileEntityRendererDispatcher.instance.getRenderer(renderer)));
     }
 
     @Override
     public void setItemRenderer(Item item, TileEntityRenderer<?> renderer) {
-        setItemRenderer(item, new AbstractTileEntityItemStackRenderer() {
+        Preconditions.checkNotNull(renderer);
+        setItemRenderer(Preconditions.checkNotNull(item), new AbstractTileEntityItemStackRenderer() {
 
             @Override
             protected void renderItem(ItemStack stack) {
@@ -221,13 +221,13 @@ public final class RenderingRegistry implements IElecRenderingRegistry {
     void removeJsonErrors(ModelLoader modelLoader, ModelManager modelManager, Map<ResourceLocation, IBakedModel> modelRegistry) {
         ElecCore.logger.info("Cleaning up internal Json stuff...");
         try {
-            Set<ModelResourceLocation> set = (Set<ModelResourceLocation>) ReflectionHelper.makeFinalFieldModifiable(ModelLoader.class.getDeclaredField("missingVariants")).get(modelLoader);
+            //Set<ModelResourceLocation> set = (Set<ModelResourceLocation>) ReflectionHelper.makeFinalFieldModifiable(ModelLoader.class.getDeclaredField("missingVariants")).get(modelLoader);
             Map<ResourceLocation, Exception> exceptionMap = (Map<ResourceLocation, Exception>) ReflectionHelper.makeFinalFieldModifiable(ModelLoader.class.getDeclaredField("loadingExceptions")).get(modelLoader);
             //if (ElecCore.removeJSONErrors){
             //    exceptionMap.clear();
             //}
             for (ModelResourceLocation rl : getValidLocations(modelManager, modelRegistry, modelLoader)) {
-                set.remove(rl);
+                //set.remove(rl);
                 exceptionMap.remove(rl);
             }
             ElecModelManager.INSTANCE.cleanModelLoadingExceptions(exceptionMap);

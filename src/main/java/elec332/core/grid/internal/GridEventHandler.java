@@ -21,7 +21,7 @@ class GridEventHandler {
 
     @SubscribeEvent
     public void chunkLoad(ChunkEvent.Load event) {
-        if (!event.getWorld().isRemote()) {
+        if (event.getWorld() != null && !event.getWorld().isRemote()) {
             if (!(event.getChunk() instanceof Chunk)) {
                 throw new RuntimeException();
             }

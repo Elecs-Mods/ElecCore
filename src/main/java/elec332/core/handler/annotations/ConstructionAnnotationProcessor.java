@@ -11,8 +11,10 @@ import elec332.core.api.util.IMemberPointer;
 import elec332.core.util.FMLHelper;
 import elec332.core.util.FieldPointer;
 import elec332.core.util.MethodPointer;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.ModLoadingStage;
+import net.minecraftforge.fml.javafmlmod.FMLModContainer;
 import org.objectweb.asm.Type;
 
 import java.util.Map;
@@ -74,6 +76,10 @@ public class ConstructionAnnotationProcessor implements IAnnotationDataProcessor
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
+                if (mod instanceof FMLModContainer){
+                    ((FMLModContainer) mod).getEventBus().register(proxy);
+                }
+                MinecraftForge.EVENT_BUS.register(proxy);
                 ElecCore.logger.info("Injecting proxy into " + member.getName() + "@" + member.getParentType().getCanonicalName());
                 injector.accept(proxy);
             });

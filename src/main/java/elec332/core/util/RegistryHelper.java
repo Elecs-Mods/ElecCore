@@ -19,6 +19,7 @@ import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.gen.feature.Feature;
@@ -29,6 +30,7 @@ import net.minecraftforge.registries.*;
 
 import javax.annotation.Nonnull;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -166,6 +168,11 @@ public class RegistryHelper {
 
     public static Map<Block, Item> getBlockItemMap() {
         return GameData.getBlockItemMap();
+    }
+
+    @SuppressWarnings("deprecation")
+    public static Optional<DimensionType> getDimensionType(ResourceLocation name){
+        return Registry.DIMENSION_TYPE.getValue(name);
     }
 
     /**
