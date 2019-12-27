@@ -22,21 +22,22 @@ import net.minecraft.world.server.ServerWorldLightManager;
 import net.minecraft.world.server.TicketType;
 import net.minecraft.world.storage.DimensionSavedDataManager;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executor;
 import java.util.function.BooleanSupplier;
 
 /**
  * Created by Elec332 on 22-12-2019
  */
-public class WrappedServerChunkProvider extends ServerChunkProvider {
+class WrappedServerChunkProvider extends ServerChunkProvider {
 
+    @SuppressWarnings("all")
     public WrappedServerChunkProvider(ServerChunkProvider spr) {
         super(spr.world, new File("noop"), null, null, command -> {
-            if (command instanceof DelegatedTaskExecutor){
+            if (command instanceof DelegatedTaskExecutor) {
                 command.run();
             }
         }, spr.generator, -1, null, null);
@@ -46,6 +47,7 @@ public class WrappedServerChunkProvider extends ServerChunkProvider {
 
     private final ServerChunkProvider scp;
 
+    @Nonnull
     @Override
     public ServerWorldLightManager getLightManager() {
         return scp.getLightManager();
@@ -53,7 +55,7 @@ public class WrappedServerChunkProvider extends ServerChunkProvider {
 
     @Nullable
     @Override
-    public IChunk getChunk(int p_212849_1_, int p_212849_2_, ChunkStatus p_212849_3_, boolean p_212849_4_) {
+    public IChunk getChunk(int p_212849_1_, int p_212849_2_, @Nonnull ChunkStatus p_212849_3_, boolean p_212849_4_) {
         return scp.getChunk(p_212849_1_, p_212849_2_, p_212849_3_, p_212849_4_);
     }
 
@@ -67,6 +69,7 @@ public class WrappedServerChunkProvider extends ServerChunkProvider {
         return scp.getChunkForLight(p_217202_1_, p_217202_2_);
     }
 
+    @Nonnull
     @Override
     public World getWorld() {
         return scp.getWorld();
@@ -98,18 +101,20 @@ public class WrappedServerChunkProvider extends ServerChunkProvider {
     }
 
     @Override
-    public void tick(BooleanSupplier p_217207_1_) {
+    public void tick(@Nonnull BooleanSupplier p_217207_1_) {
         scp.tick(p_217207_1_);
     }
 
+    @Nonnull
     @Override
     public String makeString() {
         return scp.makeString();
     }
 
     @Override
+    @SuppressWarnings("all")
     public ChunkGenerator<?> getChunkGenerator() {
-        if (scp == null){
+        if (scp == null) {
             return null;
         }
         return scp.getChunkGenerator();
@@ -126,37 +131,37 @@ public class WrappedServerChunkProvider extends ServerChunkProvider {
     }
 
     @Override
-    public void markLightChanged(LightType p_217201_1_, SectionPos p_217201_2_) {
+    public void markLightChanged(@Nonnull LightType p_217201_1_, SectionPos p_217201_2_) {
         scp.markLightChanged(p_217201_1_, p_217201_2_);
     }
 
     @Override
-    public void forceChunk(ChunkPos p_217206_1_, boolean p_217206_2_) {
+    public void forceChunk(@Nonnull ChunkPos p_217206_1_, boolean p_217206_2_) {
         scp.forceChunk(p_217206_1_, p_217206_2_);
     }
 
     @Override
-    public void updatePlayerPosition(ServerPlayerEntity p_217221_1_) {
+    public void updatePlayerPosition(@Nonnull ServerPlayerEntity p_217221_1_) {
         scp.updatePlayerPosition(p_217221_1_);
     }
 
     @Override
-    public void untrack(Entity p_217226_1_) {
+    public void untrack(@Nonnull Entity p_217226_1_) {
         scp.untrack(p_217226_1_);
     }
 
     @Override
-    public void track(Entity p_217230_1_) {
+    public void track(@Nonnull Entity p_217230_1_) {
         scp.track(p_217230_1_);
     }
 
     @Override
-    public void sendToTrackingAndSelf(Entity p_217216_1_, IPacket<?> p_217216_2_) {
+    public void sendToTrackingAndSelf(@Nonnull Entity p_217216_1_, @Nonnull IPacket<?> p_217216_2_) {
         scp.sendToTrackingAndSelf(p_217216_1_, p_217216_2_);
     }
 
     @Override
-    public void sendToAllTracking(Entity p_217218_1_, IPacket<?> p_217218_2_) {
+    public void sendToAllTracking(@Nonnull Entity p_217218_1_, @Nonnull IPacket<?> p_217218_2_) {
         scp.sendToAllTracking(p_217218_1_, p_217218_2_);
     }
 
@@ -170,16 +175,19 @@ public class WrappedServerChunkProvider extends ServerChunkProvider {
         scp.setAllowedSpawnTypes(p_217203_1_, p_217203_2_);
     }
 
+    @Nonnull
     @Override
     public DimensionSavedDataManager getSavedData() {
         return scp.getSavedData();
     }
 
+    @Nonnull
     @Override
     public PointOfInterestManager getPointOfInterestManager() {
         return scp.getPointOfInterestManager();
     }
 
+    @Nonnull
     @Override
     public CompletableFuture<Either<IChunk, ChunkHolder.IChunkLoadingError>> func_217232_b(int p_217232_1_, int p_217232_2_, ChunkStatus p_217232_3_, boolean p_217232_4_) {
         return scp.func_217232_b(p_217232_1_, p_217232_2_, p_217232_3_, p_217232_4_);
@@ -217,18 +225,19 @@ public class WrappedServerChunkProvider extends ServerChunkProvider {
         return scp.func_225314_f();
     }
 
+    @Nonnull
     @Override
-    public String func_217208_a(ChunkPos p_217208_1_) {
+    public String func_217208_a(@Nonnull ChunkPos p_217208_1_) {
         return scp.func_217208_a(p_217208_1_);
     }
 
     @Override
-    public <T> void func_217222_b(TicketType<T> p_217222_1_, ChunkPos p_217222_2_, int p_217222_3_, T p_217222_4_) {
+    public <T> void func_217222_b(@Nonnull TicketType<T> p_217222_1_, @Nonnull ChunkPos p_217222_2_, int p_217222_3_, @Nonnull T p_217222_4_) {
         scp.func_217222_b(p_217222_1_, p_217222_2_, p_217222_3_, p_217222_4_);
     }
 
     @Override
-    public <T> void func_217228_a(TicketType<T> p_217228_1_, ChunkPos p_217228_2_, int p_217228_3_, T p_217228_4_) {
+    public <T> void func_217228_a(@Nonnull TicketType<T> p_217228_1_, @Nonnull ChunkPos p_217228_2_, int p_217228_3_, @Nonnull T p_217228_4_) {
         scp.func_217228_a(p_217228_1_, p_217228_2_, p_217228_3_, p_217228_4_);
     }
 

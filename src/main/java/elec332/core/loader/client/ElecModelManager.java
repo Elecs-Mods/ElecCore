@@ -14,18 +14,21 @@ import elec332.core.api.discovery.AnnotationDataProcessor;
 import elec332.core.api.discovery.IAnnotationData;
 import elec332.core.api.discovery.IAnnotationDataHandler;
 import elec332.core.api.discovery.IAnnotationDataProcessor;
+import elec332.core.client.ClientHelper;
+import elec332.core.client.util.InternalResourcePack;
 import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.client.renderer.model.ModelBakery;
 import net.minecraft.client.renderer.model.ModelResourceLocation;
+import net.minecraft.resources.ResourcePackType;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.model.ModelLoader;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.fml.ModLoadingStage;
 
+import javax.annotation.Nonnull;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -43,9 +46,9 @@ enum ElecModelManager implements IAnnotationDataProcessor {
 
     ElecModelManager() {
         this.modelHandlers = Lists.newArrayList();
-        MinecraftForge.EVENT_BUS.addListener(EventPriority.NORMAL, this::registerModels);
     }
 
+    private static final String FAKE_BLOCKSTATE_JSON = "{ 'variants': { '': { 'model': 'builtin/missing' } } }";
     private List<IModelHandler> modelHandlers;
 
     @Override
@@ -69,13 +72,65 @@ enum ElecModelManager implements IAnnotationDataProcessor {
                 }
             }
         }
+        preHandleModels();
+        registerFakeResources();
     }
 
-    public void registerModels(ModelRegistryEvent event) {
+    public void preHandleModels() {
         ElecCore.logger.info("Registering models");
         for (IModelHandler modelHandler : modelHandlers) {
             modelHandler.preHandleModels();
         }
+    }
+
+    private void registerFakeResources() {
+        Map<String, Set<ResourceLocation>> mods = Maps.newHashMap();
+        modelHandlers.stream()
+                .map(IModelHandler::getHandlerObjectNames)
+                .flatMap(Set::stream)
+                .forEach(rl -> mods.computeIfAbsent(rl.getNamespace(), k -> Sets.newHashSet()).add(rl));
+        mods.keySet().forEach(name -> ClientHelper.getMinecraft().getResourceManager().addResourcePack(new InternalResourcePack(name + " automodel", name) {
+
+            Set<ResourceLocation> objects = mods.get(name);
+
+            @Nonnull
+            @Override
+            public InputStream getResourceStream(@Nonnull ResourcePackType type, @Nonnull ResourceLocation location) {
+                if (!location.getNamespace().equals(name)) {
+                    throw new IllegalArgumentException();
+                }
+                String path = location.getPath();
+                if (isValidBlockState(path)) {
+                    return new ByteArrayInputStream(FAKE_BLOCKSTATE_JSON.getBytes());
+                } else if (isValidItemModel(path)) {
+                    return new ByteArrayInputStream(ModelBakery.MISSING_MODEL_MESH.getBytes());
+                }
+                throw new IllegalArgumentException();
+            }
+
+            @Override
+            public boolean resourceExists(@Nonnull ResourcePackType type, @Nonnull ResourceLocation location) {
+                String path = location.getPath();
+                return isValidBlockState(path) || isValidItemModel(path);
+            }
+
+            private boolean isValidBlockState(String path) {
+                if (path.startsWith("blockstates/") && path.endsWith(".json")) {
+                    String p2 = path.replace("blockstates/", "").replace(".json", "");
+                    return objects.stream().anyMatch(rl -> rl.getPath().equals(p2));
+                }
+                return false;
+            }
+
+            private boolean isValidItemModel(String path) {
+                if (path.startsWith("models/item/") && path.endsWith(".json")) {
+                    String p2 = path.replace("models/item/", "").replace(".json", "");
+                    return objects.stream().anyMatch(rl -> rl.getPath().equals(p2));
+                }
+                return false;
+            }
+
+        }));
     }
 
     Set<ModelResourceLocation> registerBakedModels(Map<ResourceLocation, IBakedModel> registry, Function<ModelResourceLocation, IBakedModel> modelGetter, ModelLoader modelLoader) {

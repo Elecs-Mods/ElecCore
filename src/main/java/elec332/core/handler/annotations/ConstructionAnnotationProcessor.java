@@ -76,7 +76,7 @@ public class ConstructionAnnotationProcessor implements IAnnotationDataProcessor
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
-                if (mod instanceof FMLModContainer){
+                if (mod instanceof FMLModContainer) {
                     ((FMLModContainer) mod).getEventBus().register(proxy);
                 }
                 MinecraftForge.EVENT_BUS.register(proxy);

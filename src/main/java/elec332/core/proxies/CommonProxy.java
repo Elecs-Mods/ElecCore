@@ -32,7 +32,7 @@ public class CommonProxy {
     }
 
     @SubscribeEvent
-    public void registerWindow(RegistryEvent.Register<ContainerType<?>> event){
+    public void registerWindow(RegistryEvent.Register<ContainerType<?>> event) {
         RegistryHelper.getContainers().register(WINDOW_CONTAINER_TYPE.setRegistryName(GUI_NAME));
     }
 

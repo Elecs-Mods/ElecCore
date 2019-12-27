@@ -36,9 +36,9 @@ import net.minecraftforge.client.model.BasicState;
 import net.minecraftforge.client.model.IModel;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.client.model.ModelLoaderRegistry;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.ModLoader;
 import net.minecraftforge.fml.javafmlmod.FMLModContainer;
 
 import javax.annotation.Nonnull;
@@ -316,13 +316,13 @@ public final class RenderingRegistry implements IElecRenderingRegistry {
             }
 
         });
-        MinecraftForge.EVENT_BUS.register(new Object() {
+        Preconditions.checkNotNull(((FMLModContainer) FMLHelper.findMod("eleccoreloader"))).getEventBus().register(new Object() {
 
             @SubscribeEvent(priority = EventPriority.HIGH)
             @OnlyIn(Dist.CLIENT)
             public void bakeModels(ModelBakeEvent event) {
                 instance().missingModel.set(event.getModelManager().getMissingModel());
-                MinecraftForge.EVENT_BUS.post(new ModelLoadEventImpl(instance().quadBakery, instance().modelBakery, instance.templateBakery, event.getModelRegistry(), event.getModelManager()::getModel, event.getModelLoader()));
+                ModLoader.get().postEvent(new ModelLoadEventImpl(instance().quadBakery, instance().modelBakery, instance.templateBakery, event.getModelRegistry(), event.getModelManager()::getModel, event.getModelLoader()));
             }
 
         });

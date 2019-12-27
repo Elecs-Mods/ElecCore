@@ -29,6 +29,7 @@ import net.minecraftforge.client.model.*;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.model.IModelState;
 import net.minecraftforge.common.model.TRSRTransformation;
+import net.minecraftforge.registries.ForgeRegistryEntry;
 import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nonnull;
@@ -94,6 +95,12 @@ public class BlockVariantModelHandler implements IModelHandler {
 
             }
         }
+    }
+
+    @Nonnull
+    @Override
+    public Set<ResourceLocation> getHandlerObjectNames() {
+        return blockResourceLocations.values().stream().map(BlockState::getBlock).map(ForgeRegistryEntry::getRegistryName).collect(Collectors.toSet());
     }
 
     @Override

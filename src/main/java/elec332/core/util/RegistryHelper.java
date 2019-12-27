@@ -171,7 +171,7 @@ public class RegistryHelper {
     }
 
     @SuppressWarnings("deprecation")
-    public static Optional<DimensionType> getDimensionType(ResourceLocation name){
+    public static Optional<DimensionType> getDimensionType(ResourceLocation name) {
         return Registry.DIMENSION_TYPE.getValue(name);
     }
 

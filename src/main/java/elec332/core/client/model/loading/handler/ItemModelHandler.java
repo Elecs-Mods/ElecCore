@@ -12,13 +12,17 @@ import elec332.core.loader.client.RenderingRegistry;
 import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.client.renderer.model.ModelResourceLocation;
 import net.minecraft.item.Item;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.model.ModelLoader;
+import net.minecraftforge.registries.ForgeRegistryEntry;
 
 import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * Created by Elec332 on 18-9-2016.
@@ -59,6 +63,12 @@ public class ItemModelHandler implements IModelHandler {
                 }
             }
         }
+    }
+
+    @Nonnull
+    @Override
+    public Set<ResourceLocation> getHandlerObjectNames() {
+        return itemResourceLocations.keySet().stream().map(ForgeRegistryEntry::getRegistryName).collect(Collectors.toSet());
     }
 
     @Override

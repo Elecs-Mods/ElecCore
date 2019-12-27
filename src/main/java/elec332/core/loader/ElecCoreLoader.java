@@ -52,7 +52,7 @@ public class ElecCoreLoader {
 
     private AnnotationDataHandler annotationDataHandler;
 
-    private void registerObjects(RegistryEvent.Register<Item> noop){
+    private void registerObjects(RegistryEvent.Register<Item> noop) {
         Feature<NoFeatureConfig> featureHook = new Feature<NoFeatureConfig>(NoFeatureConfig::deserialize) {
 
             @Override

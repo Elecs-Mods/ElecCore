@@ -8,6 +8,7 @@ import net.minecraftforge.client.model.ModelLoader;
 import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 
 /**
@@ -38,6 +39,15 @@ public interface IModelHandler {
      * Gets called after {@link IModelHandler#getModelHandlers(List)}
      */
     public void preHandleModels();
+
+    /**
+     * Used to get the names of the objects that are handled by this handler.
+     * This is used to remove the model-loading error from the log files and gets called after {@link IModelHandler#preHandleModels()}
+     *
+     * @return A {@link Set} with the registry names of the objects handled by this model handler
+     */
+    @Nonnull
+    public Set<ResourceLocation> getHandlerObjectNames();
 
     /**
      * Used to register the models to the registry,
