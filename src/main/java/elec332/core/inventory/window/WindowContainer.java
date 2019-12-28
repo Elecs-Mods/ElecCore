@@ -288,7 +288,7 @@ public final class WindowContainer extends Container {
         @OnlyIn(Dist.CLIENT)
         @Override
         public boolean isEnabled() {
-            return widget.canBeHovered();
+            return widget.isEnabled();
         }
 
         @Nonnull
@@ -380,12 +380,23 @@ public final class WindowContainer extends Container {
 
         @Override
         @OnlyIn(Dist.CLIENT)
-        public void handleMouseClickDefault(WidgetSlot slotIn, int slotId, int mouseButton, @Nonnull ClickType type) {
+        public void handleSlotClickDefault(WidgetSlot slotIn, int slotId, int mouseButton, @Nonnull ClickType type) {
             Slot slot = slotIn == null ? null : slotStuff.get(slotIn);
             if (slotIn != null && slot == null) {
                 throw new IllegalArgumentException();
             }
             windowGui.handleMouseClickDefault(slot, slotId, mouseButton, type);
+        }
+
+        @Override
+        @OnlyIn(Dist.CLIENT)
+        public boolean mouseDraggedDefault(double mouseX, double mouseY, int mouseButton, double dragX, double dragY) {
+            return windowGui.mouseDraggedDefault(mouseX, mouseY, mouseButton, dragX, dragY);
+        }
+
+        @Override
+        public boolean mouseReleasedDefault(double mouseX, double mouseY, int mouseButton) {
+            return windowGui.mouseReleasedDefault(mouseX, mouseY, mouseButton);
         }
 
         @Override

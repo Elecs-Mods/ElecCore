@@ -1,4 +1,4 @@
-package elec332.core.util;
+package elec332.core.util.math;
 
 import com.google.common.base.Preconditions;
 import net.minecraft.util.Direction;

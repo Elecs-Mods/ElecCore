@@ -1,6 +1,6 @@
 package elec332.core.inventory.widget.slot;
 
-import elec332.core.client.RenderHelper;
+import com.google.common.collect.Lists;
 import elec332.core.client.util.GuiDraw;
 import elec332.core.inventory.tooltip.ToolTip;
 import elec332.core.inventory.widget.Widget;
@@ -16,6 +16,8 @@ import net.minecraftforge.items.IItemHandlerModifiable;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * Created by Elec332 on 28-11-2016.
@@ -26,16 +28,26 @@ public class WidgetSlot extends Widget {
         super(x, y, 0, 0, 16, 16);
         this.inventory = inventory;
         this.slotIndex = index;
+        this.changeListeners = Lists.newArrayList();
+    }
+
+    private final List<Consumer<WidgetSlot>> changeListeners;
+    private final IItemHandler inventory;
+    private final int slotIndex;
+
+    public WidgetSlot addChangeListener(Consumer<WidgetSlot> listener) {
+        changeListeners.add(listener);
+        return this;
+    }
+
+    protected void notifyChangeListeners() {
+        changeListeners.forEach(l -> l.accept(this));
     }
 
     @Override
-    public void draw(Window window, int guiX, int guiY, double mouseX, double mouseY) {
-        RenderHelper.bindTexture(Window.DEFAULT_BACKGROUND);
-        GuiDraw.drawTexturedModalRect(guiX + x - 1, guiY + y - 1, 180, 0, 18, 18);
+    public void draw(Window window, int guiX, int guiY, double mouseX, double mouseY, float partialTicks) {
+        drawHollow(guiX, guiY, -1, -1, 18, 18);
     }
-
-    private final IItemHandler inventory;
-    private final int slotIndex;
 
     @Override
     public void onWindowClosed(PlayerEntity player) {
@@ -126,7 +138,7 @@ public class WidgetSlot extends Widget {
      * Called when the stack in a Slot changes
      */
     public void onSlotChanged() {
-
+        notifyChangeListeners();
     }
 
     /**
@@ -179,12 +191,8 @@ public class WidgetSlot extends Widget {
         return !isHidden() && ItemStackHelper.isStackValid(this.inventory.extractItem(getSlotIndex(), 1, true));
     }
 
-    /**
-     * Actualy only call when we want to render the white square effect over the slots. Return always True, except for
-     * the armor slot of the Donkey/Mule (we can't interact with the Undead and Skeleton horses)
-     */
     @OnlyIn(Dist.CLIENT)
-    public boolean canBeHovered() {
+    public boolean isEnabled() {
         return !isHidden();
     }
 

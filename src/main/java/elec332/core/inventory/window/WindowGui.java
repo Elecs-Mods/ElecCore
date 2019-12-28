@@ -71,13 +71,40 @@ public final class WindowGui extends ContainerScreen<WindowContainer> {
     }
 
     @Override
+    protected void handleMouseClick(Slot slotIn, int slotId, int mouseButton, @Nonnull ClickType type) {
+        window.handleSlotClick(slotIn == null ? null : ((WindowContainer.WidgetLinkedSlot) slotIn).widget, slotId, mouseButton, type);
+    }
+
+    @Override
+    public void mouseMoved(double mouseX, double mouseY) {
+        window.mouseMoved(mouseX, mouseY);
+    }
+
+    @Override
     public boolean mouseClicked(double mouseX, double mouseY, int mouseButton) {
         return window.mouseClicked(mouseX, mouseY, mouseButton) || super.mouseClicked(mouseX, mouseY, mouseButton);
     }
 
+    void handleMouseClickDefault(Slot slotIn, int slotId, int mouseButton, @Nonnull ClickType type) {
+        super.handleMouseClick(slotIn, slotId, mouseButton, type);
+    }
+
     @Override
-    public boolean charTyped(char typedChar, int keyCode) {
-        return window.keyTyped(typedChar, keyCode) || super.charTyped(typedChar, keyCode);
+    public boolean mouseReleased(double mouseX, double mouseY, int mouseButton) {
+        return window.mouseReleased(mouseX, mouseY, mouseButton);
+    }
+
+    boolean mouseReleasedDefault(double mouseX, double mouseY, int mouseButton) {
+        return super.mouseReleased(mouseX, mouseY, mouseButton);
+    }
+
+    @Override
+    public boolean mouseDragged(double mouseX, double mouseY, int mouseButton, double dragX, double dragY) {
+        return window.mouseDragged(mouseX, mouseY, mouseButton, dragX, dragY);
+    }
+
+    boolean mouseDraggedDefault(double mouseX, double mouseY, int mouseButton, double dragX, double dragY) {
+        return super.mouseDragged(mouseX, mouseY, mouseButton, dragX, dragY);
     }
 
     @Override
@@ -88,23 +115,24 @@ public final class WindowGui extends ContainerScreen<WindowContainer> {
             MainWindow mw = Minecraft.getInstance().mainWindow;
             double mouseX = mh.getMouseX() * width / mw.getFramebufferWidth();//displayWidth;
             double mouseY = height - mh.getMouseY() * height / (mw.getFramebufferHeight() - 1); //Minecraft.getInstance().displayHeight
-            b = window.handleMouseWheel(wheel, window.translatedMouseX(mouseX), window.translatedMouseY(mouseY));
+            b = window.mouseScrolled(wheel, window.translatedMouseX(mouseX), window.translatedMouseY(mouseY));
         }
         return b || super.mouseScrolled(dafuq1, dafuq2, wheel);
     }
 
     @Override
-    protected void handleMouseClick(Slot slotIn, int slotId, int mouseButton, @Nonnull ClickType type) {
-        window.handleMouseClick(slotIn == null ? null : ((WindowContainer.WidgetLinkedSlot) slotIn).widget, slotId, mouseButton, type);
-    }
-
-    void handleMouseClickDefault(Slot slotIn, int slotId, int mouseButton, @Nonnull ClickType type) {
-        super.handleMouseClick(slotIn, slotId, mouseButton, type);
+    public boolean keyPressed(int key, int scanCode, int modifiers) {
+        return window.keyPressed(key, scanCode, modifiers) || super.keyPressed(key, scanCode, modifiers);
     }
 
     @Override
-    public void mouseMoved(double mouseX, double mouseY) {
-        window.mouseMoved(mouseX, mouseY);
+    public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
+        return window.keyReleased(keyCode, scanCode, modifiers) || super.keyReleased(keyCode, scanCode, modifiers);
+    }
+
+    @Override
+    public boolean charTyped(char typedChar, int keyCode) {
+        return window.charTyped(typedChar, keyCode) || super.charTyped(typedChar, keyCode);
     }
 
     @Override

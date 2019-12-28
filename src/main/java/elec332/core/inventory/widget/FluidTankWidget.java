@@ -62,7 +62,7 @@ public class FluidTankWidget extends Widget {
     }
 
     @Override
-    public void draw(Window gui, int guiX, int guiY, double mouseX, double mouseY) {
+    public void draw(Window gui, int guiX, int guiY, double mouseX, double mouseY, float partialTicks) {
         GlStateManager.pushMatrix();
         drawFluid(guiX, guiY);
         GlStateManager.popMatrix();

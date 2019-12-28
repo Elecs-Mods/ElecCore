@@ -1,9 +1,9 @@
 package elec332.core.block;
 
 import com.google.common.collect.Lists;
-import elec332.core.util.IndexedAABB;
 import elec332.core.util.PlayerHelper;
-import elec332.core.util.RayTraceHelper;
+import elec332.core.util.math.IndexedAABB;
+import elec332.core.util.math.RayTraceHelper;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;

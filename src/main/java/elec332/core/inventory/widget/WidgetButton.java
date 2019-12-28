@@ -5,13 +5,17 @@ import com.mojang.blaze3d.platform.GLX;
 import com.mojang.blaze3d.platform.GlStateManager;
 import elec332.core.client.RenderHelper;
 import elec332.core.client.util.GuiDraw;
+import elec332.core.inventory.tooltip.ToolTip;
 import elec332.core.inventory.window.Window;
 import elec332.core.util.NBTBuilder;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import org.lwjgl.opengl.GL11;
 
+import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.List;
 
@@ -44,9 +48,15 @@ public class WidgetButton extends Widget {
     private List<IButtonEventListener> buttonEvents;
     private boolean active;
     protected String displayString;
+    private ToolTip toolTip;
 
     public WidgetButton setDisplayString(String s) {
         this.displayString = s;
+        return this;
+    }
+
+    public WidgetButton setToolTip(ToolTip toolTip) {
+        this.toolTip = toolTip;
         return this;
     }
 
@@ -59,6 +69,7 @@ public class WidgetButton extends Widget {
     }
 
     @Override
+    @OnlyIn(Dist.CLIENT)
     public final boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (isMouseOver(mouseX, mouseY) && active) {
             onButtonClicked(button);
@@ -80,7 +91,7 @@ public class WidgetButton extends Widget {
     }
 
     @Override
-    public void draw(Window gui, int guiX, int guiY, double mouseX, double mouseY) {
+    public void draw(Window gui, int guiX, int guiY, double mouseX, double mouseY, float partialTicks) {
         if (!isHidden()) {
             GlStateManager.pushMatrix();
             FontRenderer fontrenderer = RenderHelper.getMCFontrenderer();
@@ -141,6 +152,12 @@ public class WidgetButton extends Widget {
 
     public void clearEvents() {
         buttonEvents.clear();
+    }
+
+    @Nullable
+    @Override
+    public ToolTip getToolTip(double mouseX, double mouseY) {
+        return toolTip;
     }
 
     public static interface IButtonEventListener {

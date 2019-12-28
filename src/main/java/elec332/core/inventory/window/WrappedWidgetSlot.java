@@ -100,7 +100,7 @@ class WrappedWidgetSlot extends WidgetSlot {
     }
 
     @Override
-    public boolean canBeHovered() {
+    public boolean isEnabled() {
         return slot.isEnabled();
     }
 
@@ -116,7 +116,7 @@ class WrappedWidgetSlot extends WidgetSlot {
     }
 
     @Override
-    public void setBackgroundName(@Nonnull String name) {
+    public void setBackgroundName(@Nullable String name) {
         slot.setBackgroundName(name);
     }
 

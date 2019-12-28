@@ -1,5 +1,6 @@
-package elec332.core.util;
+package elec332.core.util.math;
 
+import elec332.core.util.PlayerHelper;
 import elec332.core.world.WorldHelper;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.LivingEntity;

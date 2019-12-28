@@ -102,6 +102,7 @@ public class Widget implements IWidget {
     }
 
     @Override
+    @OnlyIn(Dist.CLIENT)
     public final boolean isMouseOver(double mouseX, double mouseY) {
         return isMouseOver(mouseX, mouseY, x, y, width, height);
     }
@@ -111,24 +112,55 @@ public class Widget implements IWidget {
     }
 
     @Override
+    @OnlyIn(Dist.CLIENT)
+    public void mouseMoved(double mouseX, double mouseY) {
+    }
+
+    @Override
+    @OnlyIn(Dist.CLIENT)
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         return false;
     }
 
     @Override
-    public boolean keyTyped(char typedChar, int keyCode) {
+    @OnlyIn(Dist.CLIENT)
+    public boolean mouseReleased(double mouseX, double mouseY, int button) {
         return false;
     }
 
     @Override
     @OnlyIn(Dist.CLIENT)
-    public boolean handleMouseWheel(double wheel, double translatedMouseX, double translatedMouseY) {
+    public boolean mouseDragged(double mouseX, double mouseY, int mouseButton, double dragX, double dragY) {
         return false;
     }
 
     @Override
     @OnlyIn(Dist.CLIENT)
-    public void draw(Window window, int guiX, int guiY, double mouseX, double mouseY) {
+    public boolean mouseScrolled(double wheel, double mouseX, double mouseY) {
+        return false;
+    }
+
+    @Override
+    @OnlyIn(Dist.CLIENT)
+    public boolean keyPressed(int key, int scanCode, int modifiers) {
+        return false;
+    }
+
+    @Override
+    @OnlyIn(Dist.CLIENT)
+    public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
+        return false;
+    }
+
+    @Override
+    @OnlyIn(Dist.CLIENT)
+    public boolean charTyped(char typedChar, int keyCode) {
+        return false;
+    }
+
+    @Override
+    @OnlyIn(Dist.CLIENT)
+    public void draw(Window window, int guiX, int guiY, double mouseX, double mouseY, float partialTicks) {
         if (background != null) {
             RenderHelper.bindTexture(background);
         }
@@ -138,6 +170,31 @@ public class Widget implements IWidget {
     @OnlyIn(Dist.CLIENT)
     protected final void bindTexture(ResourceLocation resourceLocation) {
         RenderHelper.bindTexture(resourceLocation);
+    }
+
+    protected void drawHollow(int guiX, int guiY, int xPos, int yPos, int width, int height) {
+        bindTexture(Window.DEFAULT_BACKGROUND);
+        int sX = 180;
+        int sY = 23;
+        int eX = 218;
+        int eY = 113;
+        if (width == 18 && height == 18) {
+            GuiDraw.drawTexturedModalRect(guiX + x + xPos, guiY + y + yPos, sX, 0, width, height);
+        } else {
+            float wX = width / 2f;
+            float hY = height / 2f;
+            int leftX = (int) Math.floor(wX);
+            int rightX = (int) Math.ceil(wX);
+            int topY = (int) Math.floor(hY);
+            int bottomY = (int) Math.ceil(hY);
+            if (leftX > 36 || rightX > 36 || topY > 88 || bottomY > 88) {
+                throw new UnsupportedOperationException();
+            }
+            GuiDraw.drawTexturedModalRect(guiX + x + xPos, guiY + y + yPos, sX, sY, leftX, topY);  //Top Left
+            GuiDraw.drawTexturedModalRect(guiX + x + xPos + (width - leftX), guiY + y + yPos, eX - rightX, sY, rightX, topY); //Top Right
+            GuiDraw.drawTexturedModalRect(guiX + x + xPos, guiY + y + yPos + (height - topY), sX, eY - bottomY, leftX, bottomY); //Bottom Left
+            GuiDraw.drawTexturedModalRect(guiX + x + xPos + (width - leftX), guiY + y + yPos + (height - topY), eX - rightX, eY - bottomY, rightX, bottomY); //Bottom Right
+        }
     }
 
     public Widget setHidden(boolean hidden) {
@@ -156,6 +213,5 @@ public class Widget implements IWidget {
     public ToolTip getToolTip(double mouseX, double mouseY) {
         return null;
     }
-
 
 }

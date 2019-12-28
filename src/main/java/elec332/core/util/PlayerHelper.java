@@ -1,5 +1,6 @@
 package elec332.core.util;
 
+import elec332.core.util.math.RayTraceHelper;
 import net.minecraft.command.ICommandSource;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;

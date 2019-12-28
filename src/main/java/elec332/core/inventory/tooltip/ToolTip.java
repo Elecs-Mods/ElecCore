@@ -47,10 +47,17 @@ public class ToolTip {
     }
 
     private int width = -1;
+    private int offsetX = 0, offsetY = 0;
     private final List<String> tooltip;
 
     public List<String> getTooltip() {
         return tooltip;
+    }
+
+    public ToolTip setMouseOffset(int xOffset, int yOffset) {
+        this.offsetX = xOffset;
+        this.offsetY = yOffset;
+        return this;
     }
 
     @OnlyIn(Dist.CLIENT)
@@ -61,6 +68,8 @@ public class ToolTip {
     @OnlyIn(Dist.CLIENT)
     public void renderTooltip(int mouseX, int mouseY, int guiLeft, int guiTop, @Nonnull ItemStack stack) {
         MainWindow mc = RenderHelper.getMainWindow();
+        mouseX += offsetX;
+        mouseY += offsetY;
         GuiUtils.drawHoveringText(Preconditions.checkNotNull(stack), tooltip, mouseX, mouseY, mc.getFramebufferWidth(), mc.getHeight(), width, RenderHelper.getMCFontrenderer());
     }
 

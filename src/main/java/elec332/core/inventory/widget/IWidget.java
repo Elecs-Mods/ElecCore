@@ -1,6 +1,7 @@
 package elec332.core.inventory.widget;
 
 import elec332.core.inventory.tooltip.ToolTip;
+import elec332.core.inventory.window.IGuiEventListener;
 import elec332.core.inventory.window.IWidgetContainer;
 import elec332.core.inventory.window.Window;
 import net.minecraft.entity.player.PlayerEntity;
@@ -15,7 +16,7 @@ import java.util.List;
 /**
  * Created by Elec332 on 28-11-2016.
  */
-public interface IWidget {
+public interface IWidget extends IGuiEventListener {
 
     public IWidget setContainer(IWidgetContainer container);
 
@@ -29,17 +30,43 @@ public interface IWidget {
 
     public void readNBTChangesFromPacket(CompoundNBT tagCompound, LogicalSide receiver);
 
+    @OnlyIn(Dist.CLIENT)
     public boolean isMouseOver(double mouseX, double mouseY);
 
+    @Override
+    @OnlyIn(Dist.CLIENT)
+    public void mouseMoved(double mouseX, double mouseY);
+
+    @Override
+    @OnlyIn(Dist.CLIENT)
     public boolean mouseClicked(double mouseX, double mouseY, int button);
 
-    public boolean keyTyped(char typedChar, int keyCode);
+    @Override
+    @OnlyIn(Dist.CLIENT)
+    public boolean mouseReleased(double mouseX, double mouseY, int mouseButton);
+
+    @Override
+    @OnlyIn(Dist.CLIENT)
+    public boolean mouseDragged(double mouseX, double mouseY, int mouseButton, double dragX, double dragY);
+
+    @Override
+    @OnlyIn(Dist.CLIENT)
+    public boolean mouseScrolled(double wheel, double translatedMouseX, double translatedMouseY);
+
+    @Override
+    @OnlyIn(Dist.CLIENT)
+    public boolean keyPressed(int key, int scanCode, int modifiers);
+
+    @Override
+    @OnlyIn(Dist.CLIENT)
+    public boolean keyReleased(int keyCode, int scanCode, int modifiers);
+
+    @Override
+    @OnlyIn(Dist.CLIENT)
+    public boolean charTyped(char typedChar, int keyCode);
 
     @OnlyIn(Dist.CLIENT)
-    public boolean handleMouseWheel(double wheel, double translatedMouseX, double translatedMouseY);
-
-    @OnlyIn(Dist.CLIENT)
-    public void draw(Window window, int guiX, int guiY, double mouseX, double mouseY);
+    public void draw(Window window, int guiX, int guiY, double mouseX, double mouseY, float partialTicks);
 
     public boolean isHidden();
 

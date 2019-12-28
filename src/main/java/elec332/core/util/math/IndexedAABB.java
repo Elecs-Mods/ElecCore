@@ -1,4 +1,4 @@
-package elec332.core.util;
+package elec332.core.util.math;
 
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;

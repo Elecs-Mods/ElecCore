@@ -48,7 +48,7 @@ public class WidgetText extends Widget {
 
     @Override
     @OnlyIn(Dist.CLIENT)
-    public void draw(Window window, int guiX, int guiY, double mouseX, double mouseY) {
+    public void draw(Window window, int guiX, int guiY, double mouseX, double mouseY, float partialTicks) {
         GlStateManager.pushMatrix();
         GlStateManager.translatef(guiX, guiY, 0);
         FontRenderer font = RenderHelper.getMCFontrenderer();

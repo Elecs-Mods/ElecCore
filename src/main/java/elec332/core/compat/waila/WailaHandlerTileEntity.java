@@ -2,7 +2,7 @@ package elec332.core.compat.waila;
 
 import elec332.core.api.info.IInfoDataAccessorBlock;
 import elec332.core.handler.InformationHandler;
-import elec332.core.util.RayTraceHelper;
+import elec332.core.util.math.RayTraceHelper;
 import elec332.core.world.WorldHelper;
 import mcp.mobius.waila.api.IComponentProvider;
 import mcp.mobius.waila.api.IDataAccessor;

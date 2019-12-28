@@ -1,5 +1,6 @@
-package elec332.core.util;
+package elec332.core.util.math;
 
+import elec332.core.util.ObjectReference;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.Vec3d;
@@ -8,6 +9,7 @@ import net.minecraft.util.math.shapes.VoxelShapes;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -32,7 +34,11 @@ public class HitboxHelper {
     }
 
     public static VoxelShape combineShapes(Stream<VoxelShape> shapes) {
-        return shapes.reduce(VoxelShapes.empty(), VoxelShapes::or);
+        VoxelShape ret = shapes.map(HitboxHelper::unwrap).reduce(VoxelShapes.empty(), VoxelShapes::or);
+        if (shapes.noneMatch(s -> s instanceof CustomRayTraceVoxelShape)) {
+            return ret;
+        }
+        return new CombinedIndexedVoxelShape(ret, shapes.collect(Collectors.toList()));
     }
 
     public static VoxelShape rotateFromDown(VoxelShape shape, final Direction facing) {
@@ -57,6 +63,10 @@ public class HitboxHelper {
             default:
                 return aabb;
         }
+    }
+
+    private static VoxelShape unwrap(VoxelShape shape) {
+        return shape instanceof CustomRayTraceVoxelShape ? ((CustomRayTraceVoxelShape) shape).shape : shape;
     }
 
 }

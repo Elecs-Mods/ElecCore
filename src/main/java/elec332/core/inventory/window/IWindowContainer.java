@@ -30,7 +30,13 @@ public interface IWindowContainer {
     public List<IWindowListener> getListeners();
 
     @OnlyIn(Dist.CLIENT)
-    public void handleMouseClickDefault(WidgetSlot slotIn, int slotId, int mouseButton, @Nonnull ClickType type);
+    public void handleSlotClickDefault(WidgetSlot slotIn, int slotId, int mouseButton, @Nonnull ClickType type);
+
+    @OnlyIn(Dist.CLIENT)
+    public boolean mouseDraggedDefault(double mouseX, double mouseY, int mouseButton, double dragX, double dragY);
+
+    @OnlyIn(Dist.CLIENT)
+    public boolean mouseReleasedDefault(double mouseX, double mouseY, int mouseButton);
 
     public boolean mergeItemStackDefault(ItemStack stack, int startIndex, int endIndex, boolean reverseDirection);
 

@@ -33,7 +33,7 @@ import java.util.*;
 /**
  * Created by Elec332 on 28-11-2016.
  */
-public class Window implements IWidgetContainer {
+public class Window implements IWidgetContainer, IGuiEventListener {
 
     public Window() {
         this(-1, -1);
@@ -63,10 +63,18 @@ public class Window implements IWidgetContainer {
             }
         }
         initWindow();
+        if (getPlayer().world.isRemote) {
+            initClient();
+        }
         hasInit = true;
     }
 
     protected void initWindow() {
+
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    protected void initClient() {
 
     }
 
@@ -340,12 +348,19 @@ public class Window implements IWidgetContainer {
     }
 
     @OnlyIn(Dist.CLIENT)
-    protected void handleMouseClick(@Nullable WidgetSlot slotIn, int slotId, int mouseButton, @Nonnull ClickType type) {
-        windowContainer.handleMouseClickDefault(slotIn, slotId, mouseButton, type);
+    protected void handleSlotClick(@Nullable WidgetSlot slotIn, int slotId, int mouseButton, @Nonnull ClickType type) {
+        windowContainer.handleSlotClickDefault(slotIn, slotId, mouseButton, type);
     }
 
+    @Override
     @OnlyIn(Dist.CLIENT)
-    protected boolean mouseClicked(double mouseX, double mouseY, int button) {
+    public void mouseMoved(double mouseX, double mouseY) {
+        getWidgets().stream().filter(w -> !w.isHidden()).forEach(w -> w.mouseMoved(translatedMouseX(mouseX), translatedMouseY(mouseY)));
+    }
+
+    @Override
+    @OnlyIn(Dist.CLIENT)
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
         for (IWidget widget : getWidgets()) {
             if (!widget.isHidden() && widget.isMouseOver(translatedMouseX(mouseX), translatedMouseY(mouseY)) && widget.mouseClicked(translatedMouseX(mouseX), translatedMouseY(mouseY), button)) {
                 return true;
@@ -354,23 +369,66 @@ public class Window implements IWidgetContainer {
         return false;
     }
 
-    public void mouseMoved(double mouseX, double mouseY) {
+    @Override
+    @OnlyIn(Dist.CLIENT)
+    public boolean mouseReleased(double mouseX, double mouseY, int mouseButton) {
+        for (IWidget widget : getWidgets()) {
+            if (!widget.isHidden() && widget.mouseReleased(translatedMouseX(mouseX), translatedMouseY(mouseY), mouseButton)) {
+                return true;
+            }
+        }
+        return windowContainer.mouseReleasedDefault(mouseX, mouseY, mouseButton);
     }
 
+    @Override
     @OnlyIn(Dist.CLIENT)
-    protected boolean keyTyped(char typedChar, int keyCode) {
+    public boolean mouseDragged(double mouseX, double mouseY, int mouseButton, double dragX, double dragY) {
         for (IWidget widget : getWidgets()) {
-            if (!widget.isHidden() && widget.keyTyped(typedChar, keyCode)) {
+            if (!widget.isHidden() && widget.mouseDragged(translatedMouseX(mouseX), translatedMouseY(mouseY), mouseButton, dragX, dragY)) {
+                return true;
+            }
+        }
+        return windowContainer.mouseDraggedDefault(mouseX, mouseY, mouseButton, dragX, dragY);
+    }
+
+    @Override
+    @OnlyIn(Dist.CLIENT)
+    public boolean mouseScrolled(double wheel, double translatedMouseX, double translatedMouseY) {
+        for (IWidget widget : widgets) {
+            if (widget.mouseScrolled(wheel, translatedMouseX, translatedMouseY)) {
                 return true;
             }
         }
         return false;
     }
 
+    @Override
     @OnlyIn(Dist.CLIENT)
-    protected boolean handleMouseWheel(double wheel, double translatedMouseX, double translatedMouseY) {
+    public boolean keyPressed(int key, int scanCode, int modifiers) {
         for (IWidget widget : widgets) {
-            if (widget.handleMouseWheel(wheel, translatedMouseX, translatedMouseY)) {
+            if (widget.keyPressed(key, scanCode, modifiers)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    @OnlyIn(Dist.CLIENT)
+    public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
+        for (IWidget widget : widgets) {
+            if (widget.keyReleased(keyCode, scanCode, modifiers)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    @OnlyIn(Dist.CLIENT)
+    public boolean charTyped(char typedChar, int keyCode) {
+        for (IWidget widget : getWidgets()) {
+            if (!widget.isHidden() && widget.charTyped(typedChar, keyCode)) {
                 return true;
             }
         }
@@ -417,6 +475,14 @@ public class Window implements IWidgetContainer {
     @OnlyIn(Dist.CLIENT)
     protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
         GlStateManager.pushMatrix();
+        drawBackground();
+        int k = (width - xSize) / 2;
+        int l = (height - ySize) / 2;
+        drawWidgets(k, l, mouseX, mouseY, partialTicks);
+        GlStateManager.popMatrix();
+    }
+
+    protected void drawBackground() {
         int k = (width - xSize) / 2;
         int l = (height - ySize) / 2;
         GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
@@ -441,16 +507,14 @@ public class Window implements IWidgetContainer {
                 }
             }
         }
-        drawWidgets(k, l, mouseX, mouseY);
-        GlStateManager.popMatrix();
     }
 
-    protected void drawWidgets(int k, int l, int mouseX, int mouseY) {
+    protected void drawWidgets(int k, int l, int mouseX, int mouseY, float partialTicks) {
         GlStateManager.pushMatrix();
         GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
         for (IWidget widget : getWidgets()) {
             if (!widget.isHidden()) {
-                widget.draw(this, k, l, translatedMouseX(mouseX), translatedMouseY(mouseY));
+                widget.draw(this, k, l, translatedMouseX(mouseX), translatedMouseY(mouseY), partialTicks);
             }
         }
         GlStateManager.popMatrix();
