@@ -17,7 +17,7 @@ public @interface Configurable {
     /**
      * @return The config category of this field
      */
-    String category() default IConfigWrapper.CATEGORY_GENERAL;
+    String category() default "";
 
     /**
      * @return The comment on this configurable value

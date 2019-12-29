@@ -11,7 +11,7 @@ import java.util.List;
 
 /**
  * Created by Elec332 on 28-12-2019
- *
+ * <p>
  * Originally created by Amadornes
  */
 public class CombinedIndexedVoxelShape extends CustomRayTraceVoxelShape {

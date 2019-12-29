@@ -64,6 +64,7 @@ public class ElecCoreLoader {
         featureHook.setRegistryName(new ResourceLocation("eleccoreloader", "featurehook"));
         RegistryHelper.getFeatures().register(featureHook);
         RegistryHelper.getBiomeRegistry().forEach(biome -> biome.addFeature(GenerationStage.Decoration.values()[GenerationStage.Decoration.values().length - 1], new ConfiguredFeature<>(featureHook, NoFeatureConfig.NO_FEATURE_CONFIG)));
+        lastStage = ModLoadingStage.LOAD_REGISTRIES;
     }
 
     private void preInit(FMLCommonSetupEvent event) {

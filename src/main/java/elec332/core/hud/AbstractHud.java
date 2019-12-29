@@ -2,7 +2,6 @@ package elec332.core.hud;
 
 import com.google.common.base.Strings;
 import elec332.core.ElecCore;
-import elec332.core.api.config.IConfigWrapper;
 import elec332.core.api.config.IConfigurableElement;
 import elec332.core.client.RenderHelper;
 import elec332.core.hud.position.Alignment;
@@ -30,7 +29,7 @@ public abstract class AbstractHud implements IConfigurableElement {
         this.alignment = alignment;
         this.horiz = horizontal;
         this.ver = vertical;
-        this.category = IConfigWrapper.CATEGORY_CLIENT;
+        this.category = "";//IConfigWrapper.CATEGORY_CLIENT;
     }
 
     public AbstractHud setConfigCategory(String s) {

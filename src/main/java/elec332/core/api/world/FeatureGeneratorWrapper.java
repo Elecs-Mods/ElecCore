@@ -49,12 +49,15 @@ public class FeatureGeneratorWrapper implements IAdvancedChunkPopulator, IConfig
     }
 
     @Override
-    public void reconfigure(@Nonnull ForgeConfigSpec.Builder config) {
-        if (this.generator instanceof IConfigurableElement) {
-            ((IConfigurableElement) this.generator).reconfigure(config);
-        }
-        //category = "generationKey"
+    public void registerProperties(@Nonnull ForgeConfigSpec.Builder config) {
+        config.push(name);
         this.genkey = config.comment("When this key differs from the key stored in the chunk data, the chunk will be retrogenned.").define(getName(), INITIAL)::get;
+
+        if (this.generator instanceof IConfigurableElement) {
+            ((IConfigurableElement) this.generator).registerProperties(config);
+        }
+
+        config.pop();
     }
 
 }

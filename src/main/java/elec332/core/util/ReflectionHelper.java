@@ -3,6 +3,7 @@ package elec332.core.util;
 import com.google.common.collect.Lists;
 import joptsimple.internal.Strings;
 
+import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Field;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
@@ -170,7 +171,35 @@ public class ReflectionHelper {
                 lastE = e;
             }
         }
-        throw new RuntimeException("Failed to find fields: " + Strings.join(methodNames, ","), lastE);
+        throw new RuntimeException("Failed to find methods: " + Strings.join(methodNames, ","), lastE);
+    }
+
+    public static Object dismantledInvoke(MethodHandle func, Object o, Object[] objects) throws Throwable {
+        Object[] all = new Object[objects.length + 1];
+        all[0] = o;
+        System.arraycopy(objects, 0, all, 1, objects.length);
+        return dismantledInvoke(func, all);
+    }
+
+    public static Object dismantledInvoke(MethodHandle func, Object[] objects) throws Throwable {
+        switch (objects.length) {
+            case 0:
+                return func.invoke();
+            case 1:
+                return func.invoke(objects[0]);
+            case 2:
+                return func.invoke(objects[0], objects[1]);
+            case 3:
+                return func.invoke(objects[0], objects[1], objects[2]);
+            case 4:
+                return func.invoke(objects[0], objects[1], objects[2], objects[3]);
+            case 5:
+                return func.invoke(objects[0], objects[1], objects[2], objects[3], objects[4]);
+            case 6:
+                return func.invoke(objects[0], objects[1], objects[2], objects[3], objects[4], objects[5]);
+            default:
+                throw new UnsupportedOperationException();
+        }
     }
 
 }

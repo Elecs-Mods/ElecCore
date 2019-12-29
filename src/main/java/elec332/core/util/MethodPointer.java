@@ -11,6 +11,10 @@ import java.lang.reflect.Method;
  */
 public class MethodPointer<P, R> implements IMemberPointer<Method, P, R> {
 
+    public MethodPointer(Class<P> parent, String name, Class... parameters) {
+        this(parent, parameters, name);
+    }
+
     public MethodPointer(Class<P> parent, Class[] parameters, String... names) {
         this(ReflectionHelper.findMethod(parent, parameters, names));
     }
@@ -58,7 +62,7 @@ public class MethodPointer<P, R> implements IMemberPointer<Method, P, R> {
     @SuppressWarnings("unchecked")
     public R invoke(P parent, Object... params) {
         try {
-            return (R) handle.invoke(parent);
+            return (R) ReflectionHelper.dismantledInvoke(handle, parent, params);
         } catch (Throwable e) {
             throw new RuntimeException(e);
         }

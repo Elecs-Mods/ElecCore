@@ -10,8 +10,7 @@ import java.util.Set;
  */
 public interface IConfigWrapper {
 
-    public static final String CATEGORY_GENERAL = "general";
-    public static final String CATEGORY_CLIENT = "client";
+    public static final String TOML_EXTENSION = ".toml";
 
     /**
      * Registers a class or object to this {@link IConfigWrapper},
@@ -53,7 +52,7 @@ public interface IConfigWrapper {
      * @return The instance of this {@link IConfigWrapper}, so this can be chained.
      */
     @Nonnull
-    public IConfigWrapper setCategoryData(String category, String description);
+    public IConfigWrapper setCategoryDescription(String category, String description);
 
     public void register();
 
@@ -63,11 +62,6 @@ public interface IConfigWrapper {
      * @return Whether this {@link IConfigWrapper} has already been loaded from/saved to disk
      */
     public boolean hasBeenLoaded();
-
-    /**
-     * Refreshes the config values
-     */
-    public void load();
 
     /**
      * Used for checking all registered configuration categories

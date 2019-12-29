@@ -33,7 +33,7 @@ public class GuiDraw {
     }
 
     public static void drawScaledCustomSizeModalRect(int x, int y, int u, int v, int uWidth, int vHeight, int width, int height, int tileWidth, int tileHeight) {
-        Screen.blit(x, y, u, v, uWidth, vHeight, width, height, tileWidth, tileHeight);
+        Screen.blit(x, y, width, height, u, v, uWidth, vHeight, tileWidth, tileHeight);
         //Gui.drawScaledCustomSizeModalRect(x, y, u, v, uWidth, vHeight, width, height, tileWidth, tileHeight);
     }
 

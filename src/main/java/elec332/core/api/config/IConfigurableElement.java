@@ -11,6 +11,15 @@ import javax.annotation.Nonnull;
  */
 public interface IConfigurableElement {
 
-    public void reconfigure(@Nonnull ForgeConfigSpec.Builder config);
+    public void registerProperties(@Nonnull ForgeConfigSpec.Builder config);
+
+    /**
+     * Gets called when the config file is initially loaded
+     * and when the config values have changed.
+     * <p>
+     * Use this to reload e.g. fields with the values from the defined properties
+     */
+    public default void load() {
+    }
 
 }
