@@ -5,6 +5,8 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import elec332.core.ElecCore;
 import elec332.core.api.APIHandlerInject;
+import elec332.core.api.config.Configurable;
+import elec332.core.api.config.IConfigElementSerializer;
 import elec332.core.api.discovery.IAnnotationData;
 import elec332.core.api.mod.IElecCoreMod;
 import elec332.core.api.mod.IElecCoreModHandler;
@@ -20,6 +22,7 @@ import elec332.core.config.AbstractConfigWrapper;
 import elec332.core.data.SaveHandler;
 import elec332.core.module.DefaultModuleInfo;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -27,7 +30,9 @@ import net.minecraftforge.fml.ModContainer;
 import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
 import net.minecraftforge.fml.javafmlmod.FMLModContainer;
 
+import javax.annotation.Nullable;
 import java.lang.reflect.AnnotatedParameterizedType;
+import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Arrays;
@@ -152,27 +157,46 @@ public class ElecCoreSetup {
             return null;
         });
         AbstractConfigWrapper.registerConfigElementSerializer((type, instance, field, data, config, defaultValue, comment) -> {
-            if (field.getType().isAssignableFrom(String.class)) {
+            if (type.isAssignableFrom(String.class) || (type.isArray() && type.getComponentType().isAssignableFrom(String.class))) {
                 if (!Strings.isNullOrEmpty(comment)) {
                     config.comment(comment);
                 }
                 if (data.validStrings().length > 0) {
                     final List validVals = ImmutableList.copyOf(data.validStrings()); //No List<String>, because compiler warnings...
-                    return config.define(field.getName(), (String) defaultValue, validVals::contains);
+                    if (type.isArray()) {
+                        return config.defineList(field.getName(), Arrays.asList((String[]) defaultValue), validVals::contains);
+                    } else {
+                        return config.define(field.getName(), (String) defaultValue, validVals::contains);
+                    }
                 } else {
-                    return config.define(field.getName(), (String) defaultValue);
+                    if (type.isArray()) {
+                        return config.defineList(field.getName(), Arrays.asList((String[]) defaultValue), v -> true);
+                    } else {
+                        return config.define(field.getName(), (String) defaultValue);
+                    }
                 }
             }
             return null;
         });
-        AbstractConfigWrapper.registerConfigElementSerializer((type, instance, field, data, config, defaultValue, comment) -> {
-            if (field.getType().isAssignableFrom(Float.TYPE)) {
-                if (!Strings.isNullOrEmpty(comment)) {
-                    config.comment(comment);
+        AbstractConfigWrapper.registerConfigElementSerializer(new IConfigElementSerializer() {
+
+            @Nullable
+            @Override
+            public ForgeConfigSpec.ConfigValue makeConfigEntry(Class<?> type, Object instance, Field field, Configurable data, ForgeConfigSpec.Builder config, Object defaultValue, String comment) {
+                if (field.getType().isAssignableFrom(Float.TYPE)) {
+                    if (!Strings.isNullOrEmpty(comment)) {
+                        config.comment(comment);
+                    }
+                    return config.defineInRange(field.getName(), (float) defaultValue, data.minValue(), data.maxValue());
                 }
-                return config.defineInRange(field.getName(), (float) defaultValue, data.minValue(), data.maxValue());
+                return null;
             }
-            return null;
+
+            @Override
+            public Object getFieldValue(Field field, ForgeConfigSpec.ConfigValue configValue) {
+                return ((Double) configValue.get()).floatValue();
+            }
+
         });
     }
 

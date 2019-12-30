@@ -3,7 +3,6 @@ package elec332.core.config;
 import com.electronwill.nightconfig.core.CommentedConfig;
 import com.electronwill.nightconfig.core.file.CommentedFileConfig;
 import com.google.common.base.Preconditions;
-import elec332.core.loader.ElecCoreLoader;
 import elec332.core.util.ConstructorPointer;
 import elec332.core.util.FMLHelper;
 import elec332.core.util.MethodPointer;
@@ -66,7 +65,14 @@ public class ConfigWrapper extends AbstractConfigWrapper {
         logger.info("Registered config: " + fileName);
         if (FMLHelper.hasFMLModContainer(mod)) {
             FMLModContainer mc = FMLHelper.getFMLModContainer(mod);
-            mc.getEventBus().addListener((Consumer<? extends ModConfig.Loading>) cfgLoad -> logger.info("Loading config: " + fileName));
+            mc.getEventBus().addListener((Consumer<? extends ModConfig.Loading>) cfgLoad -> {
+                logger.info("Loading config: " + fileName);
+                runLoadTasks();
+            });
+            mc.getEventBus().addListener((Consumer<? extends ModConfig.ConfigReloading>) cfgLoad -> {
+                logger.info("Reloading config: " + fileName);
+                runLoadTasks();
+            });
         }
         if (FMLHelper.hasReachedState(ModLoadingStage.COMMON_SETUP)) {
             final CommentedFileConfig configData = config.getHandler()
@@ -80,9 +86,6 @@ public class ConfigWrapper extends AbstractConfigWrapper {
             setConfig.accept(config, configData);
             sendLoadingEvent.accept(mod, config);
             config.save();
-        } else {
-            System.out.println("Nope");
-            System.out.println(ElecCoreLoader.getLastStage());
         }
     }
 

@@ -70,7 +70,7 @@ public abstract class AbstractConfigWrapper implements IConfigWrapper {
             o = null;
         }
         final Object fInst = o;
-        String classCategory = "";
+        String classCategory = CATEGORY_GENERAL;
         String comment = "";
         if (objClass.isAnnotationPresent(Configurable.Class.class)) {
             Configurable.Class configClass = (Configurable.Class) objClass.getAnnotation(Configurable.Class.class);
@@ -112,7 +112,7 @@ public abstract class AbstractConfigWrapper implements IConfigWrapper {
                     for (IConfigElementSerializer serializer : serializers) {
                         ForgeConfigSpec.ConfigValue cv = serializer.makeConfigEntry(field.getType(), o, field, configurable, configuration, oldValue, configurable.comment());
                         if (cv != null) {
-                            loadTasks.add(FuncHelper.safeRunnable(() -> field.set(fInst, cv.get())));
+                            loadTasks.add(FuncHelper.safeRunnable(() -> field.set(fInst, serializer.getFieldValue(field, cv))));
                             configuration.pop(configuration.depth - i);
                             serialized = true;
                             break;
@@ -203,7 +203,7 @@ public abstract class AbstractConfigWrapper implements IConfigWrapper {
     @Override
     public void registerConfigWithInnerClasses(Object obj) {
         registerConfig(obj);
-        for (Class<?> clazz : Lists.reverse(Lists.newArrayList(obj.getClass().getDeclaredClasses()))) {
+        for (Class<?> clazz : Lists.reverse(Lists.newArrayList(((Class) (obj instanceof Class ? obj : obj.getClass())).getDeclaredClasses()))) {
             if (!clazz.isInterface()) {
                 try {
                     registerConfigWithInnerClasses(clazz.getConstructor().newInstance());

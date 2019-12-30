@@ -10,6 +10,7 @@ import java.util.Set;
  */
 public interface IConfigWrapper {
 
+    public static final String CATEGORY_GENERAL = "general";
     public static final String TOML_EXTENSION = ".toml";
 
     /**
