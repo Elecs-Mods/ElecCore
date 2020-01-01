@@ -30,12 +30,12 @@ public class PlayerHelper {
     }
 
     /**
-     * Gets the player's corrected head vector
+     * Gets the player's corrected eye position
      *
      * @param player The player
-     * @return The corrected head vector
+     * @return The corrected eye position
      */
-    public static Vec3d getCorrectedHeadVec(PlayerEntity player) {
+    public static Vec3d getCorrectedEyePosition(PlayerEntity player) {
         double yCoord = player.posY;
         if (player.getEntityWorld().isRemote) {
             yCoord += player.getEyeHeight();// - player.getDefaultEyeHeight();

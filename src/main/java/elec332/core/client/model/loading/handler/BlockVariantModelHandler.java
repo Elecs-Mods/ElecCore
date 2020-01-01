@@ -11,6 +11,7 @@ import elec332.core.api.client.model.loading.ModelHandler;
 import elec332.core.client.model.loading.INoBlockStateJsonBlock;
 import elec332.core.client.model.loading.INoJsonBlock;
 import elec332.core.loader.client.RenderingRegistry;
+import elec332.core.util.ObjectReference;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
@@ -25,10 +26,12 @@ import net.minecraft.resources.IResourceManager;
 import net.minecraft.state.IProperty;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.client.event.ModelBakeEvent;
 import net.minecraftforge.client.model.*;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.model.IModelState;
 import net.minecraftforge.common.model.TRSRTransformation;
+import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.registries.ForgeRegistryEntry;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -54,7 +57,12 @@ public class BlockVariantModelHandler implements IModelHandler {
         this.models = Maps.newHashMap();
         ModelLoaderRegistry.registerLoader(new InternalModelLoader());
         MinecraftForge.EVENT_BUS.register(this);
+        ObjectReference<Object> ref = new ObjectReference<>();
+        MinecraftForge.EVENT_BUS.addListener(EventPriority.HIGHEST, true, ModelBakeEvent.class, evt -> ref.set(new Object()));
         RenderingRegistry.instance().registerLoader(iconRegistrar -> {
+            if (ref.get() == null) {
+                return;
+            }
             if (models.isEmpty()) {
                 blockResourceLocations.keySet().forEach(mrl -> {
                     IUnbakedModel model_;
@@ -361,7 +369,7 @@ public class BlockVariantModelHandler implements IModelHandler {
         return data;
     }
 
-    private class TextureOverride implements Function<ResourceLocation, TextureAtlasSprite> {
+    private static class TextureOverride implements Function<ResourceLocation, TextureAtlasSprite> {
 
         private TextureOverride(Map<ResourceLocation, ResourceLocation> data, Function<ResourceLocation, TextureAtlasSprite> defaultFunc) {
             this.data = data;
@@ -380,7 +388,7 @@ public class BlockVariantModelHandler implements IModelHandler {
 
     }
 
-    private class TextureOverrideData implements Serializable {
+    private static class TextureOverrideData implements Serializable {
 
         @SuppressWarnings("all")
         private Map<String, Map<String, String>> textureOverrides;

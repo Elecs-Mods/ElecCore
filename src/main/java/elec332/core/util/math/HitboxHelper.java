@@ -1,5 +1,6 @@
 package elec332.core.util.math;
 
+import com.google.common.collect.ImmutableList;
 import elec332.core.util.ObjectReference;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -29,16 +30,16 @@ public class HitboxHelper {
         return combineShapes(Arrays.stream(shapes));
     }
 
-    public static VoxelShape combineShapes(Collection<VoxelShape> shapes) {
-        return combineShapes(shapes.stream());
+    public static VoxelShape combineShapes(Stream<VoxelShape> shapes) {
+        return combineShapes(shapes.collect(Collectors.toList()));
     }
 
-    public static VoxelShape combineShapes(Stream<VoxelShape> shapes) {
-        VoxelShape ret = shapes.map(HitboxHelper::unwrap).reduce(VoxelShapes.empty(), VoxelShapes::or);
-        if (shapes.noneMatch(s -> s instanceof CustomRayTraceVoxelShape)) {
+    public static VoxelShape combineShapes(Collection<VoxelShape> shapes) {
+        VoxelShape ret = shapes.stream().map(HitboxHelper::unwrap).reduce(VoxelShapes.empty(), VoxelShapes::or);
+        if (shapes.stream().noneMatch(s -> s instanceof CustomRayTraceVoxelShape)) {
             return ret;
         }
-        return new CombinedIndexedVoxelShape(ret, shapes.collect(Collectors.toList()));
+        return new CombinedIndexedVoxelShape(ret, ImmutableList.copyOf(shapes));
     }
 
     public static VoxelShape rotateFromDown(VoxelShape shape, final Direction facing) {

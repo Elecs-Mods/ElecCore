@@ -1,6 +1,7 @@
 package elec332.core.world;
 
 import elec332.core.ElecCore;
+import elec332.core.client.ClientHelper;
 import elec332.core.util.FMLHelper;
 import elec332.core.util.ItemStackHelper;
 import elec332.core.util.PlayerHelper;
@@ -243,12 +244,26 @@ public class WorldHelper {
     }
 
     /**
+     * Makes sure all blocks in the specified range are re-rendered
+     *
+     * @param world The world the blocks are in
+     * @param from  The starting position
+     * @param to    The end position
+     */
+    public static void markBlockRangeForRenderUpdate(World world, BlockPos from, BlockPos to) {
+        if (world.isRemote) {
+            ClientHelper.getMinecraft().worldRenderer.markBlockRangeForRenderUpdate(from.getX(), from.getY(), from.getZ(), to.getX(), to.getY(), to.getZ());
+        }
+    }
+
+    /**
      * Checks whether the chunk in which the provided coordinate is located is loaded
      *
      * @param world The world in which the position is located
      * @param pos   The position to be checked
      * @return Whether the chunk in which the provided coordinate is located is loaded
      */
+    @SuppressWarnings("all")
     public static boolean chunkLoaded(IWorld world, BlockPos pos) {
         ChunkPos cp = chunkPosFromBlockPos(pos);
         AbstractChunkProvider chunkProvider = world.getChunkProvider();
@@ -275,6 +290,7 @@ public class WorldHelper {
      * @param world The world in which the position is located
      * @param pos   The position
      */
+    @SuppressWarnings("all")
     public static void markBlockForRenderUpdate(World world, BlockPos pos) {
         if (world.isRemote) {
             world.notifyBlockUpdate(pos, null, null, PLACEBLOCK_RENDERMAIN);
@@ -295,7 +311,7 @@ public class WorldHelper {
         worldObj.createExplosion(null, xCoord, yCoord, zCoord, force * 4, Explosion.Mode.DESTROY);
     }
 
-    /**
+    /*
      * Requests a {@link //ForgeChunkManager.Ticket} for the specified location
      *
      * @param //world       The world in which the position is located
@@ -309,16 +325,16 @@ public class WorldHelper {
      * NBTBuilder.from(ticket.getModData()).setBlockPos(loc);
      * }
      * return ticket;
-     * }
-     * <p>
-     * /**
+     * }*/
+
+    /**
      * Gets the position of the chunk in which the provided position is located
      */
     public static ChunkPos chunkPosFromBlockPos(BlockPos loc) {
         return new ChunkPos(loc.getX() >> 4, loc.getZ() >> 4);
     }
 
-    /**
+    /*
      * Forces a chunk to stay loaded using the provided {@link ForgeChunkManager.Ticket}
      * The chunk in which the provided position is located will be loaded.
      * The position is a {@link BlockPos} serialized as a long in the Ticket's moddata,
@@ -356,6 +372,7 @@ public class WorldHelper {
      * @param blockLoc The position at which to drop the item(s)
      * @param stack    The {@link ItemStack} to be dropped
      */
+    @SuppressWarnings("UnusedReturnValue")
     public static boolean dropStack(World world, BlockPos blockLoc, ItemStack stack) {
         return dropStack(world, blockLoc.getX(), blockLoc.getY(), blockLoc.getZ(), stack);
     }

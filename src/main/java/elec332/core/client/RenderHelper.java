@@ -134,6 +134,13 @@ public class RenderHelper {
     }
 
     public static void drawSelectionBox(Entity player, World world, BlockPos pos, VoxelShape shapeOverride, float partialTicks) {
+        double d0 = player.lastTickPosX + (player.posX - player.lastTickPosX) * (double) partialTicks;
+        double d1 = player.lastTickPosY + (player.posY - player.lastTickPosY) * (double) partialTicks;
+        double d2 = player.lastTickPosZ + (player.posZ - player.lastTickPosZ) * (double) partialTicks;
+        drawSelectionBox(world, pos, shapeOverride, new Vec3d(d0, d1, d2));
+    }
+
+    public static void drawSelectionBox(World world, BlockPos pos, VoxelShape shapeOverride, Vec3d projectedView) {
         if (world.getWorldBorder().contains(pos)) {
             GlStateManager.enableBlend();
             GlStateManager.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
@@ -143,9 +150,9 @@ public class RenderHelper {
             GlStateManager.matrixMode(5889);
             GlStateManager.pushMatrix();
             GlStateManager.scalef(1.0F, 1.0F, 0.999F);
-            double d0 = player.lastTickPosX + (player.posX - player.lastTickPosX) * (double) partialTicks;
-            double d1 = player.lastTickPosY + (player.posY - player.lastTickPosY) * (double) partialTicks;
-            double d2 = player.lastTickPosZ + (player.posZ - player.lastTickPosZ) * (double) partialTicks;
+            double d0 = projectedView.x;
+            double d1 = projectedView.y;
+            double d2 = projectedView.z;
             WorldRenderer.drawShape(shapeOverride, (double) pos.getX() - d0, (double) pos.getY() - d1, (double) pos.getZ() - d2, 0.0F, 0.0F, 0.0F, 0.4F);
             GlStateManager.popMatrix();
             GlStateManager.matrixMode(5888);

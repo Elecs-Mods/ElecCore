@@ -92,6 +92,11 @@ public abstract class CustomRayTraceVoxelShape extends SplitVoxelShape {
     }
 
     @Override
+    public boolean contains(double x, double y, double z) {
+        return shape.contains(x, y, z);
+    }
+
+    @Override
     @Nullable
     public abstract BlockRayTraceResult rayTrace(@Nonnull Vec3d start, @Nonnull Vec3d end, @Nonnull BlockPos pos);
 

@@ -4,10 +4,7 @@ import com.google.common.collect.Lists;
 import joptsimple.internal.Strings;
 
 import java.lang.invoke.MethodHandle;
-import java.lang.reflect.Field;
-import java.lang.reflect.Member;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
+import java.lang.reflect.*;
 import java.util.List;
 
 /**
@@ -136,12 +133,12 @@ public class ReflectionHelper {
     }
 
     /**
-     * Makes a field accessible
+     * Makes a AccessibleObject accessible
      *
-     * @param field The field
-     * @return The same field, but accessible
+     * @param field The object
+     * @return The same object, but accessible
      */
-    public static Field makeFieldAccessible(Field field) {
+    public static <T extends AccessibleObject> T makeObjectAccessible(T field) {
         field.setAccessible(true);
         return field;
     }

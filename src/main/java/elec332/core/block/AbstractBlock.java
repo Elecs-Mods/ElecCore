@@ -16,7 +16,6 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.world.IBlockReader;
@@ -25,7 +24,6 @@ import net.minecraft.world.storage.loot.LootContext;
 import net.minecraft.world.storage.loot.LootParameters;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.List;
 
 /**
@@ -107,13 +105,6 @@ public abstract class AbstractBlock extends Block implements IAbstractBlock {
         return BlockMethods.removedByPlayer(state, world, pos, player, willHarvest, fluid, this);
     }
 
-    @Nullable
-    @Override //Old collisionRayTrace
-    @Deprecated
-    public RayTraceResult getRayTraceResult(BlockState state, World world, BlockPos pos, Vec3d start, Vec3d end, RayTraceResult original) {
-        return BlockMethods.collisionRayTrace(state, world, pos, start, end, this);
-    }
-
     @Nonnull
     @Override
     @Deprecated
@@ -131,32 +122,17 @@ public abstract class AbstractBlock extends Block implements IAbstractBlock {
         return drops;
     }
 
-    @SuppressWarnings("deprecation")
+    @SuppressWarnings("all")
     public final List<ItemStack> getOriginalDrops(BlockState state, LootContext.Builder builder) {
         return super.getDrops(state, builder);
     }
 
+    @SuppressWarnings("all")
     public final void getTileDrops(List<ItemStack> drops, World world, BlockPos pos, int fortune) {
         TileEntity tile = WorldHelper.getTileAt(world, pos);
         if (tile instanceof ITileWithDrops) {
             ((ITileWithDrops) tile).getDrops(drops, fortune);
         }
     }
-
-    /*
-    //@Override
-    @SuppressWarnings("deprecation")
-    public void addCollisionBoxToList(BlockState state, @Nonnull World world, @Nonnull BlockPos pos, @Nonnull AxisAlignedBB entityBox, @Nonnull List<AxisAlignedBB> collidingBoxes, Entity entityIn, boolean isActualState) {
-        BlockMethods.addCollisionBoxToList(state, world, pos, entityBox, collidingBoxes, entityIn, isActualState, this);
-    }
-
-    @Nonnull
-    @OnlyIn(Dist.CLIENT)
-    //@Override
-    @SuppressWarnings("deprecation")
-    public AxisAlignedBB getSelectedBoundingBox(BlockState state, @Nonnull World world, @Nonnull BlockPos pos) {
-        return BlockMethods.getSelectedBoundingBox(state, world, pos, this);
-    }
-    */
 
 }

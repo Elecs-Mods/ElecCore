@@ -37,7 +37,7 @@ public enum GridEventInputHandler {
 
 
     public void worldBlockUpdate(IWorld world, BlockPos pos, BlockState oldState, BlockState newState) {
-        if (!world.isRemote() && (newState.getBlock().hasTileEntity(newState)) || oldState.getBlock().hasTileEntity(oldState)) {
+        if (!world.isRemote()/* && (newState.getBlock().hasTileEntity(newState)) || oldState.getBlock().hasTileEntity(oldState)*/) {
             bud.add(new DimensionCoordinate(world, pos));
         }
     }

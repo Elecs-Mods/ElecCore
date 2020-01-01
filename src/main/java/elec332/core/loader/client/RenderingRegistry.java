@@ -155,6 +155,9 @@ public final class RenderingRegistry implements IElecRenderingRegistry {
 
     @SubscribeEvent(priority = EventPriority.HIGH)
     public void onTextureStitch(TextureStitchEvent event) {
+        if (!event.getMap().getBasePath().equals("textures")) {
+            return;
+        }
         IIconRegistrar iconRegistrar = new IconRegistrar(event);
         for (ITextureLoader loader : textureLoaders) {
             loader.registerTextures(iconRegistrar);

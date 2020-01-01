@@ -127,6 +127,7 @@ class WrappedServerChunkProvider extends ServerChunkProvider {
 
     @Override
     public void markBlockChanged(BlockPos p_217217_1_) {
+        GridEventInputHandler.INSTANCE.worldBlockUpdate(getWorld(), p_217217_1_, null, null);
         scp.markBlockChanged(p_217217_1_);
     }
 

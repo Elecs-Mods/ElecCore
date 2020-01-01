@@ -108,9 +108,9 @@ public class ElecCoreSetup {
                                 .filter(annotatedType -> annotatedType.getType() instanceof ParameterizedType || (annotatedType.getType() instanceof Class && IObjectRegister.class.isAssignableFrom((Class<?>) annotatedType.getType())))
                                 .map(obj -> obj instanceof AnnotatedParameterizedType ? obj : (((Class) obj.getType()).getAnnotatedInterfaces()[0]))
                                 .map(apt -> ((AnnotatedParameterizedType) apt).getAnnotatedActualTypeArguments()[0].getType())
+                                .map(pt -> pt instanceof ParameterizedType ? ((ParameterizedType) pt).getRawType() : pt)
                                 .findFirst()
                                 .get();
-                        ty = ((ParameterizedType) ty).getRawType();
                         //ty = ((ParameterizedType) ty).getActualTypeArguments()[0];
                         //if (ty instanceof ParameterizedType) { //TileEntityType also has parameters...
                         //    ty = ((ParameterizedType) ty).getRawType();

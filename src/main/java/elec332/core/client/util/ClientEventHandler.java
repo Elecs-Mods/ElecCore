@@ -33,7 +33,7 @@ public class ClientEventHandler {
             if (!state.isAir(world, pos) && state.getBlock() instanceof ISelectionBoxOverride) {
                 VoxelShape shape = ((ISelectionBoxOverride) state.getBlock()).getSelectionBox(state, world, pos, ElecCore.proxy.getClientPlayer(), event.getTarget());
                 if (shape != null) {
-                    RenderHelper.drawSelectionBox(event.getInfo().getRenderViewEntity(), world, pos, shape, event.getPartialTicks());
+                    RenderHelper.drawSelectionBox(world, pos, shape, event.getInfo().getProjectedView());
                     event.setCanceled(true);
                 }
             }

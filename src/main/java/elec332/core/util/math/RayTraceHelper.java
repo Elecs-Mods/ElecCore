@@ -49,8 +49,8 @@ public class RayTraceHelper {
         //Vec3d endPos = startPos.add(new Vec3d(entity.getLookVec().x * length, entity.getLookVec().y * length, entity.getLookVec().z * length));
 
 
-        Vec3d headVec = PlayerHelper.getCorrectedHeadVec(player);
-        Vec3d lookVec = player.getLook(1.0F);
+        Vec3d headVec = PlayerHelper.getCorrectedEyePosition(player);
+        Vec3d lookVec = player.getLook(0);
         double reach = PlayerHelper.getBlockReachDistance(player);
         Vec3d endVec = headVec.add(lookVec.x * reach, lookVec.y * reach, lookVec.z * reach);
         return Pair.of(headVec, endVec);
@@ -69,7 +69,7 @@ public class RayTraceHelper {
     @SuppressWarnings("all")
     public static BlockRayTraceResult retraceBlock(BlockState blockState, World world, BlockPos pos, PlayerEntity player) {
         Pair<Vec3d, Vec3d> rayTraceVectors = getRayTraceVectors(player);
-        return blockState.getCollisionShape(world, pos).rayTrace(rayTraceVectors.getLeft(), rayTraceVectors.getRight(), pos);
+        return blockState.getShape(world, pos).rayTrace(rayTraceVectors.getLeft(), rayTraceVectors.getRight(), pos);
         //Old
         //return Block.collisionRayTrace(blockState, world, pos, rayTraceVectors.getLeft(), rayTraceVectors.getRight());
     }
@@ -85,7 +85,7 @@ public class RayTraceHelper {
         Vec3d vec3d = new Vec3d(player.posX, player.posY + player.getEyeHeight(), player.posZ);
         Vec3d vec3d1 = getVectorForRotation(player.rotationPitch, player.rotationYawHead);
         Vec3d vec3d2 = vec3d.add(vec3d1.x * distance, vec3d1.y * distance, vec3d1.z * distance);
-        RayTraceContext rtc = new RayTraceContext(vec3d, vec3d2, RayTraceContext.BlockMode.COLLIDER, RayTraceContext.FluidMode.NONE, player);
+        RayTraceContext rtc = new RayTraceContext(vec3d, vec3d2, RayTraceContext.BlockMode.OUTLINE, RayTraceContext.FluidMode.NONE, player);
         return player.getEntityWorld().rayTraceBlocks(rtc);
         //return player.getEntityWorld().rayTraceBlocks(vec3d, vec3d2, RayTraceFluidMode.NEVER, false, true);
     }
