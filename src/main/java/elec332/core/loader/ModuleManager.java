@@ -18,6 +18,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.ModContainer;
 import net.minecraftforge.fml.javafmlmod.FMLModContainer;
 import net.minecraftforge.fml.loading.moddiscovery.ModInfo;
+import net.minecraftforge.forgespi.language.IModInfo;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.maven.artifact.versioning.ArtifactVersion;
 import org.apache.maven.artifact.versioning.VersionRange;
@@ -123,7 +124,7 @@ enum ModuleManager implements IModuleManager {
             List<Pair<String, VersionRange>> requirements = module.getModDependencies();
             for (Pair<String, VersionRange> dep : requirements) {
                 ArtifactVersion ver = names.get(dep.getLeft());
-                if (ver == null || !dep.getRight().containsVersion(ver)) {
+                if (dep.getRight() != IModInfo.UNBOUNDED && (ver == null || !dep.getRight().containsVersion(ver))) {
                     if (!module.autoDisableIfRequirementsNotMet()) {
                         missingMods.add(dep.getKey() + "@" + dep.getRight().toString());
                     }

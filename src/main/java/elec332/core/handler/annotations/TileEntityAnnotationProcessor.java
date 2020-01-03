@@ -2,11 +2,12 @@ package elec332.core.handler.annotations;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import elec332.core.ElecCore;
 import elec332.core.api.APIHandlerInject;
 import elec332.core.api.discovery.IAnnotationData;
 import elec332.core.api.discovery.IAnnotationDataHandler;
-import elec332.core.api.registration.IObjectRegister;
+import elec332.core.api.registration.IItemRegister;
 import elec332.core.api.registration.RegisteredTileEntity;
 import elec332.core.util.FMLHelper;
 import elec332.core.util.FieldPointer;
@@ -14,9 +15,13 @@ import elec332.core.util.ObjectReference;
 import elec332.core.util.RegistryHelper;
 import elec332.core.util.function.FuncHelper;
 import net.minecraft.block.Block;
+import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.fml.ModContainer;
+import net.minecraftforge.fml.javafmlmod.FMLModContainer;
 import net.minecraftforge.registries.IForgeRegistry;
 
 import javax.annotation.Nonnull;
@@ -25,16 +30,19 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.util.Map;
+import java.util.Set;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 /**
  * Created by Elec332 on 27-1-2019
  */
-public class TileEntityAnnotationProcessor implements IObjectRegister<TileEntityType<?>> {
+public class TileEntityAnnotationProcessor implements IItemRegister {
 
     @APIHandlerInject
     private static IAnnotationDataHandler asmData;
     private static final Map<Class, TileEntityType> typeReference = Maps.newIdentityHashMap();
+    private static final Map<String, Set<Runnable>> toRegister = Maps.newHashMap();
 
     @Nullable
     @SuppressWarnings("unchecked")
@@ -43,27 +51,43 @@ public class TileEntityAnnotationProcessor implements IObjectRegister<TileEntity
     }
 
     @Override
-    public void register(IForgeRegistry<TileEntityType<?>> registry) {
+    public void register(IForgeRegistry<Item> registry) { //Because items are registered before tiles
         asmData.getAnnotationList(RegisteredTileEntity.class).forEach(this::accept);
+        FMLModContainer elecCore = (FMLModContainer) FMLHelper.getActiveModContainer();
+        toRegister.keySet().forEach(name -> {
+            FMLModContainer reg;
+            ModContainer mc = FMLHelper.findMod(name);
+            if (FMLHelper.hasFMLModContainer(mc)) {
+                reg = FMLHelper.getFMLModContainer(mc);
+            } else {
+                reg = elecCore;
+            }
+            reg.getEventBus().addGenericListener(TileEntityType.class, (Consumer<RegistryEvent.Register<TileEntityType<?>>>) evt -> {
+                Set<Runnable> toRun = toRegister.remove(name);
+                toRun.forEach(Runnable::run);
+            });
+        });
     }
 
     @SuppressWarnings("all")
     private void accept(IAnnotationData data) {
         String name = (String) data.getAnnotationInfo().get("value");
         try {
-            Class<? extends TileEntity> clazz = null;
-            Field f = null;
+            Class<? extends TileEntity> clazz_ = null;
+            Field f;
             if (data.isField()) {
                 f = data.getField();
                 if (f.getGenericType() instanceof ParameterizedType && ((ParameterizedType) f.getGenericType()).getRawType() == TileEntityType.class) {
                     java.lang.reflect.Type[] t = ((ParameterizedType) f.getGenericType()).getActualTypeArguments();
                     if (t.length == 1) {
-                        clazz = (Class<? extends TileEntity>) t[0];
+                        clazz_ = (Class<? extends TileEntity>) t[0];
                     }
                 }
             } else {
-                clazz = (Class<? extends TileEntity>) Class.forName(data.getClassName());
+                clazz_ = (Class<? extends TileEntity>) Class.forName(data.getClassName());
+                f = null;
             }
+            final Class<? extends TileEntity> clazz = clazz_;
             if (!name.contains(":")) {
                 String mod = (String) data.getAnnotationInfo().get("mod");
                 if (Strings.isNullOrEmpty(mod)) {
@@ -71,21 +95,25 @@ public class TileEntityAnnotationProcessor implements IObjectRegister<TileEntity
                 }
                 name = mod + ":" + name;
             }
-            ObjectReference<TileEntityType<?>> ref = new ObjectReference<>();
-            ref.set(RegistryHelper.getTileEntities().getValue(new ResourceLocation(name)));
 
-            if (ref.get() == null) {
-                registerTileEntity(clazz, new ResourceLocation(name), ref);
-            }
-            if (f != null) {
-                TileEntityType<?> type = ref.get();
-                if (type instanceof TileType && ((TileType) type).getTileType() != clazz) {
-                    throw new RuntimeException("Field type mismatch!");
+            final String finalName = name;
+            toRegister.computeIfAbsent(name.split(":")[0], o -> Sets.newHashSet()).add(() -> {
+                ObjectReference<TileEntityType<?>> ref = new ObjectReference<>();
+                ref.set(RegistryHelper.getTileEntities().getValue(new ResourceLocation(finalName)));
+
+                if (ref.get() == null) {
+                    registerTileEntity(clazz, new ResourceLocation(finalName), ref);
                 }
-                new FieldPointer(f).set(null, type);
-            }
+                if (f != null) {
+                    TileEntityType<?> type = ref.get();
+                    if (type instanceof TileType && ((TileType) type).getTileType() != clazz) {
+                        throw new RuntimeException("Field type mismatch!");
+                    }
+                    new FieldPointer(f).set(null, type);
+                }
+            });
         } catch (Exception e) {
-            ElecCore.logger.error("Error registering tile: " + name, e);
+            ElecCore.logger.error("Error pre-registering tile: " + name, e);
         }
     }
 

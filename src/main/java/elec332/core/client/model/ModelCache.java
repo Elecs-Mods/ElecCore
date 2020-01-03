@@ -1,5 +1,6 @@
 package elec332.core.client.model;
 
+import com.google.common.base.Preconditions;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.ImmutableList;
@@ -40,6 +41,10 @@ import java.util.concurrent.TimeUnit;
 public abstract class ModelCache<K> implements IBakedModel {
 
     protected ModelCache() {
+        this(null);
+    }
+
+    protected ModelCache(IBakedModel defaultModel) {
         quads = CacheBuilder.newBuilder().expireAfterAccess(2, TimeUnit.MINUTES).build();
         itemModels = CacheBuilder.newBuilder().expireAfterAccess(2, TimeUnit.MINUTES).build();
         iol = new ItemOverrideList() {
@@ -52,11 +57,13 @@ public abstract class ModelCache<K> implements IBakedModel {
 
         };
         debug = false;
+        this.defaultModel = defaultModel;
     }
 
     private final Cache<K, Map<Direction, List<BakedQuad>>> quads;
     private final Cache<K, IBakedModel> itemModels;
     private final ItemOverrideList iol;
+    private final IBakedModel defaultModel;
     protected boolean debug;
 
     protected abstract K get(BlockState state, IModelData modelState);
@@ -79,7 +86,7 @@ public abstract class ModelCache<K> implements IBakedModel {
             return ret;
         };
         try {
-            return debug ? loader.call() : quads.get(key, loader);
+            return debug ? loader.call() : quads.get(Preconditions.checkNotNull(key), loader);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -99,7 +106,7 @@ public abstract class ModelCache<K> implements IBakedModel {
 
         };
         try {
-            return debug ? loader.call() : itemModels.get(key, loader);
+            return debug ? loader.call() : itemModels.get(Preconditions.checkNotNull(key), loader);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -132,9 +139,14 @@ public abstract class ModelCache<K> implements IBakedModel {
 
     @Nonnull
     @Override
+    @SuppressWarnings("deprecation")
     public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, @Nonnull Random rand) {
         if (needsModelData()) {
-            throw new UnsupportedOperationException();
+            if (defaultModel == null) {
+                throw new UnsupportedOperationException();
+            } else {
+                return defaultModel.getQuads(state, side, rand);
+            }
         }
         return getQuads(state, side, rand, EmptyModelData.INSTANCE);
     }
@@ -159,17 +171,17 @@ public abstract class ModelCache<K> implements IBakedModel {
 
     @Override
     public boolean isAmbientOcclusion() {
-        return true;
+        return defaultModel == null || defaultModel.isAmbientOcclusion();
     }
 
     @Override
     public boolean isGui3d() {
-        return true;
+        return defaultModel == null || defaultModel.isGui3d();
     }
 
     @Override
     public boolean isBuiltInRenderer() {
-        return false;
+        return defaultModel != null && defaultModel.isBuiltInRenderer();
     }
 
     @Override

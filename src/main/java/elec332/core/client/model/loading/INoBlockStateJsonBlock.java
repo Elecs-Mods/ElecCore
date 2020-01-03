@@ -9,6 +9,8 @@ import net.minecraft.client.renderer.model.ModelRotation;
 import net.minecraft.client.renderer.model.Variant;
 import net.minecraft.client.renderer.model.VariantList;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IEnviromentBlockReader;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -30,7 +32,7 @@ public interface INoBlockStateJsonBlock extends IBlockModelItemLink {
         return new ResourceLocation(variant.getModelLocation().toString() + "_overrides");
     }
 
-    public default void addAdditionalData(BlockState state, Map<String, String> dataMap) {
+    public default void addAdditionalData(IEnviromentBlockReader world, BlockPos pos, Map<String, String> dataMap) {
     }
 
     public interface RotationImpl extends INoBlockStateJsonBlock {

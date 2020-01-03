@@ -18,20 +18,24 @@ import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent;
 @ElecModule(owner = ElecCore.MODID, name = "WailaCompat", modDependencies = ModNames.WAILA)
 public class WailaCompatHandler implements IWailaPlugin {
 
-    private static IRegistrar registrar;
+    private static IRegistrar registrar = null;
+    private static boolean enabled;
 
     @ElecModule.EventHandler
     public void afterModLoad(FMLLoadCompleteEvent event) {
-        WailaHandlerTileEntity teh = new WailaHandlerTileEntity();
-        registrar.registerBlockDataProvider(teh, Block.class);
-        registrar.registerComponentProvider(teh, TooltipPosition.BODY, Block.class);
-        WailaHandlerEntity eh = new WailaHandlerEntity();
-        registrar.registerEntityDataProvider(eh, Entity.class);
-        registrar.registerComponentProvider(eh, TooltipPosition.BODY, Entity.class);
+        WailaCompatHandler.enabled = true;
     }
 
     @Override
     public void register(IRegistrar registrar) {
+        if (enabled && WailaCompatHandler.registrar == null) {
+            WailaHandlerTileEntity teh = new WailaHandlerTileEntity();
+            WailaHandlerEntity eh = new WailaHandlerEntity();
+            registrar.registerBlockDataProvider(teh, Block.class);
+            registrar.registerComponentProvider(teh, TooltipPosition.BODY, Block.class);
+            registrar.registerEntityDataProvider(eh, Entity.class);
+            registrar.registerComponentProvider(eh, TooltipPosition.BODY, Entity.class);
+        }
         WailaCompatHandler.registrar = registrar;
     }
 

@@ -1,17 +1,19 @@
 package elec332.core.client.model.loading.handler;
 
 import com.google.common.base.Charsets;
-import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
-import com.google.common.collect.*;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import elec332.core.api.client.model.loading.IModelHandler;
 import elec332.core.api.client.model.loading.ModelHandler;
+import elec332.core.client.model.ModelCache;
+import elec332.core.client.model.ModelProperties;
 import elec332.core.client.model.loading.INoBlockStateJsonBlock;
 import elec332.core.client.model.loading.INoJsonBlock;
+import elec332.core.client.util.MultiWrappedUnbakedModel;
 import elec332.core.loader.client.RenderingRegistry;
-import elec332.core.util.ObjectReference;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
@@ -21,17 +23,19 @@ import net.minecraft.client.renderer.texture.ISprite;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.renderer.vertex.VertexFormat;
+import net.minecraft.item.ItemStack;
 import net.minecraft.resources.IResource;
-import net.minecraft.resources.IResourceManager;
 import net.minecraft.state.IProperty;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.client.event.ModelBakeEvent;
-import net.minecraftforge.client.model.*;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.model.IModelState;
-import net.minecraftforge.common.model.TRSRTransformation;
-import net.minecraftforge.eventbus.api.EventPriority;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IEnviromentBlockReader;
+import net.minecraftforge.client.model.BasicState;
+import net.minecraftforge.client.model.ModelLoader;
+import net.minecraftforge.client.model.ModelLoaderRegistry;
+import net.minecraftforge.client.model.data.EmptyModelData;
+import net.minecraftforge.client.model.data.IModelData;
+import net.minecraftforge.client.model.data.ModelDataMap;
 import net.minecraftforge.registries.ForgeRegistryEntry;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -54,33 +58,14 @@ public class BlockVariantModelHandler implements IModelHandler {
     public BlockVariantModelHandler() {
         this.blockResourceLocations = Maps.newHashMap();
         this.uniqueNames = Sets.newHashSet();
-        this.models = Maps.newHashMap();
-        ModelLoaderRegistry.registerLoader(new InternalModelLoader());
-        MinecraftForge.EVENT_BUS.register(this);
-        ObjectReference<Object> ref = new ObjectReference<>();
-        MinecraftForge.EVENT_BUS.addListener(EventPriority.HIGHEST, true, ModelBakeEvent.class, evt -> ref.set(new Object()));
-        RenderingRegistry.instance().registerLoader(iconRegistrar -> {
-            if (ref.get() == null) {
-                return;
-            }
-            if (models.isEmpty()) {
-                blockResourceLocations.keySet().forEach(mrl -> {
-                    IUnbakedModel model_;
-                    try {
-                        model_ = ModelLoaderRegistry.getModel(mrl);
-                    } catch (Exception e) {
-                        throw new RuntimeException(e);
-                        //model_ = null;//ModelLoaderRegistry.getMissingModel();
-                    }
-                    models.put(mrl, model_);
-                });
-            }
-            models.values().stream().filter(Objects::nonNull).map(ubm -> ubm.getTextures(ModelLoader.defaultModelGetter(), Sets.newHashSet())).forEach(set -> set.forEach(iconRegistrar::registerSprite));
-        });
+        this.textures = Maps.newHashMap();
+        RenderingRegistry.instance().registerLoader(iconRegistrar -> textures.values().forEach(d -> d.getAllTextures().forEach(iconRegistrar::registerSprite)));
     }
 
+    private static final Map<String, String> EMPTY_MAP = Maps.newHashMap();
+
     private final Map<ModelResourceLocation, BlockState> blockResourceLocations;
-    private final Map<ModelResourceLocation, IUnbakedModel> models;
+    private final Map<ResourceLocation, TextureOverrideData> textures;
     private final Set<ResourceLocation> uniqueNames;
 
     @Override
@@ -91,6 +76,7 @@ public class BlockVariantModelHandler implements IModelHandler {
     @Override
     @SuppressWarnings("all")
     public void preHandleModels() {
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
         for (Block block : RenderingRegistry.instance().getAllValidBlocks()) {
             if (block instanceof INoBlockStateJsonBlock && !(block instanceof INoJsonBlock)) {
                 ResourceLocation baseName = new ResourceLocation("varianthandled", block.getRegistryName().toString().replace(":", "_"));
@@ -99,8 +85,25 @@ public class BlockVariantModelHandler implements IModelHandler {
                 block.getStateContainer().getValidStates().forEach(ibs -> {
                     ModelResourceLocation mrl = BlockModelShapes.getModelLocation(ibs);
                     blockResourceLocations.put(mrl, ibs);
+                    List<Variant> variants = ((INoBlockStateJsonBlock) block).getVariantsFor(ibs).getVariantList();
+                    variants.forEach(variant -> {
+                        if (((INoBlockStateJsonBlock) block).hasTextureOverrideJson(ibs)) {
+                            ResourceLocation tRes = ((INoBlockStateJsonBlock) block).getTextureOverridesJson(ibs, variant);
+                            try {
+                                IResource iresource = Minecraft.getInstance().getResourceManager().getResource(new ResourceLocation(tRes.getNamespace(), "models/" + tRes.getPath() + ".json"));
+                                Reader reader = new InputStreamReader(iresource.getInputStream(), Charsets.UTF_8);
+                                TextureOverrideData tod = gson.fromJson(reader, TextureOverrideData.class);
+                                textures.put(tRes, tod);
+                            } catch (Exception e) {
+                                if (!(e instanceof FileNotFoundException)) {
+                                    System.out.println("Exception while loading texture overrides: " + tRes);
+                                    e.printStackTrace();
+                                }
+                            }
+                        }
+                        ModelLoader.addSpecialModel(variant.getModelLocation());
+                    });
                 });
-
             }
         }
     }
@@ -135,230 +138,100 @@ public class BlockVariantModelHandler implements IModelHandler {
     @Override
     @Nonnull
     public Map<ModelResourceLocation, IBakedModel> registerBakedModels(Function<ModelResourceLocation, IBakedModel> bakedModelGetter, ModelLoader modelLoader) {
-        return models.entrySet().stream()
-                .collect(Collectors.toMap(Map.Entry::getKey, e -> {
-                    IUnbakedModel model = MoreObjects.firstNonNull(e.getValue(), ModelLoaderRegistry.getMissingModel());
-                    return Preconditions.checkNotNull(model.bake(modelLoader, ModelLoader.defaultTextureGetter(), new BasicState(model.getDefaultState(), false), DefaultVertexFormats.BLOCK));
-                }));
-        //return ImmutableMap.of();
+        Map<ModelResourceLocation, IBakedModel> ret = Maps.newHashMap();
+        blockResourceLocations.forEach((mrl, ibs) -> {
+            IUnbakedModel model = getUnbakedModel(ibs, modelLoader);
+            IBakedModel m = Preconditions.checkNotNull(model.bake(modelLoader, ModelLoader.defaultTextureGetter(), new BasicState(model.getDefaultState(), false), DefaultVertexFormats.BLOCK));
+            ret.put(mrl, m);
+        });
+        return ret;
     }
 
     private ResourceLocation getFixedLocation(ResourceLocation rl) {
         return new ResourceLocation(rl.getPath().replace("_", ":"));
     }
 
-    private class InternalModelLoader implements ICustomModelLoader {
+    private IUnbakedModel getUnbakedModel(BlockState blockState, ModelLoader modelLoader) {
+        Block block = blockState.getBlock();
+        Map<String, String> props = addNormalProperties(blockState, Maps.newHashMap());
+        boolean unlProp = ((INoBlockStateJsonBlock) block).hasTextureOverrideJson(blockState);
+        List<Variant> variants = ((INoBlockStateJsonBlock) block).getVariantsFor(blockState).getVariantList();
+        List<Pair<Variant, TextureOverrideData>> data = variants.stream().map((Variant variant) -> {
 
-        @Override
-        public boolean accepts(@Nonnull ResourceLocation modelLocation) {
-            return modelLocation instanceof ModelResourceLocation && blockResourceLocations.keySet().contains(modelLocation);
-        }
-
-        @Nonnull
-        @Override
-        public IUnbakedModel loadModel(@Nonnull ResourceLocation modelLocation) throws Exception {
-            if (!(modelLocation instanceof ModelResourceLocation)) {
-                throw new RuntimeException();
+            Pair<Variant, TextureOverrideData> nullRet = Pair.of(variant, null);
+            if (!unlProp) {
+                return nullRet;
             }
-            Gson gson = new GsonBuilder().setPrettyPrinting().create();
-            BlockState ibs = blockResourceLocations.get(modelLocation);
-            if (ibs == null) {
-                throw new IllegalStateException();
+            ResourceLocation location = ((INoBlockStateJsonBlock) block).getTextureOverridesJson(blockState, variant);
+            if (location == null) {
+                return nullRet;
             }
-            Block block = ibs.getBlock();
-            Map<String, String> props = addNormalProperties(ibs, Maps.newHashMap());
-            boolean unlProp = ((INoBlockStateJsonBlock) block).hasTextureOverrideJson(ibs);
-            List<Variant> variants = ((INoBlockStateJsonBlock) block).getVariantsFor(ibs).getVariantList();
-            List<Pair<Variant, TextureOverrideData>> data = variants.stream().map((Variant variant) -> {
+            return Pair.of(variant, textures.get(location));
 
-                Pair<Variant, TextureOverrideData> nullRet = Pair.of(variant, null);
-                if (!unlProp) {
-                    return nullRet;
+        }).collect(Collectors.toList());
+
+        return new MultiWrappedUnbakedModel(modelLoader, variants) {
+
+            @Override
+            protected IBakedModel bakeModel(IUnbakedModel model, int index, @Nonnull ModelBakery bakery, @Nonnull final Function<ResourceLocation, TextureAtlasSprite> spriteGetter, @Nonnull ISprite sprite, @Nonnull VertexFormat format) {
+                TextureOverrideData texOv = data.get(index).getRight();
+                Function<ResourceLocation, TextureAtlasSprite> spriteGetter_ = spriteGetter;
+                if (texOv != null && texOv.containsProperty(props.keySet())) {
+                    spriteGetter_ = new TextureOverride(texOv.process(props), spriteGetter);
                 }
-                ResourceLocation location = ((INoBlockStateJsonBlock) block).getTextureOverridesJson(ibs, variant);
-                if (location == null) {
-                    return nullRet;
+                IBakedModel base = super.bakeModel(model, index, bakery, spriteGetter_, sprite, format);
+                if (texOv == null) {
+                    return base;
                 }
-                try {
-                    IResource iresource = Minecraft.getInstance().getResourceManager().getResource(new ResourceLocation(location.getNamespace(), "models/" + location.getPath() + ".json"));
-                    Reader reader = new InputStreamReader(iresource.getInputStream(), Charsets.UTF_8);
-                    Pair<Variant, TextureOverrideData> ret = Pair.of(variant, gson.fromJson(reader, TextureOverrideData.class));
-                    reader.close();
-                    return ret;
-                } catch (Exception e) {
-                    if (!(e instanceof FileNotFoundException)) {
-                        System.out.println("Exception while loading texture overrides: " + location);
-                        e.printStackTrace();
-                    }
-                    return nullRet;
-                }
+                return new ModelCache<Map<String, String>>(base) {
 
-            }).collect(Collectors.toList());
-
-
-            List<ResourceLocation> locations = Lists.newArrayList();
-            Set<ResourceLocation> textures = Sets.newHashSet();
-            List<IModel> models = Lists.newArrayList();
-            IModelState defaultState;
-            ImmutableList.Builder<Pair<IModel, IModelState>> builder = ImmutableList.builder();
-            for (Pair<Variant, TextureOverrideData> vtp : data) {
-                Variant v = vtp.getLeft();
-                TextureOverrideData t = vtp.getRight();
-
-                ResourceLocation loc = v.getModelLocation();
-                locations.add(loc);
-
-                IUnbakedModel model;
-                if (loc.equals(net.minecraftforge.client.model.ModelLoader.MODEL_MISSING)) {
-                    model = ModelLoaderRegistry.getMissingModel();
-                } else {
-                    model = ModelLoaderRegistry.getModel(loc);
-                }
-
-                model = v.process(model);
-                for (ResourceLocation location : model.getDependencies()) {
-                    ModelLoaderRegistry.getModelOrMissing(location);
-                }
-                textures.addAll(model.getTextures(net.minecraftforge.client.model.ModelLoader.defaultModelGetter(), new HashSet<>()));
-                if (t != null) {
-                    textures.addAll(t.getAllTextures());
-                }
-
-                IModelState modelDefaultState = model.getDefaultState();
-                Preconditions.checkNotNull(modelDefaultState, "Model %s returned null as default state", loc);
-                models.add(model);
-                builder.add(Pair.of(model, v.getState()));
-            }
-
-            if (models.size() == 0) {
-                IModel missing = ModelLoaderRegistry.getMissingModel();
-                models.add(missing);
-                builder.add(Pair.of(missing, TRSRTransformation.identity()));
-            }
-
-            defaultState = new MultiModelState(builder.build());
-
-            return new IUnbakedModel() {
-
-                @Nonnull
-                @Override
-                public Collection<ResourceLocation> getDependencies() {
-                    return ImmutableList.copyOf(locations);
-                }
-
-                @Nonnull
-                @Override
-                public Collection<ResourceLocation> getTextures(@Nonnull Function<ResourceLocation, IUnbakedModel> modelGetter, @Nonnull Set<String> missingTextureErrors) {
-                    return ImmutableSet.copyOf(textures);
-                }
-
-                @Nullable
-                @Override
-                public IBakedModel bake(@Nonnull ModelBakery modelGetter, @Nonnull Function<ResourceLocation, TextureAtlasSprite> spriteGetter, @Nonnull ISprite sprite, @Nonnull VertexFormat format) {
-                    if (!Attributes.moreSpecific(format, Attributes.DEFAULT_BAKED_FORMAT)) {
-                        throw new IllegalArgumentException("Can't bake vanilla weighted models to the format that doesn't fit into the default one: " + format);
-                    }
-                    if (variants.size() == 1) {
-                        IModel model = models.get(0);
-                        TextureOverrideData texOv = data.get(0).getRight();
-                        if (texOv != null && texOv.containsProperty(props.keySet())) {
-                            spriteGetter = new TextureOverride(texOv.process(props), spriteGetter);
+                    @Nonnull
+                    @Override
+                    public IModelData getModelData(@Nonnull IEnviromentBlockReader world, @Nonnull BlockPos pos, @Nonnull BlockState state, @Nonnull IModelData tileData) {
+                        if (tileData == EmptyModelData.INSTANCE) {
+                            tileData = new ModelDataMap.Builder().build();
                         }
-                        return bakeModel(model, modelGetter, spriteGetter, MultiModelState.getPartState(sprite.getState(), model, 0), sprite.isUvLock(), format, texOv);
+                        tileData.setData(ModelProperties.WORLD, world);
+                        tileData.setData(ModelProperties.POS, pos);
+                        return tileData;
                     }
-                    WeightedBakedModel.Builder builder = new WeightedBakedModel.Builder();
-                    for (int i = 0; i < variants.size(); i++) {
-                        IModel model = models.get(i);
-                        TextureOverrideData texOv = data.get(i).getRight();
-                        if (texOv != null && texOv.containsProperty(props.keySet())) {
-                            spriteGetter = new TextureOverride(texOv.process(props), spriteGetter);
+
+                    @Override
+                    protected Map<String, String> get(BlockState state, IModelData extraData) {
+                        Map<String, String> data = Maps.newHashMap();
+                        ((INoBlockStateJsonBlock) blockState.getBlock()).addAdditionalData(extraData.getData(ModelProperties.WORLD), extraData.getData(ModelProperties.POS), data);
+                        if (data.isEmpty()) {
+                            return EMPTY_MAP;
                         }
-                        IBakedModel bModel = bakeModel(model, modelGetter, spriteGetter, MultiModelState.getPartState(sprite.getState(), model, i), sprite.isUvLock(), format, texOv);
-                        builder.add(bModel, variants.get(i).getWeight());
+                        return data;
                     }
-                    return builder.build();
-                }
 
-                @Nonnull
-                @Override
-                public IModelState getDefaultState() {
-                    return defaultState;
-                }
+                    @Override
+                    protected Map<String, String> get(ItemStack stack) {
+                        return EMPTY_MAP;
+                    }
 
-            };
-        }
+                    @Nonnull
+                    @Override
+                    @SuppressWarnings("all")
+                    protected ResourceLocation getTextureLocation() {
+                        return base.getParticleTexture().getName();
+                    }
 
-        @Override
-        public void onResourceManagerReload(@Nonnull IResourceManager resourceManager) {
-        }
+                    @Override
+                    protected void bakeQuads(List<BakedQuad> list, Direction side, Map<String, String> key) {
+                        if (key == EMPTY_MAP) {
+                            list.addAll(base.getQuads(null, side, new Random(), EmptyModelData.INSTANCE));
+                        } else {
+                            IBakedModel ret = model.bake(bakery, new TextureOverride(texOv.process(key), spriteGetter), sprite, format);
+                            list.addAll(Preconditions.checkNotNull(ret).getQuads(null, side, new Random(), EmptyModelData.INSTANCE));
+                        }
+                    }
 
-        @SuppressWarnings("all")
-        private IBakedModel bakeModel(IModel model, @Nonnull ModelBakery modelGetter, @Nonnull Function<ResourceLocation, TextureAtlasSprite> spriteGetter, @Nonnull IModelState state, boolean uvlock, @Nonnull VertexFormat format, @Nullable TextureOverrideData tovd) {
-
-            IBakedModel base = model.bake(modelGetter, spriteGetter, new BasicState(state, uvlock), format);
-            if (tovd == null) {
-                return base;
+                };
             }
-            return new IBakedModel() {
 
-                Map<BlockState, IBakedModel> cache = new WeakHashMap<>();
-
-                @Override
-                public List<BakedQuad> getQuads(@Nullable BlockState blockState, @Nullable Direction side, Random rand) {
-                    if (blockState == null) {
-                        return base.getQuads(null, side, rand);
-                    }
-                    if (cache.containsKey(blockState)) {
-                        return cache.get(blockState).getQuads(blockState, side, rand);
-                    }
-                    Map<String, String> data = Maps.newHashMap();
-                    ((INoBlockStateJsonBlock) blockState.getBlock()).addAdditionalData(blockState, data);
-                    if (data.isEmpty()) {
-                        cache.put(blockState, base);
-                    }
-                    IBakedModel ret;
-                    cache.put(blockState, ret = model.bake(modelGetter, new TextureOverride(tovd.process(data), spriteGetter), new BasicState(state, uvlock), format));
-                    return ret.getQuads(blockState, side, rand);
-                }
-
-                @Override
-                public boolean isAmbientOcclusion() {
-                    return base.isAmbientOcclusion();
-                }
-
-                @Override
-                public boolean isGui3d() {
-                    return base.isGui3d();
-                }
-
-                @Override
-                public boolean isBuiltInRenderer() {
-                    return base.isBuiltInRenderer();
-                }
-
-                @Override
-                @Nonnull
-                public TextureAtlasSprite getParticleTexture() {
-                    return base.getParticleTexture();
-                }
-
-                @Override
-                @Nonnull
-                @SuppressWarnings("deprecation")
-                public ItemCameraTransforms getItemCameraTransforms() {
-                    return base.getItemCameraTransforms();
-                }
-
-                @Override
-                @Nonnull
-                public ItemOverrideList getOverrides() {
-                    return base.getOverrides();
-                }
-
-            };
-
-        }
-
+        };
     }
 
     @SuppressWarnings("all")
