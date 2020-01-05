@@ -19,9 +19,13 @@ apply plugin: 'eclipse'
 
 repositories {
 
-	maven {
+	maven { //WAILA
 		url "http://tehnut.info/maven"
 	}
+
+    maven { //JEI
+        url "https://dvs1.progwml6.com/files/maven"
+    }
 	
 }
 
@@ -91,26 +95,15 @@ minecraft {
 }
 
 dependencies {
-
 	minecraft 'net.minecraftforge:forge:' + config.minecraft_version + "-" + config.forge_version
 
 	//WAILA
     compileOnly "mcp.mobius.waila:Hwyla:${config.WAILA_version}:api"
     runtimeOnly fg.deobf("mcp.mobius.waila:Hwyla:${config.WAILA_version}")
-    //compile fg.deobf("mcp.mobius.waila:Hwyla:${config.WAILA_version}")
-	//deobfCompile "mcp.mobius.waila:Hwyla:${config.WAILA_version}"
 	
 	//JEI
-	///deobfCompile "mezz.jei:jei_${config.jei_version}"
-	
-	//MCMP
-	//deobfCompile "MCMultiPart2:MCMultiPart:${config.mcmp_version}:deobf"
-	
-	//Forestry
-	//deobfCompile "net.sengir.forestry:forestry_${config.minecraft_version}:${config.forestry_version}"
-	//deobfCompile "net.sengir.forestry:forestry_${config.forestry_version}"
-	//deobfCompile "cofhcore:CoFHCore-1.10.2:release:universal"
-	//deobfCompile "eleccore-rendering-library:ElecCore:1.10.2:1.7.425"
+    compileOnly "mezz.jei:jei-${config.jei_version}:api"
+    runtimeOnly fg.deobf("mezz.jei:jei-${config.jei_version}")
 }
 
 processResources {
