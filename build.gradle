@@ -60,34 +60,18 @@ minecraft {
     runs {
         client {
             workingDirectory project.file('run')
-
-            mods {
-                eleccore {
-                    source sourceSets.main
-                }
-            }
+            source sourceSets.main
         }
 
         server {
             workingDirectory project.file('run')
-
-            mods {
-                eleccore {
-                    source sourceSets.main
-                }
-            }
+            source sourceSets.main
         }
 
         data {
             workingDirectory project.file('run')
-
             args '--mod', 'eleccore', '--all', '--output', file('src/generated/resources/')
-
-            mods {
-                eleccore {
-                    source sourceSets.main
-                }
-            }
+            source sourceSets.main
         }
 
     }
@@ -107,18 +91,18 @@ dependencies {
 }
 
 processResources {
-
-    // this will ensure that this task is redone when the versions change.
-    inputs.property "version", modVersion
-    inputs.property "mcversion", config.minecraft_version
+    // this will ensure that this task is redone every time.
+    inputs.property "timeStamp", new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
 
     // replace stuff in mcmod.info, nothing else
     from(sourceSets.main.resources.srcDirs) {
         include 'META_INF/mods.toml'
-                
-        // replace version and mcversion
-        expand 'version': modVersion, 'mcversion': config.minecraft_version, 'loaderversion': config.minecraft_version.replace('1.', '')
-        expand 'forgeversion': config.forge_version
+        expand([
+                version: modVersion,
+                mcversion: config.minecraft_version,
+                loaderversion: config.minecraft_version.replace('1.', ''),
+                forgeversion: config.forge_version
+        ])
     }
         
     // copy everything else, thats not the mcmod.info

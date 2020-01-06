@@ -1,24 +1,13 @@
-modLoader="javafml" #mandatory
-# A version range to match for said mod loader - for regular FML @Mod it will be the minecraft version (without the 1.)
-loaderVersion="[${loaderversion},)" #mandatory
-# A URL to query for updates for this mod. See the JSON update specification <here>
-#updateJSONURL="http://myurl.me/" #optional
-# A URL to refer people to when problems occur with this mod
-issueTrackerURL="https://github.com/Elecs-Mods/ElecCore/issues" #optional
-# A URL for the "homepage" for this mod, displayed in the mod UI
-#displayURL="http://example.com/" #optional
-# A file name (in the root of the mod JAR) containing a logo for display
-#logoFile="examplemod.png" #optional
-# A text field displayed in the mod UI
-#credits="Thanks for this example mod goes to Java" #optional
-# A text field displayed in the mod UI
-authors="Elec332" #optional
+modLoader="javafml"
+loaderVersion="[${loaderversion},)"
+issueTrackerURL="https://github.com/Elecs-Mods/ElecCore/issues"
+authors="Elec332"
 
-[[mods]] #mandatory
-modId="eleccore" #mandatory
-version="${version}" #mandatory
-displayName="ElecCore" #mandatory
-description="Provides core functionality for Elec's Mods" #mandatory
+[[mods]]
+modId="eleccore"
+version="${version}"
+displayName="ElecCore"
+description="Provides core functionality for Elec's Mods"
 
 [[dependencies.eleccore]]
     modId="minecraft"
@@ -41,9 +30,9 @@ description="Provides core functionality for Elec's Mods" #mandatory
     ordering="AFTER"
     side="BOTH"
 
-[[mods]] #mandatory
-modId="eleccoreloader" #mandatory
-version="${version}" #mandatory
-displayName="ElecCoreLoader" #mandatory
-description="Loads the main ElecCore components" #mandatory
+[[mods]]
+modId="eleccoreloader"
+version="${version}"
+displayName="ElecCoreLoader"
+description="Loads the main ElecCore components"
 
