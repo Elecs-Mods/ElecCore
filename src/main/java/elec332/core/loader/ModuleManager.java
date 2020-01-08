@@ -16,6 +16,7 @@ import elec332.core.module.DefaultWrappedModule;
 import elec332.core.util.FMLHelper;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.ModContainer;
+import net.minecraftforge.fml.event.lifecycle.ModLifecycleEvent;
 import net.minecraftforge.fml.javafmlmod.FMLModContainer;
 import net.minecraftforge.fml.loading.moddiscovery.ModInfo;
 import net.minecraftforge.forgespi.language.IModInfo;
@@ -29,6 +30,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.*;
 import java.util.function.BiFunction;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -91,17 +93,6 @@ enum ModuleManager implements IModuleManager {
         }
 
         constructModules(depCheckModules);
-
-        /*activeModules.forEach(module -> {
-
-            try {
-                ((FMLEvent) event).applyModContainer(module.getOwnerMod());
-                module.invokeEvent(event);
-            } catch (Exception e) {
-                throw new RuntimeException("Error invoking FMLPreInitializationEvent on module " + module.getName() + ", owned by: " + module.getOwnerMod(), e.getCause());
-            }
-
-        });*/
 
         registerModulesToModBus();
 
@@ -189,14 +180,13 @@ enum ModuleManager implements IModuleManager {
         }
     }
 
-    @SuppressWarnings("all")
     private void registerModulesToModBus() {
         for (IModuleContainer module : activeModules) {
             ModContainer mc = module.getOwnerMod();
             if (!FMLHelper.hasFMLModContainer(mc)) {
                 throw new UnsupportedOperationException();
             }
-            ((FMLModContainer) mc).getEventBus().addListener(event -> {
+            ((FMLModContainer) mc).getEventBus().addListener((Consumer<ModLifecycleEvent>) event -> {
                 try {
                     module.invokeEvent(event);
                 } catch (Exception e) {
@@ -232,7 +222,6 @@ enum ModuleManager implements IModuleManager {
         }
     }
 
-    @SuppressWarnings("all")
     private void registerAdditionalModule(IModuleInfo module) {
         if (locked) {
             throw new IllegalStateException("Mod " + FMLHelper.getActiveModContainer() + " attempted to register a module too late!");
@@ -280,6 +269,7 @@ enum ModuleManager implements IModuleManager {
     }
 
     @APIHandlerInject
+    @SuppressWarnings("unused")
     public void injectModuleManager(IAPIHandler apiHandler) {
         apiHandler.inject(INSTANCE, IModuleManager.class);
     }

@@ -108,7 +108,7 @@ public class WidgetTextField extends Widget {
             runListeners(getTextField().getText());
             syncToServer();
         }
-        return ret;
+        return ret || ClientHelper.getMinecraft().gameSettings.keyBindInventory.matchesKey(key, scanCode);
     }
 
     @Override

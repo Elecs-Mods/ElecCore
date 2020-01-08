@@ -9,7 +9,7 @@ import mcp.mobius.waila.api.TooltipPosition;
 import mcp.mobius.waila.api.WailaPlugin;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
-import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 
 /**
  * Created by Elec332 on 15-8-2015.
@@ -22,7 +22,7 @@ public class WailaCompatHandler implements IWailaPlugin {
     private static boolean enabled;
 
     @ElecModule.EventHandler
-    public void afterModLoad(FMLLoadCompleteEvent event) {
+    public void afterModLoad(FMLCommonSetupEvent event) {
         WailaCompatHandler.enabled = true;
     }
 
