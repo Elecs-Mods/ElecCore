@@ -124,7 +124,7 @@ enum ModuleManager implements IModuleManager {
             List<Pair<String, VersionRange>> requirements = module.getModDependencies();
             for (Pair<String, VersionRange> dep : requirements) {
                 ArtifactVersion ver = names.get(dep.getLeft());
-                if (dep.getRight() != IModInfo.UNBOUNDED && (ver == null || !dep.getRight().containsVersion(ver))) {
+                if (ver == null || (dep.getRight() != IModInfo.UNBOUNDED && !dep.getRight().containsVersion(ver))) {
                     if (!module.autoDisableIfRequirementsNotMet()) {
                         missingMods.add(dep.getKey() + "@" + dep.getRight().toString());
                     }
