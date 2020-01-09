@@ -1,5 +1,6 @@
 package elec332.core.loader;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.*;
 import elec332.core.api.APIHandlerInject;
 import elec332.core.api.IAPIHandler;
@@ -106,18 +107,20 @@ enum AnnotationDataHandler {
                 .collect(Collectors.toMap(Function.identity(), mfi -> {
                     ModFile mf = mfi.getFile();
                     SetMultimap<Type, IAnnotationData> ret = HashMultimap.create();
-                    mf.getScanResult().getAnnotations().forEach(ad -> {
-                        IAnnotationData annotationData = new AnnotationData(ad, mf);
-                        if (annotationData.getAnnotationName().startsWith("Ljava/lang") || annotationData.getAnnotationName().startsWith("Ljavax/annotation")) {
-                            return;
-                        }
-                        Type annType = ad.getAnnotationType();
-                        ret.put(annType, annotationData);
-                        ModContainer mc = modSearcher.apply(annotationData);
-                        if (mc != null) {
-                            annotationDataM.computeIfAbsent(mc.getModId(), s -> HashMultimap.create()).put(annType, annotationData);
-                        }
-                    });
+                    mf.getScanResult().getAnnotations().stream()
+                            .filter(Objects::nonNull)
+                            .forEach(ad -> {
+                                IAnnotationData annotationData = new AnnotationData(ad, mf);
+                                if (annotationData.getAnnotationName().startsWith("Ljava/lang") || annotationData.getAnnotationName().startsWith("Ljavax/annotation")) {
+                                    return;
+                                }
+                                Type annType = ad.getAnnotationType();
+                                ret.put(annType, annotationData);
+                                ModContainer mc = modSearcher.apply(annotationData);
+                                if (mc != null) {
+                                    annotationDataM.computeIfAbsent(mc.getModId(), s -> HashMultimap.create()).put(annType, annotationData);
+                                }
+                            });
                     return ret;
                 }));
         final SetMultimap<Type, IAnnotationData> annotationData = HashMultimap.create();
@@ -248,7 +251,7 @@ enum AnnotationDataHandler {
     private static class AnnotationData implements IAnnotationData {
 
         private AnnotationData(ModFileScanData.AnnotationData asmData, ModFile file) {
-            this.asmData = asmData;
+            this.asmData = Preconditions.checkNotNull(asmData);
             this.modFile = file;
             this.isField = asmData.getMemberName().indexOf('(') == -1;
             this.isClass = asmData.getMemberName().indexOf('.') != -1;

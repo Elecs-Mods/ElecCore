@@ -13,6 +13,7 @@ import elec332.core.inventory.widget.IWidgetListener;
 import elec332.core.inventory.widget.slot.WidgetSlot;
 import elec332.core.inventory.widget.slot.WidgetSlotOutput;
 import elec332.core.util.ItemStackHelper;
+import net.minecraft.client.renderer.Rectangle2d;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.container.ClickType;
@@ -350,6 +351,20 @@ public class Window implements IWidgetContainer, IGuiEventListener {
     @OnlyIn(Dist.CLIENT)
     protected void handleSlotClick(@Nullable WidgetSlot slotIn, int slotId, int mouseButton, @Nonnull ClickType type) {
         windowContainer.handleSlotClickDefault(slotIn, slotId, mouseButton, type);
+    }
+
+    /**
+     * Used for JEI, makes sure the GUI doesn't interfere with JEI's stuff
+     *
+     * @param extraAreas A list that extra used areas can be added to
+     */
+    @OnlyIn(Dist.CLIENT)
+    public void addExtraGuiAreas(List<Rectangle2d> extraAreas) {
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    protected Rectangle2d createRelativeRectangle(int x, int y, int width, int height) {
+        return new Rectangle2d(guiLeft + x, guiTop + y, width, height);
     }
 
     @Override

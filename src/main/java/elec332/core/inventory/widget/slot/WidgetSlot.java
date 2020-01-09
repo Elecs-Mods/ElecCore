@@ -29,14 +29,26 @@ public class WidgetSlot extends Widget {
         this.inventory = inventory;
         this.slotIndex = index;
         this.changeListeners = Lists.newArrayList();
+        this.ghostBackground = this.skipBackground = false;
     }
 
     private final List<Consumer<WidgetSlot>> changeListeners;
     private final IItemHandler inventory;
     private final int slotIndex;
+    private boolean ghostBackground, skipBackground;
 
     public WidgetSlot addChangeListener(Consumer<WidgetSlot> listener) {
         changeListeners.add(listener);
+        return this;
+    }
+
+    public WidgetSlot setGhostBackground() {
+        ghostBackground = true;
+        return this;
+    }
+
+    public WidgetSlot setSkipBackground() {
+        skipBackground = true;
         return this;
     }
 
@@ -46,7 +58,15 @@ public class WidgetSlot extends Widget {
 
     @Override
     public void draw(Window window, int guiX, int guiY, double mouseX, double mouseY, float partialTicks) {
-        drawHollow(guiX, guiY, -1, -1, 18, 18);
+        if (skipBackground) {
+            return;
+        }
+        if (ghostBackground) {
+            bindTexture(Window.DEFAULT_BACKGROUND);
+            GuiDraw.drawTexturedModalRect(guiX + x - 1, guiY + y - 1, 198, 0, 18, 18);
+        } else {
+            drawHollow(guiX, guiY, -1, -1, 18, 18);
+        }
     }
 
     @Override

@@ -2,16 +2,22 @@ package elec332.core.block;
 
 import com.google.common.base.Preconditions;
 import elec332.core.tile.ITileWithDrops;
+import elec332.core.util.BlockProperties;
 import elec332.core.world.WorldHelper;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.IWaterLoggable;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.fluid.Fluids;
 import net.minecraft.fluid.IFluidState;
 import net.minecraft.item.ItemStack;
+import net.minecraft.state.StateContainer;
+import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
@@ -19,6 +25,7 @@ import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.world.IBlockReader;
+import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 import net.minecraft.world.storage.loot.LootContext;
 import net.minecraft.world.storage.loot.LootParameters;
@@ -33,6 +40,9 @@ public abstract class AbstractBlock extends Block implements IAbstractBlock {
 
     public AbstractBlock(Properties builder) {
         super(builder);
+        if (getDefaultState().has(BlockProperties.WATERLOGGED)) {
+            setDefaultState(getDefaultState().with(BlockStateProperties.WATERLOGGED, false));
+        }
     }
 
     private String unlocalizedName;
@@ -120,6 +130,42 @@ public abstract class AbstractBlock extends Block implements IAbstractBlock {
     public List<ItemStack> getDrops(List<ItemStack> drops, @Nonnull LootContext.Builder builder, Entity entity, World world, BlockPos pos, @Nonnull BlockState state, ItemStack stack) {
         getTileDrops(drops, world, pos, EnchantmentHelper.getEnchantmentLevel(Enchantments.FORTUNE, stack));
         return drops;
+    }
+
+    @Nonnull
+    @Override
+    @SuppressWarnings("deprecation")
+    public BlockState updatePostPlacement(@Nonnull BlockState stateIn, Direction facing, BlockState facingState, IWorld worldIn, BlockPos currentPos, BlockPos facingPos) {
+        if (stateIn.has(BlockProperties.WATERLOGGED) && stateIn.get(BlockStateProperties.WATERLOGGED)) {
+            worldIn.getPendingFluidTicks().scheduleTick(currentPos, Fluids.WATER, Fluids.WATER.getTickRate(worldIn));
+        }
+        return super.updatePostPlacement(stateIn, facing, facingState, worldIn, currentPos, facingPos);
+    }
+
+    @Nonnull
+    @Override
+    @SuppressWarnings("deprecation")
+    public IFluidState getFluidState(BlockState state) {
+        if (state.has(BlockProperties.WATERLOGGED) && state.get(BlockStateProperties.WATERLOGGED)) {
+            return Fluids.WATER.getStillFluidState(false);
+        }
+        return super.getFluidState(state);
+    }
+
+    @Override
+    public boolean propagatesSkylightDown(BlockState state, @Nonnull IBlockReader reader, @Nonnull BlockPos pos) {
+        if (state.has(BlockProperties.WATERLOGGED) && state.get(BlockStateProperties.WATERLOGGED)) {
+            return false;
+        }
+        return super.propagatesSkylightDown(state, reader, pos);
+    }
+
+    @Override
+    protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
+        super.fillStateContainer(builder);
+        if (this instanceof IWaterLoggable) {
+            builder.add(BlockStateProperties.WATERLOGGED);
+        }
     }
 
     @SuppressWarnings("all")

@@ -1,6 +1,7 @@
 package elec332.core.inventory.window;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
 import com.mojang.blaze3d.platform.GlStateManager;
 import elec332.core.ElecCore;
 import elec332.core.util.InventoryHelper;
@@ -9,6 +10,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.MouseHelper;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
+import net.minecraft.client.renderer.Rectangle2d;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.container.ClickType;
 import net.minecraft.inventory.container.Slot;
@@ -68,6 +70,12 @@ public final class WindowGui extends ContainerScreen<WindowContainer> {
     @Override
     public boolean isPauseScreen() {
         return window.doesWindowPauseGame();
+    }
+
+    public List<Rectangle2d> getGuiExtraAreas() {
+        List<Rectangle2d> ret = Lists.newArrayList();
+        window.addExtraGuiAreas(ret);
+        return ret;
     }
 
     @Override
