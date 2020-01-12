@@ -89,7 +89,7 @@ public abstract class FluidTankWrapper implements IFluidHandler, IFluidTank, INB
             return 0;
         }
         FluidStack f = getFluid();
-        if (!f.isFluidEqual(resource)) {
+        if (!f.isEmpty() && !f.isFluidEqual(resource)) {
             return 0;
         }
         if (canFillFluidType(resource)) {

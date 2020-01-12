@@ -13,15 +13,14 @@ import net.minecraft.client.particle.Particle;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.WorldRenderer;
+import net.minecraft.client.renderer.WorldVertexBufferUploader;
 import net.minecraft.client.renderer.color.BlockColors;
 import net.minecraft.client.renderer.color.ItemColors;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.culling.ICamera;
 import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.client.renderer.model.ModelRotation;
-import net.minecraft.client.renderer.texture.AtlasTexture;
-import net.minecraft.client.renderer.texture.MissingTextureSprite;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.renderer.texture.*;
 import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.entity.Entity;
@@ -61,6 +60,7 @@ public class RenderHelper {
     private static final Minecraft mc;
     private static final Map<BufferBuilder, ITessellator> worldRenderTessellators;
     private static final Map<Direction, ITransformation[]> rotateAroundMap;
+    private static final WorldVertexBufferUploader vertexBufferUploader;
     private static IBakedModel nullModel;
 
     @Nonnull
@@ -95,6 +95,11 @@ public class RenderHelper {
     @Nonnull
     public static ITessellator getTessellator() {
         return tessellator;
+    }
+
+    public static void drawBuffer(BufferBuilder buffer) {
+        buffer.finishDrawing();
+        vertexBufferUploader.draw(buffer);
     }
 
     public static ItemColors getItemColors() {
@@ -250,18 +255,27 @@ public class RenderHelper {
         return new Vec3d(original.x * m, original.y * m, original.z * m);
     }
 
+    public static ITextureObject getTextureObject(ResourceLocation location) {
+        return getTextureManager().getTexture(location);
+    }
+
     public static void bindBlockTextures() {
         bindTexture(getBlocksResourceLocation());
     }
 
     public static void bindTexture(ResourceLocation rl) {
-        mc.textureManager.bindTexture(rl);
+        getTextureManager().bindTexture(rl);
+    }
+
+    public static TextureManager getTextureManager() {
+        return mc.textureManager;
     }
 
     @Nonnull
     public static TextureAtlasSprite checkIcon(TextureAtlasSprite icon) {
-        if (icon == null)
+        if (icon == null) {
             return getMissingTextureIcon();
+        }
         return icon;
     }
 
@@ -311,9 +325,10 @@ public class RenderHelper {
     static {
         mcTessellator = Tessellator.getInstance();
         tessellator = new ElecTessellator(mcTessellator);
+        vertexBufferUploader = new WorldVertexBufferUploader();
         mc = Minecraft.getInstance();
         worldRenderTessellators = Maps.newHashMap();
-        worldRenderTessellators.put(mcTessellator.getBuffer(), tessellator);
+        worldRenderTessellators.put(tessellator.getBuffer(), tessellator);
         rotateAroundMap = Maps.newEnumMap(Direction.class);
         for (Direction facing : Direction.values()) {
             switch (facing) {

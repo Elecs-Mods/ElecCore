@@ -15,4 +15,6 @@ public interface IElecCoreModHandler {
 
     public void registerModHandler(BiConsumer<ModContainer, IElecCoreMod> handler);
 
+    public void registerConstructionModHandler(BiConsumer<ModContainer, IElecCoreMod> handler);
+
 }

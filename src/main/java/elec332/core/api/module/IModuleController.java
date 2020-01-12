@@ -1,5 +1,7 @@
 package elec332.core.api.module;
 
+import net.minecraftforge.common.ForgeConfigSpec;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.function.BiFunction;
@@ -10,7 +12,16 @@ import java.util.function.Consumer;
  */
 public interface IModuleController {
 
+    default public boolean shouldModuleConstruct(IModuleInfo moduleInfo, boolean allDependenciesPresent) {
+        return allDependenciesPresent;
+    }
+
     public boolean isModuleEnabled(String moduleName);
+
+    @Nullable
+    default public ForgeConfigSpec.BooleanValue getModuleConfig(String moduleName) {
+        return null;
+    }
 
     @Nullable
     default public IModuleContainer wrap(@Nonnull IModuleInfo module, BiFunction<Object, IModuleInfo, IModuleContainer> defaultWrapper) throws Exception {

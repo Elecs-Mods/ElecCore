@@ -14,11 +14,13 @@ import elec332.core.util.function.FuncHelper;
 import elec332.core.util.function.UnsafeRunnable;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.fml.ModLoadingStage;
+import net.minecraftforge.fml.config.ModConfig;
 
 import javax.annotation.Nonnull;
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Function;
 
 /**
  * Created by Elec332 on 12-4-2015.
@@ -160,10 +162,10 @@ public abstract class AbstractConfigWrapper implements IConfigWrapper {
             throw new RuntimeException("Cannot set category data after registering!");
         }
         int i = configuration.depth;
-        configuration.push(category);
         if (!Strings.isNullOrEmpty(description)) {
             configuration.comment(description);
         }
+        configuration.push(category);
         configuration.pop(configuration.depth - i);
         this.category.add(category);
         return this;
@@ -195,6 +197,8 @@ public abstract class AbstractConfigWrapper implements IConfigWrapper {
 
     protected abstract void postRegister();
 
+    protected abstract ModConfig.Type getConfigType();
+
     @Override
     public boolean hasBeenLoaded() {
         return configuration == null;
@@ -212,6 +216,11 @@ public abstract class AbstractConfigWrapper implements IConfigWrapper {
                 }
             }
         }
+    }
+
+    @Override
+    public <T> T registerConfig(Function<ForgeConfigSpec.Builder, T> factory) {
+        return useBuilder(factory);
     }
 
     @Override
@@ -233,11 +242,19 @@ public abstract class AbstractConfigWrapper implements IConfigWrapper {
     }
 
     private void registerProperties(IConfigurableElement configurableElement) {
+        useBuilder(builder -> {
+            configurableElement.registerProperties(builder, getConfigType());
+            return null;
+        });
+    }
+
+    private <T> T useBuilder(Function<ForgeConfigSpec.Builder, T> user) {
         int i = configuration.depth;
-        configurableElement.registerProperties(configuration);
+        T ret = user.apply(configuration);
         if (configuration.depth != i) {
             configuration.pop(configuration.depth - i);
         }
+        return ret;
     }
 
     private void checkReloadListener(IConfigurableElement cfg) {

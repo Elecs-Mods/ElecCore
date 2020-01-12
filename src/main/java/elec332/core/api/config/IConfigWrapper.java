@@ -1,7 +1,12 @@
 package elec332.core.api.config;
 
+import com.electronwill.nightconfig.core.UnmodifiableCommentedConfig;
+import net.minecraftforge.common.ForgeConfigSpec;
+
 import javax.annotation.Nonnull;
 import java.util.Set;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 /**
  * Created by Elec332 on 18-10-2016.
@@ -30,6 +35,25 @@ public interface IConfigWrapper {
      * @param obj The top-level instance/class of your configuration
      */
     public void registerConfigWithInnerClasses(Object obj);
+
+    /**
+     * Runs the consumer through the config builder of this {@link IConfigWrapper},
+     *
+     * @param initializer The config initializer
+     */
+    default public void initializeConfig(Consumer<ForgeConfigSpec.Builder> initializer) {
+        registerConfig(builder -> {
+            initializer.accept(builder);
+            return null;
+        });
+    }
+
+    /**
+     * Registers and initializes an object to this {@link IConfigWrapper},
+     *
+     * @param factory The config factory
+     */
+    public <T> T registerConfig(Function<ForgeConfigSpec.Builder, T> factory);
 
     /**
      * Registers an {@link IConfigurableElement} to this {@link IConfigWrapper}
@@ -71,5 +95,12 @@ public interface IConfigWrapper {
      */
     @Nonnull
     public Set<String> getRegisteredCategories();
+
+    /**
+     * Returns the raw currently loaded config data (read-only)
+     *
+     * @return The currently loaded, read-only, raw config data
+     */
+    public UnmodifiableCommentedConfig getRawReadOnlyData();
 
 }

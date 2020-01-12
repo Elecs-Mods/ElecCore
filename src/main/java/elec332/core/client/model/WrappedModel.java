@@ -49,6 +49,7 @@ public abstract class WrappedModel implements IBakedModel {
 
     @Nonnull
     @Override
+    @SuppressWarnings("deprecation")
     public TextureAtlasSprite getParticleTexture() {
         return parent.getParticleTexture();
     }

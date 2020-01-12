@@ -276,9 +276,12 @@ public class WorldHelper {
             return false;
         }
         if (chunkProvider instanceof ServerChunkProvider) {
+            if (((ServerChunkProvider) chunkProvider).world.getServer().isServerStopped()) {
+                return false;
+            }
             b1 = ((ServerChunkProvider) chunkProvider).chunkExists(cp.x, cp.z);
         } else {
-            b1 = chunk instanceof EmptyChunk;
+            b1 = !(chunk instanceof EmptyChunk);
         }
         return b1;// && chunk.isLoaded();
     }

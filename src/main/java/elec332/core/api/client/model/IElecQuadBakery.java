@@ -5,6 +5,7 @@ import elec332.core.api.client.model.template.IQuadTemplate;
 import elec332.core.api.client.model.template.IQuadTemplateSidedMap;
 import net.minecraft.client.renderer.Vector3f;
 import net.minecraft.client.renderer.model.BakedQuad;
+import net.minecraft.client.renderer.texture.ISprite;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.util.Direction;
 import net.minecraftforge.common.model.ITransformation;
@@ -63,6 +64,8 @@ public interface IElecQuadBakery {
     public BakedQuad bakeQuad(Vector3f v1, Vector3f v2, TextureAtlasSprite texture, Direction facing, ITransformation rotation, IQuadTemplate.IUVData uvData, int tint);
 
     public BakedQuad bakeQuad(Vector3f v1, Vector3f v2, TextureAtlasSprite texture, Direction facing, ITransformation rotation, float uMin, float vMin, float uMax, float vMax, int tint);
+
+    public BakedQuad bakeQuad(Vector3f v1, Vector3f v2, TextureAtlasSprite texture, Direction facing, ISprite state, float uMin, float vMin, float uMax, float vMax, int tint);
 
     /**
      * Bakes the list of general quads for an item from the provided textures.

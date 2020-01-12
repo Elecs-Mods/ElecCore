@@ -30,4 +30,7 @@ public interface IElecCoreMod {
     default public void registerSaveHandlers(ISingleRegister<IExternalSaveHandler> saveHandlerRegistry) {
     }
 
+    default public void afterConstruction() {
+    }
+
 }

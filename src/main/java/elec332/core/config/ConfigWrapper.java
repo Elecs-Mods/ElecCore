@@ -1,6 +1,7 @@
 package elec332.core.config;
 
 import com.electronwill.nightconfig.core.CommentedConfig;
+import com.electronwill.nightconfig.core.UnmodifiableCommentedConfig;
 import com.electronwill.nightconfig.core.file.CommentedFileConfig;
 import com.google.common.base.Preconditions;
 import elec332.core.util.ConstructorPointer;
@@ -54,13 +55,14 @@ public class ConfigWrapper extends AbstractConfigWrapper {
     private final String fileName;
     private final ModConfig.Type type;
     private final Logger logger;
+    private ModConfig config;
 
     @Override
     protected void registerConfigSpec() {
         if (FMLHelper.hasReachedState(ModLoadingStage.COMPLETE)) {
             throw new IllegalStateException();
         }
-        ModConfig config = new ModConfig(type, getSpec(), mod, fileName);
+        config = new ModConfig(type, getSpec(), mod, fileName);
         mod.addConfig(config);
         logger.info("Registered config: " + fileName);
         if (FMLHelper.hasFMLModContainer(mod)) {
@@ -75,6 +77,7 @@ public class ConfigWrapper extends AbstractConfigWrapper {
             });
         }
         if (FMLHelper.hasReachedState(ModLoadingStage.COMMON_SETUP)) {
+            logger.info("Immediately loading config...");
             final CommentedFileConfig configData = config.getHandler()
                     .reader(FMLPaths.CONFIGDIR.get())
                     .apply(config);
@@ -87,6 +90,16 @@ public class ConfigWrapper extends AbstractConfigWrapper {
             sendLoadingEvent.accept(mod, config);
             config.save();
         }
+    }
+
+    @Override
+    protected ModConfig.Type getConfigType() {
+        return type;
+    }
+
+    @Override
+    public UnmodifiableCommentedConfig getRawReadOnlyData() {
+        return config == null ? null : Preconditions.checkNotNull(config.getConfigData()).unmodifiable();
     }
 
     @Override

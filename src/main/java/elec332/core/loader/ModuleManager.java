@@ -8,14 +8,15 @@ import elec332.core.ElecCore;
 import elec332.core.api.APIHandlerInject;
 import elec332.core.api.IAPIHandler;
 import elec332.core.api.discovery.IAnnotationDataHandler;
-import elec332.core.api.module.IModuleContainer;
-import elec332.core.api.module.IModuleController;
-import elec332.core.api.module.IModuleInfo;
-import elec332.core.api.module.IModuleManager;
+import elec332.core.api.module.*;
 import elec332.core.module.DefaultWrappedModule;
 import elec332.core.util.FMLHelper;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.common.ForgeConfigSpec;
+import net.minecraftforge.eventbus.api.Event;
+import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.fml.ModContainer;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.ModLifecycleEvent;
 import net.minecraftforge.fml.javafmlmod.FMLModContainer;
 import net.minecraftforge.fml.loading.moddiscovery.ModInfo;
@@ -28,7 +29,9 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -42,31 +45,37 @@ enum ModuleManager implements IModuleManager {
     INSTANCE;
 
     ModuleManager() {
-        this.registeredModules = Sets.newHashSet();
+        this.discoveredModules = Sets.newHashSet();
         this.moduleControllers = Maps.newHashMap();
+        this.constructedModules = Sets.newHashSet();
         this.activeModules = Sets.newHashSet();
         this.activeModules_ = Collections.unmodifiableSet(activeModules);
         this.activeModuleNames = Maps.newHashMap();
         this.fieldProcessors = Maps.newHashMap();
         this.moduleDiscoverers = Sets.newHashSet();
         this.erroredMods = Sets.newHashSet();
+        this.checkCounter = new AtomicInteger();
+        this.moduleConfig = Maps.newHashMap();
     }
 
     private static final IModuleController DEFAULT_CONTROLLER;
     private static final BiFunction<Object, IModuleInfo, IModuleContainer> defaultImpl;
-    private Set<IModuleContainer> activeModules, activeModules_;
-    private Set<IModuleInfo> registeredModules;
+
+    private Set<IModuleContainer> constructedModules, activeModules, activeModules_;
+    private Set<IModuleInfo> discoveredModules;
     private Map<ResourceLocation, IModuleContainer> activeModuleNames;
     private Map<String, IModuleController> moduleControllers;
+    private Map<ResourceLocation, ForgeConfigSpec.BooleanValue> moduleConfig;
     private Map<Class<? extends Annotation>, Function<IModuleContainer, Object>> fieldProcessors;
     private Set<BiFunction<IAnnotationDataHandler, Function<String, IModuleController>, List<IModuleInfo>>> moduleDiscoverers;
     private Set<String> erroredMods;
+    private AtomicInteger checkCounter;
     private boolean locked, loaded;
 
     @APIHandlerInject
     private IAnnotationDataHandler asmData = null;
 
-    void init() {
+    void gatherAndConstruct() {
         moduleControllers = FMLHelper.getMods().stream()
                 .filter(mc -> mc.getMod() instanceof IModuleController)
                 .collect(Collectors.toMap(ModContainer::getModId, mc -> (IModuleController) mc.getMod()));
@@ -81,9 +90,12 @@ enum ModuleManager implements IModuleManager {
             }
             list.stream()
                     .filter(Objects::nonNull)
-                    .filter(moduleInfo -> moduleInfo.alwaysEnabled() || moduleInfo.getModuleController().isModuleEnabled(moduleInfo.getName()))
-                    .forEach(registeredModules::add);
+                    .forEach(discoveredModules::add);
         });
+
+        discoveredModules.stream()
+                .filter(moduleInfo -> !moduleInfo.alwaysEnabled())
+                .forEach(module -> moduleConfig.put(module.getCombinedName(), module.getModuleController().getModuleConfig(module.getName())));
 
         List<IModuleInfo> depCheckModules = checkModDependencies();
         while (true) {
@@ -101,6 +113,10 @@ enum ModuleManager implements IModuleManager {
         loaded = true;
     }
 
+    Set<IModuleContainer> getConstructedModules() {
+        return constructedModules;
+    }
+
     private List<IModuleInfo> checkModDependencies() {
         Map<String, ArtifactVersion> names = Maps.newHashMap();
         for (ModInfo modInfo : FMLHelper.getModList().getMods()) {
@@ -109,8 +125,8 @@ enum ModuleManager implements IModuleManager {
 
         List<IModuleInfo> list = Lists.newArrayList();
 
-        for (IModuleInfo module : registeredModules) {
-            boolean add = true;
+        for (IModuleInfo module : discoveredModules) {
+            boolean depsPresent = true;
             Set<String> missingMods = Sets.newHashSet();
             List<Pair<String, VersionRange>> requirements = module.getModDependencies();
             for (Pair<String, VersionRange> dep : requirements) {
@@ -119,13 +135,13 @@ enum ModuleManager implements IModuleManager {
                     if (!module.autoDisableIfRequirementsNotMet()) {
                         missingMods.add(dep.getKey() + "@" + dep.getRight().toString());
                     }
-                    add = false;
+                    depsPresent = false;
                 }
             }
             if (!missingMods.isEmpty()) {
                 throw new RuntimeException(String.format("Module %s is missing the required " + (missingMods.size() == 1 ? "dependency" : "dependencies") + " : {}", module.getCombinedName().toString(), missingMods));
             }
-            if (add) {
+            if (module.alwaysEnabled() ? depsPresent : module.getModuleController().shouldModuleConstruct(module, depsPresent)) {
                 list.add(module);
             }
         }
@@ -158,7 +174,7 @@ enum ModuleManager implements IModuleManager {
 
     private void constructModules(List<IModuleInfo> list) {
         for (IModuleInfo module : list) {
-            if (activeModuleNames.get(module.getCombinedName()) != null) {
+            if (constructedModules.stream().map(IModuleInfo::getCombinedName).anyMatch(name -> name.equals(module.getCombinedName()))) {
                 throw new RuntimeException("Found duplicate module name: " + module.getCombinedName());
             }
             try {
@@ -170,34 +186,69 @@ enum ModuleManager implements IModuleManager {
                 if (module_ == null) {
                     continue;
                 }
-                activeModules.add(module_);
-                activeModuleNames.put(new ResourceLocation(module.getCombinedName().toString().toLowerCase()), module_);
-                ElecCore.logger.info("Successfully registered module " + module.getName() + " from mod " + module.getOwner());
+                constructedModules.add(module_);
+                ElecCore.logger.info("Successfully constructed module " + module.getName() + " from mod " + module.getOwner());
             } catch (Exception e) {
-                ElecCore.logger.error("Error registering module " + module.getName() + " from mod " + module.getOwner());
+                ElecCore.logger.error("Error constructing module " + module.getName() + " from mod " + module.getOwner());
                 ElecCore.logger.error(e);
             }
         }
     }
 
+    private synchronized void addRegisteredModule(IModuleContainer moduleContainer) {
+        activeModules.add(moduleContainer);
+        activeModuleNames.put(new ResourceLocation(moduleContainer.getCombinedName().toString().toLowerCase()), moduleContainer);
+    }
+
     private void registerModulesToModBus() {
-        for (IModuleContainer module : activeModules) {
+        for (IModuleContainer module : constructedModules) {
             ModContainer mc = module.getOwnerMod();
             if (!FMLHelper.hasFMLModContainer(mc)) {
                 throw new UnsupportedOperationException();
             }
-            ((FMLModContainer) mc).getEventBus().addListener((Consumer<ModLifecycleEvent>) event -> {
-                try {
-                    module.invokeEvent(event);
-                } catch (Exception e) {
-                    throw new RuntimeException("Error invoking event on module " + module.getModule() + ", owned by: " + module.getOwnerMod(), e.getCause());
+            final FMLModContainer modContainer = FMLHelper.getFMLModContainer(mc);
+            modContainer.getEventBus().addListener(EventPriority.LOW, (Consumer<FMLCommonSetupEvent>) cse -> {
+                boolean add = Optional.ofNullable(moduleConfig.get(module.getCombinedName())).map(ForgeConfigSpec.BooleanValue::get).orElse(true);
+                add &= module.alwaysEnabled() || module.getModuleController().isModuleEnabled(module.getName());
+                if (add) {
+                    addRegisteredModule(module);
+                    ElecCore.logger.info("Successfully registered module " + module.getName() + " from mod " + module.getOwner());
+                }
+                checkCounter.incrementAndGet();
+                if (add) {
+                    invokeEvent(module, cse);
+                    modContainer.getEventBus().addListener(EventPriority.LOW, (Consumer<ModLifecycleEvent>) event -> invokeEvent(module, event));
+                    Class objClass = module.getModule().getClass();
+                    for (Method method : objClass.getDeclaredMethods()) {
+                        if (method.isAnnotationPresent(ElecModule.EventHandler.class)/* || method.isAnnotationPresent(Mod.EventHandler.class)*/) {
+                            if (method.getParameterTypes().length != 1) {
+                                continue;
+                            }
+                            Class<?> param = method.getParameterTypes()[0];
+                            if (!Event.class.isAssignableFrom(param) || ModLifecycleEvent.class.isAssignableFrom(param)) {
+                                continue;
+                            }
+                            ElecModule.EventHandler ann = method.getAnnotation(ElecModule.EventHandler.class);
+                            @SuppressWarnings("unchecked") //Checked above
+                                    Class<? extends Event> type = (Class<? extends Event>) param;
+                            modContainer.getEventBus().addListener(ann.priority(), ann.receiveCanceled(), type, event -> invokeEvent(module, event));
+                        }
+                    }
                 }
             });
         }
     }
 
+    private void invokeEvent(IModuleContainer module, Object event) {
+        try {
+            module.invokeEvent(event);
+        } catch (Exception e) {
+            throw new RuntimeException("Error invoking event on module " + module.getModule() + ", owned by: " + module.getOwnerMod().getModId(), e.getCause());
+        }
+    }
+
     private void processModuleField(Class<? extends Annotation> clazz, Function<IModuleContainer, Object> function) {
-        for (IModuleContainer module : activeModules) {
+        for (IModuleContainer module : constructedModules) {
             for (Field field : module.getModule().getClass().getDeclaredFields()) {
                 if (field.isAnnotationPresent(clazz)) {
                     field.setAccessible(true);
@@ -209,7 +260,10 @@ enum ModuleManager implements IModuleManager {
                     }
                     IModuleContainer module_ = module;
                     if (!Strings.isNullOrEmpty(name)) {
-                        module_ = activeModuleNames.get(new ResourceLocation(name));
+                        ResourceLocation rlName = new ResourceLocation(name);
+                        module_ = constructedModules.stream()
+                                .filter(m -> m.getCombinedName().equals(rlName))
+                                .findFirst().orElse(null);
                     }
                     Object o = function.apply(module_);
                     try {
@@ -229,18 +283,24 @@ enum ModuleManager implements IModuleManager {
         if (module == null) {
             return;
         }
-        registeredModules.add(module);
+        discoveredModules.add(module);
     }
 
     @Nonnull
     @Override
     public Set<IModuleContainer> getActiveModules() {
+        if (checkCounter.get() != constructedModules.size()) {
+            throw new UnsupportedOperationException();
+        }
         return activeModules_;
     }
 
     @Nullable
     @Override
     public IModuleContainer getActiveModule(ResourceLocation module) {
+        if (checkCounter.get() != constructedModules.size()) {
+            throw new UnsupportedOperationException();
+        }
         return activeModuleNames.get(new ResourceLocation(module.toString().toLowerCase()));
     }
 
@@ -259,7 +319,7 @@ enum ModuleManager implements IModuleManager {
         if (!loaded) {
             throw new IllegalStateException();
         }
-        activeModules.forEach(module -> {
+        getActiveModules().forEach(module -> {
             try {
                 module.invokeEvent(event);
             } catch (Exception e) {

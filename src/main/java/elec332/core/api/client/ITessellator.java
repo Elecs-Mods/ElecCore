@@ -1,8 +1,11 @@
 package elec332.core.api.client;
 
-import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.client.model.pipeline.VertexBufferConsumer;
+
+import javax.annotation.Nonnull;
 
 /**
  * Created by Elec332 on 25-11-2015.
@@ -33,6 +36,12 @@ public interface ITessellator {
 
     public void startDrawingGui();
 
-    public Tessellator getMCTessellator();
+    public void draw();
+
+    @Nonnull
+    public BufferBuilder getBuffer();
+
+    @Nonnull
+    public VertexBufferConsumer getVertexBufferConsumer();
 
 }

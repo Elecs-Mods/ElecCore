@@ -1,5 +1,7 @@
 package elec332.core.api.module;
 
+import net.minecraftforge.eventbus.api.EventPriority;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -58,6 +60,10 @@ public @interface ElecModule {
     @Retention(RetentionPolicy.RUNTIME)
     @Target(ElementType.METHOD)
     public @interface EventHandler {
+
+        EventPriority priority() default EventPriority.NORMAL;
+
+        boolean receiveCanceled() default false;
 
     }
 

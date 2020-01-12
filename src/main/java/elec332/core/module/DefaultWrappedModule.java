@@ -50,7 +50,6 @@ public class DefaultWrappedModule implements IModuleContainer {
     private final List<Pair<String, VersionRange>> modDependencies;
     private final IModuleController moduleController;
     private final ModContainer mod;
-    private Boolean enabled = null;
 
     @Nonnull
     @Override
@@ -89,12 +88,6 @@ public class DefaultWrappedModule implements IModuleContainer {
 
     @Override
     public void invokeEvent(Object event) throws Exception {
-        if (enabled == null) {
-            enabled = getModuleController().isModuleEnabled(getName());
-        }
-        if (!enabled) {
-            return;
-        }
         Class objClass = this.module.getClass();
         for (Method method : objClass.getDeclaredMethods()) {
             if (method.isAnnotationPresent(ElecModule.EventHandler.class)/* || method.isAnnotationPresent(Mod.EventHandler.class)*/) {

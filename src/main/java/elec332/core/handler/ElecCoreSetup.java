@@ -92,7 +92,7 @@ public class ElecCoreSetup {
             });
         });
         modHandler.registerModHandler((mc, mod) -> mod.registerSaveHandlers(saveHandler -> SaveHandler.INSTANCE.registerSaveHandler(mc, saveHandler)));
-        modHandler.registerModHandler(forFMLMod((mc, mod) -> {
+        modHandler.registerConstructionModHandler(forFMLMod((mc, mod) -> {
             List<IObjectRegister<?>> list = Lists.newArrayList();
             mod.registerRegisters(list::add, worldGenRegister -> worldGenManager.registerWorldGenRegistry(worldGenRegister, mc));
             if (list.isEmpty()) {
@@ -111,10 +111,6 @@ public class ElecCoreSetup {
                                 .map(pt -> pt instanceof ParameterizedType ? ((ParameterizedType) pt).getRawType() : pt)
                                 .findFirst()
                                 .get();
-                        //ty = ((ParameterizedType) ty).getActualTypeArguments()[0];
-                        //if (ty instanceof ParameterizedType) { //TileEntityType also has parameters...
-                        //    ty = ((ParameterizedType) ty).getRawType();
-                        //}
                         if (ty.equals(event1.getGenericType())) {
                             register.preRegister();
                             register.register(event1.getRegistry());
@@ -124,7 +120,6 @@ public class ElecCoreSetup {
 
             });
         }));
-
     }
 
     private static BiConsumer<ModContainer, IElecCoreMod> forFMLMod(BiConsumer<FMLModContainer, IElecCoreMod> c) {

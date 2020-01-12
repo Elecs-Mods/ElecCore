@@ -1,11 +1,16 @@
 package elec332.core.client.util;
 
 import elec332.core.api.client.ITessellator;
+import elec332.core.client.RenderHelper;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.client.model.pipeline.VertexBufferConsumer;
+import org.lwjgl.opengl.GL11;
+
+import javax.annotation.Nonnull;
 
 /**
  * Created by Elec332 on 25-11-2015.
@@ -18,16 +23,18 @@ public class ElecTessellator implements ITessellator {
     }
 
     public ElecTessellator(Tessellator tessellator) {
-        this(tessellator.getBuffer());
+        this.worldRenderer = tessellator.getBuffer();
         this.tessellator = tessellator;
     }
 
     public ElecTessellator(BufferBuilder worldRenderer) {
         this.worldRenderer = worldRenderer;
+        this.tessellator = null;
     }
 
-    private Tessellator tessellator;
+    private final Tessellator tessellator;
     private final BufferBuilder worldRenderer;
+    private VertexBufferConsumer vertexBufferConsumer;
     private int brightness1, brightness2;
     private int color1, color2, color3, color4;
 
@@ -70,12 +77,12 @@ public class ElecTessellator implements ITessellator {
 
     @Override
     public void startDrawingWorldBlock() {
-        worldRenderer.begin(7, DefaultVertexFormats.BLOCK);
+        worldRenderer.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
     }
 
     @Override
     public void startDrawingGui() {
-        worldRenderer.begin(7, DefaultVertexFormats.POSITION_TEX);
+        worldRenderer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
     }
 
     @Override
@@ -87,12 +94,28 @@ public class ElecTessellator implements ITessellator {
         worldRenderer.endVertex();
     }
 
+    @Nonnull
     @Override
-    public Tessellator getMCTessellator() {
+    public BufferBuilder getBuffer() {
+        return worldRenderer;
+    }
+
+    @Override
+    public void draw() {
         if (tessellator == null) {
-            throw new IllegalStateException();
+            RenderHelper.drawBuffer(this.worldRenderer);
+            return;
         }
-        return tessellator;
+        tessellator.draw();
+    }
+
+    @Nonnull
+    @Override
+    public VertexBufferConsumer getVertexBufferConsumer() {
+        if (vertexBufferConsumer == null) {
+            vertexBufferConsumer = new VertexBufferConsumer(getBuffer());
+        }
+        return vertexBufferConsumer;
     }
 
     private void drawColor() {

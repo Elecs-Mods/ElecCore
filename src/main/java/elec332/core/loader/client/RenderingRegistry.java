@@ -54,6 +54,7 @@ import java.util.function.Supplier;
  */
 @StaticLoad
 @OnlyIn(Dist.CLIENT)
+@SuppressWarnings("unused")
 public final class RenderingRegistry implements IElecRenderingRegistry {
 
     public static RenderingRegistry instance() {
@@ -203,6 +204,7 @@ public final class RenderingRegistry implements IElecRenderingRegistry {
         setItemRenderer(Preconditions.checkNotNull(item), new AbstractTileEntityItemStackRenderer() {
 
             @Override
+            @SuppressWarnings("all")
             protected void renderItem(ItemStack stack) {
                 renderer.render(null, 0, 0, 0, 0, 0);
             }

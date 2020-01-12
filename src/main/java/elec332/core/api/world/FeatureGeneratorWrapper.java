@@ -4,6 +4,7 @@ import elec332.core.api.config.IConfigurableElement;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.gen.ChunkGenerator;
 import net.minecraftforge.common.ForgeConfigSpec;
+import net.minecraftforge.fml.config.ModConfig;
 
 import javax.annotation.Nonnull;
 import java.util.Random;
@@ -49,12 +50,12 @@ public class FeatureGeneratorWrapper implements IAdvancedChunkPopulator, IConfig
     }
 
     @Override
-    public void registerProperties(@Nonnull ForgeConfigSpec.Builder config) {
+    public void registerProperties(@Nonnull ForgeConfigSpec.Builder config, ModConfig.Type type) {
         config.push(name);
         this.genkey = config.comment("When this key differs from the key stored in the chunk data, the chunk will be retrogenned.").define(getName(), INITIAL)::get;
 
         if (this.generator instanceof IConfigurableElement) {
-            ((IConfigurableElement) this.generator).registerProperties(config);
+            ((IConfigurableElement) this.generator).registerProperties(config, type);
         }
 
         config.pop();

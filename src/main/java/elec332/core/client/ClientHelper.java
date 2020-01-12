@@ -1,5 +1,6 @@
 package elec332.core.client;
 
+import net.minecraft.client.GameSettings;
 import net.minecraft.client.KeyboardListener;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
@@ -20,6 +21,10 @@ public class ClientHelper {
 
     public static KeyboardListener getKeyboardListener() {
         return getMinecraft().keyboardListener;
+    }
+
+    public static GameSettings getGameSettings() {
+        return getMinecraft().gameSettings;
     }
 
     public static boolean isShiftKeyDown() {

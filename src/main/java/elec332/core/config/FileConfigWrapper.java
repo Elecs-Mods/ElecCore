@@ -1,11 +1,13 @@
 package elec332.core.config;
 
 import com.electronwill.nightconfig.core.CommentedConfig;
+import com.electronwill.nightconfig.core.UnmodifiableCommentedConfig;
 import com.electronwill.nightconfig.core.file.CommentedFileConfig;
 import com.electronwill.nightconfig.core.file.FileConfig;
 import com.electronwill.nightconfig.core.file.FileWatcher;
 import com.electronwill.nightconfig.core.io.WritingMode;
 import elec332.core.util.FieldPointer;
+import net.minecraftforge.fml.config.ModConfig;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -44,8 +46,18 @@ public class FileConfigWrapper extends AbstractConfigWrapper {
     }
 
     @Override
+    protected ModConfig.Type getConfigType() {
+        return null;
+    }
+
+    @Override
     protected void postRegister() {
         load();
+    }
+
+    @Override
+    public UnmodifiableCommentedConfig getRawReadOnlyData() {
+        return cfg == null ? null : cfg.unmodifiable();
     }
 
     /**

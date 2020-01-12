@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -37,22 +38,33 @@ enum ElecModHandler implements IElecCoreModHandler {
     ElecModHandler() {
         reg = Maps.newHashMap();
         handlers = Sets.newHashSet();
+        constructionHandlers = Sets.newHashSet();
     }
 
     @APIHandlerInject(weight = Short.MAX_VALUE)
     private IAnnotationDataHandler asmData = null;
     private Map<Class<? extends Annotation>, Function<ModContainer, Object>> reg;
-    private Set<BiConsumer<ModContainer, IElecCoreMod>> handlers;
+    private Set<BiConsumer<ModContainer, IElecCoreMod>> handlers, constructionHandlers;
     private List<Pair<ModContainer, IElecCoreMod>> mods;
 
-    void afterConstruct() {
+    void gatherAndInitialize() {
         identifyMods();
         initAnnotations(asmData);
-        init(mods);
+        construction(mods);
     }
 
-    void latePreInit() {
-        init(ModuleManager.INSTANCE.getActiveModules().stream()
+    void postConstruction() {
+        mods.forEach(p -> p.getRight().afterConstruction());
+        forActiveModules(this::construction);
+    }
+
+    void postSetup() {
+        postSetup(mods);
+        forActiveModules(this::postSetup);
+    }
+
+    private void forActiveModules(Consumer<List<Pair<ModContainer, IElecCoreMod>>> consumer) {
+        consumer.accept(ModuleManager.INSTANCE.getConstructedModules().stream()
                 .filter(mc -> mc.getModule() instanceof IElecCoreMod)
                 .map(moduleContainer -> Pair.of(moduleContainer.getOwnerMod(), (IElecCoreMod) moduleContainer.getModule()))
                 .collect(Collectors.toList()));
@@ -72,7 +84,15 @@ enum ElecModHandler implements IElecCoreModHandler {
                 .collect(Collectors.toList());
     }
 
-    private void init(List<Pair<ModContainer, IElecCoreMod>> mods) {
+    private void postSetup(List<Pair<ModContainer, IElecCoreMod>> mods) {
+        runHandlers(mods, handlers);
+    }
+
+    private void construction(List<Pair<ModContainer, IElecCoreMod>> mods) {
+        runHandlers(mods, constructionHandlers);
+    }
+
+    private void runHandlers(List<Pair<ModContainer, IElecCoreMod>> mods, final Set<BiConsumer<ModContainer, IElecCoreMod>> handlers) {
         mods.forEach(mod -> handlers.forEach(handler -> handler.accept(mod.getLeft(), mod.getRight())));
     }
 
@@ -139,6 +159,11 @@ enum ElecModHandler implements IElecCoreModHandler {
     @Override
     public void registerModHandler(BiConsumer<ModContainer, IElecCoreMod> handler) {
         handlers.add(handler);
+    }
+
+    @Override
+    public void registerConstructionModHandler(BiConsumer<ModContainer, IElecCoreMod> handler) {
+        constructionHandlers.add(handler);
     }
 
     @APIHandlerInject(weight = Short.MAX_VALUE)

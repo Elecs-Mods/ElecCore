@@ -17,12 +17,11 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.Direction;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.client.model.BasicState;
 import net.minecraftforge.client.model.ItemLayerModel;
-import net.minecraftforge.common.model.IModelState;
 import net.minecraftforge.common.model.ITransformation;
 import net.minecraftforge.common.model.TRSRTransformation;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.EnumMap;
 import java.util.List;
@@ -129,20 +128,16 @@ public class ElecQuadBakery implements IElecQuadBakery {
         return bakeQuad(v1, v2, texture, facing, rotation, uvData.getUMin(), uvData.getVMin(), uvData.getUMax(), uvData.getVMax(), tint);
     }
 
-    @SuppressWarnings("ConstantConditions")
     @Override
     public BakedQuad bakeQuad(Vector3f v1, Vector3f v2, TextureAtlasSprite texture, Direction facing, ITransformation rotation, float f1, float f2, float f3, float f4, int tint) {
+        return bakeQuad(v1, v2, texture, facing, new BasicState((something) -> Optional.of(new TRSRTransformation(rotation.getMatrixVec())), false), f1, f2, f3, f4, tint);
+    }
+
+    @Override
+    public BakedQuad bakeQuad(Vector3f v1, Vector3f v2, TextureAtlasSprite texture, Direction facing, ISprite rotation, float f1, float f2, float f3, float f4, int tint) {
         BlockFaceUV bfuv = new BlockFaceUV(new float[]{f1, f2, f3, f4}, 0);
-        BlockPartFace bpf = new BlockPartFace(rotation.rotateTransform(facing), tint, null, bfuv);
-        return faceBakery.makeBakedQuad(v1, v2, bpf, texture, facing, new ISprite() {
-
-            @Nonnull
-            @Override
-            public IModelState getState() {
-                return (something) -> Optional.of(new TRSRTransformation(rotation.getMatrixVec()));
-            }
-
-        }, null, true);
+        BlockPartFace bpf = new BlockPartFace(rotation.getState().apply(Optional.empty()).orElse(TRSRTransformation.identity()).rotateTransform(facing), tint, "", bfuv);
+        return faceBakery.makeBakedQuad(v1, v2, bpf, texture, facing, rotation, null, true);
     }
 
     /**

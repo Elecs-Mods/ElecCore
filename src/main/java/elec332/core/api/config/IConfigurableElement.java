@@ -1,6 +1,7 @@
 package elec332.core.api.config;
 
 import net.minecraftforge.common.ForgeConfigSpec;
+import net.minecraftforge.fml.config.ModConfig;
 
 import javax.annotation.Nonnull;
 
@@ -11,7 +12,7 @@ import javax.annotation.Nonnull;
  */
 public interface IConfigurableElement {
 
-    public void registerProperties(@Nonnull ForgeConfigSpec.Builder config);
+    public void registerProperties(@Nonnull ForgeConfigSpec.Builder config, ModConfig.Type type);
 
     /**
      * Gets called when the config file is initially loaded
