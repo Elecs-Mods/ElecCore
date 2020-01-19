@@ -36,24 +36,23 @@ public abstract class AbstractInfoProviderCapability<O> implements IInfoProvider
         }
     }
 
-    @Nonnull
     @Override
-    public final CompoundNBT getInfoNBTData(@Nonnull CompoundNBT tag, TileEntity tile, @Nonnull ServerPlayerEntity player, @Nonnull IInfoDataAccessorBlock hitData) {
+    public void gatherInformation(@Nonnull CompoundNBT tag, @Nonnull ServerPlayerEntity player, @Nonnull IInfoDataAccessorBlock hitData) {
+        TileEntity tile = hitData.getTileEntity();
         if (tile != null) {
             LazyOptional<O> cap = tile.getCapability(capability, hitData.getSide());
             if (cap != null) {
                 O instance = cap.orElse(null);
                 if (instance != null) {
-                    getNBTData(tag, tile, instance, player, hitData);
+                    getNBTData(tag, instance, player, hitData);
                 }
             }
         }
-        return tag;
     }
 
     public abstract void addInformation(@Nonnull IInformation information, @Nonnull IInfoDataAccessorBlock hitData, O capability);
 
     @Nonnull
-    public abstract CompoundNBT getNBTData(@Nonnull CompoundNBT tag, TileEntity tile, O capability, @Nonnull ServerPlayerEntity player, @Nonnull IInfoDataAccessorBlock hitData);
+    public abstract CompoundNBT getNBTData(@Nonnull CompoundNBT tag, O capability, @Nonnull ServerPlayerEntity player, @Nonnull IInfoDataAccessorBlock hitData);
 
 }

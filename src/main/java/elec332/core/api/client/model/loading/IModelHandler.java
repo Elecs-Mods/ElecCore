@@ -6,9 +6,10 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.model.ModelLoader;
 
 import javax.annotation.Nonnull;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 /**
@@ -31,23 +32,25 @@ public interface IModelHandler {
      *
      * @param list All objects annotated with {@link ModelHandler}
      */
-    public void getModelHandlers(List<?> list);
+    default public void getModelHandlers(List<?> list) {
+    }
 
     /**
      * Used to setup handler and prepare for registering the models.
      * <p>
      * Gets called after {@link IModelHandler#getModelHandlers(List)}
      */
-    public void preHandleModels();
+    default public void preHandleModels() {
+    }
 
     /**
      * Used to get the names of the objects that are handled by this handler.
      * This is used to remove the model-loading error from the log files and gets called after {@link IModelHandler#preHandleModels()}
      *
-     * @return A {@link Set} with the registry names of the objects handled by this model handler
+     * @return A {@link Collection} with the model locations of the objects handled by this model handler
      */
     @Nonnull
-    public Set<ResourceLocation> getHandlerObjectNames();
+    public Collection<ResourceLocation> getHandlerModelLocations();
 
     /**
      * Used to register the models to the registry,
@@ -55,10 +58,9 @@ public interface IModelHandler {
      *
      * @param bakedModelGetter The getter for fetching already existing/loaded models
      * @param modelLoader      The model loader
-     * @return A Non-null map with the models that need to be registered
+     * @param registry         The model registry, models that need to be registered can be registered here
      */
-    @Nonnull
-    public Map<ModelResourceLocation, IBakedModel> registerBakedModels(Function<ModelResourceLocation, IBakedModel> bakedModelGetter, ModelLoader modelLoader);
+    public void registerBakedModels(Function<ModelResourceLocation, IBakedModel> bakedModelGetter, ModelLoader modelLoader, BiConsumer<ModelResourceLocation, IBakedModel> registry);
 
     /**
      * Can be used to remove exceptions from being displayed in the logs,

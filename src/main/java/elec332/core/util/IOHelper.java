@@ -3,12 +3,14 @@ package elec332.core.util;
 import elec332.core.ElecCore;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.CompressedStreamTools;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.loading.FMLPaths;
 import org.apache.commons.io.FileUtils;
 
 import javax.annotation.Nonnull;
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -37,24 +39,6 @@ public class IOHelper {
     }
 
     public static final IObjectIO<CompoundNBT> NBT_IO, NBT_COMPRESSED_IO;
-
-    /**
-     * Gets the {@link InputStream} from the provided {@link ResourceLocation},
-     * also works on the {@link net.minecraftforge.api.distmarker.Dist#DEDICATED_SERVER}
-     * (MC's method doesn't)
-     *
-     * @param resourceLocation The location of the resource
-     * @return The {@link InputStream} from the provided {@link ResourceLocation}
-     */
-    @Nonnull
-    public static InputStream getFromResource(@Nonnull ResourceLocation resourceLocation) throws IOException {
-        String location = "/assets/" + resourceLocation.getNamespace() + "/" + resourceLocation.getPath();
-        InputStream ret = ElecCore.class.getResourceAsStream(location);
-        if (ret != null) {
-            return ret;
-        }
-        throw new FileNotFoundException(location);
-    }
 
     /**
      * Makes sure the folder exists, tries to create it if it doesn't.

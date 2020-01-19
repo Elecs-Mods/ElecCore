@@ -8,6 +8,7 @@ import elec332.core.api.client.model.loading.IBlockModelHandler;
 import elec332.core.api.client.model.loading.IModelHandler;
 import elec332.core.api.client.model.loading.ModelHandler;
 import elec332.core.loader.client.RenderingRegistry;
+import elec332.core.util.ResourceHelper;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.renderer.BlockModelShapes;
@@ -20,7 +21,9 @@ import net.minecraftforge.registries.ForgeRegistryEntry;
 import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
+import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -69,24 +72,26 @@ public class BlockModelHandler implements IModelHandler {
 
     @Nonnull
     @Override
-    public Set<ResourceLocation> getHandlerObjectNames() {
-        return blockResourceLocations.keySet().stream().map(BlockState::getBlock).map(ForgeRegistryEntry::getRegistryName).collect(Collectors.toSet());
+    public Set<ResourceLocation> getHandlerModelLocations() {
+        return blockResourceLocations.keySet().stream()
+                .map(BlockState::getBlock)
+                .map(ForgeRegistryEntry::getRegistryName)
+                .filter(Objects::nonNull)
+                .map(ResourceHelper::getBlockModelLocation)
+                .collect(Collectors.toSet());
     }
 
     @Override
-    @Nonnull
-    public Map<ModelResourceLocation, IBakedModel> registerBakedModels(Function<ModelResourceLocation, IBakedModel> modelGetter, ModelLoader modelLoader) {
-        Map<ModelResourceLocation, IBakedModel> ret = Maps.newHashMap();
+    public void registerBakedModels(Function<ModelResourceLocation, IBakedModel> bakedModelGetter, ModelLoader modelLoader, BiConsumer<ModelResourceLocation, IBakedModel> registry) {
         for (Map.Entry<BlockState, ModelResourceLocation> entry : blockResourceLocations.entrySet()) {
             ModelResourceLocation mrl = entry.getValue();
             for (IBlockModelHandler handler : blockModelHandlers) {
                 if (handler.handleBlock(entry.getKey().getBlock())) {
-                    ret.put(mrl, handler.getModelFor(entry.getKey(), mrl.getVariant(), mrl));
+                    registry.accept(mrl, handler.getModelFor(entry.getKey(), mrl.getVariant(), mrl));
                     break;
                 }
             }
         }
-        return ret;
     }
 
     @Override

@@ -17,7 +17,7 @@ import java.util.function.Predicate;
 /**
  * Created by Elec332 on 29-12-2019
  */
-public class FileConfigWrapper extends AbstractConfigWrapper {
+public class FileConfigWrapper extends AbstractFileConfigWrapper {
 
     public FileConfigWrapper(File location) {
         this(location.toPath());

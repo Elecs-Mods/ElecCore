@@ -2,12 +2,15 @@ package elec332.core.api.client.model;
 
 import elec332.core.api.client.ITextureLoader;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.client.renderer.model.IBakedModel;
-import net.minecraft.client.renderer.model.ModelResourceLocation;
 import net.minecraft.client.renderer.tileentity.ItemStackTileEntityRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import net.minecraft.item.Item;
+import net.minecraft.state.IProperty;
+import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.ResourceLocation;
 
 import javax.annotation.Nonnull;
 import java.util.function.Supplier;
@@ -17,7 +20,12 @@ import java.util.function.Supplier;
  */
 public interface IElecRenderingRegistry {
 
-    public void registerLoadableModel(ModelResourceLocation mrl);
+    @Nonnull
+    public StateContainer<Block, BlockState> registerBlockStateLocation(ResourceLocation location, IProperty<?>... properties);
+
+    public void registerModelLocation(ResourceLocation location);
+
+    public void registerTextureLocation(ResourceLocation location);
 
     public Item registerFakeItem(Item item);
 

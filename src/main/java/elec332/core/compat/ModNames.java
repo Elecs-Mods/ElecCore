@@ -12,5 +12,6 @@ public class ModNames {
     public static final String ELECCORE = ElecCore.MODID;
     public static final String WAILA = "waila";
     public static final String FORESTRY = "forestry";
+    public static final String THE_ONE_PROBE = "theoneprobe";
 
 }

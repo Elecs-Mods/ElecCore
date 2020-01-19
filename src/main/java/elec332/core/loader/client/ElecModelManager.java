@@ -29,6 +29,7 @@ import net.minecraftforge.fml.ModLoadingStage;
 import javax.annotation.Nonnull;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -86,8 +87,8 @@ enum ElecModelManager implements IAnnotationDataProcessor {
     private void registerFakeResources() {
         Map<String, Set<ResourceLocation>> mods = Maps.newHashMap();
         modelHandlers.stream()
-                .map(IModelHandler::getHandlerObjectNames)
-                .flatMap(Set::stream)
+                .map(IModelHandler::getHandlerModelLocations)
+                .flatMap(Collection::stream)
                 .forEach(rl -> mods.computeIfAbsent(rl.getNamespace(), k -> Sets.newHashSet()).add(rl));
         mods.keySet().forEach(name -> ClientHelper.getMinecraft().getResourceManager().addResourcePack(new InternalResourcePack(name + " automodel", name) {
 
@@ -117,15 +118,16 @@ enum ElecModelManager implements IAnnotationDataProcessor {
             private boolean isValidBlockState(String path) {
                 if (path.startsWith("blockstates/") && path.endsWith(".json")) {
                     String p2 = path.replace("blockstates/", "").replace(".json", "");
-                    return objects.stream().anyMatch(rl -> rl.getPath().equals(p2));
+                    return objects.stream().anyMatch(rl -> rl.getPath().replace("block/", "").equals(p2));
                 }
                 return false;
             }
 
             private boolean isValidItemModel(String path) {
                 if (path.startsWith("models/item/") && path.endsWith(".json")) {
-                    String p2 = path.replace("models/item/", "").replace(".json", "");
-                    return objects.stream().anyMatch(rl -> rl.getPath().equals(p2));
+                    String p2 = path.replace("models/item/", "")
+                            .replace(".json", "");
+                    return objects.stream().anyMatch(rl -> rl.getPath().replace("item/", "").equals(p2));
                 }
                 return false;
             }
@@ -141,7 +143,7 @@ enum ElecModelManager implements IAnnotationDataProcessor {
         Map<ModelResourceLocation, IBakedModel> models = Maps.newHashMap();
 
         for (IModelHandler modelHandler : modelHandlers) {
-            models.putAll(modelHandler.registerBakedModels(modelGetter, modelLoader));
+            modelHandler.registerBakedModels(modelGetter, modelLoader, models::put);
         }
 
         for (Map.Entry<ModelResourceLocation, IBakedModel> entry : models.entrySet()) {

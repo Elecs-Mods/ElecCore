@@ -13,6 +13,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Created by Elec332 on 16-10-2016.
@@ -34,6 +35,7 @@ public interface IInfoDataAccessorBlock extends IInfoDataAccessor {
     @Override
     public CompoundNBT getData();
 
+    @Nonnull
     @Override
     public Vec3d getHitVec();
 
@@ -46,10 +48,13 @@ public interface IInfoDataAccessorBlock extends IInfoDataAccessor {
     @Nonnull
     public Block getBlock();
 
+    @Nullable
     public TileEntity getTileEntity();
 
+    @Nullable
     public ItemStack getStack();
 
+    @Nonnull
     public BlockRayTraceResult getRayTraceResult();
 
 }

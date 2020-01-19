@@ -7,7 +7,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.world.World;
 
 import javax.annotation.Nonnull;
 
@@ -27,12 +26,10 @@ public enum InformationHandler implements IInfoProvider, IInfoProviderEntity {
     }
 
     @Override
-    @Nonnull
-    public CompoundNBT getInfoNBTData(@Nonnull CompoundNBT tag, TileEntity tile, @Nonnull ServerPlayerEntity player, @Nonnull IInfoDataAccessorBlock hitData) {
+    public void gatherInformation(@Nonnull CompoundNBT tag, @Nonnull ServerPlayerEntity player, @Nonnull IInfoDataAccessorBlock hitData) {
         for (IInfoProvider info : ElecCoreRegistrar.INFORMATION_PROVIDERS.getAllRegisteredObjects()) {
-            tag = info.getInfoNBTData(tag, tile, player, hitData);
+            info.gatherInformation(tag, player, hitData);
         }
-        return tag;
     }
 
     @Override
@@ -42,13 +39,11 @@ public enum InformationHandler implements IInfoProvider, IInfoProviderEntity {
         }
     }
 
-    @Nonnull
     @Override
-    public CompoundNBT getNBTData(@Nonnull CompoundNBT tag, @Nonnull World world, @Nonnull Entity entity, @Nonnull ServerPlayerEntity player) {
+    public void gatherInformation(@Nonnull CompoundNBT tag, @Nonnull ServerPlayerEntity player, @Nonnull IInfoDataAccessorEntity hitData) {
         for (IInfoProviderEntity info : ElecCoreRegistrar.INFORMATION_PROVIDERS_ENTITY.getAllRegisteredObjects()) {
-            tag = info.getNBTData(tag, world, entity, player);
+            info.gatherInformation(tag, player, hitData);
         }
-        return tag;
     }
 
     static {
@@ -67,17 +62,16 @@ public enum InformationHandler implements IInfoProvider, IInfoProviderEntity {
                 }
             }
 
-            @Nonnull
             @Override
-            public CompoundNBT getInfoNBTData(@Nonnull CompoundNBT tag, TileEntity tile, @Nonnull ServerPlayerEntity player, @Nonnull IInfoDataAccessorBlock hitData) {
+            public void gatherInformation(@Nonnull CompoundNBT tag, @Nonnull ServerPlayerEntity player, @Nonnull IInfoDataAccessorBlock hitData) {
                 Block block = hitData.getBlock();
                 if (block instanceof IInfoProvider) {
-                    tag = ((IInfoProvider) block).getInfoNBTData(tag, tile, player, hitData);
+                    ((IInfoProvider) block).gatherInformation(tag, player, hitData);
                 }
+                TileEntity tile = hitData.getTileEntity();
                 if (tile instanceof IInfoProvider) {
-                    return ((IInfoProvider) tile).getInfoNBTData(tag, tile, player, hitData);
+                    ((IInfoProvider) tile).gatherInformation(tag, player, hitData);
                 }
-                return tag;
             }
 
         });
@@ -92,10 +86,12 @@ public enum InformationHandler implements IInfoProvider, IInfoProviderEntity {
                 }
             }
 
-            @Nonnull
             @Override
-            public CompoundNBT getNBTData(@Nonnull CompoundNBT tag, @Nonnull World world, @Nonnull Entity entity, @Nonnull ServerPlayerEntity player) {
-                return entity instanceof IInfoProviderEntity ? ((IInfoProviderEntity) entity).getNBTData(tag, world, entity, player) : tag;
+            public void gatherInformation(@Nonnull CompoundNBT tag, @Nonnull ServerPlayerEntity player, @Nonnull IInfoDataAccessorEntity hitData) {
+                Entity entity = hitData.getEntity();
+                if (entity instanceof IInfoProviderEntity) {
+                    ((IInfoProviderEntity) entity).gatherInformation(tag, player, hitData);
+                }
             }
 
         });

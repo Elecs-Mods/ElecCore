@@ -7,6 +7,7 @@ import elec332.core.ElecCore;
 import elec332.core.api.APIHandlerInject;
 import elec332.core.api.config.Configurable;
 import elec332.core.api.config.IConfigElementSerializer;
+import elec332.core.api.config.IConfigWrapper;
 import elec332.core.api.discovery.IAnnotationData;
 import elec332.core.api.mod.IElecCoreMod;
 import elec332.core.api.mod.IElecCoreModHandler;
@@ -18,7 +19,6 @@ import elec332.core.api.network.INetworkManager;
 import elec332.core.api.network.ModNetworkHandler;
 import elec332.core.api.registration.IObjectRegister;
 import elec332.core.api.world.IWorldGenManager;
-import elec332.core.config.AbstractConfigWrapper;
 import elec332.core.data.SaveHandler;
 import elec332.core.module.DefaultModuleInfo;
 import net.minecraft.util.ResourceLocation;
@@ -133,7 +133,7 @@ public class ElecCoreSetup {
     }
 
     private static void registerConfigSerializers() {
-        AbstractConfigWrapper.registerConfigElementSerializer((type, instance, field, data, config, defaultValue, comment) -> {
+        IConfigWrapper.registerConfigElementSerializer((type, instance, field, data, config, defaultValue, comment) -> {
             if (type.isAssignableFrom(Integer.TYPE)) {
                 if (!Strings.isNullOrEmpty(comment)) {
                     config.comment(comment);
@@ -142,7 +142,7 @@ public class ElecCoreSetup {
             }
             return null;
         });
-        AbstractConfigWrapper.registerConfigElementSerializer((type, instance, field, data, config, defaultValue, comment) -> {
+        IConfigWrapper.registerConfigElementSerializer((type, instance, field, data, config, defaultValue, comment) -> {
             if (type.isAssignableFrom(Boolean.TYPE)) {
                 if (!Strings.isNullOrEmpty(comment)) {
                     config.comment(comment);
@@ -151,7 +151,7 @@ public class ElecCoreSetup {
             }
             return null;
         });
-        AbstractConfigWrapper.registerConfigElementSerializer((type, instance, field, data, config, defaultValue, comment) -> {
+        IConfigWrapper.registerConfigElementSerializer((type, instance, field, data, config, defaultValue, comment) -> {
             if (type.isAssignableFrom(String.class) || (type.isArray() && type.getComponentType().isAssignableFrom(String.class))) {
                 if (!Strings.isNullOrEmpty(comment)) {
                     config.comment(comment);
@@ -173,7 +173,7 @@ public class ElecCoreSetup {
             }
             return null;
         });
-        AbstractConfigWrapper.registerConfigElementSerializer(new IConfigElementSerializer() {
+        IConfigWrapper.registerConfigElementSerializer(new IConfigElementSerializer() {
 
             @Nullable
             @Override

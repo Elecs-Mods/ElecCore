@@ -29,7 +29,7 @@ import java.util.List;
 /**
  * Created by Elec332 on 19-2-2019
  */
-public class WailaHandlerTileEntity implements IComponentProvider, IServerDataProvider<TileEntity> {
+public class WailaHandlerBlock implements IComponentProvider, IServerDataProvider<TileEntity> {
 
     @Override
     public void appendServerData(CompoundNBT data, ServerPlayerEntity player, World world, TileEntity te) {
@@ -43,7 +43,7 @@ public class WailaHandlerTileEntity implements IComponentProvider, IServerDataPr
             tag.putBoolean("_nope_", true);
             return;
         }
-        InformationHandler.INSTANCE.getInfoNBTData(tag, te, player, new IInfoDataAccessorBlock() {
+        InformationHandler.INSTANCE.gatherInformation(tag, player, new IInfoDataAccessorBlock() {
 
             private BlockState ibs;
 
@@ -71,6 +71,7 @@ public class WailaHandlerTileEntity implements IComponentProvider, IServerDataPr
                 return tag;
             }
 
+            @Nonnull
             @Override
             public Vec3d getHitVec() {
                 return getRayTraceResult().getHitVec();
@@ -107,6 +108,7 @@ public class WailaHandlerTileEntity implements IComponentProvider, IServerDataPr
                 return null;
             }
 
+            @Nonnull
             @Override
             public BlockRayTraceResult getRayTraceResult() {
                 return rtr;
@@ -152,9 +154,10 @@ public class WailaHandlerTileEntity implements IComponentProvider, IServerDataPr
                     return accessor.getSide();
                 }
 
+                @Nonnull
                 @Override
                 public Vec3d getHitVec() {
-                    return accessor.getHitResult() == null ? null : accessor.getHitResult().getHitVec();
+                    return accessor.getHitResult().getHitVec();
                 }
 
                 @Nonnull
@@ -180,6 +183,7 @@ public class WailaHandlerTileEntity implements IComponentProvider, IServerDataPr
                     return accessor.getStack();
                 }
 
+                @Nonnull
                 @Override
                 public BlockRayTraceResult getRayTraceResult() {
                     return (BlockRayTraceResult) accessor.getHitResult();

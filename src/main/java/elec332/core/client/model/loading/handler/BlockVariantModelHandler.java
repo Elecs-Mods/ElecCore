@@ -14,6 +14,7 @@ import elec332.core.client.model.loading.INoBlockStateJsonBlock;
 import elec332.core.client.model.loading.INoJsonBlock;
 import elec332.core.client.util.MultiWrappedUnbakedModel;
 import elec332.core.loader.client.RenderingRegistry;
+import elec332.core.util.ResourceHelper;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
@@ -46,6 +47,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.Serializable;
 import java.util.*;
+import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -67,11 +69,6 @@ public class BlockVariantModelHandler implements IModelHandler {
     private final Map<ModelResourceLocation, BlockState> blockResourceLocations;
     private final Map<ResourceLocation, TextureOverrideData> textures;
     private final Set<ResourceLocation> uniqueNames;
-
-    @Override
-    public void getModelHandlers(List<?> list) {
-        //
-    }
 
     @Override
     @SuppressWarnings("all")
@@ -110,8 +107,13 @@ public class BlockVariantModelHandler implements IModelHandler {
 
     @Nonnull
     @Override
-    public Set<ResourceLocation> getHandlerObjectNames() {
-        return blockResourceLocations.values().stream().map(BlockState::getBlock).map(ForgeRegistryEntry::getRegistryName).collect(Collectors.toSet());
+    public Set<ResourceLocation> getHandlerModelLocations() {
+        return blockResourceLocations.values().stream()
+                .map(BlockState::getBlock)
+                .map(ForgeRegistryEntry::getRegistryName)
+                .filter(Objects::nonNull)
+                .map(ResourceHelper::getBlockModelLocation)
+                .collect(Collectors.toSet());
     }
 
     @Override
@@ -136,15 +138,12 @@ public class BlockVariantModelHandler implements IModelHandler {
     }
 
     @Override
-    @Nonnull
-    public Map<ModelResourceLocation, IBakedModel> registerBakedModels(Function<ModelResourceLocation, IBakedModel> bakedModelGetter, ModelLoader modelLoader) {
-        Map<ModelResourceLocation, IBakedModel> ret = Maps.newHashMap();
+    public void registerBakedModels(Function<ModelResourceLocation, IBakedModel> bakedModelGetter, ModelLoader modelLoader, BiConsumer<ModelResourceLocation, IBakedModel> registry) {
         blockResourceLocations.forEach((mrl, ibs) -> {
             IUnbakedModel model = getUnbakedModel(ibs, modelLoader);
             IBakedModel m = Preconditions.checkNotNull(model.bake(modelLoader, ModelLoader.defaultTextureGetter(), new BasicState(model.getDefaultState(), false), DefaultVertexFormats.BLOCK));
-            ret.put(mrl, m);
+            registry.accept(mrl, m);
         });
-        return ret;
     }
 
     private ResourceLocation getFixedLocation(ResourceLocation rl) {

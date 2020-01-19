@@ -29,7 +29,7 @@ public class WailaCompatHandler implements IWailaPlugin {
     @Override
     public void register(IRegistrar registrar) {
         if (enabled && WailaCompatHandler.registrar == null) {
-            WailaHandlerTileEntity teh = new WailaHandlerTileEntity();
+            WailaHandlerBlock teh = new WailaHandlerBlock();
             WailaHandlerEntity eh = new WailaHandlerEntity();
             registrar.registerBlockDataProvider(teh, Block.class);
             registrar.registerComponentProvider(teh, TooltipPosition.BODY, Block.class);

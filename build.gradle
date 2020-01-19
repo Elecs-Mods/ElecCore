@@ -18,15 +18,12 @@ apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'eclipse'
 
 repositories {
-
+    maven { //Everything except WAILA
+        url = "https://modmaven.k-4u.nl"
+    }
 	maven { //WAILA
 		url "http://tehnut.info/maven"
 	}
-
-    maven { //JEI
-        url "https://dvs1.progwml6.com/files/maven"
-    }
-	
 }
 
 ext.configFile = file "build.properties"
@@ -88,6 +85,8 @@ dependencies {
 	//JEI
     compileOnly "mezz.jei:jei-${config.jei_version}:api"
     runtimeOnly fg.deobf("mezz.jei:jei-${config.jei_version}")
+
+    compileOnly "mcjty.theoneprobe:TheOneProbe-${config.top_version}:api"
 }
 
 processResources {

@@ -265,6 +265,9 @@ public class WorldHelper {
      */
     @SuppressWarnings("all")
     public static boolean chunkLoaded(IWorld world, BlockPos pos) {
+        if (world == null) {
+            return false;
+        }
         ChunkPos cp = chunkPosFromBlockPos(pos);
         AbstractChunkProvider chunkProvider = world.getChunkProvider();
         if (!chunkProvider.isChunkLoaded(cp)) {

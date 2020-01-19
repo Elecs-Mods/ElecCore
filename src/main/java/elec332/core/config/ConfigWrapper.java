@@ -22,7 +22,7 @@ import java.util.function.Consumer;
 /**
  * Created by Elec332 on 29-12-2019
  */
-public class ConfigWrapper extends AbstractConfigWrapper {
+public class ConfigWrapper extends AbstractFileConfigWrapper {
 
     public ConfigWrapper(@Nonnull Object mod) {
         this(Preconditions.checkNotNull(FMLHelper.getModContainer(mod)));

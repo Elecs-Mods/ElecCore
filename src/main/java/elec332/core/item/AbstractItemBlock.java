@@ -15,6 +15,8 @@ public abstract class AbstractItemBlock extends BlockItem implements IAbstractIt
         super(block, itemBuilder);
     }
 
+    public static final String TILE_DATA_TAG = "BlockEntityTag";
+
     private String unlocalizedName;
 
     @Nonnull

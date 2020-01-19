@@ -26,8 +26,14 @@ public class WailaInformationType implements IInformation {
     }
 
     @Override
-    public void addInformation(ITextComponent text) {
-        tooltip.add(text);
+    public void addInformation(@Nonnull ITextComponent text) {
+        tooltip.add(Preconditions.checkNotNull(text));
+    }
+
+    @Nonnull
+    @Override
+    public Object getInformationComponent() {
+        return tooltip;
     }
 
 }
