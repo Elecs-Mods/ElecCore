@@ -84,8 +84,8 @@ public class GuiDraw {
         if (mc.currentScreen != null) {
             mc.currentScreen.renderBackground();
         } else {
-            gui.width = mc.mainWindow.getScaledWidth();
-            gui.height = mc.mainWindow.getScaledHeight();
+            gui.width = RenderHelper.getMainWindow().getScaledWidth();
+            gui.height = RenderHelper.getMainWindow().getScaledHeight();
             gui.renderBackground();
         }
     }

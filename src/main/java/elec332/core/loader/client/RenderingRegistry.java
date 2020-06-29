@@ -4,6 +4,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import com.mojang.blaze3d.matrix.MatrixStack;
 import elec332.core.ElecCore;
 import elec332.core.api.APIHandlerInject;
 import elec332.core.api.IAPIHandler;
@@ -19,33 +20,31 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.renderer.BlockModelShapes;
+import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.model.*;
 import net.minecraft.client.renderer.texture.AtlasTexture;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.tileentity.ItemStackTileEntityRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.state.IProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.ModelBakeEvent;
 import net.minecraftforge.client.event.TextureStitchEvent;
-import net.minecraftforge.client.model.BasicState;
 import net.minecraftforge.client.model.ModelLoader;
-import net.minecraftforge.client.model.ModelLoaderRegistry;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModLoader;
 import net.minecraftforge.fml.javafmlmod.FMLModContainer;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
@@ -67,6 +66,7 @@ public final class RenderingRegistry implements IElecRenderingRegistry {
     private static final RenderingRegistry instance;
     private static final FieldPointer<Item, Supplier<ItemStackTileEntityRenderer>> teisrField;
 
+    @SuppressWarnings("ConstantConditions")
     private RenderingRegistry() {
         modelLoaders = Sets.newHashSet();
         textureLoaders = Sets.newHashSet();
@@ -78,6 +78,17 @@ public final class RenderingRegistry implements IElecRenderingRegistry {
         missingModel = new ObjectReference<>();
         mcDefaultStatesAdder = ModelBakery.STATE_CONTAINER_OVERRIDES::put;
         hideStates = false;
+
+        tileTypeRef = new ObjectReference<>();
+        tileTypeLink = new TileEntity(null) {
+
+            @Override
+            @SuppressWarnings("NullableProblems")
+            public TileEntityType<?> getType() {
+                return tileTypeRef.get();
+            }
+
+        };
     }
 
     private final Set<IModelLoader> modelLoaders;
@@ -91,8 +102,12 @@ public final class RenderingRegistry implements IElecRenderingRegistry {
 
     private final ObjectReference<IBakedModel> missingModel;
 
+    private final TileEntity tileTypeLink;
+    private final ObjectReference<TileEntityType<?>> tileTypeRef;
+
     private BiConsumer<ResourceLocation, StateContainer<Block, BlockState>> mcDefaultStatesAdder;
     private boolean hideStates;
+    private AtlasTexture blockTextures;
 
     @APIHandlerInject
     private IElecQuadBakery quadBakery = null;
@@ -172,6 +187,15 @@ public final class RenderingRegistry implements IElecRenderingRegistry {
         return missingModel;
     }
 
+    @Nonnull
+    @Override
+    public AtlasTexture getBlockTextures() {
+        if (this.blockTextures == null) {
+            throw new IllegalStateException("Requested block textures too early");
+        }
+        return blockTextures;
+    }
+
     private void registerLoader(Object obj) {
         if (obj instanceof IModelLoader) {
             this.modelLoaders.add((IModelLoader) obj);
@@ -183,9 +207,10 @@ public final class RenderingRegistry implements IElecRenderingRegistry {
 
     @SubscribeEvent(priority = EventPriority.HIGH)
     public void onTextureStitch(TextureStitchEvent event) {
-        if (!event.getMap().getBasePath().equals("textures")) {
+        if (!event.getMap().getTextureLocation().equals(RenderHelper.getBlocksResourceLocation())) {
             return;
         }
+        blockTextures = event.getMap();
         IIconRegistrar iconRegistrar = new IconRegistrar(event);
         for (ITextureLoader loader : textureLoaders) {
             loader.registerTextures(iconRegistrar);
@@ -200,8 +225,10 @@ public final class RenderingRegistry implements IElecRenderingRegistry {
         for (ResourceLocation mrl : extraModels) {
             IBakedModel model;
             try {
-                IUnbakedModel model_ = ModelLoaderRegistry.getModel(mrl);
-                model = model_.bake(event.getModelLoader(), ModelLoader.defaultTextureGetter(), new BasicState(model_.getDefaultState(), false), DefaultVertexFormats.ITEM);
+                //IUnbakedModel model_ = ModelLoaderRegistry.getModel(mrl);
+                //model = model_.bake(event.getModelLoader(), ModelLoader.defaultTextureGetter(), new SimpleModelTransform(model_.getDefaultState(), false), DefaultVertexFormats.ITEM);
+                IUnbakedModel model_ = event.getModelLoader().getModelOrMissing(mrl);
+                model = model_.bakeModel(event.getModelLoader(), ModelLoader.defaultTextureGetter(), ModelRotation.X0_Y0, mrl);
             } catch (Exception e) {
                 model = RenderHelper.getMissingModel();
                 ElecCore.logger.error("Exception loading blockstate for the variant {}: ", new ResourceLocation(mrl.getNamespace(), mrl.getPath()), e);
@@ -224,8 +251,25 @@ public final class RenderingRegistry implements IElecRenderingRegistry {
     }
 
     @Override
-    public void setItemRenderer(Item item, Class<? extends TileEntity> renderer) {
-        setItemRenderer(item, Preconditions.checkNotNull(TileEntityRendererDispatcher.instance.getRenderer(renderer)));
+    @SuppressWarnings("unchecked")
+    public <T extends TileEntity> TileEntityRenderer<T> getTESR(TileEntityType<T> tile) {
+        tileTypeRef.set(tile);
+        return (TileEntityRenderer<T>) getTESR(tileTypeLink);
+    }
+
+    @Override
+    public <T extends TileEntity> TileEntityRenderer<T> getTESR(T tile) {
+        return TileEntityRendererDispatcher.instance.getRenderer(tile);
+    }
+
+    @Override
+    public <T extends TileEntity> void setItemRenderer(Item item, T tile) {
+        setItemRenderer(item, getTESR(tile));
+    }
+
+    @Override
+    public <T extends TileEntity> void setItemRenderer(Item item, TileEntityType<T> tile) {
+        setItemRenderer(item, getTESR(tile));
     }
 
     @Override
@@ -234,8 +278,11 @@ public final class RenderingRegistry implements IElecRenderingRegistry {
         setItemRenderer(Preconditions.checkNotNull(item), new AbstractTileEntityItemStackRenderer() {
 
             @Override
-            protected void renderItem(ItemStack stack) {
-                renderer.render(null, 0, 0, 0, 0, 0);
+            @SuppressWarnings("ConstantConditions")
+            protected void renderItem(ItemStack stack, @Nonnull MatrixStack matrixStack, @Nonnull IRenderTypeBuffer renderTypeBuffer, int combinedLightIn, int combinedOverlayIn) {
+                renderer.render(null, 0, matrixStack, renderTypeBuffer, combinedLightIn, combinedLightIn);
+                //RenderHelper.renderTileEntityAt(renderer, null, 0, 0, 0, 0);
+                //renderer.render(null, 0, 0, 0, 0, 0);
             }
 
         });
@@ -284,8 +331,8 @@ public final class RenderingRegistry implements IElecRenderingRegistry {
         private final ITESRItem itesrItem;
 
         @Override
-        protected void renderItem(ItemStack stack) {
-            itesrItem.renderItem(stack);
+        protected void renderItem(ItemStack stack, @Nonnull MatrixStack matrixStack, @Nonnull IRenderTypeBuffer renderTypeBuffer, int combinedLightIn, int combinedOverlayIn) {
+            itesrItem.renderItem(stack, matrixStack, renderTypeBuffer, combinedLightIn, combinedOverlayIn);
         }
 
     }
@@ -298,7 +345,6 @@ public final class RenderingRegistry implements IElecRenderingRegistry {
         }
 
         private final AtlasTexture textureMap;
-        @Nullable
         private final Consumer<ResourceLocation> register;
 
         @Override
@@ -388,7 +434,7 @@ public final class RenderingRegistry implements IElecRenderingRegistry {
             }
 
         });
-        teisrField = new FieldPointer<>(Item.class, "teisr");
+        teisrField = new FieldPointer<>(Item.class, "ister");
     }
 
 }

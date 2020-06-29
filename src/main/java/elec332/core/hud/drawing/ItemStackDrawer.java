@@ -20,7 +20,7 @@ public class ItemStackDrawer implements IDrawer<ItemStack> {
     @Override
     @OnlyIn(Dist.CLIENT)
     public int draw(ItemStack drawable, Minecraft mc, Alignment alignment, int x, int y, Object... data) {
-        RenderHelper.enableGUIStandardItemLighting();
+        RenderHelper.enableStandardItemLighting();
         mc.getItemRenderer().renderItemIntoGUI(drawable, x, y);
         RenderHelper.disableStandardItemLighting();
         return 18;

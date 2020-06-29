@@ -66,8 +66,8 @@ public class ElecModelBakery implements IElecModelBakery {
             generalQuads = ImmutableList.of();
         }
         DefaultBakedModel ret = new DefaultBakedModel(template);
-        ret.setGeneralQuads(quadBakery.bakeQuads(generalQuads, rotation));
-        ret.setSidedQuads(quadBakery.bakeQuads(sidedQuads, rotation));
+        ret.setGeneralQuads(quadBakery.bakeQuads(generalQuads, rotation.getRotation()));
+        ret.setSidedQuads(quadBakery.bakeQuads(sidedQuads, rotation.getRotation()));
         return ret;
     }
 
@@ -144,6 +144,7 @@ public class ElecModelBakery implements IElecModelBakery {
             this.builtIn = template.isBuiltInRenderer();
             this.texture = template.getParticleTexture();
             this.ict = template.getItemCameraTransforms();
+            this.isSideLit = false; //todo
         }
 
         private DefaultBakedModel(IModelTemplate template) {
@@ -154,11 +155,12 @@ public class ElecModelBakery implements IElecModelBakery {
             this.builtIn = template.isBuiltInRenderer();
             this.texture = template.getTexture();
             this.ict = template.getItemCameraTransforms();
+            this.isSideLit = false; //todo
         }
 
         private IQuadProvider sidedQuads;
         private List<BakedQuad> generalQuads;
-        private final boolean ao, gui3D, builtIn;
+        private final boolean ao, gui3D, builtIn, isSideLit;
         private final TextureAtlasSprite texture;
         private final ItemCameraTransforms ict;
 
@@ -186,6 +188,11 @@ public class ElecModelBakery implements IElecModelBakery {
         @Override
         public boolean isGui3d() {
             return this.gui3D;
+        }
+
+        @Override //isSideLit
+        public boolean func_230044_c_() {
+            return isSideLit;
         }
 
         @Override

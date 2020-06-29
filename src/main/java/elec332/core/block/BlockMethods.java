@@ -5,6 +5,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.IFluidState;
+import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
@@ -22,8 +23,8 @@ public final class BlockMethods {
         return "tile." + block.getRegistryName().toString().replace(":", ".").toLowerCase();
     }
 
-    public static <B extends Block & IAbstractBlock> boolean onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult hit, B block) {
-        return hit != null && block.onBlockActivated(world, pos, state, player, hand, hit);
+    public static <B extends Block & IAbstractBlock> ActionResultType onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult hit, B block) {
+        return hit != null ? block.onBlockActivated(world, pos, state, player, hand, hit) : ActionResultType.PASS;
     }
 
     public static <B extends Block & IAbstractBlock> boolean removedByPlayer(@Nonnull BlockState state, World world, @Nonnull BlockPos pos, @Nonnull PlayerEntity player, boolean willHarvest, IFluidState fluid, B block) {

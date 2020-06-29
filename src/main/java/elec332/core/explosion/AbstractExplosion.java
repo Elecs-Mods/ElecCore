@@ -81,9 +81,9 @@ public abstract class AbstractExplosion extends Explosion {
             for (Entity entity : allEntities) {
                 double distance = getDistance(entity) / radius;
                 if (distance <= 1.0D) {
-                    double xDifference = entity.posX - location.getX();
-                    double yDifference = entity.posY - location.getY();
-                    double zDifference = entity.posZ - location.getZ();
+                    double xDifference = entity.getPosX() - location.getX();
+                    double yDifference = entity.getPosY() - location.getY();
+                    double zDifference = entity.getPosZ() - location.getZ();
                     double d1 = MathHelper.sqrt(xDifference * xDifference + yDifference * yDifference + zDifference * zDifference);
                     xDifference /= d1;
                     yDifference /= d1;

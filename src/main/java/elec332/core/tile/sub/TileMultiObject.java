@@ -20,6 +20,7 @@ import net.minecraft.fluid.IFluidState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
+import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.ResourceLocation;
@@ -56,7 +57,6 @@ public class TileMultiObject extends AbstractTileEntity {
         }
     }
 
-    @SuppressWarnings("all")
     public TileMultiObject() {
         subtiles = Lists.newArrayList();
         cachedCaps = Maps.newHashMap();
@@ -162,10 +162,10 @@ public class TileMultiObject extends AbstractTileEntity {
     }
 
     @SuppressWarnings("unused")
-    public boolean onBlockActivated(PlayerEntity player, Hand hand, BlockState state, BlockRayTraceResult rtr) {
+    public ActionResultType onBlockActivated(PlayerEntity player, Hand hand, BlockState state, BlockRayTraceResult rtr) {
         Pair<Vec3d, Vec3d> rayTraceVectors = RayTraceHelper.getRayTraceVectors(player);
         Pair<ISubTileLogic, RayTraceResult> hit = getRayTraceResult(state, rayTraceVectors.getLeft(), rayTraceVectors.getRight(), getData(pos));
-        return hit != null && hit.getLeft().onBlockActivated(player, hand, hit.getRight());
+        return hit != null ? hit.getLeft().onBlockActivated(player, hand, hit.getRight()) : ActionResultType.PASS;
     }
 
     public ItemStack getStack(@Nonnull RayTraceResult hit, PlayerEntity player) {

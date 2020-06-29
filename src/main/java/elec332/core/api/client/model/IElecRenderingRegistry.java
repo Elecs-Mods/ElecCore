@@ -4,12 +4,14 @@ import elec332.core.api.client.ITextureLoader;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.renderer.model.IBakedModel;
+import net.minecraft.client.renderer.texture.AtlasTexture;
 import net.minecraft.client.renderer.tileentity.ItemStackTileEntityRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import net.minecraft.item.Item;
 import net.minecraft.state.IProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.ResourceLocation;
 
 import javax.annotation.Nonnull;
@@ -21,35 +23,44 @@ import java.util.function.Supplier;
 public interface IElecRenderingRegistry {
 
     @Nonnull
-    public StateContainer<Block, BlockState> registerBlockStateLocation(ResourceLocation location, IProperty<?>... properties);
+    StateContainer<Block, BlockState> registerBlockStateLocation(ResourceLocation location, IProperty<?>... properties);
 
-    public void registerModelLocation(ResourceLocation location);
+    void registerModelLocation(ResourceLocation location);
 
-    public void registerTextureLocation(ResourceLocation location);
+    void registerTextureLocation(ResourceLocation location);
 
-    public Item registerFakeItem(Item item);
+    Item registerFakeItem(Item item);
 
-    public Block registerFakeBlock(Block block);
+    Block registerFakeBlock(Block block);
 
-    public void registerLoader(IModelLoader modelLoader);
+    void registerLoader(IModelLoader modelLoader);
 
-    public void registerLoader(ITextureLoader textureLoader);
+    void registerLoader(ITextureLoader textureLoader);
 
-    public void registerLoader(IModelAndTextureLoader loader);
-
-    @Nonnull
-    public Iterable<Block> getAllValidBlocks();
+    void registerLoader(IModelAndTextureLoader loader);
 
     @Nonnull
-    public Iterable<Item> getAllValidItems();
+    Iterable<Block> getAllValidBlocks();
 
     @Nonnull
-    public Supplier<IBakedModel> missingModelGetter();
+    Iterable<Item> getAllValidItems();
 
-    public void setItemRenderer(Item item, Class<? extends TileEntity> renderer);
+    @Nonnull
+    Supplier<IBakedModel> missingModelGetter();
 
-    public void setItemRenderer(Item item, TileEntityRenderer<?> renderer);
+    @Nonnull
+    AtlasTexture getBlockTextures();
 
-    public void setItemRenderer(Item item, ItemStackTileEntityRenderer renderer);
+    <T extends TileEntity> TileEntityRenderer<T> getTESR(TileEntityType<T> tile);
+
+    <T extends TileEntity> TileEntityRenderer<T> getTESR(T tile);
+
+    <T extends TileEntity> void setItemRenderer(Item item, T tile);
+
+    <T extends TileEntity> void setItemRenderer(Item item, TileEntityType<T> tile);
+
+    void setItemRenderer(Item item, TileEntityRenderer<?> renderer);
+
+    void setItemRenderer(Item item, ItemStackTileEntityRenderer renderer);
 
 }

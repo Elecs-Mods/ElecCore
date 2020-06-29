@@ -4,6 +4,10 @@ import net.minecraft.client.GameSettings;
 import net.minecraft.client.KeyboardListener;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.resources.FallbackResourceManager;
+import net.minecraft.resources.IResourceManager;
+import net.minecraft.resources.IResourcePack;
+import net.minecraft.resources.SimpleReloadableResourceManager;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -13,7 +17,19 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 @OnlyIn(Dist.CLIENT)
 public class ClientHelper {
 
-    private static final Minecraft mc;
+    public static void addResourcePack(IResourcePack resourcePack) {
+        addResourcePack(getMinecraft().getResourceManager(), resourcePack);
+    }
+
+    public static void addResourcePack(IResourceManager resourceManager, IResourcePack resourcePack) {
+        if (resourceManager instanceof SimpleReloadableResourceManager) {
+            ((SimpleReloadableResourceManager) resourceManager).addResourcePack(resourcePack);
+        } else if (resourceManager instanceof FallbackResourceManager) {
+            ((FallbackResourceManager) resourceManager).addResourcePack(resourcePack);
+        } else {
+            throw new UnsupportedOperationException();
+        }
+    }
 
     public static Minecraft getMinecraft() {
         return mc;
@@ -38,6 +54,8 @@ public class ClientHelper {
     public static boolean isAltDown() {
         return Screen.hasAltDown();
     }
+
+    private static final Minecraft mc;
 
     static {
         mc = Minecraft.getInstance();

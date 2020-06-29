@@ -1,9 +1,9 @@
 package elec332.core.client.model.model;
 
 import com.google.common.collect.ImmutableList;
+import elec332.core.client.RenderHelper;
 import elec332.core.client.model.ElecModelBakery;
 import net.minecraft.block.BlockState;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Vector3f;
 import net.minecraft.client.renderer.model.BakedQuad;
 import net.minecraft.client.renderer.model.IBakedModel;
@@ -66,7 +66,7 @@ public abstract class AbstractItemModel implements IBakedModel {
     @Override
     @Nonnull
     public TextureAtlasSprite getParticleTexture() {
-        return Minecraft.getInstance().getTextureMap().getAtlasSprite(getTextureLocation().toString());
+        return RenderHelper.getBlockTextures().getSprite(getTextureLocation());
     }
 
     public abstract ResourceLocation getTextureLocation();

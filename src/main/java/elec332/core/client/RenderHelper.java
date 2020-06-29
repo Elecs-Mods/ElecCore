@@ -1,7 +1,8 @@
 package elec332.core.client;
 
 import com.google.common.collect.Maps;
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.systems.RenderSystem;
 import elec332.core.ElecCore;
 import elec332.core.api.client.ITessellator;
 import elec332.core.client.util.ElecTessellator;
@@ -10,19 +11,16 @@ import net.minecraft.client.MainWindow;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.particle.Particle;
-import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.WorldRenderer;
-import net.minecraft.client.renderer.WorldVertexBufferUploader;
+import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.color.BlockColors;
 import net.minecraft.client.renderer.color.ItemColors;
-import net.minecraft.client.renderer.culling.Frustum;
-import net.minecraft.client.renderer.culling.ICamera;
+import net.minecraft.client.renderer.culling.ClippingHelperImpl;
 import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.client.renderer.model.ModelRotation;
 import net.minecraft.client.renderer.texture.*;
 import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.Fluid;
@@ -38,12 +36,10 @@ import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.model.ITransformation;
-import net.minecraftforge.common.model.TRSRTransformation;
+import net.minecraftforge.client.extensions.IForgeTransformationMatrix;
 import net.minecraftforge.fluids.FluidAttributes;
 
 import javax.annotation.Nonnull;
-import javax.vecmath.Vector3f;
 import java.util.Map;
 
 /**
@@ -57,9 +53,10 @@ public class RenderHelper {
     public static final double BB_EXPAND_NUMBER = 0.0020000000949949026D;
     private static final Tessellator mcTessellator;
     private static final ITessellator tessellator;
+    private static final IRenderTypeBuffer mcRenderTypeBuffer;
     private static final Minecraft mc;
     private static final Map<BufferBuilder, ITessellator> worldRenderTessellators;
-    private static final Map<Direction, ITransformation[]> rotateAroundMap;
+    private static final Map<Direction, IForgeTransformationMatrix[]> rotateAroundMap;
     private static final WorldVertexBufferUploader vertexBufferUploader;
     private static IBakedModel nullModel;
 
@@ -89,12 +86,24 @@ public class RenderHelper {
     }
 
     public static MainWindow getMainWindow() {
-        return mc.mainWindow;
+        return mc.getMainWindow();
+    }
+
+    public static AtlasTexture getBlockTextures() {
+        return getTextureMap(getBlocksResourceLocation());
+    }
+
+    public static AtlasTexture getTextureMap(ResourceLocation map) {
+        return mc.getModelManager().getAtlasTexture(map);
     }
 
     @Nonnull
     public static ITessellator getTessellator() {
         return tessellator;
+    }
+
+    public IRenderTypeBuffer getMCRenderTypeBuffer() {
+        return mcRenderTypeBuffer;
     }
 
     public static void drawBuffer(BufferBuilder buffer) {
@@ -116,13 +125,44 @@ public class RenderHelper {
     }
 
     @OnlyIn(Dist.CLIENT)
-    public static <T extends TileEntity> void renderTileEntityAt(TileEntityRenderer<T> tesr, T tile, double x, double y, double z, float partialTicks, int destroyStage) {
-        tesr.render(tile, x, y, x, partialTicks, destroyStage);
+    public static <T extends TileEntity> void renderTileEntityAt(TileEntityRenderer<T> tesr, T tile, double x, double y, double z, float partialTicks) {
+        renderTileEntityAt(tesr, tile, x, y, z, mcRenderTypeBuffer, partialTicks);
     }
 
     @OnlyIn(Dist.CLIENT)
-    public static void renderTileEntityAt(TileEntity tile, double x, double y, double z, float partialTicks, int destroyStage) {
-        TileEntityRendererDispatcher.instance.render(tile, x, y, z, partialTicks, destroyStage, false);
+    public static <T extends TileEntity> void renderTileEntityAt(TileEntityRenderer<T> tesr, T tile, double x, double y, double z, IRenderTypeBuffer buffer, float partialTicks) {
+        MatrixStack stack = new MatrixStack();
+        stack.translate(x, y, z);
+        renderTileEntityAt(tesr, tile, stack, buffer, partialTicks);
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    public static <T extends TileEntity> void renderTileEntityAt(TileEntityRenderer<T> tesr, T tile, MatrixStack matrixStack, IRenderTypeBuffer buffer, float partialTicks) {
+        int i;
+        World world = tile.getWorld();
+        if (world != null) {
+            i = WorldRenderer.getCombinedLight(world, tile.getPos());
+        } else {
+            i = 15728880;
+        }
+        tesr.render(tile, partialTicks, matrixStack, buffer, i, OverlayTexture.NO_OVERLAY);
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    public static void renderTileEntityAt(TileEntity tile, double x, double y, double z, float partialTicks) {
+        renderTileEntityAt(tile, x, y, z, partialTicks, mcRenderTypeBuffer);
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    public static void renderTileEntityAt(TileEntity tile, double x, double y, double z, float partialTicks, IRenderTypeBuffer renderTypeBuffer) {
+        MatrixStack matrixStack = new MatrixStack();
+        matrixStack.translate(x, y, z);
+        renderTileEntityAt(tile, matrixStack, partialTicks, renderTypeBuffer);
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    public static void renderTileEntityAt(TileEntity tile, MatrixStack matrixStack, float partialTicks, IRenderTypeBuffer renderTypeBuffer) {
+        TileEntityRendererDispatcher.instance.renderTileEntity(tile, partialTicks, matrixStack, renderTypeBuffer);
     }
 
     public static void drawExpandedSelectionBoundingBox(@Nonnull AxisAlignedBB aabb) {
@@ -130,7 +170,9 @@ public class RenderHelper {
     }
 
     public static void drawSelectionBoundingBox(@Nonnull AxisAlignedBB aabb) {
-        WorldRenderer.drawSelectionBoundingBox(aabb, 0.0F, 0.0F, 0.0F, 0.4F);
+        mcTessellator.getBuffer().begin(3, DefaultVertexFormats.POSITION_COLOR);
+        WorldRenderer.drawBoundingBox(new MatrixStack(), mcTessellator.getBuffer(), aabb, 0.0F, 0.0F, 0.0F, 0.4F);
+        mcTessellator.draw();
     }
 
     @Nonnull
@@ -139,43 +181,52 @@ public class RenderHelper {
     }
 
     public static void drawSelectionBox(Entity player, World world, BlockPos pos, VoxelShape shapeOverride, float partialTicks) {
-        double d0 = player.lastTickPosX + (player.posX - player.lastTickPosX) * (double) partialTicks;
-        double d1 = player.lastTickPosY + (player.posY - player.lastTickPosY) * (double) partialTicks;
-        double d2 = player.lastTickPosZ + (player.posZ - player.lastTickPosZ) * (double) partialTicks;
+        double d0 = player.lastTickPosX + (player.getPosX() - player.lastTickPosX) * (double) partialTicks;
+        double d1 = player.lastTickPosY + (player.getPosY() - player.lastTickPosY) * (double) partialTicks;
+        double d2 = player.lastTickPosZ + (player.getPosZ() - player.lastTickPosZ) * (double) partialTicks;
         drawSelectionBox(world, pos, shapeOverride, new Vec3d(d0, d1, d2));
     }
 
     public static void drawSelectionBox(World world, BlockPos pos, VoxelShape shapeOverride, Vec3d projectedView) {
         if (world.getWorldBorder().contains(pos)) {
-            GlStateManager.enableBlend();
-            GlStateManager.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-            GlStateManager.lineWidth(Math.max(2.5F, (float) mc.mainWindow.getFramebufferWidth() / 1920.0F * 2.5F));
-            GlStateManager.disableTexture();
-            GlStateManager.depthMask(false);
-            GlStateManager.matrixMode(5889);
-            GlStateManager.pushMatrix();
-            GlStateManager.scalef(1.0F, 1.0F, 0.999F);
+            MatrixStack stack = new MatrixStack();
             double d0 = projectedView.x;
             double d1 = projectedView.y;
             double d2 = projectedView.z;
-            WorldRenderer.drawShape(shapeOverride, (double) pos.getX() - d0, (double) pos.getY() - d1, (double) pos.getZ() - d2, 0.0F, 0.0F, 0.0F, 0.4F);
-            GlStateManager.popMatrix();
-            GlStateManager.matrixMode(5888);
-            GlStateManager.depthMask(true);
-            GlStateManager.enableTexture();
-            GlStateManager.disableBlend();
+            RenderSystem.lineWidth(Math.max(2.5F, (float) getMainWindow().getFramebufferWidth() / 1920.0F * 2.5F));
+            WorldRenderer.drawVoxelShapeParts(stack, mcTessellator.getBuffer(), shapeOverride, (double) pos.getX() - d0, (double) pos.getY() - d1, (double) pos.getZ() - d2, 0.0F, 0.0F, 0.0F, 0.4F);
         }
     }
 
     @Nonnull
-    public static ITransformation getTransformation(int x, int y, int z) {
+    public static IForgeTransformationMatrix getTransformation(int x, int y, int z) {
         if ((z = MathHelper.normalizeAngle(z, 360)) == 0) {
-            return ModelRotation.getModelRotation(x, y);
+            return ModelRotation.getModelRotation(x, y).getRotation();
         }
-        return TRSRTransformation.blockCenterToCorner(new TRSRTransformation(null, TRSRTransformation.quatFromXYZDegrees(new Vector3f(MathHelper.normalizeAngle(x, 360), MathHelper.normalizeAngle(y, 360), z)), null, null));
+        return new TransformationMatrix(null, quatFromXYZDegrees(new Vector3f(MathHelper.normalizeAngle(x, 360), MathHelper.normalizeAngle(y, 360), z)), null, null);
+        //return TRSRTransformation.blockCenterToCorner(new TRSRTransformation(null, TRSRTransformation.quatFromXYZDegrees(new Vector3f(MathHelper.normalizeAngle(x, 360), MathHelper.normalizeAngle(y, 360), z)), null, null));
     }
 
-    public static ITransformation[] getTranformationsFor(Direction axis) {
+    public static Quaternion quatFromXYZDegrees(Vector3f xyz) {
+        return quatFromXYZ((float) Math.toRadians(xyz.getX()), (float) Math.toRadians(xyz.getY()), (float) Math.toRadians(xyz.getZ()));
+    }
+
+    public static Quaternion quatFromXYZ(Vector3f xyz) {
+        return quatFromXYZ(xyz.getX(), xyz.getY(), xyz.getZ());
+    }
+
+    public static Quaternion quatFromXYZ(float x, float y, float z) {
+        Quaternion ret = new Quaternion(0, 0, 0, 1), t = new Quaternion(0, 0, 0, 0);
+        t.set((float) Math.sin(x / 2), 0, 0, (float) Math.cos(x / 2));
+        ret.multiply(t);
+        t.set(0, (float) Math.sin(y / 2), 0, (float) Math.cos(y / 2));
+        ret.multiply(t);
+        t.set(0, 0, (float) Math.sin(z / 2), (float) Math.cos(z / 2));
+        ret.multiply(t);
+        return ret;
+    }
+
+    public static IForgeTransformationMatrix[] getTranformationsFor(Direction axis) {
         return rotateAroundMap.get(axis);
     }
 
@@ -214,29 +265,47 @@ public class RenderHelper {
     @Nonnull
     public static Vec3d getPlayerVec(float partialTicks) {
         PlayerEntity player = ElecCore.proxy.getClientPlayer();
-        double dX = player.lastTickPosX + (player.posX - player.lastTickPosX) * partialTicks;
-        double dY = player.lastTickPosY + (player.posY - player.lastTickPosY) * partialTicks;
-        double dZ = player.lastTickPosZ + (player.posZ - player.lastTickPosZ) * partialTicks;
+        double dX = player.lastTickPosX + (player.getPosX() - player.lastTickPosX) * partialTicks;
+        double dY = player.lastTickPosY + (player.getPosY() - player.lastTickPosY) * partialTicks;
+        double dZ = player.lastTickPosZ + (player.getPosZ() - player.lastTickPosZ) * partialTicks;
         return new Vec3d(dX, dY, dZ);
     }
 
     public static void translateToWorld(float partialTicks) {
         Vec3d vec = getPlayerVec(partialTicks);
-        GlStateManager.translated(-vec.x, -vec.y, -vec.z);
+        RenderSystem.translated(-vec.x, -vec.y, -vec.z);
     }
 
     @Nonnull
     public static Vec3d getPlayerVec() {
         PlayerEntity player = ElecCore.proxy.getClientPlayer();
-        return new Vec3d(player.posX, player.posY, player.posZ);
+        return new Vec3d(player.getPosX(), player.getPosY(), player.getPosZ());
     }
 
     @Nonnull
-    public static ICamera getPlayerCamera(float partialTicks) {
-        ICamera camera = new Frustum();
-        Vec3d vec = getPlayerVec(partialTicks);
-        camera.setPosition(vec.x, vec.y, vec.z);
-        return camera;
+    public static ClippingHelperImpl getPlayerCamera(float partialTicks) {
+        MatrixStack stack = new MatrixStack();
+        ActiveRenderInfo ri = mc.gameRenderer.getActiveRenderInfo();
+
+        stack.getLast().getMatrix().mul(mc.gameRenderer.getProjectionMatrix(ri, partialTicks, true));
+
+        Matrix4f projection = stack.getLast().getMatrix();
+
+        stack.rotate(Vector3f.ZP.rotationDegrees(0)); //roll
+        stack.rotate(Vector3f.XP.rotationDegrees(ri.getPitch()));
+        stack.rotate(Vector3f.YP.rotationDegrees(ri.getYaw() + 180.0F));
+
+        Matrix4f matrix4f = stack.getLast().getMatrix();
+
+        ClippingHelperImpl clippingHelperImpl = new ClippingHelperImpl(matrix4f, projection);
+
+        Vec3d vec3d = ri.getProjectedView();
+        double d0 = vec3d.getX();
+        double d1 = vec3d.getY();
+        double d2 = vec3d.getZ();
+        clippingHelperImpl.setCameraPosition(d0, d1, d2);
+
+        return clippingHelperImpl;
     }
 
     public static void drawLine(Vec3d from, Vec3d to, Vec3d player, float thickness) {
@@ -255,7 +324,7 @@ public class RenderHelper {
         return new Vec3d(original.x * m, original.y * m, original.z * m);
     }
 
-    public static ITextureObject getTextureObject(ResourceLocation location) {
+    public static Texture getTextureObject(ResourceLocation location) {
         return getTextureManager().getTexture(location);
     }
 
@@ -290,15 +359,15 @@ public class RenderHelper {
 
     @Nonnull
     public static TextureAtlasSprite getMissingTextureIcon() {
-        return MissingTextureSprite.func_217790_a();//.getSprite();//mc.getTextureMap().getMissingSprite();//((TextureMap) Minecraft.getInstance().getTextureManager().getTexture(getBlocksResourceLocation())).getAtlasSprite("missingno");
+        return getBlockTextures().getSprite(MissingTextureSprite.getLocation());//MissingTextureSprite.func_217790_a();//.getSprite();//mc.getTextureMap().getMissingSprite();//((TextureMap) Minecraft.getInstance().getTextureManager().getTexture(getBlocksResourceLocation())).getAtlasSprite("missingno");
     }
 
     public static TextureAtlasSprite getIconFrom(ResourceLocation rl) {
-        return mc.getTextureMap().getSprite(rl);
+        return getBlockTextures().getSprite(rl);
     }
 
     public static TextureAtlasSprite getIconFrom(String rl) {
-        return mc.getTextureMap().getAtlasSprite(rl);
+        return getBlockTextures().getSprite(new ResourceLocation(rl));
     }
 
     @Nonnull
@@ -318,37 +387,34 @@ public class RenderHelper {
         net.minecraft.client.renderer.RenderHelper.enableStandardItemLighting();
     }
 
-    public static void enableGUIStandardItemLighting() {
-        net.minecraft.client.renderer.RenderHelper.enableGUIStandardItemLighting();
-    }
-
     static {
+        mc = Minecraft.getInstance();
         mcTessellator = Tessellator.getInstance();
         tessellator = new ElecTessellator(mcTessellator);
+        mcRenderTypeBuffer = IRenderTypeBuffer.getImpl(mcTessellator.getBuffer());
         vertexBufferUploader = new WorldVertexBufferUploader();
-        mc = Minecraft.getInstance();
         worldRenderTessellators = Maps.newHashMap();
         worldRenderTessellators.put(tessellator.getBuffer(), tessellator);
         rotateAroundMap = Maps.newEnumMap(Direction.class);
         for (Direction facing : Direction.values()) {
             switch (facing) {
                 case NORTH:
-                    rotateAroundMap.put(facing, new ITransformation[]{RenderHelper.getTransformation(0, 0, 0), RenderHelper.getTransformation(0, 0, 90), RenderHelper.getTransformation(0, 0, 180), RenderHelper.getTransformation(0, 0, 270)});
+                    rotateAroundMap.put(facing, new IForgeTransformationMatrix[]{RenderHelper.getTransformation(0, 0, 0), RenderHelper.getTransformation(0, 0, 90), RenderHelper.getTransformation(0, 0, 180), RenderHelper.getTransformation(0, 0, 270)});
                     break;
                 case EAST:
-                    rotateAroundMap.put(facing, new ITransformation[]{RenderHelper.getTransformation(0, 90, 0), RenderHelper.getTransformation(180, -90, 90), RenderHelper.getTransformation(-90, -90, 90), RenderHelper.getTransformation(0, -90, 90)});
+                    rotateAroundMap.put(facing, new IForgeTransformationMatrix[]{RenderHelper.getTransformation(0, 90, 0), RenderHelper.getTransformation(180, -90, 90), RenderHelper.getTransformation(-90, -90, 90), RenderHelper.getTransformation(0, -90, 90)});
                     break;
                 case SOUTH:
-                    rotateAroundMap.put(facing, new ITransformation[]{RenderHelper.getTransformation(180, 0, 0), RenderHelper.getTransformation(180, 0, 90), RenderHelper.getTransformation(180, 0, 180), RenderHelper.getTransformation(180, 0, -90)});
+                    rotateAroundMap.put(facing, new IForgeTransformationMatrix[]{RenderHelper.getTransformation(180, 0, 0), RenderHelper.getTransformation(180, 0, 90), RenderHelper.getTransformation(180, 0, 180), RenderHelper.getTransformation(180, 0, -90)});
                     break;
                 case WEST:
-                    rotateAroundMap.put(facing, new ITransformation[]{RenderHelper.getTransformation(0, 90, 180), RenderHelper.getTransformation(180, 90, 180), RenderHelper.getTransformation(90, 90, 180), RenderHelper.getTransformation(-90, 90, 180)});
+                    rotateAroundMap.put(facing, new IForgeTransformationMatrix[]{RenderHelper.getTransformation(0, 90, 180), RenderHelper.getTransformation(180, 90, 180), RenderHelper.getTransformation(90, 90, 180), RenderHelper.getTransformation(-90, 90, 180)});
                     break;
                 case UP:
-                    rotateAroundMap.put(facing, new ITransformation[]{RenderHelper.getTransformation(-90, 0, 0), RenderHelper.getTransformation(90, 0, 90), RenderHelper.getTransformation(90, 0, 180), RenderHelper.getTransformation(90, 0, -90)});
+                    rotateAroundMap.put(facing, new IForgeTransformationMatrix[]{RenderHelper.getTransformation(-90, 0, 0), RenderHelper.getTransformation(90, 0, 90), RenderHelper.getTransformation(90, 0, 180), RenderHelper.getTransformation(90, 0, -90)});
                     break;
                 case DOWN:
-                    rotateAroundMap.put(facing, new ITransformation[]{RenderHelper.getTransformation(90, 0, 0), RenderHelper.getTransformation(-90, 0, 90), RenderHelper.getTransformation(-90, 0, 180), RenderHelper.getTransformation(-90, 0, -90)});
+                    rotateAroundMap.put(facing, new IForgeTransformationMatrix[]{RenderHelper.getTransformation(90, 0, 0), RenderHelper.getTransformation(-90, 0, 90), RenderHelper.getTransformation(-90, 0, 180), RenderHelper.getTransformation(-90, 0, -90)});
                     break;
                 default:
                     throw new IllegalArgumentException();

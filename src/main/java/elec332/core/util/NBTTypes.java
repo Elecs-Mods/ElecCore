@@ -7,18 +7,18 @@ import net.minecraft.nbt.*;
  */
 public enum NBTTypes {
 
-    END(new EndNBT()),                           //0
-    BYTE(new ByteNBT((byte) 0)),                 //1
-    SHORT(new ShortNBT((short) 0)),              //2
-    INT(new IntNBT(0)),                //3
-    LONG(new LongNBT(0)),              //4
-    FLOAT(new FloatNBT(0)),            //5
-    DOUBLE(new DoubleNBT(0)),          //6
-    BYTE_ARRAY(new ByteArrayNBT(new byte[0])),   //7
-    STRING(new StringNBT("")),          //8
-    LIST(new ListNBT()),                         //9
-    COMPOUND(new CompoundNBT()),                 //10
-    INT_ARRAY(new IntArrayNBT(new int[0]));      //11
+    END(EndNBT.INSTANCE),                       //0
+    BYTE(ByteNBT.ZERO),                         //1
+    SHORT(ShortNBT.valueOf((short) 0)),         //2
+    INT(IntNBT.valueOf(0)),                     //3
+    LONG(LongNBT.valueOf(0)),                   //4
+    FLOAT(FloatNBT.valueOf(0)),                 //5
+    DOUBLE(DoubleNBT.ZERO),                     //6
+    BYTE_ARRAY(new ByteArrayNBT(new byte[0])),  //7
+    STRING(StringNBT.valueOf("")),              //8
+    LIST(new ListNBT()),                        //9
+    COMPOUND(new CompoundNBT()),                //10
+    INT_ARRAY(new IntArrayNBT(new int[0]));     //11
 
     ///##########################///
 

@@ -1,7 +1,7 @@
 package elec332.core.hud.position;
 
 import com.google.common.base.Strings;
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import elec332.core.client.RenderHelper;
 import elec332.core.client.util.GuiDraw;
 import elec332.core.hud.drawing.IDrawer;
@@ -18,25 +18,25 @@ public enum Alignment {
     LEFT {
         @Override
         public <D> void renderHudPart(IDrawer<D> drawer, D toDraw, @Nullable String display, int x, int y, Object... data) {
-            GlStateManager.pushMatrix();
+            RenderSystem.pushMatrix();
             int width = drawer.draw(toDraw, GuiDraw.mc, this, x, y, data);
             if (!Strings.isNullOrEmpty(display)) {
                 RenderHelper.getMCFontrenderer().drawString(display, x + width, y + 5, Color.WHITE.getRGB());
             }
-            GlStateManager.popMatrix();
+            RenderSystem.popMatrix();
         }
 
     },
     RIGHT {
         @Override
         public <D> void renderHudPart(IDrawer<D> drawer, D toDraw, @Nullable String display, int x, int y, Object... data) {
-            GlStateManager.pushMatrix();
+            RenderSystem.pushMatrix();
             int width = drawer.draw(toDraw, GuiDraw.mc, this, x, y, data);
             if (!Strings.isNullOrEmpty(display)) {
                 FontRenderer fr = RenderHelper.getMCFontrenderer();
                 fr.drawString(display, x - width - fr.getStringWidth(display), y + 5, Color.WHITE.getRGB());
             }
-            GlStateManager.popMatrix();
+            RenderSystem.popMatrix();
         }
 
     };

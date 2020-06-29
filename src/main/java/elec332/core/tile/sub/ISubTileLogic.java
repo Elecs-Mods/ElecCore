@@ -5,6 +5,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
@@ -52,8 +53,8 @@ public interface ISubTileLogic extends ICapabilityProvider {
         return true;
     }
 
-    public default boolean onBlockActivated(PlayerEntity player, Hand hand, RayTraceResult hit) {
-        return false;
+    public default ActionResultType onBlockActivated(PlayerEntity player, Hand hand, RayTraceResult hit) {
+        return ActionResultType.PASS;
     }
 
     public default VoxelShape getShape(BlockState state, int data) {

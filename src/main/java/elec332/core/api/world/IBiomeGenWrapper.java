@@ -54,9 +54,9 @@ public interface IBiomeGenWrapper {
 
     public <FC extends IFeatureConfig, PC extends IPlacementConfig> void addFeature(GenerationStage.Decoration decorationStage, Feature<FC> feature, FC fc, Placement<PC> placement, PC pc);
 
-    public <FC extends IFeatureConfig, PC extends IPlacementConfig> void addFeature(GenerationStage.Decoration decorationStage, ConfiguredFeature<FC> configuredFeature, ConfiguredPlacement<PC> placement);
+    public <FC extends IFeatureConfig, PC extends IPlacementConfig> void addFeature(GenerationStage.Decoration decorationStage, ConfiguredFeature<FC, ? extends Feature<FC>> configuredFeature, ConfiguredPlacement<PC> placement);
 
-    public void addFeature(GenerationStage.Decoration decorationStage, ConfiguredFeature<? extends IFeatureConfig> feature);
+    public <C extends IFeatureConfig> void addFeature(GenerationStage.Decoration decorationStage, ConfiguredFeature<C, ? extends Feature<C>> feature);
 
     default public <C extends IFeatureConfig> void addStructure(Structure<C> structure, C config) {
         addStructure(structure, config, structure.toString());

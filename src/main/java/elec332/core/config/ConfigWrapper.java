@@ -71,7 +71,7 @@ public class ConfigWrapper extends AbstractFileConfigWrapper {
                 logger.info("Loading config: " + fileName);
                 runLoadTasks();
             });
-            mc.getEventBus().addListener((Consumer<? extends ModConfig.ConfigReloading>) cfgLoad -> {
+            mc.getEventBus().addListener((Consumer<? extends ModConfig.Reloading>) cfgLoad -> {
                 logger.info("Reloading config: " + fileName);
                 runLoadTasks();
             });

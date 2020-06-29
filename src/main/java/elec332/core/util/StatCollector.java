@@ -1,13 +1,12 @@
 package elec332.core.util;
 
-import net.minecraft.util.text.translation.LanguageMap;
+import net.minecraft.util.text.LanguageMap;
 
 /**
  * Created by Elec332 on 10-3-2016.
  * <p>
  * Translation helper
  */
-@SuppressWarnings("deprecation")
 public class StatCollector {
 
     private static LanguageMap fallback = new LanguageMap();

@@ -38,9 +38,9 @@ public class FeaturePlacers {
     public static final Placement<FrequencyConfig> NETHER_FIRE = HELL_FIRE;
     public static final Placement<FrequencyConfig> NETHER_MAGMA = MAGMA;
     public static final Placement<NoPlacementConfig> HEIGHT_4_TO_32 = EMERALD_ORE;
-    public static final Placement<LakeChanceConfig> LAVA_LAKE = Placement.LAVA_LAKE;
-    public static final Placement<LakeChanceConfig> WATER_LAKE = Placement.WATER_LAKE;
-    public static final Placement<DungeonRoomConfig> DUNGEON_ROOM = DUNGEONS;
+    public static final Placement<ChanceConfig> LAVA_LAKE = Placement.LAVA_LAKE;
+    public static final Placement<ChanceConfig> WATER_LAKE = Placement.WATER_LAKE;
+    public static final Placement<ChanceConfig> DUNGEON_ROOM = DUNGEONS;
     public static final Placement<NoPlacementConfig> ROOFED_TREE = DARK_OAK_TREE;
     public static final Placement<ChanceConfig> ICEBERG_PLACEMENT = ICEBERG;
     public static final Placement<FrequencyConfig> NETHER_GLOWSTONE = LIGHT_GEM_CHANCE;

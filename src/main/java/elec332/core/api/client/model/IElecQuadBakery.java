@@ -5,10 +5,10 @@ import elec332.core.api.client.model.template.IQuadTemplate;
 import elec332.core.api.client.model.template.IQuadTemplateSidedMap;
 import net.minecraft.client.renderer.Vector3f;
 import net.minecraft.client.renderer.model.BakedQuad;
-import net.minecraft.client.renderer.texture.ISprite;
+import net.minecraft.client.renderer.model.IModelTransform;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.util.Direction;
-import net.minecraftforge.common.model.ITransformation;
+import net.minecraftforge.client.extensions.IForgeTransformationMatrix;
 
 import java.util.List;
 
@@ -32,7 +32,7 @@ public interface IElecQuadBakery {
      * @param rotation The fixed quad rotation.
      * @return The ISidedMap with the baked quads.
      */
-    public IQuadProvider bakeQuads(IQuadTemplateSidedMap from, ITransformation rotation);
+    public IQuadProvider bakeQuads(IQuadTemplateSidedMap from, IForgeTransformationMatrix rotation);
 
     /**
      * Bakes all template quads in the list.
@@ -49,23 +49,23 @@ public interface IElecQuadBakery {
      * @param rotation The fixed quad rotation.
      * @return A new list with the baked quads.
      */
-    public List<BakedQuad> bakeQuads(List<IQuadTemplate> from, ITransformation rotation);
+    public List<BakedQuad> bakeQuads(List<IQuadTemplate> from, IForgeTransformationMatrix rotation);
 
     public BakedQuad bakeQuad(Vector3f v1, Vector3f v2, TextureAtlasSprite texture, Direction facing);
 
-    public BakedQuad bakeQuad(Vector3f v1, Vector3f v2, TextureAtlasSprite texture, Direction facing, ITransformation rotation);
+    public BakedQuad bakeQuad(Vector3f v1, Vector3f v2, TextureAtlasSprite texture, Direction facing, IForgeTransformationMatrix rotation);
 
-    public BakedQuad bakeQuad(Vector3f v1, Vector3f v2, TextureAtlasSprite texture, Direction facing, ITransformation rotation, float uMin, float vMin, float uMax, float vMax);
+    public BakedQuad bakeQuad(Vector3f v1, Vector3f v2, TextureAtlasSprite texture, Direction facing, IForgeTransformationMatrix rotation, float uMin, float vMin, float uMax, float vMax);
 
     public BakedQuad bakeQuad(IQuadTemplate template);
 
-    public BakedQuad bakeQuad(IQuadTemplate template, ITransformation rotation);
+    public BakedQuad bakeQuad(IQuadTemplate template, IForgeTransformationMatrix rotation);
 
-    public BakedQuad bakeQuad(Vector3f v1, Vector3f v2, TextureAtlasSprite texture, Direction facing, ITransformation rotation, IQuadTemplate.IUVData uvData, int tint);
+    public BakedQuad bakeQuad(Vector3f v1, Vector3f v2, TextureAtlasSprite texture, Direction facing, IForgeTransformationMatrix rotation, IQuadTemplate.IUVData uvData, int tint);
 
-    public BakedQuad bakeQuad(Vector3f v1, Vector3f v2, TextureAtlasSprite texture, Direction facing, ITransformation rotation, float uMin, float vMin, float uMax, float vMax, int tint);
+    public BakedQuad bakeQuad(Vector3f v1, Vector3f v2, TextureAtlasSprite texture, Direction facing, IForgeTransformationMatrix rotation, float uMin, float vMin, float uMax, float vMax, int tint);
 
-    public BakedQuad bakeQuad(Vector3f v1, Vector3f v2, TextureAtlasSprite texture, Direction facing, ISprite state, float uMin, float vMin, float uMax, float vMax, int tint);
+    public BakedQuad bakeQuad(Vector3f v1, Vector3f v2, TextureAtlasSprite texture, Direction facing, IModelTransform state, float uMin, float vMin, float uMax, float vMax, int tint);
 
     /**
      * Bakes the list of general quads for an item from the provided textures.

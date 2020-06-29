@@ -75,7 +75,8 @@ public class WorldHelper {
     }
 
     public static void enqueueChunkRelightChecks(Chunk chunk) {
-        chunk.getWorld().getChunkProvider().getLightManager().func_215571_a(chunk.getPos(), true);
+        //todo: ??? chunk.getWorld().getChunkProvider().markLightChanged(LightType.BLOCK, SectionPos.from(chunk.getPos(), chunk.getHeight()));
+        chunk.getWorld().getChunkProvider().getLightManager().enableLightSources(chunk.getPos(), true);
         //chunk.enqueueRelightChecks();
     }
 
@@ -97,7 +98,7 @@ public class WorldHelper {
      * @param <T>               The configuration type
      * @return The internal feature of this feature configuration
      */
-    public static <T extends IFeatureConfig> Feature<T> getFeature(ConfiguredFeature<T> configuredFeature) {
+    public static <T extends IFeatureConfig, F extends Feature<T>> F getFeature(ConfiguredFeature<T, F> configuredFeature) {
         return configuredFeature.feature;
     }
 
@@ -108,7 +109,7 @@ public class WorldHelper {
      * @param <T>               The configuration type
      * @return The internal configuration of this feature configuration
      */
-    public static <T extends IFeatureConfig> T getFeatureConfiguration(ConfiguredFeature<T> configuredFeature) {
+    public static <T extends IFeatureConfig, F extends Feature<T>> T getFeatureConfiguration(ConfiguredFeature<T, F> configuredFeature) {
         return configuredFeature.config;
     }
 
@@ -462,7 +463,6 @@ public class WorldHelper {
         return getServerWorldDirect(dimension);
     }
 
-    @SuppressWarnings("all")
     public static ServerWorld getServerWorldDirect(DimensionType type) {
         return ElecCore.proxy.getServer().getWorld(type);
     }

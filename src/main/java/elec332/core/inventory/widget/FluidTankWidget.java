@@ -1,6 +1,6 @@
 package elec332.core.inventory.widget;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import elec332.core.client.RenderHelper;
 import elec332.core.client.util.GuiDraw;
 import elec332.core.inventory.tooltip.ToolTip;
@@ -63,9 +63,9 @@ public class FluidTankWidget extends Widget {
 
     @Override
     public void draw(Window gui, int guiX, int guiY, double mouseX, double mouseY, float partialTicks) {
-        GlStateManager.pushMatrix();
+        RenderSystem.pushMatrix();
         drawFluid(guiX, guiY);
-        GlStateManager.popMatrix();
+        RenderSystem.popMatrix();
         GL11.glColor4f(1, 1, 1, 1);
         int rH = height - 11 + 1; //First pixel
         int p = rH % 6;

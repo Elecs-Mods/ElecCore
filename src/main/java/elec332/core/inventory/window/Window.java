@@ -3,7 +3,7 @@ package elec332.core.inventory.window;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import elec332.core.ElecCore;
 import elec332.core.client.RenderHelper;
 import elec332.core.client.util.GuiDraw;
@@ -462,10 +462,10 @@ public class Window implements IWidgetContainer, IGuiEventListener {
 
     @OnlyIn(Dist.CLIENT)
     protected void drawScreenPost(int mouseX, int mouseY, float partialTicks) {
-        GlStateManager.disableLighting();
-        GlStateManager.disableDepthTest();
-        GlStateManager.pushMatrix();
-        GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+        RenderSystem.disableLighting();
+        RenderSystem.disableDepthTest();
+        RenderSystem.pushMatrix();
+        RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
         net.minecraft.client.renderer.RenderHelper.disableStandardItemLighting();
         for (IWidget widget : getWidgets()) {
             if (widget.isHidden()) {
@@ -483,24 +483,24 @@ public class Window implements IWidgetContainer, IGuiEventListener {
                 }
             }
         }
-        GlStateManager.popMatrix();
-        GlStateManager.enableDepthTest();
+        RenderSystem.popMatrix();
+        RenderSystem.enableDepthTest();
     }
 
     @OnlyIn(Dist.CLIENT)
     protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
-        GlStateManager.pushMatrix();
+        RenderSystem.pushMatrix();
         drawBackground();
         int k = (width - xSize) / 2;
         int l = (height - ySize) / 2;
         drawWidgets(k, l, mouseX, mouseY, partialTicks);
-        GlStateManager.popMatrix();
+        RenderSystem.popMatrix();
     }
 
     protected void drawBackground() {
         int k = (width - xSize) / 2;
         int l = (height - ySize) / 2;
-        GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+        RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
         ResourceLocation background = getBackgroundImageLocation();
         if (background != null) {
             RenderHelper.bindTexture(background);
@@ -525,14 +525,14 @@ public class Window implements IWidgetContainer, IGuiEventListener {
     }
 
     protected void drawWidgets(int k, int l, int mouseX, int mouseY, float partialTicks) {
-        GlStateManager.pushMatrix();
-        GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+        RenderSystem.pushMatrix();
+        RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
         for (IWidget widget : getWidgets()) {
             if (!widget.isHidden()) {
                 widget.draw(this, k, l, translatedMouseX(mouseX), translatedMouseY(mouseY), partialTicks);
             }
         }
-        GlStateManager.popMatrix();
+        RenderSystem.popMatrix();
     }
 
     @OnlyIn(Dist.CLIENT)

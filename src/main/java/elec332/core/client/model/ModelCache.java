@@ -6,8 +6,8 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import elec332.core.loader.client.RenderingRegistry;
 import net.minecraft.block.BlockState;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.model.BakedQuad;
 import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.client.renderer.model.ItemCameraTransforms;
@@ -18,7 +18,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IEnviromentBlockReader;
+import net.minecraft.world.ILightReader;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -157,7 +157,7 @@ public abstract class ModelCache<K> implements IBakedModel {
 
     @Nonnull
     @Override
-    public IModelData getModelData(@Nonnull IEnviromentBlockReader world, @Nonnull BlockPos pos, @Nonnull BlockState state, @Nonnull IModelData tileData) {
+    public IModelData getModelData(@Nonnull ILightReader world, @Nonnull BlockPos pos, @Nonnull BlockState state, @Nonnull IModelData tileData) {
         if (tileData == EmptyModelData.INSTANCE) {
             tileData = new ModelDataMap.Builder().build();
         }
@@ -165,7 +165,7 @@ public abstract class ModelCache<K> implements IBakedModel {
         return tileData;
     }
 
-    public void addModelData(@Nonnull IEnviromentBlockReader world, @Nonnull BlockPos pos, @Nonnull BlockState state, @Nonnull IModelData modelData) {
+    public void addModelData(@Nonnull ILightReader world, @Nonnull BlockPos pos, @Nonnull BlockState state, @Nonnull IModelData modelData) {
 
     }
 
@@ -179,6 +179,11 @@ public abstract class ModelCache<K> implements IBakedModel {
         return defaultModel == null || defaultModel.isGui3d();
     }
 
+    @Override //isSideLit
+    public boolean func_230044_c_() {
+        return defaultModel != null && defaultModel.func_230044_c_();
+    }
+
     @Override
     public boolean isBuiltInRenderer() {
         return defaultModel != null && defaultModel.isBuiltInRenderer();
@@ -187,7 +192,7 @@ public abstract class ModelCache<K> implements IBakedModel {
     @Override
     @Nonnull
     public TextureAtlasSprite getParticleTexture() {
-        return Minecraft.getInstance().getTextureMap().getAtlasSprite(getTextureLocation().toString());
+        return RenderingRegistry.instance().getBlockTextures().getSprite(getTextureLocation());
     }
 
     @Nonnull

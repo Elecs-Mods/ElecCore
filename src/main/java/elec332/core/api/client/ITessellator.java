@@ -12,7 +12,7 @@ import javax.annotation.Nonnull;
  * <p>
  * A tessellator that works like 1.7.10, meaning that
  * it remembers the brightness, opaque and color settings, and that
- * {@link ITessellator#addVertexWithUV(double, double, double, double, double)}
+ * {@link ITessellator#addVertexWithUV(double, double, double, float, float)}
  * can be called for creating vertices
  */
 @OnlyIn(Dist.CLIENT)
@@ -30,7 +30,7 @@ public interface ITessellator {
 
     public void setColorRGBA(int red, int green, int blue, int alpha);
 
-    public void addVertexWithUV(double x, double y, double z, double u, double v);
+    public void addVertexWithUV(double x, double y, double z, float u, float v);
 
     public void startDrawingWorldBlock();
 

@@ -82,7 +82,7 @@ public class RayTraceHelper {
      * @return The {@link RayTraceResult} from the raytrace
      */
     public static BlockRayTraceResult rayTrace(LivingEntity player, double distance) {
-        Vec3d vec3d = new Vec3d(player.posX, player.posY + player.getEyeHeight(), player.posZ);
+        Vec3d vec3d = new Vec3d(player.getPosX(), player.getPosY() + player.getEyeHeight(), player.getPosZ());
         Vec3d vec3d1 = getVectorForRotation(player.rotationPitch, player.rotationYawHead);
         Vec3d vec3d2 = vec3d.add(vec3d1.x * distance, vec3d1.y * distance, vec3d1.z * distance);
         RayTraceContext rtc = new RayTraceContext(vec3d, vec3d2, RayTraceContext.BlockMode.OUTLINE, RayTraceContext.FluidMode.NONE, player);

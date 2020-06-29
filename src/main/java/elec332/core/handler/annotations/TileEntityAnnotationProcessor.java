@@ -41,13 +41,13 @@ public class TileEntityAnnotationProcessor implements IItemRegister {
 
     @APIHandlerInject
     private static IAnnotationDataHandler asmData;
-    private static final Map<Class, TileEntityType> typeReference = Maps.newIdentityHashMap();
+    private static final Map<Class<?>, TileEntityType<?>> typeReference = Maps.newIdentityHashMap();
     private static final Map<String, Set<Runnable>> toRegister = Maps.newHashMap();
 
     @Nullable
     @SuppressWarnings("unchecked")
     public static <T extends TileEntity> TileEntityType<T> getTileType(Class<T> clazz) {
-        return typeReference.get(clazz);
+        return (TileEntityType<T>) typeReference.get(clazz);
     }
 
     @Override
@@ -88,13 +88,7 @@ public class TileEntityAnnotationProcessor implements IItemRegister {
                 f = null;
             }
             final Class<? extends TileEntity> clazz = clazz_;
-            if (!name.contains(":")) {
-                String mod = (String) data.getAnnotationInfo().get("mod");
-                if (Strings.isNullOrEmpty(mod)) {
-                    mod = FMLHelper.getOwnerName(clazz);
-                }
-                name = mod + ":" + name;
-            }
+            name = checkName(name, (String) data.getAnnotationInfo().get("mod"), clazz);
 
             final String finalName = name;
             toRegister.computeIfAbsent(name.split(":")[0], o -> Sets.newHashSet()).add(() -> {
@@ -117,11 +111,22 @@ public class TileEntityAnnotationProcessor implements IItemRegister {
         }
     }
 
+    public static String checkName(String name, String mod, Class<? extends TileEntity> clazz) {
+        if (!name.contains(":")) {
+            if (Strings.isNullOrEmpty(mod)) {
+                mod = FMLHelper.getOwnerName(clazz);
+            }
+            name = mod + ":" + name;
+        }
+        return name;
+    }
+
     public static <T extends TileEntity> TileEntityType<T> registerTileEntity(Class<T> clazz, ResourceLocation rl) {
         return registerTileEntity(clazz, rl, new ObjectReference<>());
     }
 
     private static <T extends TileEntity> TileEntityType<T> registerTileEntity(Class<T> clazz, ResourceLocation rl, ObjectReference<TileEntityType<?>> ref) {
+        @SuppressWarnings("rawtypes")
         Supplier s = null;
         try {
             Constructor<? extends TileEntity> c = clazz.getDeclaredConstructor(TileEntityType.class);
@@ -147,7 +152,7 @@ public class TileEntityAnnotationProcessor implements IItemRegister {
             throw new RuntimeException();
         }
         @SuppressWarnings("unchecked")
-        TileEntityType<T> tt = new TileType<>(s, clazz);
+        TileEntityType<T> tt = new TileType<T>(s, clazz);
         typeReference.put(clazz, tt);
         ref.set(tt);
         return RegistryHelper.registerTileEntity(rl, tt);

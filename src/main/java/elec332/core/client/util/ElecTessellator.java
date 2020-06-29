@@ -86,7 +86,7 @@ public class ElecTessellator implements ITessellator {
     }
 
     @Override
-    public void addVertexWithUV(double x, double y, double z, double u, double v) {
+    public void addVertexWithUV(double x, double y, double z, float u, float v) {
         worldRenderer.pos(x, y, z);
         drawColor();
         worldRenderer.tex(u, v); //tex

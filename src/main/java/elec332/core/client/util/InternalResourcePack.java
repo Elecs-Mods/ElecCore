@@ -46,7 +46,7 @@ public abstract class InternalResourcePack implements IResourcePack {
 
     @Nonnull
     @Override
-    public Collection<ResourceLocation> getAllResourceLocations(@Nonnull ResourcePackType type, @Nonnull String pathIn, int maxDepth, @Nonnull Predicate<String> filter) {
+    public Collection<ResourceLocation> getAllResourceLocations(@Nonnull ResourcePackType type, @Nonnull String nameSpace, @Nonnull String pathIn, int maxDepth, @Nonnull Predicate<String> filter) {
         return Collections.emptyList();
     }
 

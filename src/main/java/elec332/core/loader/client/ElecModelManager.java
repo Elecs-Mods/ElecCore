@@ -90,7 +90,7 @@ enum ElecModelManager implements IAnnotationDataProcessor {
                 .map(IModelHandler::getHandlerModelLocations)
                 .flatMap(Collection::stream)
                 .forEach(rl -> mods.computeIfAbsent(rl.getNamespace(), k -> Sets.newHashSet()).add(rl));
-        mods.keySet().forEach(name -> ClientHelper.getMinecraft().getResourceManager().addResourcePack(new InternalResourcePack(name + " automodel", name) {
+        mods.keySet().forEach(name -> ClientHelper.addResourcePack(new InternalResourcePack(name + " automodel", name) {
 
             Set<ResourceLocation> objects = mods.get(name);
 

@@ -7,6 +7,8 @@ import elec332.core.world.WorldHelper;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.IWaterLoggable;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.RenderTypeLookup;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.Entity;
@@ -17,6 +19,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.state.StateContainer;
 import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
@@ -32,6 +35,7 @@ import net.minecraft.world.storage.loot.LootParameters;
 
 import javax.annotation.Nonnull;
 import java.util.List;
+import java.util.function.Predicate;
 
 /**
  * Created by Elec332 on 26-11-2016.
@@ -46,6 +50,14 @@ public abstract class AbstractBlock extends Block implements IAbstractBlock {
     }
 
     private String unlocalizedName;
+
+    public void setBlockRenderType(RenderType renderType) {
+        RenderTypeLookup.setRenderLayer(this, renderType);
+    }
+
+    public void setBlockRenderType(Predicate<RenderType> renderTypes) {
+        RenderTypeLookup.setRenderLayer(this, renderTypes);
+    }
 
     @Nonnull
     @Override
@@ -104,8 +116,9 @@ public abstract class AbstractBlock extends Block implements IAbstractBlock {
 
     @Override
     @Deprecated
+    @Nonnull
     @SuppressWarnings("deprecation")
-    public boolean onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult hit) {
+    public ActionResultType onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult hit) {
         return BlockMethods.onBlockActivated(state, world, pos, player, hand, hit, this);
     }
 

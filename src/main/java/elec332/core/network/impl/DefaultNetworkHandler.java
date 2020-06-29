@@ -134,9 +134,9 @@ class DefaultNetworkHandler implements IElecNetworkHandler, DefaultByteBufFactor
     public void sendToAllAround(IMessage message, TargetPoint point) {
         sendTo(message, ServerHelper.getAllPlayersInDimension(point.dimension).stream()
                 .filter(player -> {
-                    double d4 = point.x - player.posX;
-                    double d5 = point.y - player.posY;
-                    double d6 = point.z - player.posZ;
+                    double d4 = point.x - player.getPosX();
+                    double d5 = point.y - player.getPosY();
+                    double d6 = point.z - player.getPosZ();
                     return d4 * d4 + d5 * d5 + d6 * d6 < point.range * point.range;
                 }));
     }

@@ -30,7 +30,7 @@ public class IndexedAABB extends AxisAlignedBB {
     }
 
     public IndexedAABB(MutableBoundingBox mutableBoundingBox, int index) {
-        this(AxisAlignedBB.func_216363_a(mutableBoundingBox), index);
+        this(AxisAlignedBB.toImmutable(mutableBoundingBox), index);
     }
 
     public IndexedAABB(Vec3d min, Vec3d max, int index) {

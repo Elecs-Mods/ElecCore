@@ -1,8 +1,7 @@
 package elec332.core.inventory.window;
 
+import com.mojang.datafixers.util.Pair;
 import elec332.core.inventory.widget.slot.WidgetSlot;
-import net.minecraft.client.renderer.texture.AtlasTexture;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
@@ -82,12 +81,6 @@ class WrappedWidgetSlot extends WidgetSlot {
         return slot.getItemStackLimit(stack);
     }
 
-    @Nullable
-    @Override
-    public String getSlotTexture() {
-        return slot.getSlotTexture();
-    }
-
     @Nonnull
     @Override
     public ItemStack decrStackSize(int amount) {
@@ -104,31 +97,15 @@ class WrappedWidgetSlot extends WidgetSlot {
         return slot.isEnabled();
     }
 
-    @Nonnull
+    @Nullable
     @Override
-    public ResourceLocation getBackgroundLocation() {
-        return slot.getBackgroundLocation();
+    public Pair<ResourceLocation, ResourceLocation> getBackground() {
+        return slot.func_225517_c_();
     }
 
     @Override
-    public void setBackgroundLocation(@Nonnull ResourceLocation texture) {
-        slot.setBackgroundLocation(texture);
-    }
-
-    @Override
-    public void setBackgroundName(@Nullable String name) {
-        slot.setBackgroundName(name);
-    }
-
-    @Override
-    public TextureAtlasSprite getBackgroundSprite() {
-        return slot.getBackgroundSprite();
-    }
-
-    @Nonnull
-    @Override
-    public AtlasTexture getBackgroundMap() {
-        throw new UnsupportedOperationException();
+    public void setBackground(@Nonnull ResourceLocation atlas, @Nonnull ResourceLocation sprite) {
+        slot.setBackground(atlas, sprite);
     }
 
     @Override

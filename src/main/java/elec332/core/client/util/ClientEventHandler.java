@@ -1,5 +1,6 @@
 package elec332.core.client.util;
 
+import com.google.common.base.Preconditions;
 import elec332.core.ElecCore;
 import elec332.core.block.ISelectionBoxOverride;
 import elec332.core.client.RenderHelper;
@@ -12,7 +13,7 @@ import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.event.DrawBlockHighlightEvent;
+import net.minecraftforge.client.event.DrawHighlightEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
@@ -23,10 +24,10 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 public class ClientEventHandler {
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
-    public void onBlockHighlight(DrawBlockHighlightEvent event) {
+    public void onBlockHighlight(DrawHighlightEvent event) {
         RayTraceResult hit_ = event.getTarget();
-        World world = Minecraft.getInstance().world;
-        if (event.getSubID() == 0 && hit_ instanceof BlockRayTraceResult) {
+        World world = Preconditions.checkNotNull(Minecraft.getInstance().world);
+        if (hit_ instanceof BlockRayTraceResult) {
             BlockRayTraceResult hit = (BlockRayTraceResult) hit_;
             BlockPos pos = hit.getPos();
             BlockState state = world.getBlockState(pos);

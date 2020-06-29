@@ -158,6 +158,11 @@ public class INoJsonItemHandler implements IItemModelHandler {
             return false;//throw new UnsupportedOperationException();
         }
 
+        @Override //isSideLit
+        public boolean func_230044_c_() {
+            throw new UnsupportedOperationException();
+        }
+
         @Override
         public boolean isBuiltInRenderer() {
             throw new UnsupportedOperationException();

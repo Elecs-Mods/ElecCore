@@ -1,5 +1,6 @@
 package elec332.core.client.model.loading;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import elec332.core.client.RenderHelper;
 import elec332.core.util.BlockProperties;
@@ -10,7 +11,7 @@ import net.minecraft.client.renderer.model.Variant;
 import net.minecraft.client.renderer.model.VariantList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IEnviromentBlockReader;
+import net.minecraft.world.ILightReader;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -22,36 +23,36 @@ import java.util.Map;
 public interface INoBlockStateJsonBlock extends IBlockModelItemLink {
 
     @OnlyIn(Dist.CLIENT)
-    public VariantList getVariantsFor(BlockState state);
+    VariantList getVariantsFor(BlockState state);
 
-    default public boolean hasTextureOverrideJson(BlockState state) {
+    default boolean hasTextureOverrideJson(BlockState state) {
         return true;
     }
 
-    default public ResourceLocation getTextureOverridesJson(BlockState state, Variant variant) {
+    default ResourceLocation getTextureOverridesJson(BlockState state, Variant variant) {
         return new ResourceLocation(variant.getModelLocation().toString() + "_overrides");
     }
 
-    public default void addAdditionalData(IEnviromentBlockReader world, BlockPos pos, Map<String, String> dataMap) {
+    default void addAdditionalData(ILightReader world, BlockPos pos, Map<String, String> dataMap) {
     }
 
-    public interface RotationImpl extends INoBlockStateJsonBlock {
+    interface RotationImpl extends INoBlockStateJsonBlock {
 
         @OnlyIn(Dist.CLIENT)
         default VariantList getVariantsFor(BlockState state) {
             Block b = state.getBlock();
             ModelRotation mr = RenderHelper.getDefaultRotationFromFacing(state.get(BlockProperties.FACING_NORMAL));
-            Variant variant = new Variant(b.getRegistryName(), mr, false, 1);
+            Variant variant = new Variant(Preconditions.checkNotNull(b.getRegistryName()), mr.getRotation(), false, 1);
             return new VariantList(Lists.newArrayList(variant));
         }
 
     }
 
-    public interface DefaultImpl extends INoBlockStateJsonBlock {
+    interface DefaultImpl extends INoBlockStateJsonBlock {
 
         @Override
         default VariantList getVariantsFor(BlockState state) {
-            return new VariantList(Lists.newArrayList(new Variant(state.getBlock().getRegistryName(), ModelRotation.X0_Y0, false, 0)));
+            return new VariantList(Lists.newArrayList(new Variant(Preconditions.checkNotNull(state.getBlock().getRegistryName()), ModelRotation.X0_Y0.getRotation(), false, 0)));
         }
 
     }

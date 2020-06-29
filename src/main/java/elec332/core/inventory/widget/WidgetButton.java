@@ -1,8 +1,7 @@
 package elec332.core.inventory.widget;
 
 import com.google.common.collect.Lists;
-import com.mojang.blaze3d.platform.GLX;
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import elec332.core.client.RenderHelper;
 import elec332.core.client.util.GuiDraw;
 import elec332.core.inventory.tooltip.ToolTip;
@@ -93,14 +92,14 @@ public class WidgetButton extends Widget {
     @Override
     public void draw(Window gui, int guiX, int guiY, double mouseX, double mouseY, float partialTicks) {
         if (!isHidden()) {
-            GlStateManager.pushMatrix();
+            RenderSystem.pushMatrix();
             FontRenderer fontrenderer = RenderHelper.getMCFontrenderer();
             bindTexture(buttonTextures);
             GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
             boolean hovering = isMouseOver(mouseX, mouseY);
             int k = this.getHoverState(hovering);
             GL11.glEnable(GL11.GL_BLEND);
-            GLX.glBlendFuncSeparate(770, 771, 1, 0);
+            RenderSystem.blendFuncSeparate(770, 771, 1, 0);
             GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
             //Left half
             GuiDraw.drawTexturedModalRect(guiX + this.x, guiY + this.y, 0, 46 + k * 20, this.width / 2, this.height / 2);
@@ -118,8 +117,8 @@ public class WidgetButton extends Widget {
                 l = 16777120;
             }
             GuiDraw.drawCenteredString(fontrenderer, this.displayString, guiX + this.x + this.width / 2, guiY + this.y + (this.height - 8) / 2, l);
-            GlStateManager.color4f(1.0f, 1.0f, 1.0f, 1.0f);
-            GlStateManager.popMatrix();
+            RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
+            RenderSystem.popMatrix();
         }
     }
 

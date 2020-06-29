@@ -36,7 +36,7 @@ public class PlayerHelper {
      * @return The corrected eye position
      */
     public static Vec3d getCorrectedEyePosition(PlayerEntity player) {
-        double yCoord = player.posY;
+        double yCoord = player.getPosY();
         if (player.getEntityWorld().isRemote) {
             yCoord += player.getEyeHeight();// - player.getDefaultEyeHeight();
         } else {
@@ -45,7 +45,7 @@ public class PlayerHelper {
                 yCoord -= 0.08D;
             }
         }
-        return new Vec3d(player.posX, yCoord, player.posZ);
+        return new Vec3d(player.getPosX(), yCoord, player.getPosZ());
     }
 
     /**

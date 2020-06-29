@@ -2,8 +2,9 @@ package elec332.core.inventory.window;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import elec332.core.ElecCore;
+import elec332.core.client.RenderHelper;
 import elec332.core.util.InventoryHelper;
 import net.minecraft.client.MainWindow;
 import net.minecraft.client.Minecraft;
@@ -120,7 +121,7 @@ public final class WindowGui extends ContainerScreen<WindowContainer> {
         boolean b = false;
         if (wheel != 0) {
             MouseHelper mh = Minecraft.getInstance().mouseHelper;
-            MainWindow mw = Minecraft.getInstance().mainWindow;
+            MainWindow mw = RenderHelper.getMainWindow();
             double mouseX = mh.getMouseX() * width / mw.getFramebufferWidth();//displayWidth;
             double mouseY = height - mh.getMouseY() * height / (mw.getFramebufferHeight() - 1); //Minecraft.getInstance().displayHeight
             b = window.mouseScrolled(wheel, window.translatedMouseX(mouseX), window.translatedMouseY(mouseY));
@@ -145,20 +146,20 @@ public final class WindowGui extends ContainerScreen<WindowContainer> {
 
     @Override
     public void render(int mouseX, int mouseY, float partialTicks) {
-        GlStateManager.pushMatrix();
+        RenderSystem.pushMatrix();
         window.drawScreenPre(mouseX, mouseY, partialTicks);
-        GlStateManager.popMatrix();
+        RenderSystem.popMatrix();
         super.render(mouseX, mouseY, partialTicks);
-        GlStateManager.pushMatrix();
+        RenderSystem.pushMatrix();
         window.drawScreenPost(mouseX, mouseY, partialTicks);
-        GlStateManager.popMatrix();
+        RenderSystem.popMatrix();
     }
 
     @Override
     protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
-        GlStateManager.pushMatrix();
+        RenderSystem.pushMatrix();
         window.drawGuiContainerForegroundLayer(mouseX, mouseY);
-        GlStateManager.popMatrix();
+        RenderSystem.popMatrix();
     }
 
     @Override
@@ -174,17 +175,17 @@ public final class WindowGui extends ContainerScreen<WindowContainer> {
         }
 
         FontRenderer font = stack.getItem().getFontRenderer(stack);
-        net.minecraftforge.fml.client.config.GuiUtils.preItemToolTip(stack);
+        net.minecraftforge.fml.client.gui.GuiUtils.preItemToolTip(stack);
         this.renderTooltip(list, x, y, (font == null ? this.font : font));
-        net.minecraftforge.fml.client.config.GuiUtils.postItemToolTip();
+        net.minecraftforge.fml.client.gui.GuiUtils.postItemToolTip();
 
     }
 
     @Override
     protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
-        GlStateManager.pushMatrix();
+        RenderSystem.pushMatrix();
         window.drawGuiContainerBackgroundLayer(partialTicks, mouseX, mouseY);
-        GlStateManager.popMatrix();
+        RenderSystem.popMatrix();
     }
 
 }

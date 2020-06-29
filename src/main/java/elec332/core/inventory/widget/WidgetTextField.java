@@ -1,7 +1,7 @@
 package elec332.core.inventory.widget;
 
 import com.google.common.collect.Lists;
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import elec332.core.client.ClientHelper;
 import elec332.core.client.RenderHelper;
 import elec332.core.inventory.window.Window;
@@ -136,10 +136,10 @@ public class WidgetTextField extends Widget {
     @Override
     @OnlyIn(Dist.CLIENT)
     public void draw(Window window, int guiX, int guiY, double mouseX, double mouseY, float partialTicks) {
-        GlStateManager.pushMatrix();
-        GlStateManager.translatef(guiX, guiY, 0);
+        RenderSystem.pushMatrix();
+        RenderSystem.translatef(guiX, guiY, 0);
         getTextField().renderButton((int) mouseX, (int) mouseX, partialTicks);
-        GlStateManager.popMatrix();
+        RenderSystem.popMatrix();
     }
 
     @OnlyIn(Dist.CLIENT)

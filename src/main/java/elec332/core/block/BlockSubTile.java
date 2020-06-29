@@ -6,12 +6,13 @@ import elec332.core.tile.sub.TileMultiObject;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.material.PushReaction;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.IFluidState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.BlockRenderLayer;
+import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
@@ -38,6 +39,7 @@ public class BlockSubTile extends AbstractBlock implements ISelectionBoxOverride
     @SuppressWarnings("all")
     public BlockSubTile(Properties builder, Class<? extends ISubTileLogic>... subtiles) {
         super(builder.hardnessAndResistance(5));
+        setBlockRenderType(RenderType.getCutout());
         this.subtiles = subtiles;
     }
 
@@ -69,12 +71,6 @@ public class BlockSubTile extends AbstractBlock implements ISelectionBoxOverride
     public VoxelShape getSelectionBox(BlockState state, IWorld world, BlockPos pos, PlayerEntity player, RayTraceResult hit) {
         TileMultiObject tile = getTileEntity(world, pos, TileMultiObject.class);
         return tile.getSelectionBox(state, player, hit);
-    }
-
-    @Nonnull
-    @Override
-    public BlockRenderLayer getRenderLayer() {
-        return BlockRenderLayer.CUTOUT;
     }
 
     @Nonnull
@@ -126,7 +122,7 @@ public class BlockSubTile extends AbstractBlock implements ISelectionBoxOverride
     }
 
     @Override
-    public boolean onBlockActivated(World world, BlockPos pos, BlockState state, PlayerEntity player, Hand hand, BlockRayTraceResult hit) {
+    public ActionResultType onBlockActivated(World world, BlockPos pos, BlockState state, PlayerEntity player, Hand hand, BlockRayTraceResult hit) {
         TileMultiObject tile = getTileEntity(world, pos, TileMultiObject.class);
         return tile.onBlockActivated(player, hand, state, hit);
     }

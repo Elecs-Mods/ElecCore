@@ -59,6 +59,12 @@ class WrappedServerChunkProvider extends ServerChunkProvider {
         return scp.getChunk(p_212849_1_, p_212849_2_, p_212849_3_, p_212849_4_);
     }
 
+    @Nullable
+    @Override
+    public Chunk getChunkWithoutLoading(int p_225313_1_, int p_225313_2_) {
+        return super.getChunkWithoutLoading(p_225313_1_, p_225313_2_);
+    }
+
     @Override
     public boolean chunkExists(int p_73149_1_, int p_73149_2_) {
         return scp.chunkExists(p_73149_1_, p_73149_2_);
@@ -73,6 +79,11 @@ class WrappedServerChunkProvider extends ServerChunkProvider {
     @Override
     public World getWorld() {
         return scp.getWorld();
+    }
+
+    @Override
+    public boolean driveOneTask() {
+        return super.driveOneTask();
     }
 
     @Override
@@ -127,6 +138,7 @@ class WrappedServerChunkProvider extends ServerChunkProvider {
 
     @Override
     public void markBlockChanged(BlockPos p_217217_1_) {
+        //Todo: NUKE THIS CLASS AND HOOK SOMEWHERE ELSE
         GridEventInputHandler.INSTANCE.worldBlockUpdate(getWorld(), p_217217_1_, null, null);
         scp.markBlockChanged(p_217217_1_);
     }
@@ -134,6 +146,16 @@ class WrappedServerChunkProvider extends ServerChunkProvider {
     @Override
     public void markLightChanged(@Nonnull LightType p_217201_1_, SectionPos p_217201_2_) {
         scp.markLightChanged(p_217201_1_, p_217201_2_);
+    }
+
+    @Override
+    public <T> void registerTicket(@Nonnull TicketType<T> p_217228_1_, @Nonnull ChunkPos p_217228_2_, int p_217228_3_, @Nonnull T p_217228_4_) {
+        super.registerTicket(p_217228_1_, p_217228_2_, p_217228_3_, p_217228_4_);
+    }
+
+    @Override
+    public <T> void releaseTicket(@Nonnull TicketType<T> p_217222_1_, @Nonnull ChunkPos p_217222_2_, int p_217222_3_, @Nonnull T p_217222_4_) {
+        super.releaseTicket(p_217222_1_, p_217222_2_, p_217222_3_, p_217222_4_);
     }
 
     @Override
@@ -201,19 +223,8 @@ class WrappedServerChunkProvider extends ServerChunkProvider {
     }
 
     @Override
-    public boolean func_217234_d() {
-        return scp.func_217234_d();
-    }
-
-    @Override
     public boolean func_223435_b(Entity p_223435_1_) {
         return scp.func_223435_b(p_223435_1_);
-    }
-
-    @Nullable
-    @Override
-    public Chunk func_225313_a(int p_225313_1_, int p_225313_2_) {
-        return scp.func_225313_a(p_225313_1_, p_225313_2_);
     }
 
     @Override
@@ -230,16 +241,6 @@ class WrappedServerChunkProvider extends ServerChunkProvider {
     @Override
     public String func_217208_a(@Nonnull ChunkPos p_217208_1_) {
         return scp.func_217208_a(p_217208_1_);
-    }
-
-    @Override
-    public <T> void func_217222_b(@Nonnull TicketType<T> p_217222_1_, @Nonnull ChunkPos p_217222_2_, int p_217222_3_, @Nonnull T p_217222_4_) {
-        scp.func_217222_b(p_217222_1_, p_217222_2_, p_217222_3_, p_217222_4_);
-    }
-
-    @Override
-    public <T> void func_217228_a(@Nonnull TicketType<T> p_217228_1_, @Nonnull ChunkPos p_217228_2_, int p_217228_3_, @Nonnull T p_217228_4_) {
-        scp.func_217228_a(p_217228_1_, p_217228_2_, p_217228_3_, p_217228_4_);
     }
 
 }
