@@ -80,7 +80,7 @@ dependencies {
 
 	//WAILA
     compileOnly "mcp.mobius.waila:Hwyla:${config.WAILA_version}:api"
-    runtimeOnly fg.deobf("mcp.mobius.waila:Hwyla:forge-${config.WAILA_version}")
+    runtimeOnly fg.deobf("mcp.mobius.waila:Hwyla:${config.WAILA_version}")
 	
 	//JEI
     compileOnly "mezz.jei:jei-${config.jei_version}:api"

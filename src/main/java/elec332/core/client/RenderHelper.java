@@ -7,6 +7,7 @@ import elec332.core.ElecCore;
 import elec332.core.api.client.ITessellator;
 import elec332.core.client.util.ElecTessellator;
 import elec332.core.loader.client.RenderingRegistry;
+import elec332.core.util.RegistryHelper;
 import net.minecraft.client.MainWindow;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -40,6 +41,7 @@ import net.minecraftforge.client.extensions.IForgeTransformationMatrix;
 import net.minecraftforge.fluids.FluidAttributes;
 
 import javax.annotation.Nonnull;
+import java.lang.reflect.Field;
 import java.util.Map;
 
 /**
@@ -57,7 +59,6 @@ public class RenderHelper {
     private static final Minecraft mc;
     private static final Map<BufferBuilder, ITessellator> worldRenderTessellators;
     private static final Map<Direction, IForgeTransformationMatrix[]> rotateAroundMap;
-    private static final WorldVertexBufferUploader vertexBufferUploader;
     private static IBakedModel nullModel;
 
     @Nonnull
@@ -89,12 +90,53 @@ public class RenderHelper {
         return mc.getMainWindow();
     }
 
+    public static RenderType createRenderType(String name, RenderType parent, ResourceLocation texture) {
+        RenderType.State state = null;
+        for (Field f : parent.getClass().getDeclaredFields()) {
+            if (f.getGenericType() == RenderType.State.class) {
+                try {
+                    f.setAccessible(true);
+                    state = (RenderType.State) f.get(parent);
+                } catch (Exception e) {
+                    continue;
+                }
+                break;
+            }
+        }
+        if (state == null) {
+            throw new UnsupportedOperationException();
+        }
+        Object o = state.field_230171_p_;
+        RenderType.State newState = RenderType.State.getBuilder()
+                .texture(new RenderState.TextureState(texture, state.texture.blur, state.texture.mipmap))
+                .transparency(state.transparency)
+                .diffuseLighting(state.diffuseLighting)
+                .shadeModel(state.shadowModel)
+                .alpha(state.alpha)
+                .depthTest(state.depthTest)
+                .depthTest(state.depthTest)
+                .lightmap(state.lightmap)
+                .overlay(state.overlay)
+                .fog(state.fog)
+                .layer(state.layer)
+                .target(state.target)
+                .texturing(state.texturing)
+                .writeMask(state.writeMask)
+                .line(state.line)
+                .build(o != o.getClass().getEnumConstants()[0]);
+        return RenderType.makeType(name, parent.getVertexFormat(), parent.getDrawMode(), parent.getBufferSize(), parent.isUseDelegate(), parent.needsSorting, newState);
+    }
+
     public static AtlasTexture getBlockTextures() {
         return getTextureMap(getBlocksResourceLocation());
     }
 
     public static AtlasTexture getTextureMap(ResourceLocation map) {
         return mc.getModelManager().getAtlasTexture(map);
+    }
+
+    public static <T extends TileEntity> void registerTESR(Class<T> type, TileEntityRenderer<T> renderer) {
+        TileEntityRendererDispatcher.instance.setSpecialRendererInternal(RegistryHelper.getTileEntityType(type), renderer);
     }
 
     @Nonnull
@@ -108,7 +150,7 @@ public class RenderHelper {
 
     public static void drawBuffer(BufferBuilder buffer) {
         buffer.finishDrawing();
-        vertexBufferUploader.draw(buffer);
+        WorldVertexBufferUploader.draw(buffer);
     }
 
     public static ItemColors getItemColors() {
@@ -392,7 +434,6 @@ public class RenderHelper {
         mcTessellator = Tessellator.getInstance();
         tessellator = new ElecTessellator(mcTessellator);
         mcRenderTypeBuffer = IRenderTypeBuffer.getImpl(mcTessellator.getBuffer());
-        vertexBufferUploader = new WorldVertexBufferUploader();
         worldRenderTessellators = Maps.newHashMap();
         worldRenderTessellators.put(tessellator.getBuffer(), tessellator);
         rotateAroundMap = Maps.newEnumMap(Direction.class);

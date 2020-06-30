@@ -263,6 +263,11 @@ public final class RenderingRegistry implements IElecRenderingRegistry {
     }
 
     @Override
+    public <T extends TileEntity> void setItemRenderer(Item item, Class<T> tile) {
+        setItemRenderer(item, RegistryHelper.getTileEntityType(tile));
+    }
+
+    @Override
     public <T extends TileEntity> void setItemRenderer(Item item, T tile) {
         setItemRenderer(item, getTESR(tile));
     }

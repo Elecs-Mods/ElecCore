@@ -1,6 +1,7 @@
 package elec332.core.util;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
 import elec332.core.handler.annotations.TileEntityAnnotationProcessor;
 import net.minecraft.block.Block;
 import net.minecraft.enchantment.Enchantment;
@@ -29,6 +30,7 @@ import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.registries.*;
 
 import javax.annotation.Nonnull;
+import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -136,6 +138,21 @@ public class RegistryHelper {
 
     public static ForgeRegistry<Feature<?>> getFeatures() {
         return (ForgeRegistry<Feature<?>>) ForgeRegistries.FEATURES;
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T extends TileEntity> TileEntityType<T> getTileEntityType(Class<T> clazz) {
+        Collection<TileEntityType<T>> types = Lists.newArrayList();
+        getTileEntities().forEach(type -> {
+            TileEntity tile = type.create();
+            if (tile != null && tile.getClass() == clazz) {
+                types.add((TileEntityType<T>) type);
+            }
+        });
+        if (types.size() == 1) {
+            return types.iterator().next();
+        }
+        throw new UnsupportedOperationException("Multiple registered types");
     }
 
     public static <T extends TileEntity> TileEntityType<T> registerTileEntity(ResourceLocation id, Supplier<T> builder) {

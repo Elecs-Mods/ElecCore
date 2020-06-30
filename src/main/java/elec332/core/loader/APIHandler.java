@@ -111,10 +111,11 @@ enum APIHandler implements IAnnotationDataProcessor, IAPIHandler {
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Override
+    @SuppressWarnings({"rawtypes", "unchecked"})
     public void inject(Object o, Class<?>... classes) {
         for (Class<?> clazz : classes) {
+            ElecCore.logger.debug("Injecting type: " + clazz.getCanonicalName());
             if (!clazz.isAssignableFrom(o.getClass())) {
                 throw new IllegalArgumentException();
             }
@@ -148,7 +149,7 @@ enum APIHandler implements IAnnotationDataProcessor, IAPIHandler {
         if (ReflectionHelper.isStatic(field)) {
             return Lists.newArrayList((Object) null);
         }
-        Class owner = field.getDeclaringClass();
+        Class<?> owner = field.getDeclaringClass();
         if (owner.isEnum()) {
             return Arrays.asList(owner.getEnumConstants());
         }

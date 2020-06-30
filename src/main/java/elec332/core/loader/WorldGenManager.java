@@ -14,6 +14,7 @@ import elec332.core.util.FMLHelper;
 import elec332.core.util.RegistryHelper;
 import elec332.core.world.FeaturePlacers;
 import elec332.core.world.WorldHelper;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.EntityClassification;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -74,6 +75,7 @@ enum WorldGenManager implements ISingleObjectRegistry<IWorldGenHook>, IWorldGenM
         this.worldGenRegisters = HashMultimap.create();
         this.chunkHooks = Sets.newHashSet();
         this.retroGennableNames = Sets.newHashSet();
+        this.hooks = Lists.newArrayList();
     }
 
     private final Function<DimensionType, SetMultimap<ChunkPos, ILegacyFeatureGenerator>> absentGen;
@@ -86,9 +88,19 @@ enum WorldGenManager implements ISingleObjectRegistry<IWorldGenHook>, IWorldGenM
     private final Map<String, Structure<?>> structures, structures_;
     private final Multimap<ModContainer, IWorldGenRegister> worldGenRegisters;
     private final Set<String> retroGennableNames;
+    private final List<IWorldEventHook> hooks;
     private static final String KEY = "eleccore:worldgenmanager";
 
     private ModContainer loadingMC = null;
+
+    @Override
+    public void registerBlockChangedHook(IWorldEventHook listener) {
+        this.hooks.add(Preconditions.checkNotNull(listener));
+    }
+
+    void markBlockChanged(IWorld world, BlockPos pos, BlockState oldState, BlockState newState) {
+        hooks.forEach(hook -> hook.markBlockChanged(world, pos, oldState, newState));
+    }
 
     @Override
     public void registerWorldGenRegistry(IWorldGenRegister worldGenRegistry, Object owner) {

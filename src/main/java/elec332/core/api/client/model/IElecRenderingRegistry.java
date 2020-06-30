@@ -55,6 +55,8 @@ public interface IElecRenderingRegistry {
 
     <T extends TileEntity> TileEntityRenderer<T> getTESR(T tile);
 
+    <T extends TileEntity> void setItemRenderer(Item item, Class<T> tile);
+
     <T extends TileEntity> void setItemRenderer(Item item, T tile);
 
     <T extends TileEntity> void setItemRenderer(Item item, TileEntityType<T> tile);

@@ -16,6 +16,8 @@ import java.util.Map;
  */
 public interface IWorldGenManager {
 
+    public void registerBlockChangedHook(IWorldEventHook listener);
+
     public void registerWorldGenRegistry(IWorldGenRegister worldGenRegistry, Object owner);
 
     public void registerWorldGenRegistry(IWorldGenRegister worldGenRegistry, ModContainer owner);

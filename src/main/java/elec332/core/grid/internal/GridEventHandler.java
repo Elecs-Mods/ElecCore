@@ -1,9 +1,10 @@
 package elec332.core.grid.internal;
 
+import elec332.core.api.APIHandlerInject;
 import elec332.core.api.annotations.StaticLoad;
+import elec332.core.api.world.IWorldGenManager;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
-import net.minecraft.world.server.ServerChunkProvider;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.world.BlockEvent;
@@ -64,20 +65,25 @@ class GridEventHandler {
         }
     }
 
-    @SubscribeEvent
-    public void worldLoad(WorldEvent.Load event) {
-        if (!(event.getWorld() instanceof World)) {
-            throw new RuntimeException();
-        }
-        World world = (World) event.getWorld();
-        if (!world.isRemote()) {
-            //world.removeEventListener(WorldEventHandler.INSTANCE);
-            //world.addEventListener(WorldEventHandler.INSTANCE);
-            ServerChunkProvider scp = (ServerChunkProvider) world.getChunkProvider();
-            if (!(scp instanceof WrappedServerChunkProvider)) {
-                world.chunkProvider = new WrappedServerChunkProvider(scp);
-            }
-        }
+//    @SubscribeEvent
+//    public void worldLoad(WorldEvent.Load event) {
+//        if (!(event.getWorld() instanceof World)) {
+//            throw new RuntimeException();
+//        }
+//        World world = (World) event.getWorld();
+//        if (!world.isRemote()) {
+//            //world.removeEventListener(WorldEventHandler.INSTANCE);
+//            //world.addEventListener(WorldEventHandler.INSTANCE);
+//            ServerChunkProvider scp = (ServerChunkProvider) world.getChunkProvider();
+////            if (!(scp instanceof WrappedServerChunkProvider)) {
+////                world.chunkProvider = new WrappedServerChunkProvider(scp);
+////            }
+//        }
+//    }
+
+    @APIHandlerInject
+    private static void registerBlockChangedHook(IWorldGenManager worldGenManager) {
+        worldGenManager.registerBlockChangedHook(GridEventInputHandler.INSTANCE::worldBlockUpdate);
     }
 
     static {
