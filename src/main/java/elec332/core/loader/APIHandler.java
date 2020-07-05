@@ -50,7 +50,7 @@ enum APIHandler implements IAnnotationDataProcessor, IAPIHandler {
     @Override
     public void processASMData(IAnnotationDataHandler asmData, ModLoadingStage state) {
 
-        getWeightedAdvancedAnnotationList(asmData, StaticLoad.class, "weight").forEach(IAnnotationData::loadClass);
+        getWeightedAdvancedAnnotationList(asmData, StaticLoad.class, "weight").forEach(IAnnotationData::canLoadClass);
 
         collect(asmData, APIHandlerInject.class, "weight");
 
@@ -60,6 +60,10 @@ enum APIHandler implements IAnnotationDataProcessor, IAPIHandler {
     @SuppressWarnings("all")
     private void collect(IAnnotationDataHandler asmData, Class<? extends Annotation> annotationClass, String weightField) {
         for (IAnnotationData data : getWeightedAdvancedAnnotationList(asmData, annotationClass, weightField)) {
+
+            if (!data.canLoadClass()) {
+                continue;
+            }
 
             Consumer<?> ret;
             Class<?> type;

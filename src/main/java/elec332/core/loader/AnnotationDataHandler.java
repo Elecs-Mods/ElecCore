@@ -170,6 +170,11 @@ enum AnnotationDataHandler {
             } catch (ClassNotFoundException e) {
                 //Do nothing, class is probably annotated with @SideOnly
                 continue;
+            } catch (RuntimeException e) {
+                if (e.getMessage().contains("Attempted to load class") && e.getMessage().contains("for invalid dist")) {
+                    continue; //Do nothing, class is definitely annotated with @SideOnly
+                }
+                throw e;
             }
             if (clazz == null) {
                 continue;
@@ -282,6 +287,19 @@ enum AnnotationDataHandler {
         @Override
         public Map<String, Object> getAnnotationInfo() {
             return annotationInfo;
+        }
+
+        @Override
+        public boolean canLoadClass() {
+            if (clazz != null) {
+                return true;
+            }
+            try {
+                loadClass();
+            } catch (Exception e) {
+                return false;
+            }
+            return clazz != null;
         }
 
         @Override

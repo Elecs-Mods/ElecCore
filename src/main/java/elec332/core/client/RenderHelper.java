@@ -39,6 +39,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.extensions.IForgeTransformationMatrix;
 import net.minecraftforge.fluids.FluidAttributes;
+import net.minecraftforge.fml.client.registry.ClientRegistry;
 
 import javax.annotation.Nonnull;
 import java.lang.reflect.Field;
@@ -137,6 +138,10 @@ public class RenderHelper {
 
     public static <T extends TileEntity> void registerTESR(Class<T> type, TileEntityRenderer<T> renderer) {
         TileEntityRendererDispatcher.instance.setSpecialRendererInternal(RegistryHelper.getTileEntityType(type), renderer);
+    }
+
+    public static <T extends TileEntity> void registerTESR(Class<T> type, TileEntityRenderer<T> renderer) {
+        ClientRegistry.bindTileEntitySpecialRenderer(type, renderer);
     }
 
     @Nonnull

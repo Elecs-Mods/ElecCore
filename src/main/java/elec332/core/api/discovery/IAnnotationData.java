@@ -28,6 +28,8 @@ public interface IAnnotationData {
         return getClassType().getClassName();
     }
 
+    public boolean canLoadClass();
+
     public Class<?> loadClass();
 
     public Type getClassType();
