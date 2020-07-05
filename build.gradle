@@ -22,7 +22,7 @@ repositories {
         url = "https://modmaven.k-4u.nl"
     }
 	maven { //WAILA
-		url "http://tehnut.info/maven"
+		url "http://maven.tehnut.info"
 	}
 }
 

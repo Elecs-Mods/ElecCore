@@ -41,6 +41,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.model.ITransformation;
 import net.minecraftforge.common.model.TRSRTransformation;
 import net.minecraftforge.fluids.FluidAttributes;
+import net.minecraftforge.fml.client.registry.ClientRegistry;
 
 import javax.annotation.Nonnull;
 import javax.vecmath.Vector3f;
@@ -90,6 +91,10 @@ public class RenderHelper {
 
     public static MainWindow getMainWindow() {
         return mc.mainWindow;
+    }
+
+    public static <T extends TileEntity> void registerTESR(Class<T> type, TileEntityRenderer<T> renderer) {
+        ClientRegistry.bindTileEntitySpecialRenderer(type, renderer);
     }
 
     @Nonnull
