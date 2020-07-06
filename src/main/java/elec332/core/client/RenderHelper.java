@@ -5,6 +5,7 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import elec332.core.ElecCore;
 import elec332.core.api.client.ITessellator;
+import elec332.core.api.client.ITextureLocation;
 import elec332.core.client.util.ElecTessellator;
 import elec332.core.loader.client.RenderingRegistry;
 import elec332.core.util.RegistryHelper;
@@ -166,6 +167,17 @@ public class RenderHelper {
         return mc.getBlockColors();
     }
 
+    public static ITextureLocation createTextureLocation(ResourceLocation location) {
+        return new ITextureLocation() {
+
+            @Override
+            public ResourceLocation getTextureLocation() {
+                return location;
+            }
+
+        };
+    }
+
     @Nonnull
     public static IBakedModel getMissingModel() {
         return RenderingRegistry.instance().missingModelGetter().get();
@@ -210,6 +222,10 @@ public class RenderHelper {
     @OnlyIn(Dist.CLIENT)
     public static void renderTileEntityAt(TileEntity tile, MatrixStack matrixStack, float partialTicks, IRenderTypeBuffer renderTypeBuffer) {
         TileEntityRendererDispatcher.instance.renderTileEntity(tile, partialTicks, matrixStack, renderTypeBuffer);
+    }
+
+    public static int drawString(String text, float x, float y, int color) {
+        return getMCFontrenderer().drawString(text, x, y, color);
     }
 
     public static void drawExpandedSelectionBoundingBox(@Nonnull AxisAlignedBB aabb) {

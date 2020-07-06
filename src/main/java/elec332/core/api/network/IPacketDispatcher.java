@@ -97,9 +97,7 @@ public interface IPacketDispatcher extends ElecByteBuf.Factory {
      * @param pos     The position around which to send
      * @param range   The range around the position
      */
-    default public void sendToAllAround(IMessage message, IWorld world, BlockPos pos, double range) {
-        sendToAllAround(message, new TargetPoint(world.getDimension().getType(), pos.getX(), pos.getY(), pos.getZ(), range));
-    }
+    public void sendToAllAround(IMessage message, IWorld world, BlockPos pos, double range);
 
     /**
      * Send this message to everyone within a certain range of a point.
@@ -109,6 +107,15 @@ public interface IPacketDispatcher extends ElecByteBuf.Factory {
      * @param point   The {@link TargetPoint} around which to send
      */
     public void sendToAllAround(IMessage message, TargetPoint point);
+
+    /**
+     * Send this message to everyone within the supplied dimension.
+     * The message handler for this message type should be on the CLIENT side.
+     *
+     * @param message       The message to send
+     * @param dimensionName The dimension to target
+     */
+    public void sendToDimension(IMessage message, ResourceLocation dimensionName);
 
     /**
      * Send this message to everyone within the supplied dimension.

@@ -64,6 +64,11 @@ class DefaultSimpleNetworkHandler implements ISimpleNetworkPacketManager, BiCons
     }
 
     @Override
+    public void sendToDimension(ISimplePacket message, ResourceLocation dimensionId) {
+        packetDispatcher.sendToDimension(from(message), dimensionId);
+    }
+
+    @Override
     public void sendToDimension(ISimplePacket message, DimensionType dimensionId) {
         packetDispatcher.sendToDimension(from(message), dimensionId);
     }
@@ -89,6 +94,11 @@ class DefaultSimpleNetworkHandler implements ISimpleNetworkPacketManager, BiCons
     }
 
     @Override
+    public void sendToDimension(ISimplePacket message, ISimplePacketHandler packetHandler, ResourceLocation dimensionId) {
+        packetDispatcher.sendToDimension(from(message, packetHandler), dimensionId);
+    }
+
+    @Override
     public void sendToDimension(ISimplePacket message, ISimplePacketHandler packetHandler, DimensionType dimensionId) {
         packetDispatcher.sendToDimension(from(message, packetHandler), dimensionId);
     }
@@ -111,6 +121,11 @@ class DefaultSimpleNetworkHandler implements ISimpleNetworkPacketManager, BiCons
     @Override
     public void sendToAllAround(ByteBuf data, ISimplePacketHandler packetHandler, IPacketDispatcher.TargetPoint point) {
         packetDispatcher.sendToAllAround(from(data, packetHandler), point);
+    }
+
+    @Override
+    public void sendToDimension(ByteBuf data, ISimplePacketHandler packetHandler, ResourceLocation dimensionId) {
+        packetDispatcher.sendToDimension(from(data, packetHandler), dimensionId);
     }
 
     @Override

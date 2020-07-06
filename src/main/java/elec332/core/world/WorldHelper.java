@@ -1,5 +1,6 @@
 package elec332.core.world;
 
+import com.google.common.base.Preconditions;
 import elec332.core.ElecCore;
 import elec332.core.client.ClientHelper;
 import elec332.core.util.FMLHelper;
@@ -14,6 +15,7 @@ import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
@@ -38,6 +40,7 @@ import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.items.IItemHandler;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Map;
 import java.util.Set;
@@ -428,6 +431,15 @@ public class WorldHelper {
         world.getPendingBlockTicks().scheduleTick(blockLoc, getBlockAt(world, blockLoc), delay);
     }
 
+    public static DimensionType getDimensionType(IWorldReader world) {
+        return world.getDimension().getType();
+    }
+
+    @Nonnull
+    public static ResourceLocation getDimName(IWorld world) {
+        return Preconditions.checkNotNull(getDimID(world).getRegistryName());
+    }
+
     /**
      * Gets the dimension-ID of the specified world.
      * If the {@link World#dimension} is null, it tries to fetch it
@@ -437,7 +449,7 @@ public class WorldHelper {
      * @return The dimension-ID of the specified world.
      */
     @SuppressWarnings("all")
-    public static DimensionType getDimID(IWorldReader world) {
+    public static DimensionType getDimID(IWorld world) {
         if (world == null) {
             throw new IllegalArgumentException("Cannot fetch the Dimension-ID from a null world!");
         }
@@ -449,6 +461,10 @@ public class WorldHelper {
                     .orElseThrow(() -> new RuntimeException("Unable to determine the dimension of world: " + world));
         }
         return world.getDimension().getType();
+    }
+
+    public static World getWorldByName(ResourceLocation name) {
+        return getWorld(Preconditions.checkNotNull(DimensionType.byName(name)));
     }
 
     @Nullable
@@ -465,6 +481,16 @@ public class WorldHelper {
 
     public static ServerWorld getServerWorldDirect(DimensionType type) {
         return ElecCore.proxy.getServer().getWorld(type);
+    }
+
+    @Nullable
+    public static ServerWorld peekServerWorld(ResourceLocation name) {
+        return peekServerWorld(Preconditions.checkNotNull(DimensionType.byName(name)));
+    }
+
+    @Nullable
+    public static ServerWorld peekServerWorld(DimensionType type) {
+        return DimensionManager.getWorld(ElecCore.proxy.getServer(), type, false, false);
     }
 
     /*

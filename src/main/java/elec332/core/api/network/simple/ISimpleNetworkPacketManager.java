@@ -112,6 +112,15 @@ public interface ISimpleNetworkPacketManager {
      * Send this message to everyone within the supplied dimension.
      * Uses the {@link ISimplePacketHandler} defined by {@link ISimplePacket#getPacketHandler()}.
      *
+     * @param message       The message to send
+     * @param dimensionName The dimension to target
+     */
+    public void sendToDimension(ISimplePacket message, ResourceLocation dimensionName);
+
+    /**
+     * Send this message to everyone within the supplied dimension.
+     * Uses the {@link ISimplePacketHandler} defined by {@link ISimplePacket#getPacketHandler()}.
+     *
      * @param message     The message to send
      * @param dimensionId The dimension id to target
      */
@@ -123,9 +132,29 @@ public interface ISimpleNetworkPacketManager {
      *
      * @param message       The message to send
      * @param packetHandler The packet-handler the client has to use
+     * @param dimensionName The dimension to target
+     */
+    public void sendToDimension(ISimplePacket message, ISimplePacketHandler packetHandler, ResourceLocation dimensionName);
+
+    /**
+     * Send this message to everyone within the supplied dimension.
+     * Uses the {@link ISimplePacketHandler} defined by {@param packetHandler}.
+     *
+     * @param message       The message to send
+     * @param packetHandler The packet-handler the client has to use
      * @param dimensionId   The dimension id to target
      */
     public void sendToDimension(ISimplePacket message, ISimplePacketHandler packetHandler, DimensionType dimensionId);
+
+    /**
+     * Send the data provided in the provided {@link ByteBuf} to everyone within the supplied dimension.
+     * Uses the {@link ISimplePacketHandler} defined by {@param packetHandler}.
+     *
+     * @param data          The data to send
+     * @param packetHandler The packet-handler the client has to use
+     * @param dimensionName The dimension to target
+     */
+    public void sendToDimension(ByteBuf data, ISimplePacketHandler packetHandler, ResourceLocation dimensionName);
 
     /**
      * Send the data provided in the provided {@link ByteBuf} to everyone within the supplied dimension.
