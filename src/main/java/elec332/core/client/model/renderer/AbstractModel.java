@@ -12,9 +12,12 @@ import javax.annotation.Nonnull;
 public class AbstractModel extends Model {
 
     public void render(@Nonnull IRenderMatrix matrixStack, int light, int overlayTexture, float r, float g, float b, float a) {
+        matrixStack.push();
+        matrixStack.scale(0.0625f);
         for (RendererModel model : boxList) {
             model.render(1);
         }
+        matrixStack.pop();
     }
 
 }
