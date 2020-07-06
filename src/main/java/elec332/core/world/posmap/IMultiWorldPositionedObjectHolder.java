@@ -2,7 +2,7 @@ package elec332.core.world.posmap;
 
 import elec332.core.api.util.IClearable;
 import elec332.core.world.WorldHelper;
-import net.minecraft.world.IWorldReader;
+import net.minecraft.world.IWorld;
 import net.minecraft.world.dimension.DimensionType;
 
 import javax.annotation.Nonnull;
@@ -26,7 +26,7 @@ public interface IMultiWorldPositionedObjectHolder<T, V> extends IClearable {
      * @return The {@link PositionedObjectHolder} for the specified dimension, can be null
      */
     @Nullable
-    default public PositionedObjectHolder<T, V> get(IWorldReader world) {
+    default public PositionedObjectHolder<T, V> get(IWorld world) {
         return get(WorldHelper.getDimID(world));
     }
 
@@ -38,7 +38,7 @@ public interface IMultiWorldPositionedObjectHolder<T, V> extends IClearable {
      * @return The {@link PositionedObjectHolder} for the specified dimension
      */
     @Nonnull
-    default public PositionedObjectHolder<T, V> getOrCreate(IWorldReader world) {
+    default public PositionedObjectHolder<T, V> getOrCreate(IWorld world) {
         return getOrCreate(WorldHelper.getDimID(world));
     }
 

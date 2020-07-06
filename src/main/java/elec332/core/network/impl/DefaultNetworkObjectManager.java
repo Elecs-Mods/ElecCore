@@ -1,5 +1,6 @@
 package elec332.core.network.impl;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import elec332.core.ElecCore;
 import elec332.core.api.network.*;
@@ -12,6 +13,7 @@ import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.dimension.DimensionType;
 
 import javax.annotation.Nullable;
@@ -161,6 +163,11 @@ class DefaultNetworkObjectManager implements INetworkObjectManager, BiConsumer<D
         }
 
         @Override
+        public void sendToDimension(int id, ResourceLocation dimensionId) {
+            sendToDimension(id, Preconditions.checkNotNull(DimensionType.byName(dimensionId)));
+        }
+
+        @Override
         public void sendToDimension(int id, DimensionType dimensionId) {
             ByteBuf buf = Unpooled.buffer();
             if (getNetworkObjectSender() != null) {
@@ -209,6 +216,11 @@ class DefaultNetworkObjectManager implements INetworkObjectManager, BiConsumer<D
         }
 
         @Override
+        public void sendToDimension(int id, CompoundNBT data, ResourceLocation dimensionId) {
+            sendToDimension(id, fromTag(data), dimensionId);
+        }
+
+        @Override
         public void sendToServer(int id, CompoundNBT data) {
             sendToServer(id, fromTag(data));
         }
@@ -230,6 +242,11 @@ class DefaultNetworkObjectManager implements INetworkObjectManager, BiConsumer<D
 
         @Override
         public void sendToDimension(int id, ByteBuf data, DimensionType dimensionId) {
+            packetDispatcher.sendToDimension(new PacketNetworkObject(b, (byte) id, data), dimensionId);
+        }
+
+        @Override
+        public void sendToDimension(int id, ByteBuf data, ResourceLocation dimensionId) {
             packetDispatcher.sendToDimension(new PacketNetworkObject(b, (byte) id, data), dimensionId);
         }
 

@@ -202,7 +202,7 @@ public class TileMultiObject extends AbstractTileEntity {
     }
 
     @Override
-    public void read(CompoundNBT compound) {
+    public void read(@Nonnull CompoundNBT compound) {
         ListNBT list = compound.getList("subtiles", NBTTypes.COMPOUND.getID());
         subtiles.clear();
         for (int i = 0; i < list.size(); i++) {

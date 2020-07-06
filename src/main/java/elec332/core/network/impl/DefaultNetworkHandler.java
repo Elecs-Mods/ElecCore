@@ -13,10 +13,13 @@ import elec332.core.api.network.simple.ISimplePacketHandler;
 import elec332.core.network.IElecNetworkHandler;
 import elec332.core.util.FieldPointer;
 import elec332.core.util.ServerHelper;
+import elec332.core.world.WorldHelper;
 import io.netty.buffer.ByteBuf;
 import it.unimi.dsi.fastutil.shorts.Short2ObjectArrayMap;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IWorld;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraftforge.fml.network.NetworkDirection;
 import net.minecraftforge.fml.network.NetworkEvent;
@@ -131,6 +134,11 @@ class DefaultNetworkHandler implements IElecNetworkHandler, DefaultByteBufFactor
     }
 
     @Override
+    public void sendToAllAround(IMessage message, IWorld world, BlockPos pos, double range) {
+        sendToAllAround(message, new TargetPoint(WorldHelper.getDimID(world), pos.getX(), pos.getY(), pos.getZ(), range));
+    }
+
+    @Override
     public void sendToAllAround(IMessage message, TargetPoint point) {
         sendTo(message, ServerHelper.getAllPlayersInDimension(point.dimension).stream()
                 .filter(player -> {
@@ -139,6 +147,11 @@ class DefaultNetworkHandler implements IElecNetworkHandler, DefaultByteBufFactor
                     double d6 = point.z - player.posZ;
                     return d4 * d4 + d5 * d5 + d6 * d6 < point.range * point.range;
                 }));
+    }
+
+    @Override
+    public void sendToDimension(IMessage message, ResourceLocation dimensionId) {
+        sendToDimension(message, Preconditions.checkNotNull(DimensionType.byName(dimensionId)));
     }
 
     @Override
@@ -177,6 +190,11 @@ class DefaultNetworkHandler implements IElecNetworkHandler, DefaultByteBufFactor
     }
 
     @Override
+    public void sendToDimension(ISimplePacket message, ResourceLocation dimensionId) {
+        simpleNetworkPacketManager.sendToDimension(message, dimensionId);
+    }
+
+    @Override
     public void sendToDimension(ISimplePacket message, DimensionType dimensionId) {
         simpleNetworkPacketManager.sendToDimension(message, dimensionId);
     }
@@ -202,6 +220,11 @@ class DefaultNetworkHandler implements IElecNetworkHandler, DefaultByteBufFactor
     }
 
     @Override
+    public void sendToDimension(ISimplePacket message, ISimplePacketHandler packetHandler, ResourceLocation dimensionId) {
+        simpleNetworkPacketManager.sendToDimension(message, packetHandler, dimensionId);
+    }
+
+    @Override
     public void sendToDimension(ISimplePacket message, ISimplePacketHandler packetHandler, DimensionType dimensionId) {
         simpleNetworkPacketManager.sendToDimension(message, packetHandler, dimensionId);
     }
@@ -224,6 +247,11 @@ class DefaultNetworkHandler implements IElecNetworkHandler, DefaultByteBufFactor
     @Override
     public void sendToAllAround(ByteBuf data, ISimplePacketHandler packetHandler, TargetPoint point) {
         simpleNetworkPacketManager.sendToAllAround(data, packetHandler, point);
+    }
+
+    @Override
+    public void sendToDimension(ByteBuf data, ISimplePacketHandler packetHandler, ResourceLocation dimensionId) {
+        simpleNetworkPacketManager.sendToDimension(data, packetHandler, dimensionId);
     }
 
     @Override
@@ -266,7 +294,6 @@ class DefaultNetworkHandler implements IElecNetworkHandler, DefaultByteBufFactor
         return this;
     }
 
-    @SuppressWarnings("unchecked")
     private int getNextIndex() {
         while (messageIndexUsed.test(networkWrapper, (short) i)) {
             i++;
@@ -278,7 +305,7 @@ class DefaultNetworkHandler implements IElecNetworkHandler, DefaultByteBufFactor
 
     private static final BiPredicate<SimpleChannel, Short> messageIndexUsed;
     private static final FieldPointer<SimpleChannel, IndexedMessageCodec> indexer;
-    private static final FieldPointer<IndexedMessageCodec, Short2ObjectArrayMap> indexer2;
+    private static final FieldPointer<IndexedMessageCodec, Short2ObjectArrayMap<?>> indexer2;
     private static final FieldPointer<SimpleChannel, NetworkInstance> nameGetter;
 
     static {

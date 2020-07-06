@@ -56,6 +56,15 @@ public class AbstractTileEntity extends TileEntity implements IElecCoreNetworkTi
         return getBlockState().get(prop);
     }
 
+    @Override
+    public void read(@Nonnull CompoundNBT compound) {
+        super.read(compound);
+        readLegacy(compound);
+    }
+
+    public void readLegacy(CompoundNBT tag) {
+    }
+
     /*
     @Override
     public boolean shouldRefresh(World world, BlockPos pos, @Nonnull BlockState oldState, @Nonnull BlockState newSate) {
@@ -119,7 +128,6 @@ public class AbstractTileEntity extends TileEntity implements IElecCoreNetworkTi
     @Override
     @Nonnull
     @Deprecated
-    @SuppressWarnings("all")
     public CompoundNBT getUpdateTag() {
         isGatheringPackets = true;
         gatherData = Maps.newHashMap();

@@ -4,6 +4,7 @@ import com.google.common.collect.Maps;
 import com.mojang.blaze3d.platform.GlStateManager;
 import elec332.core.ElecCore;
 import elec332.core.api.client.ITessellator;
+import elec332.core.api.client.ITextureLocation;
 import elec332.core.client.util.ElecTessellator;
 import elec332.core.loader.client.RenderingRegistry;
 import net.minecraft.client.MainWindow;
@@ -115,6 +116,17 @@ public class RenderHelper {
         return mc.getBlockColors();
     }
 
+    public static ITextureLocation createTextureLocation(ResourceLocation location) {
+        return new ITextureLocation() {
+
+            @Override
+            public ResourceLocation getTextureLocation() {
+                return location;
+            }
+
+        };
+    }
+
     @Nonnull
     public static IBakedModel getMissingModel() {
         return RenderingRegistry.instance().missingModelGetter().get();
@@ -128,6 +140,10 @@ public class RenderHelper {
     @OnlyIn(Dist.CLIENT)
     public static void renderTileEntityAt(TileEntity tile, double x, double y, double z, float partialTicks, int destroyStage) {
         TileEntityRendererDispatcher.instance.render(tile, x, y, z, partialTicks, destroyStage, false);
+    }
+
+    public static int drawString(String text, float x, float y, int color) {
+        return getMCFontrenderer().drawString(text, x, y, color);
     }
 
     public static void drawExpandedSelectionBoundingBox(@Nonnull AxisAlignedBB aabb) {
