@@ -1,9 +1,12 @@
 package elec332.core.client.util;
 
+import com.mojang.blaze3d.vertex.IVertexBuilder;
 import elec332.core.api.client.ITessellator;
 import elec332.core.client.RenderHelper;
 import net.minecraft.client.renderer.BufferBuilder;
+import net.minecraft.client.renderer.Matrix4f;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.Vector4f;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -25,18 +28,21 @@ public class ElecTessellator implements ITessellator {
     public ElecTessellator(Tessellator tessellator) {
         this.worldRenderer = tessellator.getBuffer();
         this.tessellator = tessellator;
+        this.matrix = null;
     }
 
-    public ElecTessellator(BufferBuilder worldRenderer) {
+    public ElecTessellator(IVertexBuilder worldRenderer) {
         this.worldRenderer = worldRenderer;
         this.tessellator = null;
+        this.matrix = null;
     }
 
     private final Tessellator tessellator;
-    private final BufferBuilder worldRenderer;
+    private final IVertexBuilder worldRenderer;
     private VertexBufferConsumer vertexBufferConsumer;
     private int brightness1, brightness2;
     private int color1, color2, color3, color4;
+    private Matrix4f matrix;
 
     @Override
     public void setBrightness(int brightness) {
@@ -76,35 +82,73 @@ public class ElecTessellator implements ITessellator {
     }
 
     @Override
+    public void setMatrix(Matrix4f matrix) {
+        this.matrix = matrix;
+    }
+
+    @Override
+    public void clearMatrix() {
+        setMatrix(null);
+    }
+
+    @Override
     public void startDrawingWorldBlock() {
-        worldRenderer.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
+        if (worldRenderer instanceof BufferBuilder) {
+            ((BufferBuilder) worldRenderer).begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
+        } else {
+            throw new UnsupportedOperationException();
+        }
     }
 
     @Override
     public void startDrawingGui() {
-        worldRenderer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
+        if (worldRenderer instanceof BufferBuilder) {
+            ((BufferBuilder) worldRenderer).begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
+        } else {
+            throw new UnsupportedOperationException();
+        }
+    }
+
+    @Override
+    public void addVertexWithUV(Matrix4f matrix, double x, double y, double z, float u, float v) {
+        Vector4f vector4f = new Vector4f((float) x, (float) y, (float) z, 1.0F);
+        vector4f.transform(matrix);
+        addVertexWithUV_(vector4f.getX(), vector4f.getY(), vector4f.getZ(), u, v);
     }
 
     @Override
     public void addVertexWithUV(double x, double y, double z, float u, float v) {
+        if (matrix == null) {
+            addVertexWithUV_(x, y, z, u, v);
+        } else {
+            addVertexWithUV(matrix, x, y, z, u, v);
+        }
+    }
+
+    private void addVertexWithUV_(double x, double y, double z, float u, float v) {
         worldRenderer.pos(x, y, z);
-        drawColor();
+        worldRenderer.color(color1, color2, color3, color4);
         worldRenderer.tex(u, v); //tex
         worldRenderer.lightmap(brightness1, brightness2); //lightmap
+        worldRenderer.normal(0, 1, 0);
         worldRenderer.endVertex();
     }
 
     @Nonnull
     @Override
-    public BufferBuilder getBuffer() {
+    public IVertexBuilder getVertexBuilder() {
         return worldRenderer;
     }
 
     @Override
     public void draw() {
         if (tessellator == null) {
-            RenderHelper.drawBuffer(this.worldRenderer);
-            return;
+            if (worldRenderer instanceof BufferBuilder) {
+                RenderHelper.drawBuffer((BufferBuilder) this.worldRenderer);
+                return;
+            } else {
+                throw new UnsupportedOperationException();
+            }
         }
         tessellator.draw();
     }
@@ -113,13 +157,9 @@ public class ElecTessellator implements ITessellator {
     @Override
     public VertexBufferConsumer getVertexBufferConsumer() {
         if (vertexBufferConsumer == null) {
-            vertexBufferConsumer = new VertexBufferConsumer(getBuffer());
+            vertexBufferConsumer = new VertexBufferConsumer(worldRenderer);
         }
         return vertexBufferConsumer;
-    }
-
-    private void drawColor() {
-        worldRenderer.color(color1, color2, color3, color4);
     }
 
 }

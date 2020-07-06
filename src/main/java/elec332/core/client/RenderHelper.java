@@ -3,9 +3,11 @@ package elec332.core.client;
 import com.google.common.collect.Maps;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.IVertexBuilder;
 import elec332.core.ElecCore;
 import elec332.core.api.client.ITessellator;
 import elec332.core.api.client.ITextureLocation;
+import elec332.core.client.model.legacy.LegacyTextureLocation;
 import elec332.core.client.util.ElecTessellator;
 import elec332.core.loader.client.RenderingRegistry;
 import elec332.core.util.RegistryHelper;
@@ -18,6 +20,7 @@ import net.minecraft.client.renderer.color.BlockColors;
 import net.minecraft.client.renderer.color.ItemColors;
 import net.minecraft.client.renderer.culling.ClippingHelperImpl;
 import net.minecraft.client.renderer.model.IBakedModel;
+import net.minecraft.client.renderer.model.IModelTransform;
 import net.minecraft.client.renderer.model.ModelRotation;
 import net.minecraft.client.renderer.texture.*;
 import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
@@ -40,7 +43,6 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.extensions.IForgeTransformationMatrix;
 import net.minecraftforge.fluids.FluidAttributes;
-import net.minecraftforge.fml.client.registry.ClientRegistry;
 
 import javax.annotation.Nonnull;
 import java.lang.reflect.Field;
@@ -59,13 +61,13 @@ public class RenderHelper {
     private static final ITessellator tessellator;
     private static final IRenderTypeBuffer mcRenderTypeBuffer;
     private static final Minecraft mc;
-    private static final Map<BufferBuilder, ITessellator> worldRenderTessellators;
+    private static final Map<IVertexBuilder, ITessellator> worldRenderTessellators;
     private static final Map<Direction, IForgeTransformationMatrix[]> rotateAroundMap;
     private static IBakedModel nullModel;
 
     @Nonnull
     @SuppressWarnings("all")
-    public static ITessellator forWorldRenderer(BufferBuilder renderer) {
+    public static ITessellator forWorldRenderer(IVertexBuilder renderer) {
         ITessellator ret = worldRenderTessellators.get(renderer);
         if (ret == null) {
             ret = new ElecTessellator(renderer);
@@ -85,6 +87,7 @@ public class RenderHelper {
 
     @Nonnull
     public static FontRenderer getMCFontrenderer() {
+        RenderSystem.enableColorMaterial();
         return mc.fontRenderer;
     }
 
@@ -141,10 +144,6 @@ public class RenderHelper {
         TileEntityRendererDispatcher.instance.setSpecialRendererInternal(RegistryHelper.getTileEntityType(type), renderer);
     }
 
-    public static <T extends TileEntity> void registerTESR(Class<T> type, TileEntityRenderer<T> renderer) {
-        ClientRegistry.bindTileEntitySpecialRenderer(type, renderer);
-    }
-
     @Nonnull
     public static ITessellator getTessellator() {
         return tessellator;
@@ -168,14 +167,7 @@ public class RenderHelper {
     }
 
     public static ITextureLocation createTextureLocation(ResourceLocation location) {
-        return new ITextureLocation() {
-
-            @Override
-            public ResourceLocation getTextureLocation() {
-                return location;
-            }
-
-        };
+        return new LegacyTextureLocation(location);
     }
 
     @Nonnull
@@ -268,6 +260,24 @@ public class RenderHelper {
         }
         return new TransformationMatrix(null, quatFromXYZDegrees(new Vector3f(MathHelper.normalizeAngle(x, 360), MathHelper.normalizeAngle(y, 360), z)), null, null);
         //return TRSRTransformation.blockCenterToCorner(new TRSRTransformation(null, TRSRTransformation.quatFromXYZDegrees(new Vector3f(MathHelper.normalizeAngle(x, 360), MathHelper.normalizeAngle(y, 360), z)), null, null));
+    }
+
+    public static IForgeTransformationMatrix merge(IModelTransform first, IModelTransform second) {
+        return merge(first, second.getRotation());
+    }
+
+    public static IForgeTransformationMatrix merge(IModelTransform first, IForgeTransformationMatrix second) {
+        return merge(first.getRotation(), second);
+    }
+
+    public static IForgeTransformationMatrix merge(IForgeTransformationMatrix first, IModelTransform second) {
+        return merge(first, second.getRotation());
+    }
+
+    public static IForgeTransformationMatrix merge(IForgeTransformationMatrix first, IForgeTransformationMatrix second) {
+        Matrix4f m = new Matrix4f(first.getTransformaion().getMatrix());
+        m.mul(first.getTransformaion().getMatrix());
+        return new TransformationMatrix(m);
     }
 
     public static Quaternion quatFromXYZDegrees(Vector3f xyz) {
@@ -456,7 +466,7 @@ public class RenderHelper {
         tessellator = new ElecTessellator(mcTessellator);
         mcRenderTypeBuffer = IRenderTypeBuffer.getImpl(mcTessellator.getBuffer());
         worldRenderTessellators = Maps.newHashMap();
-        worldRenderTessellators.put(tessellator.getBuffer(), tessellator);
+        worldRenderTessellators.put(mcTessellator.getBuffer(), tessellator);
         rotateAroundMap = Maps.newEnumMap(Direction.class);
         for (Direction facing : Direction.values()) {
             switch (facing) {

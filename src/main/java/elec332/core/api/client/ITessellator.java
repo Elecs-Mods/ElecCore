@@ -1,6 +1,7 @@
 package elec332.core.api.client;
 
-import net.minecraft.client.renderer.BufferBuilder;
+import com.mojang.blaze3d.vertex.IVertexBuilder;
+import net.minecraft.client.renderer.Matrix4f;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.model.pipeline.VertexBufferConsumer;
@@ -30,6 +31,12 @@ public interface ITessellator {
 
     public void setColorRGBA(int red, int green, int blue, int alpha);
 
+    public void setMatrix(Matrix4f matrix);
+
+    public void clearMatrix();
+
+    public void addVertexWithUV(Matrix4f matrix, double x, double y, double z, float u, float v);
+
     public void addVertexWithUV(double x, double y, double z, float u, float v);
 
     public void startDrawingWorldBlock();
@@ -39,7 +46,7 @@ public interface ITessellator {
     public void draw();
 
     @Nonnull
-    public BufferBuilder getBuffer();
+    public IVertexBuilder getVertexBuilder();
 
     @Nonnull
     public VertexBufferConsumer getVertexBufferConsumer();

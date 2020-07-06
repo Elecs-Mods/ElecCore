@@ -100,7 +100,7 @@ class WrappedWidgetSlot extends WidgetSlot {
     @Nullable
     @Override
     public Pair<ResourceLocation, ResourceLocation> getBackground() {
-        return slot.func_225517_c_();
+        return slot.getBackground();
     }
 
     @Override

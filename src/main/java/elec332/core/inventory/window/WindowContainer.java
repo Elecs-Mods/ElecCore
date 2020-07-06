@@ -285,7 +285,7 @@ public final class WindowContainer extends Container {
 
         @Nullable
         @Override
-        public Pair<ResourceLocation, ResourceLocation> func_225517_c_() {
+        public Pair<ResourceLocation, ResourceLocation> getBackground() {
             return widget.getBackground();
         }
 
