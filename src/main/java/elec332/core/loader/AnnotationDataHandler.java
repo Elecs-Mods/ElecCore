@@ -9,9 +9,11 @@ import elec332.core.api.discovery.IAnnotationData;
 import elec332.core.api.discovery.IAnnotationDataHandler;
 import elec332.core.api.discovery.IAnnotationDataProcessor;
 import elec332.core.util.FMLHelper;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.ModContainer;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.ModLoadingStage;
+import net.minecraftforge.fml.loading.moddiscovery.ModAnnotation;
 import net.minecraftforge.fml.loading.moddiscovery.ModFile;
 import net.minecraftforge.forgespi.language.IModFileInfo;
 import net.minecraftforge.forgespi.language.ModFileScanData;
@@ -22,6 +24,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
@@ -34,6 +37,7 @@ enum AnnotationDataHandler {
     AnnotationDataHandler() {
         asmLoaderMap = Maps.newHashMap();
         validStates = ImmutableList.of(ModLoadingStage.CONSTRUCT, ModLoadingStage.COMMON_SETUP, ModLoadingStage.ENQUEUE_IMC, ModLoadingStage.PROCESS_IMC, ModLoadingStage.COMPLETE);
+        sideOnlyCache = Maps.newHashMap();
     }
 
     private final Map<ModLoadingStage, List<IAnnotationDataProcessor>> asmLoaderMap;
@@ -42,10 +46,24 @@ enum AnnotationDataHandler {
     private Set<String> packSorted;
     private IAnnotationDataHandler asmDataHelper;
 
+    private final Map<String, Boolean> sideOnlyCache;
+    private Predicate<String> hasWrongSideOnly;
+
+    @SuppressWarnings("ComparatorMethodParameterNotUsed")
     void identify(ModList modList) {
         for (ModLoadingStage state : validStates) {
             asmLoaderMap.put(state, Lists.newArrayList());
         }
+        this.hasWrongSideOnly = cls -> AnnotationDataHandler.this.sideOnlyCache.computeIfAbsent(cls,
+                name -> {
+                    Optional<IAnnotationData> dat = asmDataHelper.getAnnotationList(OnlyIn.class).stream().filter(asmData -> asmData.getClassName().equals(cls)).findFirst();
+                    if (!dat.isPresent()) {
+                        return false;
+                    }
+                    ModAnnotation.EnumHolder enumHolder = (ModAnnotation.EnumHolder) dat.get().getAnnotationInfo().get("value");
+                    return !FMLHelper.getDist().toString().equals(enumHolder.getValue());
+                }
+        );
 
         Map<String, ModContainer> pck = Maps.newTreeMap((o1, o2) -> {
             if (o2.contains(o1)) {
@@ -132,6 +150,11 @@ enum AnnotationDataHandler {
             public Set<IAnnotationData> getAnnotationList(Type annotationType) {
                 Set<IAnnotationData> ret = annotationData.get(annotationType);
                 return ret == null ? ImmutableSet.of() : Collections.unmodifiableSet(ret);
+            }
+
+            @Override
+            public boolean hasWrongSideOnlyAnnotation(String clazz) {
+                return hasWrongSideOnly.test(clazz);
             }
 
             @Override
@@ -253,7 +276,7 @@ enum AnnotationDataHandler {
         apiHandler.inject(this.asmDataHelper, IAnnotationDataHandler.class);
     }
 
-    private static class AnnotationData implements IAnnotationData {
+    private class AnnotationData implements IAnnotationData {
 
         private AnnotationData(ModFileScanData.AnnotationData asmData, ModFile file) {
             this.asmData = Preconditions.checkNotNull(asmData);
@@ -272,7 +295,8 @@ enum AnnotationDataHandler {
         private String methodName, methodParams;
         private Method method;
         private Type[] paramTypes;
-        private Class[] params;
+        private Class<?>[] params;
+        private Boolean sideOnly;
 
         @Override
         public ModFile getFile() {
@@ -287,19 +311,6 @@ enum AnnotationDataHandler {
         @Override
         public Map<String, Object> getAnnotationInfo() {
             return annotationInfo;
-        }
-
-        @Override
-        public boolean canLoadClass() {
-            if (clazz != null) {
-                return true;
-            }
-            try {
-                loadClass();
-            } catch (Exception e) {
-                return false;
-            }
-            return clazz != null;
         }
 
         @Override
@@ -430,6 +441,14 @@ enum AnnotationDataHandler {
                 throw new RuntimeException(e);
             }
             return params = ret;
+        }
+
+        @Override
+        public boolean hasWrongSideOnlyAnnotation() {
+            if (sideOnly == null) {
+                sideOnly = hasWrongSideOnly.test(getClassName());
+            }
+            return sideOnly;
         }
 
         @Override

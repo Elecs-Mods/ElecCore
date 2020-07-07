@@ -21,6 +21,8 @@ public interface IAnnotationDataHandler {
 
     public Set<IAnnotationData> getAnnotationList(Type annotationType);
 
+    public boolean hasWrongSideOnlyAnnotation(String clazz);
+
     public Function<Type, Set<IAnnotationData>> getAnnotationsFor(IModFileInfo file);
 
     public Function<Type, Set<IAnnotationData>> getAnnotationsFor(ModContainer mc);

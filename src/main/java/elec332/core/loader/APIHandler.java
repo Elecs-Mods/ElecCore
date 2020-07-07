@@ -43,14 +43,16 @@ enum APIHandler implements IAnnotationDataProcessor, IAPIHandler {
         injectedHandlers = Maps.newHashMap();
     }
 
-    private final Map<Class<?>, List<Consumer<?>>> callBacks;   //Used to be a multimap, but multimaps sort contents themselves,
-    // we do not want that to happen, because they will be inserted in order
+    //Used to be a multimap, but multimaps sort contents themselves,
+    //we do not want that to happen, because they will be inserted in order
+    private final Map<Class<?>, List<Consumer<?>>> callBacks;
+
     private final Map<Class<?>, Object> injectedHandlers;
 
     @Override
     public void processASMData(IAnnotationDataHandler asmData, ModLoadingStage state) {
 
-        getWeightedAdvancedAnnotationList(asmData, StaticLoad.class, "weight").forEach(IAnnotationData::canLoadClass);
+        getWeightedAdvancedAnnotationList(asmData, StaticLoad.class, "weight").forEach(IAnnotationData::tryLoadClass);
 
         collect(asmData, APIHandlerInject.class, "weight");
 
@@ -61,7 +63,7 @@ enum APIHandler implements IAnnotationDataProcessor, IAPIHandler {
     private void collect(IAnnotationDataHandler asmData, Class<? extends Annotation> annotationClass, String weightField) {
         for (IAnnotationData data : getWeightedAdvancedAnnotationList(asmData, annotationClass, weightField)) {
 
-            if (!data.canLoadClass()) {
+            if (data.hasWrongSideOnlyAnnotation()) {
                 continue;
             }
 
