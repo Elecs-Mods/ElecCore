@@ -186,6 +186,9 @@ enum AnnotationDataHandler {
         Map<Pair<Integer, IAnnotationDataProcessor>, ModLoadingStage[]> dataMap = Maps.newTreeMap(Comparator.comparing((Function<Pair<Integer, IAnnotationDataProcessor>, Integer>) Pair::getKey).reversed().thenComparing(Object::hashCode));
 
         for (IAnnotationData data : asmDataHelper.getAnnotationList(AnnotationDataProcessor.class)) {
+            if (data.hasWrongSideOnlyAnnotation()) {
+                continue;
+            }
             boolean eb = false;
             Class<?> clazz;
             try {
@@ -193,11 +196,6 @@ enum AnnotationDataHandler {
             } catch (ClassNotFoundException e) {
                 //Do nothing, class is probably annotated with @SideOnly
                 continue;
-            } catch (RuntimeException e) {
-                if (e.getMessage().contains("Attempted to load class") && e.getMessage().contains("for invalid dist")) {
-                    continue; //Do nothing, class is definitely annotated with @SideOnly
-                }
-                throw e;
             }
             if (clazz == null) {
                 continue;
