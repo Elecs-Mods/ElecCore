@@ -3,6 +3,7 @@ package elec332.core.api.discovery;
 import net.minecraftforge.fml.loading.moddiscovery.ModFile;
 import org.objectweb.asm.Type;
 
+import javax.annotation.Nullable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Map;
@@ -28,7 +29,13 @@ public interface IAnnotationData {
         return getClassType().getClassName();
     }
 
-    public boolean canLoadClass();
+    @Nullable
+    default public Class<?> tryLoadClass() {
+        if (hasWrongSideOnlyAnnotation()) {
+            return null;
+        }
+        return loadClass();
+    }
 
     public Class<?> loadClass();
 
@@ -53,5 +60,7 @@ public interface IAnnotationData {
     public Type[] getMethodParameterTypes();
 
     public Class<?>[] getMethodParameters();
+
+    public boolean hasWrongSideOnlyAnnotation();
 
 }
