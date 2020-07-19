@@ -1,11 +1,11 @@
-package elec332.core.data;
+package elec332.core.loader;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.ListMultimap;
 import elec332.core.ElecCore;
 import elec332.core.api.annotations.StaticLoad;
-import elec332.core.api.data.IExternalSaveHandler;
+import elec332.core.api.storage.IExternalSaveHandler;
 import elec332.core.util.FMLHelper;
 import elec332.core.world.WorldHelper;
 import net.minecraft.nbt.CompoundNBT;
@@ -79,7 +79,7 @@ public enum SaveHandler {
     }
 
     private CompoundNBT save(net.minecraft.world.storage.SaveHandler save, WorldInfo worldInfo) {
-        if (!this.loaded && !ElecCore.suppressSpongeIssues) {
+        if (!this.loaded && !ElecCore.suppressSpongeIssues && worldInfo.isInitialized()) {
             ElecCore.logger.error("World is unloading before data has been loaded, skipping data saving...");
             ElecCore.logger.error("This probably happened due to a crash in EG worldgen.");
             ElecCore.logger.error("All external data will be lost.");

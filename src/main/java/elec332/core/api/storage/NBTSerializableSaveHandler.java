@@ -1,4 +1,4 @@
-package elec332.core.api.data;
+package elec332.core.api.storage;
 
 import com.google.common.base.Preconditions;
 import elec332.core.api.util.IClearable;

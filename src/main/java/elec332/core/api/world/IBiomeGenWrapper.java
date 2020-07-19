@@ -26,20 +26,6 @@ public interface IBiomeGenWrapper {
 
     public Biome getBiome();
 
-    default public void addFeature(GenerationStage.Decoration decorationStage, IFeatureGenerator<NoFeatureConfig> feature, Placement<NoPlacementConfig> placement) {
-        addFeature(decorationStage, feature, placement, IWorldGenRegister.EMPTY_PLACEMENT_CONFIG);
-    }
-
-    default public <PC extends IPlacementConfig> void addFeature(GenerationStage.Decoration decorationStage, IFeatureGenerator<NoFeatureConfig> feature, Placement<PC> placement, PC pc) {
-        addFeature(decorationStage, feature, IWorldGenRegister.EMPTY_FEATURE_CONFIG, placement, pc);
-    }
-
-    default public <FC extends IFeatureConfig> void addFeature(GenerationStage.Decoration decorationStage, IFeatureGenerator<FC> feature, FC fc, Placement<NoPlacementConfig> placement) {
-        addFeature(decorationStage, feature, fc, placement, IWorldGenRegister.EMPTY_PLACEMENT_CONFIG);
-    }
-
-    public <FC extends IFeatureConfig, PC extends IPlacementConfig> void addFeature(GenerationStage.Decoration decorationStage, IFeatureGenerator<FC> feature, FC fc, Placement<PC> placement, PC pc);
-
     default public void addFeature(GenerationStage.Decoration decorationStage, Feature<NoFeatureConfig> feature, Placement<NoPlacementConfig> placement) {
         addFeature(decorationStage, feature, placement, IWorldGenRegister.EMPTY_PLACEMENT_CONFIG);
     }
@@ -58,11 +44,7 @@ public interface IBiomeGenWrapper {
 
     public <C extends IFeatureConfig> void addFeature(GenerationStage.Decoration decorationStage, ConfiguredFeature<C, ? extends Feature<C>> feature);
 
-    default public <C extends IFeatureConfig> void addStructure(Structure<C> structure, C config) {
-        addStructure(structure, config, structure.toString());
-    }
-
-    public <C extends IFeatureConfig> void addStructure(Structure<C> structure, C config, String name);
+    public <C extends IFeatureConfig> void addStructure(Structure<C> structure, C config);
 
     public <C extends ICarverConfig> void addCarver(GenerationStage.Carving stage, WorldCarver<C> carver, C carverConfig);
 

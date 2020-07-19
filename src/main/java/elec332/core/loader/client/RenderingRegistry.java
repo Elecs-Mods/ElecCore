@@ -18,7 +18,7 @@ import elec332.core.client.util.AbstractTileEntityItemStackRenderer;
 import elec332.core.util.*;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
+import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.BlockModelShapes;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.model.*;
@@ -43,8 +43,10 @@ import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModLoader;
 import net.minecraftforge.fml.javafmlmod.FMLModContainer;
+import net.minecraftforge.registries.ForgeRegistryEntry;
 
 import javax.annotation.Nonnull;
+import java.lang.reflect.Field;
 import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
@@ -118,11 +120,30 @@ public final class RenderingRegistry implements IElecRenderingRegistry {
 
     @Nonnull
     @Override
-    public StateContainer<Block, BlockState> registerBlockStateLocation(ResourceLocation location, IProperty<?>... properties) {
+    public StateContainer<Block, BlockState> registerBlockStateLocation(@Nonnull ResourceLocation location, IProperty<?>... properties) {
         if (mcDefaultStatesAdder == null) {
             throw new IllegalStateException();
         }
-        FakeBlockStateContainer fakeContainer = new FakeBlockStateContainer(properties);
+        ObjectReference<StateContainer<Block, BlockState>> ref = new ObjectReference<>();
+        Block block = new Block(Block.Properties.create(Material.AIR)) {
+
+            @Nonnull
+            @Override
+            public StateContainer<Block, BlockState> getStateContainer() {
+                return ref.get();
+            }
+
+        };
+        Preconditions.checkNotNull(location);
+        try {
+            Field f = ForgeRegistryEntry.class.getDeclaredField("registryName");
+            f.setAccessible(true);
+            f.set(block, location);
+        } catch (Exception e) {
+            block.setRegistryName(location);
+        }
+        FakeBlockStateContainer fakeContainer = new FakeBlockStateContainer(block, properties);
+        ref.set(fakeContainer);
         mcDefaultStatesAdder.accept(location, fakeContainer);
         fakeContainer.getValidStates().forEach(state -> ModelLoader.addSpecialModel(BlockModelShapes.getModelLocation(location, state)));
         return fakeContainer;
@@ -370,8 +391,8 @@ public final class RenderingRegistry implements IElecRenderingRegistry {
 
     private class FakeBlockStateContainer extends StateContainer<Block, BlockState> {
 
-        private FakeBlockStateContainer(IProperty<?>... properties) {
-            super(Blocks.AIR, BlockState::new, Arrays.stream(properties).collect(Collectors.toMap(IProperty::getName, p -> p)));
+        private FakeBlockStateContainer(Block block, IProperty<?>... properties) {
+            super(block, BlockState::new, Arrays.stream(properties).collect(Collectors.toMap(IProperty::getName, p -> p)));
         }
 
         @Nonnull

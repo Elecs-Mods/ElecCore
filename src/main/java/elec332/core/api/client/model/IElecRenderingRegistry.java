@@ -23,7 +23,7 @@ import java.util.function.Supplier;
 public interface IElecRenderingRegistry {
 
     @Nonnull
-    StateContainer<Block, BlockState> registerBlockStateLocation(ResourceLocation location, IProperty<?>... properties);
+    StateContainer<Block, BlockState> registerBlockStateLocation(@Nonnull ResourceLocation location, IProperty<?>... properties);
 
     void registerModelLocation(ResourceLocation location);
 

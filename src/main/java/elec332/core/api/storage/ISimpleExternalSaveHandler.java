@@ -1,4 +1,4 @@
-package elec332.core.api.data;
+package elec332.core.api.storage;
 
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.world.storage.SaveHandler;

@@ -141,6 +141,30 @@ public interface IConfigWrapper {
     public IConfigWrapper setCategoryDescription(@Nonnull String category, String description);
 
     /**
+     * Configures a nested sub-config in the specified category.
+     *
+     * @param category     The category the configurator will run in
+     * @param configurator The configurator that will be run in the specified category
+     */
+    default public void configureSubConfig(@Nonnull String category, Consumer<IConfigWrapper> configurator) {
+        configureSubConfig(category, null, configurator);
+    }
+
+    /**
+     * Configures a nested sub-config in the specified category.
+     *
+     * @param category     The category the configurator will run in
+     * @param comment      A comment for the specified category
+     * @param configurator The configurator that will be run in the specified category
+     */
+    default public void configureSubConfig(@Nonnull String category, String comment, Consumer<IConfigWrapper> configurator) {
+        if (configurator == null) {
+            return;
+        }
+        configurator.accept(getSubConfig(category, comment));
+    }
+
+    /**
      * Returns a nested sub-config in the specified category.
      *
      * @param category The category this config will reside in

@@ -19,7 +19,7 @@ import elec332.core.api.network.INetworkManager;
 import elec332.core.api.network.ModNetworkHandler;
 import elec332.core.api.registration.IObjectRegister;
 import elec332.core.api.world.IWorldGenManager;
-import elec332.core.data.SaveHandler;
+import elec332.core.loader.SaveHandler;
 import elec332.core.module.DefaultModuleInfo;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.ForgeConfigSpec;

@@ -1,34 +1,35 @@
 package elec332.core.loader;
 
 import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
 import com.google.common.collect.*;
 import elec332.core.ElecCore;
 import elec332.core.api.APIHandlerInject;
 import elec332.core.api.IAPIHandler;
 import elec332.core.api.annotations.StaticLoad;
 import elec332.core.api.registration.IWorldGenRegister;
-import elec332.core.api.registry.ISingleObjectRegistry;
 import elec332.core.api.world.*;
 import elec332.core.util.FMLHelper;
 import elec332.core.util.RegistryHelper;
-import elec332.core.world.FeaturePlacers;
 import elec332.core.world.WorldHelper;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.EntityClassification;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.item.Item;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.chunk.AbstractChunkProvider;
+import net.minecraft.world.chunk.Chunk;
+import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.IChunk;
 import net.minecraft.world.dimension.DimensionType;
-import net.minecraft.world.gen.ChunkGenerator;
-import net.minecraft.world.gen.GenerationSettings;
 import net.minecraft.world.gen.GenerationStage;
+import net.minecraft.world.gen.Heightmap;
 import net.minecraft.world.gen.carver.ConfiguredCarver;
 import net.minecraft.world.gen.carver.ICarverConfig;
 import net.minecraft.world.gen.carver.WorldCarver;
@@ -39,6 +40,7 @@ import net.minecraft.world.gen.placement.IPlacementConfig;
 import net.minecraft.world.gen.placement.Placement;
 import net.minecraft.world.server.ServerChunkProvider;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.world.ChunkDataEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -48,8 +50,6 @@ import org.apache.commons.lang3.tuple.Triple;
 import javax.annotation.Nonnull;
 import java.util.*;
 import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 /**
  * Created by Elec332 on 17-10-2016.
@@ -58,38 +58,35 @@ import java.util.stream.StreamSupport;
  */
 @SuppressWarnings("unused")
 @StaticLoad
-enum WorldGenManager implements ISingleObjectRegistry<IWorldGenHook>, IWorldGenManager {
+enum WorldGenManager implements IWorldGenManager {
 
     INSTANCE;
 
     WorldGenManager() {
-        this.set = Sets.newHashSet();
-        this.set_ = Collections.unmodifiableSet(set);
         this.absentGen = input -> HashMultimap.create();
         this.retroGenChunks = Maps.newHashMap();
         this.biomeGen = Maps.newHashMap();
-        this.structurez = Sets.newHashSet();
-        this.registeredFeatures = Sets.newHashSet();
-        this.structures = Feature.STRUCTURES;
-        this.structures_ = Collections.unmodifiableMap(structures);
+
+        this.structures_ = Collections.unmodifiableMap(Feature.STRUCTURES);
         this.worldGenRegisters = HashMultimap.create();
         this.chunkHooks = Sets.newHashSet();
-        this.retroGennableNames = Sets.newHashSet();
         this.hooks = Lists.newArrayList();
+        this.features = Sets.newHashSet();
     }
 
-    private final Function<DimensionType, SetMultimap<ChunkPos, ILegacyFeatureGenerator>> absentGen;
-    private final Set<IWorldGenHook> set, set_;
     private final Set<IChunkIOHook> chunkHooks;
-    private final Map<DimensionType, SetMultimap<ChunkPos, ILegacyFeatureGenerator>> retroGenChunks;
     private final Map<Biome, IBiomeGenWrapper> biomeGen;
-    private final Set<Structure<?>> structurez;
-    private final Set<Triple<Structure<?>, ? extends IFeatureConfig, String>> registeredFeatures;
-    private final Map<String, Structure<?>> structures, structures_;
     private final Multimap<ModContainer, IWorldGenRegister> worldGenRegisters;
-    private final Set<String> retroGennableNames;
     private final List<IWorldEventHook> hooks;
+
+    private final Function<DimensionType, SetMultimap<ChunkPos, ConfiguredFeature<?, ?>>> absentGen;
+    private final Map<DimensionType, SetMultimap<ChunkPos, ConfiguredFeature<?, ?>>> retroGenChunks;
+
+    private final Set<Feature<?>> features;
+    private final Map<String, Structure<?>> structures_;
+
     private static final String KEY = "eleccore:worldgenmanager";
+    private static final String RETROGEN = "retrogen:keys";
 
     private ModContainer loadingMC = null;
 
@@ -122,55 +119,42 @@ enum WorldGenManager implements ISingleObjectRegistry<IWorldGenHook>, IWorldGenM
         return structures_;
     }
 
+    void init() {
+        worldGenRegisters.forEach((c, r) -> FMLHelper.getFMLModContainer(c).getEventBus().register(new Object() {
+
+            @SubscribeEvent
+            public void registerPre(RegistryEvent.Register<Item> event) {
+                r.init();
+            }
+
+            @SubscribeEvent
+            public void registerStuff(RegistryEvent.Register<Feature<?>> event) {
+                r.registerFeatures(event.getRegistry());
+            }
+
+        }));
+    }
+
     void afterInit() {
         RegistryHelper.getBiomeRegistry().forEach(biome ->
                 worldGenRegisters.forEach((mc, worldGenRegister) -> {
                     loadingMC = mc;
-                    worldGenRegister.registerFeatures(biome, getBiomeRegister(biome));
+                    worldGenRegister.configureBiome(biome, getBiomeRegister(biome));
                     loadingMC = null;
                 })
         );
     }
 
-    @SuppressWarnings(" unchecked")
     void afterModsLoaded() {
-        structurez.removeIf(
-                structure -> StreamSupport.stream(RegistryHelper.getBiomeRegistry().spliterator(), false)
-                        .anyMatch(biome -> biome.hasStructure(structure))
-        );
-        if (!structurez.isEmpty()) {
-            structurez.forEach(f -> ElecCore.logger.warn("Detected unregistered structure, type: " + f.getClass().getCanonicalName() + " instance: " + f.toString()));
-        }
-
-        Set<Structure<?>> featStruc = //All structures registered as features in all biomes
-                StreamSupport.stream(RegistryHelper.getBiomeRegistry().spliterator(), false)
-                        .flatMap(biome ->
-                                Arrays.stream(GenerationStage.Decoration.values())
-                                        .map(biome::getFeatures)
-                                        .flatMap(Collection::stream))
-                        .map(WorldHelper::getFeature)
-                        .filter(f -> f instanceof Structure)
-                        .map(f -> (Structure<?>) f)
-                        .collect(Collectors.toSet());
-
-        registeredFeatures.forEach(t -> {
-            if (!featStruc.contains(t.getLeft())) {
-                ElecCore.logger.warn("Detected structure not registered as feature: " + t.getRight());
-                ElecCore.logger.info("Registering structure feature " + t.getRight() + " as surface structure to all biomes...");
-                StreamSupport.stream(RegistryHelper.getBiomeRegistry().spliterator(), false)
-                        .map(WorldGenManager.INSTANCE::getBiomeRegister)
-                        .forEach(reg -> reg.addFeature(GenerationStage.Decoration.SURFACE_STRUCTURES, (Feature<IFeatureConfig>) t.getLeft(), t.getMiddle(), FeaturePlacers.PASSTHROUGH));
+        for (Feature<?> f : features) {
+            ResourceLocation name = f.getRegistryName();
+            if (name == null) {
+                ElecCore.logger.warn("Detected structure with null name, type: " + f.getClass().getCanonicalName() + " instance: " + f.toString());
             }
-        });
-    }
-
-    boolean legacyPopulateChunk(IWorld world, ChunkGenerator<? extends GenerationSettings> chunkGenerator, Random random, BlockPos chunkXYWorld) {
-        ChunkPos pos = WorldHelper.chunkPosFromBlockPos(chunkXYWorld);
-        boolean b = false;
-        for (IWorldGenHook wgh : set_) {
-            b |= wgh.populateChunk(chunkGenerator, world, random, pos.x, pos.z);
+            if (!RegistryHelper.getFeatures().containsValue(f)) {
+                ElecCore.logger.warn("Detected unregistered structure, type: " + f.getClass().getCanonicalName() + " name: " + f.getRegistryName());
+            }
         }
-        return b;
     }
 
     @SubscribeEvent
@@ -180,6 +164,42 @@ enum WorldGenManager implements ISingleObjectRegistry<IWorldGenHook>, IWorldGenM
         for (IChunkIOHook wgh : chunkHooks) {
             wgh.chunkLoadedFromDisk(chunk, tag, this);
         }
+        CompoundNBT genTag = tag.getCompound(RETROGEN);
+        if (chunk.getStatus().ordinal() > ChunkStatus.FEATURES.ordinal()) {
+            BlockPos pos = chunk.getPos().asBlockPos();
+            Biome biome = Preconditions.checkNotNull(chunk.getBiomes()).getNoiseBiome(pos.getX(), pos.getY(), pos.getZ());
+            Arrays.stream(GenerationStage.Decoration.values())
+                    .map(biome::getFeatures)
+                    .flatMap(List::stream)
+                    .map(this::getRetrogenData)
+                    .filter(Objects::nonNull)
+                    .forEach(feature -> {
+                        IRetroGenFeature<IFeatureConfig> rf = feature.getLeft();
+                        IFeatureConfig config = feature.getMiddle();
+                        String name = Preconditions.checkNotNull(rf.getName(config));
+                        boolean b = genTag.contains(name);
+                        if ((!b || !rf.getGenKey(config).equals(genTag.getString(name))) && rf.shouldRetroGen(b, config)) {
+                            INSTANCE.registerForRetroGen(Preconditions.checkNotNull(chunk.getWorldForge()), chunk.getPos(), feature.getRight());
+                        }
+                    });
+        }
+    }
+
+    private Triple<IRetroGenFeature<IFeatureConfig>, IFeatureConfig, ConfiguredFeature<?, ?>> getRetrogenData(ConfiguredFeature<?, ?> configuredFeature) {
+        return getRetrogenData(configuredFeature, configuredFeature);
+    }
+
+    private Triple<IRetroGenFeature<IFeatureConfig>, IFeatureConfig, ConfiguredFeature<?, ?>> getRetrogenData(ConfiguredFeature<?, ?> configuredFeature, ConfiguredFeature<?, ?> root) {
+        Feature<?> feature = WorldHelper.getFeature(configuredFeature);
+        if (feature instanceof IRetroGenFeature) {
+            @SuppressWarnings("unchecked")
+            IRetroGenFeature<IFeatureConfig> structure = (IRetroGenFeature<IFeatureConfig>) feature;
+            IFeatureConfig config = WorldHelper.getFeatureConfiguration(configuredFeature);
+            return Triple.of(structure, config, root);
+        } else if (WorldHelper.getFeatureConfiguration(configuredFeature) instanceof DecoratedFeatureConfig) {
+            return getRetrogenData(((DecoratedFeatureConfig) WorldHelper.getFeatureConfiguration(configuredFeature)).feature, root);
+        }
+        return null;
     }
 
     @SubscribeEvent
@@ -189,49 +209,73 @@ enum WorldGenManager implements ISingleObjectRegistry<IWorldGenHook>, IWorldGenM
         for (IChunkIOHook wgh : chunkHooks) {
             wgh.chunkSavedToDisk(chunk, tag, this);
         }
+        if (chunk.getStatus().ordinal() > ChunkStatus.FEATURES.ordinal()) {
+            CompoundNBT genTag = new CompoundNBT();
+            BlockPos pos = chunk.getPos().asBlockPos();
+            Biome biome = Preconditions.checkNotNull(chunk.getBiomes()).getNoiseBiome(pos.getX(), pos.getY(), pos.getZ());
+            Arrays.stream(GenerationStage.Decoration.values())
+                    .map(biome::getFeatures)
+                    .flatMap(List::stream)
+                    .map(this::getRetrogenData)
+                    .filter(Objects::nonNull)
+                    .forEach(feature -> {
+                        IRetroGenFeature<IFeatureConfig> rf = feature.getLeft();
+                        IFeatureConfig config = feature.getMiddle();
+                        String name = Preconditions.checkNotNull(rf.getName(config));
+                        genTag.putString(name, rf.getGenKey(config));
+                    });
+            tag.put(RETROGEN, genTag);
+        }
         event.getData().put(KEY, tag);
     }
 
     @SubscribeEvent
     public void onWorldTick(TickEvent.WorldTickEvent event) {
-        SetMultimap<ChunkPos, ILegacyFeatureGenerator> map = retroGenChunks.computeIfAbsent(WorldHelper.getDimID(event.world), absentGen);
+        SetMultimap<ChunkPos, ConfiguredFeature<?, ?>> map = retroGenChunks.computeIfAbsent(WorldHelper.getDimID(event.world), absentGen);
         if (!map.isEmpty()) {
+            World world = event.world;
             ChunkPos pos = map.keySet().iterator().next();
-            Set<ILegacyFeatureGenerator> s = map.removeAll(pos);
-            if (s != null && !s.isEmpty()) {
-                World world = event.world;
-                long worldSeed = world.getSeed();
-                Random random = new Random(worldSeed);
-                long xSeed = random.nextLong() >> 2 + 1L;
-                long zSeed = random.nextLong() >> 2 + 1L;
-                long seed = xSeed * pos.x + zSeed * pos.z ^ worldSeed;
-                for (ILegacyFeatureGenerator featureGenerator : s) {
-                    random.setSeed(seed);
-                    featureGenerator.generateFeature(world, pos.x, pos.z, random, true);
+            if (WorldHelper.chunkLoaded(world, pos.asBlockPos())) {
+                Set<ConfiguredFeature<?, ?>> s = map.removeAll(pos);
+                if (s != null && !s.isEmpty()) {
+                    //System.out.println("Retrogen @ " + pos + " for " + s.stream().map(WorldHelper::getFeature).collect(Collectors.toList()));
+
+                    int x = pos.x;
+                    int z = pos.z;
+                    for (int i = -2; i < 3; i++) {
+                        for (int j = -2; j < 3; j++) {
+                            if (world.chunkExists(x + i, z + j)) {
+                                Chunk c = world.getChunk(x + i, z + j);
+                                Map<Heightmap.Type, Heightmap> heightMap = c.heightMap;
+                                if (!heightMap.containsKey(Heightmap.Type.OCEAN_FLOOR_WG)) {
+                                    heightMap.put(Heightmap.Type.OCEAN_FLOOR_WG, heightMap.get(Heightmap.Type.OCEAN_FLOOR));
+                                }
+                                if (!heightMap.containsKey(Heightmap.Type.WORLD_SURFACE_WG)) {
+                                    heightMap.put(Heightmap.Type.WORLD_SURFACE_WG, heightMap.get(Heightmap.Type.WORLD_SURFACE));
+                                }
+                            }
+                        }
+                    }
+
+                    long worldSeed = world.getSeed();
+                    Random random = new Random(worldSeed);
+                    long xSeed = random.nextLong() >> 2 + 1L;
+                    long zSeed = random.nextLong() >> 2 + 1L;
+                    long seed = xSeed * pos.x + zSeed * pos.z ^ worldSeed;
+                    for (ConfiguredFeature<?, ?> featureGenerator : s) {
+                        random.setSeed(seed);
+                        AbstractChunkProvider chunkProvider = world.getChunkProvider();
+                        if (chunkProvider instanceof ServerChunkProvider) {
+                            featureGenerator.place(world, ((ServerChunkProvider) chunkProvider).getChunkGenerator(), random, pos.asBlockPos());
+                        }
+                    }
                 }
             }
         }
     }
 
     @Override
-    public boolean register(IAdvancedChunkPopulator chunkPopulator) {
-        if (!FMLHelper.isInModInitialisation()) {
-            return false;
-        }
-        ModContainer mc = FMLHelper.getActiveModContainer();
-        if (mc == null) {
-            throw new IllegalArgumentException();
-        }
-        return register((IWorldGenHook) new ChunkPopulatorWrapper(chunkPopulator, mc.getModId()));
-    }
-
-    @Override
-    public boolean register(ILegacyFeatureGenerator featureGenerator) {
-        return FMLHelper.isInModInitialisation() && register(new FeatureGeneratorWrapper(featureGenerator));
-    }
-
-    @Override
-    public void registerForRetroGen(@Nonnull IWorld world, @Nonnull ChunkPos chunk, ILegacyFeatureGenerator... featureGenerators) {
+    public void registerForRetroGen(@Nonnull IWorld world, @Nonnull ChunkPos chunk, ConfiguredFeature<?, ?>... featureGenerators) {
         if (featureGenerators == null || featureGenerators.length == 0) {
             return;
         }
@@ -239,7 +283,7 @@ enum WorldGenManager implements ISingleObjectRegistry<IWorldGenHook>, IWorldGenM
     }
 
     @Override
-    public void registerForRetroGen(@Nonnull IWorld world, @Nonnull ChunkPos chunk, Collection<ILegacyFeatureGenerator> featureGenerators) {
+    public void registerForRetroGen(@Nonnull IWorld world, @Nonnull ChunkPos chunk, Collection<ConfiguredFeature<?, ?>> featureGenerators) {
         if (featureGenerators == null || featureGenerators.size() == 0) {
             return;
         }
@@ -247,75 +291,13 @@ enum WorldGenManager implements ISingleObjectRegistry<IWorldGenHook>, IWorldGenM
     }
 
     @Override
-    public boolean register(IWorldGenHook wgh) {
-        return FMLHelper.isInModInitialisation() && set.add(wgh) && register((IChunkIOHook) wgh);
-    }
-
-    @Override
     public boolean register(IChunkIOHook chunkIOHook) {
         return FMLHelper.isInModInitialisation() && chunkHooks.add(chunkIOHook);
-    }
-
-    @Override
-    public Set<IWorldGenHook> getAllRegisteredObjects() {
-        return set_;
     }
 
     @APIHandlerInject
     public void injectWorldGenManager(IAPIHandler apiHandler) {
         apiHandler.inject(INSTANCE, IWorldGenManager.class);
-    }
-
-    private static class ChunkPopulatorWrapper implements IWorldGenHook, ILegacyFeatureGenerator {
-
-        private ChunkPopulatorWrapper(IAdvancedChunkPopulator chunkPopulator, String owner) {
-            this.chunkPopulator = chunkPopulator;
-            this.owner = owner.toLowerCase();
-        }
-
-        private final IAdvancedChunkPopulator chunkPopulator;
-        private final String owner;
-        private String lastKey;
-
-        @Override
-        public String getName() {
-            return chunkPopulator.getName();
-        }
-
-        @Override
-        public boolean populateChunk(ChunkGenerator<?> chunkGenerator, IWorld world, Random rand, int chunkX, int chunkZ) {
-            boolean b = chunkPopulator.populateChunk(chunkGenerator, world, rand, chunkX, chunkZ);
-            this.lastKey = chunkPopulator.getGenKey();
-            return b;
-        }
-
-        @Override
-        public void chunkLoadedFromDisk(IChunk chunk, CompoundNBT data, IWorldGenManager worldGenManager) {
-            CompoundNBT tag = data.getCompound(owner);
-            boolean b = tag.contains(chunkPopulator.getName());
-            if ((!b || !chunkPopulator.getGenKey().equals(tag.getString(chunkPopulator.getName()))) && chunkPopulator.shouldRegen(b)) {
-                worldGenManager.registerForRetroGen(Preconditions.checkNotNull(chunk.getWorldForge()), chunk.getPos(), this);
-            } else {
-                this.lastKey = chunkPopulator.getGenKey();
-            }
-        }
-
-        @Override
-        public void chunkSavedToDisk(IChunk chunk, CompoundNBT data, IWorldGenManager worldGenManager) {
-            CompoundNBT tag = data.getCompound(owner);
-            if (!Strings.isNullOrEmpty(this.lastKey)) {
-                tag.putString(chunkPopulator.getName(), this.lastKey);
-            }
-            data.put(owner, tag);
-        }
-
-        @Override
-        public boolean generateFeature(IWorld world, int chunkX, int chunkZ, Random random, boolean retroGen) {
-            boolean ret = chunkPopulator.retroGen(random, chunkX, chunkZ, world);
-            this.lastKey = chunkPopulator.getGenKey();
-            return ret;
-        }
-
     }
 
     private class BiomeRegisterWrapper implements IBiomeGenWrapper {
@@ -332,58 +314,61 @@ enum WorldGenManager implements ISingleObjectRegistry<IWorldGenHook>, IWorldGenM
         }
 
         @Override
-        public <FC extends IFeatureConfig, PC extends IPlacementConfig> void addFeature(GenerationStage.Decoration decorationStage, IFeatureGenerator<FC> feature, FC fc, Placement<PC> placement, PC pc) {
-            addFeature(decorationStage, new FeatureWrapper<>(feature), fc, placement, pc);
-        }
-
-        @Override
         public <FC extends IFeatureConfig, PC extends IPlacementConfig> void addFeature(GenerationStage.Decoration decorationStage, Feature<FC> feature, FC fc, Placement<PC> placement, PC pc) {
-            addFeature(decorationStage, new ConfiguredFeature<>(feature, fc), new ConfiguredPlacement<>(placement, pc));
+            addFeature(decorationStage, feature.withConfiguration(fc), placement.configure(pc));
         }
 
         @Override
         public <FC extends IFeatureConfig, PC extends IPlacementConfig> void addFeature(GenerationStage.Decoration decorationStage, ConfiguredFeature<FC, ? extends Feature<FC>> configuredFeature, ConfiguredPlacement<PC> placement) {
-            Feature<DecoratedFeatureConfig> feature = WorldHelper.getFeature(configuredFeature) instanceof FlowersFeature ? Feature.DECORATED_FLOWER : Feature.DECORATED;
-            ConfiguredFeature<?, ?> f = new ConfiguredFeature<>(feature, new DecoratedFeatureConfig(configuredFeature, placement));
-            addFeature(decorationStage, f);
+            features.add(WorldHelper.getFeature(configuredFeature));
+            addFeature(decorationStage, configuredFeature.withPlacement(placement));
         }
 
         @Override
-        @SuppressWarnings({"unchecked", "rawtypes"})
         public <C extends IFeatureConfig> void addFeature(GenerationStage.Decoration decorationStage, ConfiguredFeature<C, ? extends Feature<C>> feature) {
-            if (WorldHelper.getFeature(feature) instanceof Structure) {
-                WorldGenManager.this.structurez.add((Structure<?>) WorldHelper.getFeature(feature));
-            }
-            if (WorldHelper.getFeatureConfiguration(feature) instanceof IRetroGenFeatureConfig) {
-                String name = Preconditions.checkNotNull(Optional.of(loadingMC).orElse(FMLHelper.getActiveModContainer())).getModId();
-                String cName = name + ":" + ((IRetroGenFeatureConfig) WorldHelper.getFeatureConfiguration(feature)).getName();
-                if (!retroGennableNames.add(cName)) {
-                    throw new IllegalArgumentException("Feature generation name is already in use: " + cName);
-                }
-                feature = new RetroGenCapableCompositeFeature(WorldHelper.getFeature(feature), (IRetroGenFeatureConfig) WorldHelper.getFeatureConfiguration(feature), name);
-                register((IChunkIOHook) feature);
+            ConfiguredFeature<IFeatureConfig, ? extends Structure<IFeatureConfig>> structure = getStructure(feature);
+            if (structure != null) {
+                biome.addStructure(structure);
             }
             biome.addFeature(decorationStage, feature);
         }
 
-        @Override
-        public <C extends IFeatureConfig> void addStructure(Structure<C> structure, C config, String s) {
-            if (structures.containsKey(s)) {
-                throw new IllegalArgumentException("Structure name " + s + " is already taken!");
+        @SuppressWarnings("unchecked")
+        private ConfiguredFeature<IFeatureConfig, ? extends Structure<IFeatureConfig>> getStructure(ConfiguredFeature<?, ?> configuredFeature) {
+            features.add(WorldHelper.getFeature(configuredFeature));
+            if (WorldHelper.getFeature(configuredFeature) instanceof Structure) {
+                Structure<IFeatureConfig> structure = ((Structure<IFeatureConfig>) WorldHelper.getFeature(configuredFeature));
+                IFeatureConfig config = getBiome().getStructureConfig(structure);
+                if (config == null) {
+                    config = WorldHelper.getFeatureConfiguration(configuredFeature);
+                }
+                return structure.withConfiguration(config);
+            } else if (WorldHelper.getFeatureConfiguration(configuredFeature) instanceof DecoratedFeatureConfig) {
+                return getStructure(((DecoratedFeatureConfig) WorldHelper.getFeatureConfiguration(configuredFeature)).feature);
             }
-            structures.put(s, structure);
-            WorldGenManager.this.registeredFeatures.add(Triple.of(structure, config, s));
-            biome.addStructure(new ConfiguredFeature<>(structure, config));
+            return null;
+        }
+
+        @Override
+        public <C extends IFeatureConfig> void addStructure(Structure<C> structure, C config) {
+            features.add(structure);
+            getBiome().addStructure(new ConfiguredFeature<>(structure, config));
         }
 
         @Override
         public <C extends ICarverConfig> void addCarver(GenerationStage.Carving stage, WorldCarver<C> carver, C carverConfig) {
+            if (!RegistryHelper.getCarvers().containsValue(carver)) {
+                ElecCore.logger.warn("Detected unregistered world carver, type: " + carver.getClass().getCanonicalName() + " name: " + carver.getRegistryName());
+            }
             addCarver(stage, new ConfiguredCarver<>(carver, carverConfig));
         }
 
         @Override
         public <C extends ICarverConfig> void addCarver(GenerationStage.Carving stage, ConfiguredCarver<C> carver) {
-            biome.addCarver(stage, carver);
+            if (!RegistryHelper.getCarvers().containsValue(carver.carver)) {
+                ElecCore.logger.warn("Detected unregistered world carver, type: " + carver.getClass().getCanonicalName() + " name: " + carver.carver.getRegistryName());
+            }
+            getBiome().addCarver(stage, carver);
         }
 
         @Override
@@ -393,105 +378,7 @@ enum WorldGenManager implements ISingleObjectRegistry<IWorldGenHook>, IWorldGenM
 
         @Override
         public void addSpawn(EntityClassification type, Biome.SpawnListEntry spawnListEntry) {
-            WorldHelper.addBiomeSpawnEntry(biome, type, spawnListEntry);
-        }
-
-    }
-
-    private static class RetroGenCapableCompositeFeature<C extends IRetroGenFeatureConfig, F extends Feature<C>> extends ConfiguredFeature<C, F> implements IChunkIOHook, ILegacyFeatureGenerator {
-
-        @SuppressWarnings("unchecked")
-        private RetroGenCapableCompositeFeature(F feature, C fc, String owner) {
-            super(feature, fc);
-            Feature<C> rf;
-            if (feature instanceof FeatureWrapper) {
-                rf = ((FeatureWrapper<C>) feature).getRetroGen();
-            } else {
-                rf = feature;
-            }
-            this.retroGenfeature = new ConfiguredFeature<>(rf, fc);
-            this.owner = owner;
-            this.config = fc;
-        }
-
-        private final C config;
-        private final ConfiguredFeature<C, ? extends Feature<C>> retroGenfeature;
-        private final String owner;
-        private String lastKey;
-
-        @Override
-        public boolean place(@Nonnull IWorld world, @Nonnull ChunkGenerator<? extends GenerationSettings> chunkGenerator, @Nonnull Random random, @Nonnull BlockPos blockPos) {
-            boolean b = super.place(world, chunkGenerator, random, blockPos);
-            this.lastKey = config.getGenKey();
-            return b;
-        }
-
-        @Override
-        public String getName() {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public void chunkLoadedFromDisk(IChunk chunk, CompoundNBT data, IWorldGenManager worldGenManager) {
-            CompoundNBT tag = data.getCompound(owner);
-            boolean b = tag.contains(config.getName());
-            if ((!b || !config.getGenKey().equals(tag.getString(config.getName()))) && config.shouldRetroGen(b)) {
-                worldGenManager.registerForRetroGen(Preconditions.checkNotNull(chunk.getWorldForge()), chunk.getPos(), this);
-            } else {
-                this.lastKey = config.getGenKey();
-            }
-        }
-
-        @Override
-        public void chunkSavedToDisk(IChunk chunk, CompoundNBT data, IWorldGenManager worldGenManager) {
-            CompoundNBT tag = data.getCompound(owner);
-            if (!Strings.isNullOrEmpty(this.lastKey)) {
-                tag.putString(config.getName(), this.lastKey);
-            }
-            data.put(owner, tag);
-        }
-
-        @Override
-        public boolean generateFeature(IWorld world, int chunkX, int chunkZ, Random random, boolean retroGen) {
-            if (!retroGen) {
-                throw new IllegalArgumentException();
-            }
-
-            //Mimic ChunkGenerator
-            BlockPos pos = new BlockPos(chunkX * 16, 0, chunkZ * 16).add(8, 8, 8);
-            if (!(world.getChunkProvider() instanceof ServerChunkProvider)) {
-                throw new RuntimeException();
-            }
-            boolean ret = retroGenfeature.place(world, ((ServerChunkProvider) world.getChunkProvider()).getChunkGenerator(), random, pos);
-            this.lastKey = config.getGenKey();
-            return ret;
-        }
-
-    }
-
-    private static class FeatureWrapper<C extends IFeatureConfig> extends Feature<C> {
-
-        private FeatureWrapper(IFeatureGenerator<C> feature) {
-            this(feature, false);
-        }
-
-        private FeatureWrapper(IFeatureGenerator<C> feature, boolean retroGen) {
-            super(feature::deserialize);
-            this.feature = feature;
-            this.retroGen = retroGen;
-        }
-
-        private final IFeatureGenerator<C> feature;
-        private final boolean retroGen;
-
-
-        @Override
-        public boolean place(@Nonnull IWorld world, @Nonnull ChunkGenerator<? extends GenerationSettings> chunkGenerator, @Nonnull Random random, @Nonnull BlockPos pos, @Nonnull C config) {
-            return feature.generateFeature(world, pos, chunkGenerator, random, config, retroGen);
-        }
-
-        private Feature<C> getRetroGen() {
-            return new FeatureWrapper<>(feature, true);
+            WorldHelper.addBiomeSpawnEntry(getBiome(), type, spawnListEntry);
         }
 
     }

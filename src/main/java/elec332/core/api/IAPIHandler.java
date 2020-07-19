@@ -1,15 +1,21 @@
 package elec332.core.api;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Optional;
 
 /**
  * Created by Elec332 on 3-11-2016.
  */
 public interface IAPIHandler {
 
-    public void inject(Object o, Class<?>... classes);
+    void inject(@Nonnull Object o, Class<?>... classes);
 
     @Nullable
-    public <T> T get(Class<T> type);
+    <T> T get(@Nonnull Class<T> type);
+
+    default <T> Optional<T> getOptional(@Nonnull Class<T> type) {
+        return Optional.ofNullable(get(type));
+    }
 
 }

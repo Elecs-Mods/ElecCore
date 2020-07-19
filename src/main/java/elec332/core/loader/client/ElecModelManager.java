@@ -49,7 +49,8 @@ enum ElecModelManager implements IAnnotationDataProcessor {
         this.modelHandlers = Lists.newArrayList();
     }
 
-    private static final String FAKE_BLOCKSTATE_JSON = "{ 'variants': { '': { 'model': 'builtin/missing' } } }";
+    private static final String FAKE_BLOCKSTATE_JSON = "{ \"variants\": { \"\": { \"model\": \"builtin/missing\" } } }";
+    private static final String MISSING_JSON = "{ \"parent\": \"builtin/generated\" }";
     private List<IModelHandler> modelHandlers;
 
     @Override

@@ -9,7 +9,9 @@ public interface IRetroGenFeatureConfig extends IFeatureConfig {
 
     public String getName();
 
-    public String getGenKey();
+    default public String getGenKey() {
+        return "generated";
+    }
 
     default public boolean shouldRetroGen(boolean hasInitialGen) {
         return !hasInitialGen;

@@ -8,12 +8,15 @@ import elec332.core.api.module.IModuleController;
 import elec332.core.api.module.IModuleInfo;
 import elec332.core.util.FMLHelper;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.eventbus.api.GenericEvent;
 import net.minecraftforge.fml.ModContainer;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.maven.artifact.versioning.VersionRange;
 
 import javax.annotation.Nonnull;
 import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.List;
 
 /**
@@ -96,6 +99,16 @@ public class DefaultWrappedModule implements IModuleContainer {
                     continue;
                 }
                 if (!method.getParameterTypes()[0].isAssignableFrom(event.getClass())) {
+                    continue;
+                }
+                if (GenericEvent.class.isAssignableFrom(event.getClass())) {
+                    Type type = method.getGenericParameterTypes()[0];
+                    if (type instanceof ParameterizedType) {
+                        type = ((ParameterizedType) type).getActualTypeArguments()[0];
+                        if (type.equals(((GenericEvent<?>) event).getGenericType())) {
+                            method.invoke(this.module, event);
+                        }
+                    }
                     continue;
                 }
                 method.invoke(this.module, event);

@@ -193,7 +193,11 @@ public class FMLHelper {
      * @return Whether the specified {@link ModLoadingStage} has been reached
      */
     public static boolean hasReachedState(ModLoadingStage state) {
-        return ElecCoreLoader.getLastStage().ordinal() >= (state.ordinal() - 1);
+        ModLoadingStage stage = ElecCoreLoader.getLastStage();
+        if (stage == null) {
+            stage = ModLoadingStage.values()[ModLoadingStage.CONSTRUCT.ordinal() - 1];
+        }
+        return stage.ordinal() >= (state.ordinal() - 1);
     }
 
     /**

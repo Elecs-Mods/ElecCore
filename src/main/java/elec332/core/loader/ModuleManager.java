@@ -9,10 +9,12 @@ import elec332.core.api.APIHandlerInject;
 import elec332.core.api.IAPIHandler;
 import elec332.core.api.discovery.IAnnotationDataHandler;
 import elec332.core.api.module.*;
+import elec332.core.api.registration.APIInjectedEvent;
 import elec332.core.module.DefaultWrappedModule;
 import elec332.core.util.FMLHelper;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.ForgeConfigSpec;
+import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.fml.ModContainer;
@@ -189,8 +191,7 @@ enum ModuleManager implements IModuleManager {
                 constructedModules.add(module_);
                 ElecCore.logger.info("Successfully constructed module " + module.getName() + " from mod " + module.getOwner());
             } catch (Exception e) {
-                ElecCore.logger.error("Error constructing module " + module.getName() + " from mod " + module.getOwner());
-                ElecCore.logger.error(e);
+                ElecCore.logger.error("Error constructing module " + module.getName() + " from mod " + module.getOwner(), e);
             }
         }
     }
@@ -207,6 +208,9 @@ enum ModuleManager implements IModuleManager {
                 throw new UnsupportedOperationException();
             }
             final FMLModContainer modContainer = FMLHelper.getFMLModContainer(mc);
+            modContainer.getEventBus().addListener(EventPriority.LOW, (Consumer<? extends RegistryEvent<?>>) evt -> invokeEvent(module, evt));
+            modContainer.getEventBus().addListener(EventPriority.LOW, (Consumer<? extends RegistryEvent.NewRegistry>) evt -> invokeEvent(module, evt));
+            modContainer.getEventBus().addListener(EventPriority.LOW, (Consumer<? extends APIInjectedEvent<?>>) evt -> invokeEvent(module, evt));
             modContainer.getEventBus().addListener(EventPriority.LOW, (Consumer<FMLCommonSetupEvent>) cse -> {
                 boolean add = Optional.ofNullable(moduleConfig.get(module.getCombinedName())).map(ForgeConfigSpec.BooleanValue::get).orElse(true);
                 add &= module.alwaysEnabled() || module.getModuleController().isModuleEnabled(module.getName());
@@ -218,7 +222,7 @@ enum ModuleManager implements IModuleManager {
                 if (add) {
                     invokeEvent(module, cse);
                     modContainer.getEventBus().addListener(EventPriority.LOW, (Consumer<ModLifecycleEvent>) event -> invokeEvent(module, event));
-                    Class objClass = module.getModule().getClass();
+                    Class<?> objClass = module.getModule().getClass();
                     for (Method method : objClass.getDeclaredMethods()) {
                         if (method.isAnnotationPresent(ElecModule.EventHandler.class)/* || method.isAnnotationPresent(Mod.EventHandler.class)*/) {
                             if (method.getParameterTypes().length != 1) {

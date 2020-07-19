@@ -2,6 +2,7 @@ package elec332.core.util;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import elec332.core.api.util.IClearable;
 import elec332.core.handler.annotations.TileEntityAnnotationProcessor;
 import net.minecraft.block.Block;
 import net.minecraft.enchantment.Enchantment;
@@ -23,16 +24,28 @@ import net.minecraft.util.SoundEvent;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.world.gen.carver.WorldCarver;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraftforge.common.ModDimension;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityManager;
+import net.minecraftforge.common.capabilities.ICapabilityProvider;
+import net.minecraftforge.common.capabilities.ICapabilitySerializable;
+import net.minecraftforge.common.util.INBTSerializable;
+import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.event.AttachCapabilitiesEvent;
+import net.minecraftforge.fml.ModContainer;
+import net.minecraftforge.fml.ModLoadingStage;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraftforge.fml.javafmlmod.FMLModContainer;
 import net.minecraftforge.registries.*;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.Callable;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -48,7 +61,7 @@ public class RegistryHelper {
      * @param clazz The capability type
      */
     public static <T> void registerEmptyCapability(Class<T> clazz) {
-        CapabilityManager.INSTANCE.register(clazz, new Capability.IStorage<T>() {
+        registerCapability(clazz, new Capability.IStorage<T>() {
 
             @Override
             public INBT writeNBT(Capability capability, Object instance, Direction side) {
@@ -65,6 +78,64 @@ public class RegistryHelper {
         });
     }
 
+    public static <T> void registerCapability(Class<T> clazz, Capability.IStorage<T> storage, Callable<? extends T> factory) {
+        if (FMLHelper.hasReachedState(ModLoadingStage.COMMON_SETUP)) {
+            CapabilityManager.INSTANCE.register(clazz, storage, factory);
+        } else {
+            if (FMLHelper.getActiveModContainer() != null && !FMLHelper.getActiveModContainer().getModId().equals("minecraft")) {
+                FMLHelper.getActiveModEventBus().addListener((Consumer<FMLCommonSetupEvent>) event -> CapabilityManager.INSTANCE.register(clazz, storage, factory));
+            } else {
+                ModContainer c = FMLHelper.getOwner(clazz);
+                if (c instanceof FMLModContainer) {
+                    ((FMLModContainer) c).getEventBus().addListener((Consumer<FMLCommonSetupEvent>) event -> CapabilityManager.INSTANCE.register(clazz, storage, factory));
+                } else {
+                    throw new UnsupportedOperationException();
+                }
+            }
+        }
+    }
+
+    public static <C> void registerCapability(AttachCapabilitiesEvent<?> event, ResourceLocation key, Capability<C> capability, C instance) {
+        Preconditions.checkNotNull(key);
+        Preconditions.checkNotNull(capability);
+        Preconditions.checkNotNull(instance);
+        if (instance instanceof INBTSerializable) {
+            event.addCapability(key, new ICapabilitySerializable<INBT>() {
+
+                @Override
+                public INBT serializeNBT() {
+                    return ((INBTSerializable<?>) instance).serializeNBT();
+                }
+
+                @Override
+                @SuppressWarnings({"unchecked", "rawtypes"})
+                public void deserializeNBT(INBT nbt) {
+                    ((INBTSerializable) instance).deserializeNBT(nbt);
+                }
+
+                @Nonnull
+                @Override
+                public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
+                    return capability.orEmpty(cap, LazyOptional.of(() -> instance));
+                }
+
+            });
+        } else {
+            event.addCapability(key, new ICapabilityProvider() {
+
+                @Nonnull
+                @Override
+                public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
+                    return capability.orEmpty(cap, LazyOptional.of(() -> instance));
+                }
+
+            });
+        }
+        if (instance instanceof IClearable) {
+            event.addListener(((IClearable) instance)::clear);
+        }
+    }
+
     public static <T extends IForgeRegistryEntry<T>> ForgeRegistry<T> createRegistry(ResourceLocation name, Class<T> type, Consumer<RegistryBuilder<T>> modifier) {
         RegistryBuilder<T> b = new RegistryBuilder<>();
         b.setName(Preconditions.checkNotNull(name));
@@ -75,7 +146,6 @@ public class RegistryHelper {
         return (ForgeRegistry<T>) b.create();
     }
 
-    @SuppressWarnings("deprecation")
     public static <T extends IForgeRegistryEntry<T>, C extends IForgeRegistry.AddCallback<T> & IForgeRegistry.ClearCallback<T> & IForgeRegistry.CreateCallback<T>> ForgeRegistry<T> createRegistry(ResourceLocation registryName, Class<T> registryType, int minId, int maxId, C callback) {
         return (ForgeRegistry<T>) new RegistryBuilder<T>().setName(registryName).addCallback(callback).setType(registryType).setIDRange(minId, maxId).create();
     }
@@ -140,6 +210,10 @@ public class RegistryHelper {
         return (ForgeRegistry<Feature<?>>) ForgeRegistries.FEATURES;
     }
 
+    public static ForgeRegistry<WorldCarver<?>> getCarvers() {
+        return (ForgeRegistry<WorldCarver<?>>) ForgeRegistries.WORLD_CARVERS;
+    }
+
     @SuppressWarnings("unchecked")
     public static <T extends TileEntity> TileEntityType<T> getTileEntityType(Class<T> clazz) {
         Collection<TileEntityType<T>> types = Lists.newArrayList();
@@ -155,6 +229,7 @@ public class RegistryHelper {
         throw new UnsupportedOperationException("Multiple registered types");
     }
 
+    @SuppressWarnings("ConstantConditions")
     public static <T extends TileEntity> TileEntityType<T> registerTileEntity(ResourceLocation id, Supplier<T> builder) {
         return registerTileEntity(id, new TileEntityType<T>(builder, null, null) {
 

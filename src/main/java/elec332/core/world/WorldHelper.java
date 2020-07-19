@@ -29,6 +29,9 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.EmptyChunk;
 import net.minecraft.world.chunk.IChunk;
 import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.world.gen.ChunkGenerator;
+import net.minecraft.world.gen.GenerationSettings;
+import net.minecraft.world.gen.Heightmap;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.IFeatureConfig;
@@ -81,6 +84,28 @@ public class WorldHelper {
         //todo: ??? chunk.getWorld().getChunkProvider().markLightChanged(LightType.BLOCK, SectionPos.from(chunk.getPos(), chunk.getHeight()));
         chunk.getWorld().getChunkProvider().getLightManager().enableLightSources(chunk.getPos(), true);
         //chunk.enqueueRelightChecks();
+    }
+
+    /**
+     * Returns whether the provided {@link ChunkGenerator} will generate a roof
+     *
+     * @param generator The chunkgenerator
+     * @return whether the provided {@link ChunkGenerator} will generate a roof
+     */
+    public static boolean hasCeiling(ChunkGenerator<? extends GenerationSettings> generator) {
+        return generator.getSettings().getBedrockRoofHeight() > 0;
+    }
+
+    /**
+     * Gets the top block at the given position for the given type
+     *
+     * @param world The world
+     * @param pos   The position to check
+     * @param type  The heightmap type to use
+     * @return The same position at the top non-air block
+     */
+    public static BlockPos getTopBlock(IWorldReader world, BlockPos pos, Heightmap.Type type) {
+        return new BlockPos(pos.getX(), world.getHeight(type, pos.getX(), pos.getZ()), pos.getZ());
     }
 
     /**
