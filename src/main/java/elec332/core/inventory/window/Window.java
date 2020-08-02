@@ -139,7 +139,8 @@ public class Window implements IWidgetContainer, IGuiEventListener {
     @Override
     public <W extends IWidget> W addWidget(W widget) {
         widget.setContainer(this);
-        widget.setID(widgets.size());
+        int id = widgets.size();
+        widget.setID(id);
         WidgetListener wl = new WidgetListener();
         wl.setWidget(widget);
         for (IWindowListener obj : getListeners()) {
@@ -147,6 +148,7 @@ public class Window implements IWidgetContainer, IGuiEventListener {
             widget.initWidget(wl);
         }
         this.widgets.add(widget);
+        this.map.put(widget, id);
         if (widget instanceof WidgetSlot) {
             windowContainer.addSlotToWindow((WidgetSlot) widget);
         }
@@ -258,7 +260,7 @@ public class Window implements IWidgetContainer, IGuiEventListener {
     public void onListenerAdded(IWindowListener listener) {
         WidgetListener wl = new WidgetListener();
         wl.setListener(listener);
-        for (IWidget widget : widgets) {
+        for (IWidget widget : getWidgets()) {
             wl.setWidget(widget);
             widget.initWidget(wl);
         }
@@ -276,12 +278,12 @@ public class Window implements IWidgetContainer, IGuiEventListener {
 
     @OnlyIn(Dist.CLIENT)
     public void updateProgressBar(int id, int data) {
-        widgets.get(id).updateProgressbar(data);
+        getWidgets().get(id).updateProgressbar(data);
     }
 
     public void detectAndSendChanges(Container from) {
         final WidgetListener wl = new WidgetListener();
-        for (IWidget widget : widgets) {
+        for (IWidget widget : getWidgets()) {
             wl.setWidget(widget);
             widget.detectAndSendChanges(new Iterable<IWidgetListener>() {
 
@@ -409,7 +411,7 @@ public class Window implements IWidgetContainer, IGuiEventListener {
     @Override
     @OnlyIn(Dist.CLIENT)
     public boolean mouseScrolled(double wheel, double translatedMouseX, double translatedMouseY) {
-        for (IWidget widget : widgets) {
+        for (IWidget widget : getWidgets()) {
             if (widget.mouseScrolled(wheel, translatedMouseX, translatedMouseY)) {
                 return true;
             }
@@ -420,7 +422,7 @@ public class Window implements IWidgetContainer, IGuiEventListener {
     @Override
     @OnlyIn(Dist.CLIENT)
     public boolean keyPressed(int key, int scanCode, int modifiers) {
-        for (IWidget widget : widgets) {
+        for (IWidget widget : getWidgets()) {
             if (widget.keyPressed(key, scanCode, modifiers)) {
                 return true;
             }
@@ -431,7 +433,7 @@ public class Window implements IWidgetContainer, IGuiEventListener {
     @Override
     @OnlyIn(Dist.CLIENT)
     public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
-        for (IWidget widget : widgets) {
+        for (IWidget widget : getWidgets()) {
             if (widget.keyReleased(keyCode, scanCode, modifiers)) {
                 return true;
             }

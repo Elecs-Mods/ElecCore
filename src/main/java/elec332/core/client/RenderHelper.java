@@ -57,6 +57,7 @@ public class RenderHelper {
 
     public static final float renderUnit = 1 / 16f;
     public static final double BB_EXPAND_NUMBER = 0.0020000000949949026D;
+    public static final int MAX_BRIGHTNESS = 15728880;
     private static final Tessellator mcTessellator;
     private static final ITessellator tessellator;
     private static final IRenderTypeBuffer mcRenderTypeBuffer;
@@ -253,6 +254,16 @@ public class RenderHelper {
         }
     }
 
+    public static void drawSelectionBox(World world, BlockPos pos, VoxelShape shapeOverride, Vec3d projectedView, MatrixStack renderer, IRenderTypeBuffer buffer) {
+        if (world.getWorldBorder().contains(pos)) {
+            double d0 = projectedView.x;
+            double d1 = projectedView.y;
+            double d2 = projectedView.z;
+            RenderSystem.lineWidth(Math.max(2.5F, (float) getMainWindow().getFramebufferWidth() / 1920.0F * 2.5F));
+            WorldRenderer.drawVoxelShapeParts(renderer, buffer.getBuffer(RenderType.getLines()), shapeOverride, (double) pos.getX() - d0, (double) pos.getY() - d1, (double) pos.getZ() - d2, 0.0F, 0.0F, 0.0F, 0.4F);
+        }
+    }
+
     @Nonnull
     public static IForgeTransformationMatrix getTransformation(int x, int y, int z) {
         if ((z = MathHelper.normalizeAngle(z, 360)) == 0) {
@@ -260,6 +271,29 @@ public class RenderHelper {
         }
         return new TransformationMatrix(null, quatFromXYZDegrees(new Vector3f(MathHelper.normalizeAngle(x, 360), MathHelper.normalizeAngle(y, 360), z)), null, null);
         //return TRSRTransformation.blockCenterToCorner(new TRSRTransformation(null, TRSRTransformation.quatFromXYZDegrees(new Vector3f(MathHelper.normalizeAngle(x, 360), MathHelper.normalizeAngle(y, 360), z)), null, null));
+    }
+
+    public static IForgeTransformationMatrix rotateFromDown(Direction insideSide) {
+        int x = insideSide.getAxis() == Direction.Axis.Z ? 180 + (90 * insideSide.getAxisDirection().getOffset()) : insideSide == Direction.UP ? 180 : 0;
+        int z = insideSide.getAxis() == Direction.Axis.X ? 180 - (90 * insideSide.getAxisDirection().getOffset()) : 0;
+        Vector3f loc = new Vector3f(0, 0, 0);
+        switch (insideSide.getOpposite()) {
+            case SOUTH:
+                loc.add(0, 1, 0);
+                break;
+            case NORTH:
+                loc.add(0, 0, 1);
+                break;
+            case WEST:
+                loc.add(1, 0, 0);
+                break;
+            case EAST:
+                loc.add(0, 1, 0);
+                break;
+            case DOWN:
+                loc.add(0, 1, 1);
+        }
+        return new TransformationMatrix(loc, quatFromXYZDegrees(new Vector3f(x, 0, z)), null, null);
     }
 
     public static IForgeTransformationMatrix merge(IModelTransform first, IModelTransform second) {
@@ -275,7 +309,7 @@ public class RenderHelper {
     }
 
     public static IForgeTransformationMatrix merge(IForgeTransformationMatrix first, IForgeTransformationMatrix second) {
-        Matrix4f m = new Matrix4f(first.getTransformaion().getMatrix());
+        Matrix4f m = new Matrix4f(second.getTransformaion().getMatrix());
         m.mul(first.getTransformaion().getMatrix());
         return new TransformationMatrix(m);
     }
@@ -333,6 +367,15 @@ public class RenderHelper {
             default:
                 return ModelRotation.X0_Y0;
         }
+    }
+
+    /**
+     * Rotates the stack to face the player
+     *
+     * @param stack Matrix stack
+     */
+    public static void facingPlayer(MatrixStack stack) {
+        stack.rotate(ClientHelper.getMinecraft().getRenderManager().info.getRotation());
     }
 
     @Nonnull

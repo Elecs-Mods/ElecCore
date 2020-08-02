@@ -22,6 +22,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.world.*;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.AbstractChunkProvider;
@@ -253,7 +254,7 @@ public class WorldHelper {
      *              (flags can be added together)
      */
     public static void setBlockState(IWorldWriter world, BlockPos pos, BlockState state, int flags) {
-        world.setBlockState(pos, state, flags);
+        Preconditions.checkNotNull(world).setBlockState(pos, state, flags);
     }
 
     /**
@@ -263,6 +264,9 @@ public class WorldHelper {
      * @param pos   The position
      */
     public static void markBlockForUpdate(World world, BlockPos pos) {
+        if (world == null) {
+            return;
+        }
         if (!world.isRemote) {
             ((ServerWorld) world).getChunkProvider().markBlockChanged(pos);
             //((ServerWorld) world).getPlayerChunkMap().markBlockForUpdate(pos);
@@ -327,7 +331,7 @@ public class WorldHelper {
      */
     @SuppressWarnings("all")
     public static void markBlockForRenderUpdate(World world, BlockPos pos) {
-        if (world.isRemote) {
+        if (Preconditions.checkNotNull(world).isRemote) {
             world.notifyBlockUpdate(pos, null, null, PLACEBLOCK_RENDERMAIN);
         }
         //world.markBlockRangeForRenderUpdate(pos, pos);
@@ -547,7 +551,7 @@ public class WorldHelper {
      * @return The {@link TileEntity} at the specified location
      */
     public static TileEntity getTileAt(IBlockReader world, BlockPos loc) {
-        return world.getTileEntity(loc);
+        return Preconditions.checkNotNull(world).getTileEntity(loc);
     }
 
     /**
@@ -569,7 +573,18 @@ public class WorldHelper {
      * @return The {@link BlockState} at the specified location
      */
     public static BlockState getBlockState(IBlockReader world, BlockPos pos) {
-        return world.getBlockState(pos);
+        return Preconditions.checkNotNull(world).getBlockState(pos);
+    }
+
+    /**
+     * Gets the {@link VoxelShape} at the specified location
+     *
+     * @param world The world
+     * @param pos   The position
+     * @return The {@link VoxelShape} at the specified location
+     */
+    public static VoxelShape getShape(IBlockReader world, BlockPos pos) {
+        return getBlockState(world, pos).getShape(world, pos);
     }
 
     /**

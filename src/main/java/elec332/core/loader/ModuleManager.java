@@ -247,7 +247,8 @@ enum ModuleManager implements IModuleManager {
         try {
             module.invokeEvent(event);
         } catch (Exception e) {
-            throw new RuntimeException("Error invoking event on module " + module.getModule() + ", owned by: " + module.getOwnerMod().getModId(), e.getCause());
+            e.printStackTrace(System.out);
+            throw new RuntimeException("Error invoking event (" + event + ") on module " + module.getModule() + ", owned by: " + module.getOwnerMod().getModId(), e.getCause());
         }
     }
 

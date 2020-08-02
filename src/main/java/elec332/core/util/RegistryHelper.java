@@ -8,6 +8,7 @@ import net.minecraft.block.Block;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.merchant.villager.VillagerProfession;
+import net.minecraft.fluid.Fluid;
 import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.item.Item;
 import net.minecraft.item.crafting.IRecipe;
@@ -99,6 +100,7 @@ public class RegistryHelper {
         Preconditions.checkNotNull(key);
         Preconditions.checkNotNull(capability);
         Preconditions.checkNotNull(instance);
+        final LazyOptional<C> ref = LazyOptional.of(() -> instance);
         if (instance instanceof INBTSerializable) {
             event.addCapability(key, new ICapabilitySerializable<INBT>() {
 
@@ -116,7 +118,7 @@ public class RegistryHelper {
                 @Nonnull
                 @Override
                 public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-                    return capability.orEmpty(cap, LazyOptional.of(() -> instance));
+                    return capability.orEmpty(cap, ref);
                 }
 
             });
@@ -126,11 +128,12 @@ public class RegistryHelper {
                 @Nonnull
                 @Override
                 public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-                    return capability.orEmpty(cap, LazyOptional.of(() -> instance));
+                    return capability.orEmpty(cap, ref);
                 }
 
             });
         }
+        event.addListener(ref::invalidate);
         if (instance instanceof IClearable) {
             event.addListener(((IClearable) instance)::clear);
         }
@@ -156,6 +159,10 @@ public class RegistryHelper {
 
     public static ForgeRegistry<Item> getItemRegistry() {
         return (ForgeRegistry<Item>) ForgeRegistries.ITEMS;
+    }
+
+    public static ForgeRegistry<Fluid> getFluidRegistry() {
+        return (ForgeRegistry<Fluid>) ForgeRegistries.FLUIDS;
     }
 
     public static ForgeRegistry<Effect> getPotionRegistry() {

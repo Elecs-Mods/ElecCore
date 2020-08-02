@@ -1,5 +1,6 @@
 package elec332.core.api.client;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
 import net.minecraft.client.renderer.Matrix4f;
 import net.minecraftforge.api.distmarker.Dist;
@@ -7,6 +8,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.model.pipeline.VertexBufferConsumer;
 
 import javax.annotation.Nonnull;
+import java.util.Objects;
 
 /**
  * Created by Elec332 on 25-11-2015.
@@ -19,36 +21,40 @@ import javax.annotation.Nonnull;
 @OnlyIn(Dist.CLIENT)
 public interface ITessellator {
 
-    public void setBrightness(int brightness);
+    void setBrightness(int brightness);
 
-    public void setColorOpaque_F(float red, float green, float blue);
+    void setColorOpaque_F(float red, float green, float blue);
 
-    public void setColorOpaque(int red, int green, int blue);
+    void setColorOpaque(int red, int green, int blue);
 
-    public void setColorRGBA_F(float red, float green, float blue, float alpha);
+    void setColorRGBA_F(float red, float green, float blue, float alpha);
 
-    public void setColorRGBA_I(int color, int alpha);
+    void setColorRGBA_I(int color, int alpha);
 
-    public void setColorRGBA(int red, int green, int blue, int alpha);
+    void setColorRGBA(int red, int green, int blue, int alpha);
 
-    public void setMatrix(Matrix4f matrix);
+    default void setTransformation(@Nonnull MatrixStack matrix) {
+        setMatrix(Objects.requireNonNull(matrix).getLast().getMatrix());
+    }
 
-    public void clearMatrix();
+    void setMatrix(Matrix4f matrix);
 
-    public void addVertexWithUV(Matrix4f matrix, double x, double y, double z, float u, float v);
+    void clearMatrix();
 
-    public void addVertexWithUV(double x, double y, double z, float u, float v);
+    void addVertexWithUV(Matrix4f matrix, double x, double y, double z, float u, float v);
 
-    public void startDrawingWorldBlock();
+    void addVertexWithUV(double x, double y, double z, float u, float v);
 
-    public void startDrawingGui();
+    void startDrawingWorldBlock();
 
-    public void draw();
+    void startDrawingGui();
+
+    void draw();
 
     @Nonnull
-    public IVertexBuilder getVertexBuilder();
+    IVertexBuilder getVertexBuilder();
 
     @Nonnull
-    public VertexBufferConsumer getVertexBufferConsumer();
+    VertexBufferConsumer getVertexBufferConsumer();
 
 }

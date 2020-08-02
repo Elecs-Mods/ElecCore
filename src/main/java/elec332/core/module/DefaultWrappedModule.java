@@ -91,10 +91,9 @@ public class DefaultWrappedModule implements IModuleContainer {
 
     @Override
     public void invokeEvent(Object event) throws Exception {
-        Class objClass = this.module.getClass();
+        Class<?> objClass = this.module.getClass();
         for (Method method : objClass.getDeclaredMethods()) {
             if (method.isAnnotationPresent(ElecModule.EventHandler.class)/* || method.isAnnotationPresent(Mod.EventHandler.class)*/) {
-
                 if (method.getParameterTypes().length != 1) {
                     continue;
                 }

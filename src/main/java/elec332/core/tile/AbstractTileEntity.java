@@ -33,15 +33,14 @@ import java.util.Map;
  */
 public class AbstractTileEntity extends TileEntity implements IElecCoreNetworkTile, RegisteredTileEntity.TypeSetter {
 
-    @SuppressWarnings("all")
     public AbstractTileEntity() {
-        super(null);
-        setTileEntityType(TileEntityAnnotationProcessor.getTileType(getClass()));
+        this(null);
+        this.setTileEntityType(TileEntityAnnotationProcessor.getTileType(this.getClass()));
     }
 
     public AbstractTileEntity(TileEntityType<?> type) {
         super(type);
-        this.type = type;
+        this.setTileEntityType(type);
     }
 
     private TileEntityType<?> type;

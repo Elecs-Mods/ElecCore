@@ -1,6 +1,7 @@
 modLoader="javafml"
 loaderVersion="[${loaderversion},)"
 issueTrackerURL="https://github.com/Elecs-Mods/ElecCore/issues"
+displayURL="https://github.com/Elecs-Mods/ElecCore"
 authors="Elec332"
 
 [[mods]]
@@ -10,13 +11,6 @@ displayName="ElecCore"
 description="Provides core functionality for Elec's Mods"
 
 [[dependencies.eleccore]]
-    modId="minecraft"
-    mandatory=true
-    versionRange="[${mcversion},)"
-    ordering="NONE"
-    side="BOTH"
-
-[[dependencies.eleccore]]
     modId="forge"
     mandatory=true
     versionRange="[${forgeversion},)"
@@ -24,9 +18,16 @@ description="Provides core functionality for Elec's Mods"
     side="BOTH"
 
 [[dependencies.eleccore]]
+    modId="minecraft"
+    mandatory=true
+    versionRange="[${mcversion},)"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.eleccore]]
     modId="forestry"
     mandatory=false
-    versionRange="(,1,)" #Accepts anything (hopefully)
+    versionRange="(,1,)"
     ordering="AFTER"
     side="BOTH"
 
@@ -35,4 +36,3 @@ modId="eleccoreloader"
 version="${version}"
 displayName="ElecCoreLoader"
 description="Loads the main ElecCore components"
-

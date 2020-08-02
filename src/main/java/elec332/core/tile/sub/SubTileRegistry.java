@@ -28,8 +28,8 @@ public enum SubTileRegistry {
     private final Map<ResourceLocation, Class<? extends SubTileLogicBase>> registry = Maps.newHashMap();
     private final Map<Class<? extends SubTileLogicBase>, ResourceLocation> registryInverse = Maps.newHashMap();
     private final Map<ResourceLocation, Function<SubTileLogicBase.Data, SubTileLogicBase>> constructors = Maps.newHashMap();
-    private final Map<Capability, Function<List<?>, ?>> capCombiners = Maps.newHashMap();
-    private final Set<Capability> cacheables = Sets.newHashSet();
+    private final Map<Capability<?>, Function<List<?>, ?>> capCombiners = Maps.newHashMap();
+    private final Set<Capability<?>> cacheables = Sets.newHashSet();
 
     @SuppressWarnings("all")
     public void registerSubTile(@Nonnull Class<? extends ISubTileLogic> clazz, @Nonnull ResourceLocation name) {

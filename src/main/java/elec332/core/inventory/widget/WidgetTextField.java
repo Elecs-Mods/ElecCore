@@ -7,7 +7,6 @@ import elec332.core.client.RenderHelper;
 import elec332.core.inventory.window.Window;
 import elec332.core.util.FMLHelper;
 import elec332.core.util.NBTBuilder;
-import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraftforge.api.distmarker.Dist;
@@ -24,7 +23,7 @@ public class WidgetTextField extends Widget {
     public WidgetTextField(int x, int y, int width, int height, String msg) {
         super(x, y, 0, 0, width, height);
         if (FMLHelper.getLogicalSide().isClient()) {
-            textField = new TextFieldWidget(RenderHelper.getMCFontrenderer(), x, y, width, height, msg);
+            textField = new net.minecraft.client.gui.widget.TextFieldWidget(RenderHelper.getMCFontrenderer(), x, y, width, height, msg);
             ClientHelper.getKeyboardListener().enableRepeatEvents(true);
         } else {
             textField = null;
@@ -148,8 +147,8 @@ public class WidgetTextField extends Widget {
     }
 
     @OnlyIn(Dist.CLIENT)
-    private TextFieldWidget getTextField() {
-        return (TextFieldWidget) textField;
+    private net.minecraft.client.gui.widget.TextFieldWidget getTextField() {
+        return (net.minecraft.client.gui.widget.TextFieldWidget) textField;
     }
 
 }

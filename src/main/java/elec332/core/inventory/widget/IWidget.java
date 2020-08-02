@@ -18,65 +18,65 @@ import java.util.List;
  */
 public interface IWidget extends IGuiEventListener {
 
-    public IWidget setContainer(IWidgetContainer container);
+    IWidget setContainer(IWidgetContainer container);
 
-    public IWidget setID(int id);
+    IWidget setID(int id);
 
-    public void initWidget(IWidgetListener iCrafting);
+    void initWidget(IWidgetListener iCrafting);
 
-    public void detectAndSendChanges(Iterable<IWidgetListener> crafters);
+    void detectAndSendChanges(Iterable<IWidgetListener> crafters);
 
-    public void updateProgressbar(int value);
+    void updateProgressbar(int value);
 
-    public void readNBTChangesFromPacket(CompoundNBT tagCompound, LogicalSide receiver);
+    void readNBTChangesFromPacket(CompoundNBT tagCompound, LogicalSide receiver);
 
     @OnlyIn(Dist.CLIENT)
-    public boolean isMouseOver(double mouseX, double mouseY);
+    boolean isMouseOver(double mouseX, double mouseY);
 
     @Override
     @OnlyIn(Dist.CLIENT)
-    public void mouseMoved(double mouseX, double mouseY);
+    void mouseMoved(double mouseX, double mouseY);
 
     @Override
     @OnlyIn(Dist.CLIENT)
-    public boolean mouseClicked(double mouseX, double mouseY, int button);
+    boolean mouseClicked(double mouseX, double mouseY, int button);
 
     @Override
     @OnlyIn(Dist.CLIENT)
-    public boolean mouseReleased(double mouseX, double mouseY, int mouseButton);
+    boolean mouseReleased(double mouseX, double mouseY, int mouseButton);
 
     @Override
     @OnlyIn(Dist.CLIENT)
-    public boolean mouseDragged(double mouseX, double mouseY, int mouseButton, double dragX, double dragY);
+    boolean mouseDragged(double mouseX, double mouseY, int mouseButton, double dragX, double dragY);
 
     @Override
     @OnlyIn(Dist.CLIENT)
-    public boolean mouseScrolled(double wheel, double translatedMouseX, double translatedMouseY);
+    boolean mouseScrolled(double wheel, double translatedMouseX, double translatedMouseY);
 
     @Override
     @OnlyIn(Dist.CLIENT)
-    public boolean keyPressed(int key, int scanCode, int modifiers);
+    boolean keyPressed(int key, int scanCode, int modifiers);
 
     @Override
     @OnlyIn(Dist.CLIENT)
-    public boolean keyReleased(int keyCode, int scanCode, int modifiers);
+    boolean keyReleased(int keyCode, int scanCode, int modifiers);
 
     @Override
     @OnlyIn(Dist.CLIENT)
-    public boolean charTyped(char typedChar, int keyCode);
+    boolean charTyped(char typedChar, int keyCode);
 
     @OnlyIn(Dist.CLIENT)
-    public void draw(Window window, int guiX, int guiY, double mouseX, double mouseY, float partialTicks);
+    void draw(Window window, int guiX, int guiY, double mouseX, double mouseY, float partialTicks);
 
-    public boolean isHidden();
+    boolean isHidden();
 
     @Nullable
-    public ToolTip getToolTip(double mouseX, double mouseY);
+    ToolTip getToolTip(double mouseX, double mouseY);
 
-    public default void modifyTooltip(List<String> tooltip, int mouseX, int mouseY) {
+    default void modifyTooltip(List<String> tooltip, int mouseX, int mouseY) {
     }
 
-    default public void onWindowClosed(PlayerEntity player) {
+    default void onWindowClosed(PlayerEntity player) {
     }
 
 }

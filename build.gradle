@@ -1,177 +1,79 @@
-import com.google.common.base.Strings;
-
 buildscript {
     repositories {
-        jcenter()
-        mavenCentral()
-        maven {
-            name = "forge"
-            url = "http://files.minecraftforge.net/maven"
-        }
+        gradlePluginPortal()
     }
     dependencies {
-        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '3.+', changing: true
+        classpath 'gradle.plugin.nl.elec332.gradle.minecraft:GradleModDev:0.2.1-Beta'
     }
 }
 
-apply plugin: 'net.minecraftforge.gradle'
-apply plugin: 'eclipse'
+apply plugin: "nl.elec332.gradle.minecraft.moddev"
+apply plugin: "nl.elec332.gradle.minecraft.modmaven"
 
-repositories {
-    maven { //Everything except WAILA
-        url = "https://modmaven.k-4u.nl"
-    }
-	maven { //WAILA
-		url "http://maven.tehnut.info"
-	}
+group = "nl.elec332.core"
+
+modSettings {
+    modName = "ElecCore"
+    modId = "eleccore"
+    basePackage = "elec332.core"
+
+    createDeobf = true
+    addWailaMaven = true
 }
 
-ext.configFile = file "build.properties"
-
-configFile.withReader {
-    def prop = new Properties()
-    prop.load(it)
-    project.ext.config = new ConfigSlurper().parse prop
-    String build = System.getenv("BUILD_NUMBER")
-    boolean localBuild = Strings.isNullOrEmpty(build)
-
-    String temp = config.mod_version
-    String classifier = config.mod_classifier
-    classifier = Strings.isNullOrEmpty(classifier) ? "" : "-" + classifier
-	project.ext.modVersion = temp + "." + (localBuild ? "9999.custom" : build)
-    config.mod_version = "${config.minecraft_version}-" + temp + "." + (localBuild ? "localBuild" : build) + classifier
-}
-
-version = config.mod_version
-group = "nl.elec332.core" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
-archivesBaseName = "ElecCore"
-
-sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8'
-
-minecraft {
-
-	accessTransformer = file 'src/main/resources/META-INF/accesstransformer.cfg'
-
-    mappings channel: 'snapshot', version: config.mappings
-
-    runs {
-        client {
-            workingDirectory project.file('run')
-            source sourceSets.main
+generateToml {
+    mods {
+        eleccore {
+            description = "Provides core functionality for Elec's Mods"
+            dependencies {
+                forestry {
+                    mandatory = false
+                    ordering = "AFTER"
+                    versionRange = "(,1,)" //Accepts anything (hopefully)
+                }
+            }
         }
-
-        server {
-            workingDirectory project.file('run')
-            source sourceSets.main
+        eleccoreloader {
+            displayName = "ElecCoreLoader"
+            description = "Loads the main ElecCore components"
         }
-
-        data {
-            workingDirectory project.file('run')
-            args '--mod', 'eleccore', '--all', '--output', file('src/generated/resources/')
-            source sourceSets.main
-        }
-
     }
-
 }
 
 dependencies {
-	minecraft 'net.minecraftforge:forge:' + config.minecraft_version + "-" + config.forge_version
 
 	//WAILA
     compileOnly "mcp.mobius.waila:Hwyla:${config.WAILA_version}:api"
-    runtimeOnly fg.deobf("mcp.mobius.waila:Hwyla:${config.WAILA_version}")
+    modRuntime "mcp.mobius.waila:Hwyla:${config.WAILA_version}"
 	
 	//JEI
     compileOnly "mezz.jei:jei-${config.jei_version}:api"
-    runtimeOnly fg.deobf("mezz.jei:jei-${config.jei_version}")
+    modRuntime "mezz.jei:jei-${config.jei_version}"
 
     compileOnly "mcjty.theoneprobe:TheOneProbe-${config.top_version}:api"
 }
 
-processResources {
-    // this will ensure that this task is redone every time.
-    inputs.property "timeStamp", new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
-
-    // replace stuff in mcmod.info, nothing else
-    from(sourceSets.main.resources.srcDirs) {
-        include 'META-INF/mods.toml'
-        expand([
-                version: modVersion,
-                mcversion: config.minecraft_version,
-                loaderversion: config.minecraft_version.replace('1.', ''),
-                forgeversion: config.forge_version
-        ])
-    }
-
-    // copy everything else, thats not the mcmod.info
-    from(sourceSets.main.resources.srcDirs) {
-        exclude 'META-INF/mods.toml'
-    }
-    
-}
-
 jar {
     manifest {
-		//attributes	'FMLAT': 'eleccore_at.cfg' All AT's are now named "accesstransformer.cfg", and will be found automatically by FML
 
         attributes([
                 'Specification-Title': 'ElecCoreAPI',
                 'Specification-Version': '2.0'
         ] as LinkedHashMap, 'elec332.core.api')
 
-        attributes([
-                'Specification-Title': archivesBaseName,
-                'Specification-Version': modVersion,
-                'Implementation-Title': archivesBaseName,
-                'Implementation-Version': modVersion
-        ] as LinkedHashMap, 'elec332.core')
-
     }
 }
 
-tasks.build.dependsOn('deobfJar')
 
-task deobfJar(type: Jar) { // Generate deobfuscated
-    from sourceSets.main.output
-    classifier = 'deobf'
-}
-
-
-//Maven magic
-task("uploadJars", dependsOn: "reobf") {
-    description = "uploads JARs"
-    if (System.getenv("local_maven") != null) {
-        apply plugin: 'maven'
-        uploadArchives {
-            repositories {
-                mavenDeployer {
-                    repository(url: "file://" + System.getenv("local_maven"))
-                    pom {
-                        groupId = project.group
-                        version = project.version
-                        artifactId = project.archivesBaseName
-                        project {
-                            name project.archivesBaseName
-                            packaging 'jar'
-                            description project.archivesBaseName
-                            issueManagement {
-                                system 'github'
-                                url 'https://github.com/Elecs-Mods/ElecCore/issues'
-                            }
-                            developers {
-                                developer {
-                                    id 'Elec332'
-                                    name 'Elec332'
-                                    roles {
-                                        role 'developer'
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+modMaven {
+    githubUrl = "https://github.com/Elecs-Mods/ElecCore"
+    forceLicense = false
+    
+    developer {
+        id "Elec332"
+        name "Elec332"
+        roles {
+            role "developer"
         }
     }
 }

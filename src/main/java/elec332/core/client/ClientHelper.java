@@ -4,10 +4,7 @@ import net.minecraft.client.GameSettings;
 import net.minecraft.client.KeyboardListener;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.resources.FallbackResourceManager;
-import net.minecraft.resources.IResourceManager;
-import net.minecraft.resources.IResourcePack;
-import net.minecraft.resources.SimpleReloadableResourceManager;
+import net.minecraft.resources.*;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -41,6 +38,17 @@ public class ClientHelper {
 
     public static GameSettings getGameSettings() {
         return getMinecraft().gameSettings;
+    }
+
+    public static void registerReloadListener(IFutureReloadListener reloadListener) {
+        if (!(getResourceManager() instanceof IReloadableResourceManager)) {
+            throw new IllegalStateException();
+        }
+        ((IReloadableResourceManager) getResourceManager()).addReloadListener(reloadListener);
+    }
+
+    public static IResourceManager getResourceManager() {
+        return getMinecraft().getResourceManager();
     }
 
     public static boolean isShiftKeyDown() {

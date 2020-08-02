@@ -15,19 +15,19 @@ import javax.annotation.Nullable;
 public interface ITileEntityLink extends IPositionable, ICapabilityProvider {
 
     @Nullable
-    public TileEntity getTileEntity();
+    TileEntity getTileEntity();
 
     @Nonnull
     @Override
-    <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side);
+    <C> LazyOptional<C> getCapability(@Nonnull Capability<C> cap, @Nullable Direction side);
 
     @Nullable
-    default public Class getInformationType() {
+    default Class<?> getInformationType() {
         return null;
     }
 
     @Nullable
-    default public Object getInformation() {
+    default Object getInformation() {
         return null;
     }
 

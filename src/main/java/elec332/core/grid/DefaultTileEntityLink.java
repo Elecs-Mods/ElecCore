@@ -17,21 +17,21 @@ import java.util.Map;
  * <p>
  * Default tile wrapper for e.g. grids
  */
-public class DefaultTileEntityLink implements ITileEntityLink {
+public class DefaultTileEntityLink<T extends TileEntity> implements ITileEntityLink {
 
-    protected DefaultTileEntityLink(TileEntity tile) {
+    protected DefaultTileEntityLink(T tile) {
         this.tile = tile;
         this.coord = DimensionCoordinate.fromTileEntity(tile);
         this.capCache = Maps.newIdentityHashMap();
     }
 
-    protected final TileEntity tile;
+    protected final T tile;
     protected final DimensionCoordinate coord;
     protected final Map<Capability<?>, Map<Direction, LazyOptional<?>>> capCache;
 
     @Nullable
     @Override
-    public TileEntity getTileEntity() {
+    public T getTileEntity() {
         return tile;
     }
 
@@ -43,7 +43,7 @@ public class DefaultTileEntityLink implements ITileEntityLink {
 
     @Nonnull
     @Override
-    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
+    public <C> LazyOptional<C> getCapability(@Nonnull Capability<C> cap, @Nullable Direction side) {
         if (!coord.isLoaded() || tile == null) {
             return LazyOptional.empty();
         }
@@ -52,14 +52,11 @@ public class DefaultTileEntityLink implements ITileEntityLink {
             LazyOptional<?> cret = capC1.get(side);
             if (cret.isPresent()) {
                 return cret.cast();
+            } else {
+                capC1.remove(side);
             }
         }
-        LazyOptional<?> ret;
-        //if (coord.isLoaded()) {
-        ret = Preconditions.checkNotNull(tile.getCapability(cap, side));
-        //} else {
-        //    ret = LazyOptional.empty();
-        //}
+        LazyOptional<?> ret = Preconditions.checkNotNull(tile.getCapability(cap, side));
         capC1.put(side, ret);
         return ret.cast();
     }

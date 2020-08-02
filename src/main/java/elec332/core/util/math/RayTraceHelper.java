@@ -1,11 +1,13 @@
 package elec332.core.util.math;
 
+import com.google.common.base.Preconditions;
 import elec332.core.util.PlayerHelper;
 import elec332.core.world.WorldHelper;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.*;
+import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -72,6 +74,43 @@ public class RayTraceHelper {
         return blockState.getShape(world, pos).rayTrace(rayTraceVectors.getLeft(), rayTraceVectors.getRight(), pos);
         //Old
         //return Block.collisionRayTrace(blockState, world, pos, rayTraceVectors.getLeft(), rayTraceVectors.getRight());
+    }
+
+    /**
+     * Perform a raytrace from a specified position to another position
+     *
+     * @param world The world
+     * @param start The position from which to start the raytracing
+     * @param end   The position to raytrace to
+     * @return The {@link RayTraceResult} from the raytrace
+     */
+    public static BlockRayTraceResult rayTrace(IBlockReader world, BlockPos start, BlockPos end) {
+        return rayTrace(world, new Vec3d(start), end);
+    }
+
+    /**
+     * Perform a raytrace from a specified position to another position
+     *
+     * @param world The world
+     * @param start The position from which to start the raytracing
+     * @param end   The position to raytrace to
+     * @return The {@link RayTraceResult} from the raytrace
+     */
+    public static BlockRayTraceResult rayTrace(IBlockReader world, Vec3d start, BlockPos end) {
+        return rayTrace(world, start, new Vec3d(end));
+    }
+
+    /**
+     * Perform a raytrace from a specified position to another position
+     *
+     * @param world The world
+     * @param start The position from which to start the raytracing
+     * @param end   The position to raytrace to
+     * @return The {@link RayTraceResult} from the raytrace
+     */
+    public static BlockRayTraceResult rayTrace(IBlockReader world, Vec3d start, Vec3d end) {
+        RayTraceContext rtc = new RayTraceContext(start, end, RayTraceContext.BlockMode.OUTLINE, RayTraceContext.FluidMode.NONE, null);
+        return Preconditions.checkNotNull(world).rayTraceBlocks(rtc);
     }
 
     /**

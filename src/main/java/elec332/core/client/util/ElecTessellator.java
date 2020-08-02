@@ -26,15 +26,19 @@ public class ElecTessellator implements ITessellator {
     }
 
     public ElecTessellator(Tessellator tessellator) {
-        this.worldRenderer = tessellator.getBuffer();
-        this.tessellator = tessellator;
-        this.matrix = null;
+        this(tessellator.getBuffer(), tessellator);
     }
 
     public ElecTessellator(IVertexBuilder worldRenderer) {
+        this(worldRenderer, null);
+    }
+
+    private ElecTessellator(IVertexBuilder worldRenderer, Tessellator tessellator) {
         this.worldRenderer = worldRenderer;
-        this.tessellator = null;
+        this.tessellator = tessellator;
         this.matrix = null;
+        setBrightness(RenderHelper.MAX_BRIGHTNESS);
+        setColorRGBA_F(1, 1, 1, 0.5f);
     }
 
     private final Tessellator tessellator;
