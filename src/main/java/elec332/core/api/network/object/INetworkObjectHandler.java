@@ -16,65 +16,65 @@ import java.util.List;
 /**
  * Created by Elec332 on 23-10-2016.
  */
-public interface INetworkObjectHandler<N extends INetworkObjectSender> extends ElecByteBuf.Factory {
+public interface INetworkObjectHandler<N extends INetworkObjectSender<N>> extends ElecByteBuf.Factory {
 
-    public void sendToAll(int id);
+    void sendToAll(int id);
 
-    public void sendTo(int id, IEntityFilter<ServerPlayerEntity> playerFilter, MinecraftServer server);
+    void sendTo(int id, IEntityFilter<ServerPlayerEntity> playerFilter, MinecraftServer server);
 
-    public void sendTo(int id, List<ServerPlayerEntity> players);
+    void sendTo(int id, List<ServerPlayerEntity> players);
 
-    public void sendTo(int id, ServerPlayerEntity player);
+    void sendTo(int id, ServerPlayerEntity player);
 
-    public void sendToAllAround(int id, IPacketDispatcher.TargetPoint point);
+    void sendToAllAround(int id, IPacketDispatcher.TargetPoint point);
 
-    public void sendToDimension(int id, ResourceLocation dimensionName);
+    void sendToDimension(int id, ResourceLocation dimensionName);
 
-    public void sendToDimension(int id, DimensionType dimensionId);
+    void sendToDimension(int id, DimensionType dimensionId);
 
-    public void sendToServer(int id);
+    void sendToServer(int id);
 
-    public void sendToAll(int id, CompoundNBT data);
+    void sendToAll(int id, CompoundNBT data);
 
-    public void sendTo(int id, CompoundNBT data, IEntityFilter<ServerPlayerEntity> playerFilter, MinecraftServer server);
+    void sendTo(int id, CompoundNBT data, IEntityFilter<ServerPlayerEntity> playerFilter, MinecraftServer server);
 
-    public void sendTo(int id, CompoundNBT data, List<ServerPlayerEntity> players);
+    void sendTo(int id, CompoundNBT data, List<ServerPlayerEntity> players);
 
-    public void sendTo(int id, CompoundNBT data, ServerPlayerEntity player);
+    void sendTo(int id, CompoundNBT data, ServerPlayerEntity player);
 
-    public void sendToAllAround(int id, CompoundNBT data, IPacketDispatcher.TargetPoint point);
+    void sendToAllAround(int id, CompoundNBT data, IPacketDispatcher.TargetPoint point);
 
-    public void sendToDimension(int id, CompoundNBT data, DimensionType dimensionId);
+    void sendToDimension(int id, CompoundNBT data, DimensionType dimensionId);
 
-    public void sendToDimension(int id, CompoundNBT data, ResourceLocation dimensionName);
+    void sendToDimension(int id, CompoundNBT data, ResourceLocation dimensionName);
 
-    public void sendToServer(int id, CompoundNBT data);
+    void sendToServer(int id, CompoundNBT data);
 
-    public void sendToAll(int id, ByteBuf data);
+    void sendToAll(int id, ByteBuf data);
 
-    default public void sendTo(int id, ByteBuf data, IEntityFilter<ServerPlayerEntity> playerFilter, MinecraftServer server) {
+    default void sendTo(int id, ByteBuf data, IEntityFilter<ServerPlayerEntity> playerFilter, MinecraftServer server) {
         for (ServerPlayerEntity player : playerFilter.filterEntities(server.getPlayerList().getPlayers())) {
             sendTo(id, data, player);
         }
     }
 
-    default public void sendTo(int id, ByteBuf data, List<ServerPlayerEntity> players) {
+    default void sendTo(int id, ByteBuf data, List<ServerPlayerEntity> players) {
         for (ServerPlayerEntity player : players) {
             sendTo(id, data, player);
         }
     }
 
-    public void sendTo(int id, ByteBuf data, ServerPlayerEntity player);
+    void sendTo(int id, ByteBuf data, ServerPlayerEntity player);
 
-    public void sendToAllAround(int id, ByteBuf data, IPacketDispatcher.TargetPoint point);
+    void sendToAllAround(int id, ByteBuf data, IPacketDispatcher.TargetPoint point);
 
-    public void sendToDimension(int id, ByteBuf data, DimensionType dimensionId);
+    void sendToDimension(int id, ByteBuf data, DimensionType dimensionId);
 
-    public void sendToDimension(int id, ByteBuf data, ResourceLocation dimensionName);
+    void sendToDimension(int id, ByteBuf data, ResourceLocation dimensionName);
 
-    public void sendToServer(int id, ByteBuf data);
+    void sendToServer(int id, ByteBuf data);
 
     @Nullable
-    public N getNetworkObjectSender();
+    N getNetworkObjectSender();
 
 }

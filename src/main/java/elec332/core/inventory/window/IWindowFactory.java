@@ -5,6 +5,6 @@ package elec332.core.inventory.window;
  */
 public interface IWindowFactory {
 
-    public Window createWindow(Object... args);
+    Window createWindow(Object... args);
 
 }

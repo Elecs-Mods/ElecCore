@@ -29,13 +29,12 @@ public class ReflectionHelper {
      * @param innerClass The class to be checked
      * @return All classes until the declaring class
      */
-    public static Class[] getAllTillMainClass(Class innerClass) {
+    public static Class<?>[] getAllTillMainClass(Class<?> innerClass) {
         if (!isInnerClass(innerClass)) {
             return new Class[]{innerClass};
         }
         String pN = getPackage(innerClass);
-        List<Class> ret = Lists.newArrayList();
-        List<String> sl = Lists.newArrayList();
+        List<Class<?>> ret = Lists.newArrayList();
         boolean f = true;
         for (String s : getAllClassNamesTillMainClass(innerClass)) {
             try {
@@ -52,7 +51,7 @@ public class ReflectionHelper {
                 throw new RuntimeException();
             }
         }
-        return ret.toArray(new Class[ret.size()]);
+        return ret.toArray(new Class[0]);
     }
 
     /**
@@ -62,7 +61,7 @@ public class ReflectionHelper {
      * @param innerClass The class to be checked
      * @return All class names until the declaring class
      */
-    public static String[] getAllClassNamesTillMainClass(Class innerClass) {
+    public static String[] getAllClassNamesTillMainClass(Class<?> innerClass) {
         if (!isInnerClass(innerClass)) {
             return new String[]{
                     innerClass.getSimpleName()
@@ -81,7 +80,7 @@ public class ReflectionHelper {
      * @param clazz The class
      * @return The package name in which this class is located
      */
-    public static String getPackage(Class clazz) {
+    public static String getPackage(Class<?> clazz) {
         return clazz.getPackage().getName();
     }
 
@@ -112,7 +111,7 @@ public class ReflectionHelper {
      * @param clazz The class
      * @return Whether the provided class is an inner class
      */
-    public static boolean isInnerClass(Class clazz) {
+    public static boolean isInnerClass(Class<?> clazz) {
         return clazz.getName().contains("$");
     }
 
@@ -157,7 +156,7 @@ public class ReflectionHelper {
         throw new RuntimeException("Failed to find fields: " + Strings.join(fieldNames, ","), lastE);
     }
 
-    public static Method findMethod(Class<?> clazz, Class[] parameters, String... methodNames) {
+    public static Method findMethod(Class<?> clazz, Class<?>[] parameters, String... methodNames) {
         Exception lastE = null;
         for (String methodName : methodNames) {
             try {

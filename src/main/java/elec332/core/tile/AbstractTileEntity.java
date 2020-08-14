@@ -48,7 +48,7 @@ public class AbstractTileEntity extends TileEntity implements IElecCoreNetworkTi
     private Map<Integer, CompoundNBT> gatherData;
 
     public Direction getTileFacing() {
-        return getTileFacing(BlockProperties.FACING_NORMAL);
+        return getTileFacing(BlockProperties.FACING_HORIZONTAL);
     }
 
     public Direction getTileFacing(IProperty<Direction> prop) {
@@ -71,7 +71,7 @@ public class AbstractTileEntity extends TileEntity implements IElecCoreNetworkTi
     }*/
 
     public boolean openTileGui(PlayerEntity player) {
-        if (world.isRemote()) {
+        if (WorldHelper.isClient(getWorld())) {
             return true;
         }
         if (!(this instanceof IWindowFactory)) {

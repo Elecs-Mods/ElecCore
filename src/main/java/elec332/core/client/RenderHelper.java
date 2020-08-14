@@ -255,7 +255,7 @@ public class RenderHelper {
     }
 
     public static void drawSelectionBox(World world, BlockPos pos, VoxelShape shapeOverride, Vec3d projectedView, MatrixStack renderer, IRenderTypeBuffer buffer) {
-        if (world.getWorldBorder().contains(pos)) {
+        if (world == null || world.getWorldBorder().contains(pos)) {
             double d0 = projectedView.x;
             double d1 = projectedView.y;
             double d2 = projectedView.z;
@@ -276,24 +276,7 @@ public class RenderHelper {
     public static IForgeTransformationMatrix rotateFromDown(Direction insideSide) {
         int x = insideSide.getAxis() == Direction.Axis.Z ? 180 + (90 * insideSide.getAxisDirection().getOffset()) : insideSide == Direction.UP ? 180 : 0;
         int z = insideSide.getAxis() == Direction.Axis.X ? 180 - (90 * insideSide.getAxisDirection().getOffset()) : 0;
-        Vector3f loc = new Vector3f(0, 0, 0);
-        switch (insideSide.getOpposite()) {
-            case SOUTH:
-                loc.add(0, 1, 0);
-                break;
-            case NORTH:
-                loc.add(0, 0, 1);
-                break;
-            case WEST:
-                loc.add(1, 0, 0);
-                break;
-            case EAST:
-                loc.add(0, 1, 0);
-                break;
-            case DOWN:
-                loc.add(0, 1, 1);
-        }
-        return new TransformationMatrix(loc, quatFromXYZDegrees(new Vector3f(x, 0, z)), null, null);
+        return new TransformationMatrix(null, quatFromXYZDegrees(new Vector3f(x, 0, z)), null, null);
     }
 
     public static IForgeTransformationMatrix merge(IModelTransform first, IModelTransform second) {

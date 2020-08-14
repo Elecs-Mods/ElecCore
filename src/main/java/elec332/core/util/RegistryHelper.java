@@ -35,6 +35,7 @@ import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
+import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.fml.ModContainer;
 import net.minecraftforge.fml.ModLoadingStage;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -84,11 +85,11 @@ public class RegistryHelper {
             CapabilityManager.INSTANCE.register(clazz, storage, factory);
         } else {
             if (FMLHelper.getActiveModContainer() != null && !FMLHelper.getActiveModContainer().getModId().equals("minecraft")) {
-                FMLHelper.getActiveModEventBus().addListener((Consumer<FMLCommonSetupEvent>) event -> CapabilityManager.INSTANCE.register(clazz, storage, factory));
+                FMLHelper.getActiveModEventBus().addListener(EventPriority.HIGH, (Consumer<FMLCommonSetupEvent>) event -> CapabilityManager.INSTANCE.register(clazz, storage, factory));
             } else {
                 ModContainer c = FMLHelper.getOwner(clazz);
                 if (c instanceof FMLModContainer) {
-                    ((FMLModContainer) c).getEventBus().addListener((Consumer<FMLCommonSetupEvent>) event -> CapabilityManager.INSTANCE.register(clazz, storage, factory));
+                    ((FMLModContainer) c).getEventBus().addListener(EventPriority.HIGH, (Consumer<FMLCommonSetupEvent>) event -> CapabilityManager.INSTANCE.register(clazz, storage, factory));
                 } else {
                     throw new UnsupportedOperationException();
                 }

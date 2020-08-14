@@ -25,7 +25,6 @@ import java.util.function.Supplier;
 /**
  * Created by Elec332 on 23-10-2016.
  */
-@SuppressWarnings("all")
 class DefaultNetworkObjectManager implements INetworkObjectManager, BiConsumer<DefaultNetworkObjectManager.PacketNetworkObject, Supplier<IExtendedMessageContext>> {
 
     DefaultNetworkObjectManager(INetworkHandler handler) {
@@ -35,19 +34,20 @@ class DefaultNetworkObjectManager implements INetworkObjectManager, BiConsumer<D
         this.i = 0;
     }
 
-    private IPacketDispatcher packetDispatcher;
-    private final List<NOH> packetStuff;
+    private final IPacketDispatcher packetDispatcher;
+    private final List<NOH<?>> packetStuff;
     private byte i;
 
     @Override
-    public <N extends INetworkObjectReceiver> INetworkObjectHandler<?> registerNetworkObject(N networkObject) {
+    @SuppressWarnings("unchecked")
+    public <N extends INetworkObjectReceiver<S>, S extends INetworkObjectSender<S>> INetworkObjectHandler<?> registerNetworkObject(N networkObject) {
         if (networkObject instanceof INetworkObjectSender) {
-            return registerNetworkObject(networkObject, (INetworkObjectSender) networkObject);
+            return registerNetworkObject(networkObject, (S) networkObject);
         }
         if (!FMLHelper.isInModInitialisation()) {
             throw new IllegalStateException();
         }
-        NOH<?> ret = new NOH(i, null, networkObject);
+        NOH<S> ret = new NOH<>(i, null, networkObject);
         packetStuff.add(ret);
         i++;
         networkObject.setNetworkObjectHandler(ret);
@@ -55,11 +55,11 @@ class DefaultNetworkObjectManager implements INetworkObjectManager, BiConsumer<D
     }
 
     @Override
-    public <N extends INetworkObjectReceiver, S extends INetworkObjectSender> INetworkObjectHandler<S> registerNetworkObject(@Nullable N networkObjectR, @Nullable S networkObjectS) {
+    public <R extends INetworkObjectReceiver<S>, S extends INetworkObjectSender<S>> INetworkObjectHandler<S> registerNetworkObject(@Nullable R networkObjectR, @Nullable S networkObjectS) {
         if (!FMLHelper.isInModInitialisation() || (networkObjectS == null && networkObjectR == null)) {
             throw new IllegalStateException();
         }
-        NOH<S> ret = new NOH<S>(i, networkObjectS, networkObjectR);
+        NOH<S> ret = new NOH<>(i, networkObjectS, networkObjectR);
         packetStuff.add(ret);
         i++;
 
@@ -78,11 +78,11 @@ class DefaultNetworkObjectManager implements INetworkObjectManager, BiConsumer<D
     }
 
     @Override
-    public <N extends INetworkObject> INetworkObjectHandler<N> registerSpecialNetworkObject(N networkObject) {
+    public <N extends INetworkObject<N>> INetworkObjectHandler<N> registerSpecialNetworkObject(N networkObject) {
         if (!FMLHelper.isInModInitialisation()) {
             throw new IllegalStateException();
         }
-        NOH<N> ret = new NOH<N>(i, networkObject, networkObject);
+        NOH<N> ret = new NOH<>(i, networkObject, networkObject);
         packetStuff.add(ret);
         i++;
         networkObject.setNetworkObjectHandler(ret);
@@ -91,31 +91,26 @@ class DefaultNetworkObjectManager implements INetworkObjectManager, BiConsumer<D
 
     @Override
     public void accept(PacketNetworkObject message, Supplier<IExtendedMessageContext> extendedMessageContext) {
-        ElecCore.tickHandler.registerCall(new Runnable() {
-
-            @Override
-            public void run() {
-                Iterator<NOH> iterator = packetStuff.iterator();
-                NOH noh = iterator.next();
-                while (!noh.handle(message)) {
-                    noh = iterator.next();
-                }
+        ElecCore.tickHandler.registerCall(() -> {
+            Iterator<NOH<?>> iterator = packetStuff.iterator();
+            NOH<?> noh = iterator.next();
+            while (!noh.handle(message)) {
+                noh = iterator.next();
             }
-
         }, extendedMessageContext.get().getReceptionSide());
     }
 
-    private class NOH<T extends INetworkObjectSender> implements INetworkObjectHandler<T>, DefaultByteBufFactory {
+    private class NOH<T extends INetworkObjectSender<T>> implements INetworkObjectHandler<T>, DefaultByteBufFactory {
 
-        private NOH(byte i, @Nullable T obj, @Nullable INetworkObjectReceiver receiver) {
+        private NOH(byte i, @Nullable T obj, @Nullable INetworkObjectReceiver<T> receiver) {
             this.b = i;
             this.obj = obj;
             this.receiver = receiver;
         }
 
-        private byte b;
-        private T obj;
-        private INetworkObjectReceiver receiver;
+        private final byte b;
+        private final T obj;
+        private final INetworkObjectReceiver<T> receiver;
 
         @Override
         public void sendToAll(int id) {
@@ -270,7 +265,7 @@ class DefaultNetworkObjectManager implements INetworkObjectManager, BiConsumer<D
         private boolean handle(PacketNetworkObject packet) {
             if (packet.i == b) {
                 try {
-                    receiver.onPacket(packet.i2, new ElecByteBufImpl(packet.data));
+                    Preconditions.checkNotNull(receiver).onPacket(packet.i2, new ElecByteBufImpl(packet.data));
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
@@ -283,6 +278,7 @@ class DefaultNetworkObjectManager implements INetworkObjectManager, BiConsumer<D
 
     public static class PacketNetworkObject implements IMessage {
 
+        @SuppressWarnings("unused")
         public PacketNetworkObject() {
         }
 
@@ -292,8 +288,8 @@ class DefaultNetworkObjectManager implements INetworkObjectManager, BiConsumer<D
             this.data = buf;
         }
 
-        byte i, i2;
-        ByteBuf data;
+        private byte i, i2;
+        private ByteBuf data;
 
         @Override
         public void fromBytes(PacketBuffer buf) {

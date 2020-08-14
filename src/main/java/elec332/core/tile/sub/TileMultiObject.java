@@ -6,6 +6,7 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import elec332.core.ElecCore;
 import elec332.core.api.registration.RegisteredTileEntity;
 import elec332.core.tile.AbstractTileEntity;
 import elec332.core.util.ItemStackHelper;
@@ -13,8 +14,10 @@ import elec332.core.util.NBTTypes;
 import elec332.core.util.math.HitboxHelper;
 import elec332.core.util.math.IndexedBlockPos;
 import elec332.core.util.math.RayTraceHelper;
+import elec332.core.world.WorldHelper;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.IFluidState;
 import net.minecraft.item.ItemStack;
@@ -102,15 +105,6 @@ public class TileMultiObject extends AbstractTileEntity {
         return null;
     }
 
-    /*
-        public RayTraceResult getRayTraceResult(Vec3d start, Vec3d end, @Nonnull RayTraceResult original, @Nonnull BlockPos pos) {
-            Pair<ISubTileLogic, RayTraceResult> ret = getRayTraceResult(start, RayTraceHelper.slightExpand(start, original.getHitVec()), getData(pos));
-            if (ret != null) {
-                return ret.getRight();
-            }
-            return null;
-        }
-    /**/
     @Nullable
     private Pair<ISubTileLogic, RayTraceResult> getRayTraceResult(BlockState state, Vec3d start, Vec3d end, int data) {
         return subtiles.stream().reduce(null, (s1, s2) -> {
@@ -127,7 +121,6 @@ public class TileMultiObject extends AbstractTileEntity {
             return s1;
         }, (a, b) -> a);
     }
-
 
     public void onRemoved() {
         cachedCaps.clear();
@@ -227,6 +220,13 @@ public class TileMultiObject extends AbstractTileEntity {
     @Override
     public void onLoad() {
         subtiles.forEach(SubTileLogicBase::onLoad);
+        if (WorldHelper.isServer(getWorld())) {
+            ElecCore.tickHandler.registerCall(() -> {
+                if (subtiles.stream().allMatch(ISubTileLogic::canBeRemoved)) {
+                    WorldHelper.setBlockState(getWorld(), getPos(), Blocks.AIR.getDefaultState(), 3);
+                }
+            }, getWorld());
+        }
     }
 
     @Override

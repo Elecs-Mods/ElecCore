@@ -55,7 +55,7 @@ public class ItemSubTile extends AbstractItemBlock {
     public void onExistingObjectClicked(@Nonnull TileEntity tile, @Nonnull BlockRayTraceResult hit, PlayerEntity player, ItemStack stack, BlockState state) {
     }
 
-    public void onEmptySolidSideClicked(@Nonnull TileEntity tile, @Nonnull Direction hit, PlayerEntity player, ItemStack stack, BlockState state) {
+    public void onEmptySolidSideClicked(@Nonnull World world, @Nonnull BlockPos clickedPos, @Nonnull TileEntity tile, @Nonnull Direction tileSide, PlayerEntity player, ItemStack stack, BlockState state) {
     }
 
     @SubscribeEvent //Using onRightClick doesn't work if there's a block directly above the object
@@ -92,7 +92,7 @@ public class ItemSubTile extends AbstractItemBlock {
                         event.setCanceled(true);
                         if (!world.isRemote) { //All logic on the server side
                             Direction rf = face.getOpposite();
-                            onEmptySolidSideClicked(tile, rf, player, stack, state);
+                            onEmptySolidSideClicked(world, pos, tile, rf, player, stack, state);
                         }
                         player.swingArm(event.getHand());
                     }

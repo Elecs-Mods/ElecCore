@@ -77,6 +77,14 @@ public class WorldHelper {
     public static final int PLACEBLOCK_NO_NEIGHBOR_REACTION_DROPS = 32;
     public static final int PLACEBLOCK_BLOCK_BEING_MOVED = 64;
 
+    public static boolean isServer(IWorldReader world) {
+        return !isClient(world);
+    }
+
+    public static boolean isClient(IWorldReader world) {
+        return Preconditions.checkNotNull(world).isRemote();
+    }
+
     public static ChunkHolder.IPlayerProvider getPlayerManager(ServerWorld world) {
         return world.getChunkProvider().chunkManager;
     }
@@ -197,7 +205,7 @@ public class WorldHelper {
      * @param block The block that has been changed
      */
     public static void notifyNeighborsOfStateChange(World world, BlockPos pos, Block block) {
-        world.notifyNeighborsOfStateChange(pos, block);
+        Preconditions.checkNotNull(world).notifyNeighborsOfStateChange(pos, block);
     }
 
     /**
@@ -284,7 +292,7 @@ public class WorldHelper {
      * @param to    The end position
      */
     public static void markBlockRangeForRenderUpdate(World world, BlockPos from, BlockPos to) {
-        if (world.isRemote) {
+        if (isClient(world)) {
             ClientHelper.getMinecraft().worldRenderer.markBlockRangeForRenderUpdate(from.getX(), from.getY(), from.getZ(), to.getX(), to.getY(), to.getZ());
         }
     }
@@ -347,7 +355,7 @@ public class WorldHelper {
      * @param force    The force of the explosion
      */
     public static void spawnExplosion(World worldObj, double xCoord, double yCoord, double zCoord, float force) {
-        worldObj.createExplosion(null, xCoord, yCoord, zCoord, force * 4, Explosion.Mode.DESTROY);
+        Preconditions.checkNotNull(worldObj).createExplosion(null, xCoord, yCoord, zCoord, force * 4, Explosion.Mode.DESTROY);
     }
 
     /*

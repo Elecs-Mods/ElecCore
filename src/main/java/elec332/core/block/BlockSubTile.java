@@ -117,7 +117,7 @@ public class BlockSubTile extends AbstractBlock implements ISelectionBoxOverride
     }
 
     @Override
-    public List<ItemStack> getDrops(List<ItemStack> drops, @Nonnull LootContext.Builder builder, Entity entity, World world, BlockPos pos, @Nonnull BlockState state, ItemStack stack) {
+    public List<ItemStack> getDrops(List<ItemStack> drops, @Nonnull LootContext.Builder builder, @Nullable Entity entity, World world, BlockPos pos, @Nonnull BlockState state, ItemStack stack) {
         return Lists.newArrayList();
     }
 

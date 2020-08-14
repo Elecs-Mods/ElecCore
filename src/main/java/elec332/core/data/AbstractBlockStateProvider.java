@@ -63,6 +63,10 @@ public abstract class AbstractBlockStateProvider extends BlockStateProvider {
         simpleFront(block, blockTexture(block));
     }
 
+    public void simpleFront(Supplier<? extends Block> blockSupplier, ResourceLocation front) {
+        simpleFront(blockSupplier.get(), front);
+    }
+
     public void simpleFront(Block block, ResourceLocation front) {
         ModelFile model = simpleFront(Preconditions.checkNotNull(block.getRegistryName()).getPath(), front);
         simpleFacingModel(block, state -> model);

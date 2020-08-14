@@ -5,11 +5,11 @@ import elec332.core.api.network.ElecByteBuf;
 /**
  * Created by Elec332 on 24-10-2016.
  */
-public interface INetworkObjectSender {
+public interface INetworkObjectSender<N extends INetworkObjectSender<N>> {
 
-    default public void writePacket(int id, ElecByteBuf data) {
+    default void writePacket(int id, ElecByteBuf data) {
     }
 
-    public void setNetworkObjectHandler(INetworkObjectHandler handler);
+    void setNetworkObjectHandler(INetworkObjectHandler<N> handler);
 
 }

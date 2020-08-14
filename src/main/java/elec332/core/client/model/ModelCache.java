@@ -94,32 +94,17 @@ public abstract class ModelCache<K> implements IBakedModel {
 
     public final IBakedModel getModel(ItemStack stack) {
         K key = get(stack);
-        Callable<IBakedModel> loader = () -> new WrappedModel(ModelCache.this) {
-
-            Map<Direction, List<BakedQuad>> quads = ModelCache.this.getQuads(key);
-
-            @Nonnull
-            @Override
-            public List<BakedQuad> getQuads(BlockState state, Direction side, @Nonnull Random rand) {
-                return quads.get(side);
-            }
-
-        };
-        try {
-            return debug ? loader.call() : itemModels.get(Preconditions.checkNotNull(key), loader);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        return getModel(key);
     }
 
     public final IBakedModel getModel(K key) {
         Callable<IBakedModel> loader = () -> new WrappedModel(ModelCache.this) {
 
-            Map<Direction, List<BakedQuad>> quads = ModelCache.this.getQuads(key);
+            private final Map<Direction, List<BakedQuad>> quads = ModelCache.this.getQuads(key);
 
             @Nonnull
             @Override
-            public List<BakedQuad> getQuads(BlockState state, Direction side, @Nonnull Random rand) {
+            public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, @Nonnull Random rand, @Nonnull IModelData extraData) {
                 return quads.get(side);
             }
 
@@ -140,7 +125,7 @@ public abstract class ModelCache<K> implements IBakedModel {
     @Nonnull
     @Override
     @SuppressWarnings("deprecation")
-    public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, @Nonnull Random rand) {
+    public final List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, @Nonnull Random rand) {
         if (needsModelData()) {
             if (defaultModel == null) {
                 throw new UnsupportedOperationException();
@@ -157,7 +142,7 @@ public abstract class ModelCache<K> implements IBakedModel {
 
     @Nonnull
     @Override
-    public IModelData getModelData(@Nonnull ILightReader world, @Nonnull BlockPos pos, @Nonnull BlockState state, @Nonnull IModelData tileData) {
+    public final IModelData getModelData(@Nonnull ILightReader world, @Nonnull BlockPos pos, @Nonnull BlockState state, @Nonnull IModelData tileData) {
         if (tileData == EmptyModelData.INSTANCE) {
             tileData = new ModelDataMap.Builder().build();
         }
@@ -166,7 +151,6 @@ public abstract class ModelCache<K> implements IBakedModel {
     }
 
     public void addModelData(@Nonnull ILightReader world, @Nonnull BlockPos pos, @Nonnull BlockState state, @Nonnull IModelData modelData) {
-
     }
 
     @Override

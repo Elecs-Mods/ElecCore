@@ -5,6 +5,7 @@ import elec332.core.util.ObjectReference;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.shapes.IBooleanFunction;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.shapes.VoxelShapes;
 
@@ -17,6 +18,10 @@ import java.util.stream.Stream;
  * Created by Elec332 on 2-2-2019
  */
 public class HitboxHelper {
+
+    public static boolean collides(VoxelShape shape1, VoxelShape shape2) {
+        return VoxelShapes.compare(shape1, shape2, IBooleanFunction.AND);
+    }
 
     public static boolean doesShapeContain(VoxelShape shape, Vec3d pos) {
         return doesShapeContain(shape, pos.x, pos.y, pos.z);

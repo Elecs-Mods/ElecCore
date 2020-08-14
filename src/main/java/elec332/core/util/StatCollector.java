@@ -9,7 +9,7 @@ import net.minecraft.util.text.LanguageMap;
  */
 public class StatCollector {
 
-    private static LanguageMap fallback = new LanguageMap();
+    private static final LanguageMap fallback = new LanguageMap();
 
     public static String translateToLocal(String key) {
         return LanguageMap.getInstance().translateKey(key);

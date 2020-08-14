@@ -57,18 +57,12 @@ public class INoJsonItemHandler implements IItemModelHandler {
     private class LinkedBlockItemModel2 extends NullModel {
 
         private LinkedBlockItemModel2() {
-            super(new NoJsonItemOverrideList(null) {
+            super(new NoJsonItemOverrideList() {
 
-                @Nonnull
                 @Override
-                public IBakedModel getModelWithOverrides(@Nonnull IBakedModel originalModel, ItemStack stack, @Nullable World world, @Nullable LivingEntity entity) {
+                protected IBakedModel getModel(@Nonnull ItemStack stack, @Nullable World world, @Nullable LivingEntity entity) {
                     IBlockModelItemLink b = (IBlockModelItemLink) ((BlockItem) stack.getItem()).getBlock();
-                    IBakedModel ret = Minecraft.getInstance().getBlockRendererDispatcher().getModelForState(b.getRenderState(stack));
-                    ItemOverrideList iol = ret.getOverrides();
-                    if (iol != null) {
-                        ret = iol.getModelWithOverrides(ret, stack, world, entity);
-                    }
-                    return Preconditions.checkNotNull(ret);
+                    return Minecraft.getInstance().getBlockRendererDispatcher().getModelForState(b.getRenderState(stack));
                 }
 
             });
@@ -79,17 +73,11 @@ public class INoJsonItemHandler implements IItemModelHandler {
     private class LinkedItemModel extends NullModel {
 
         private LinkedItemModel() {
-            super(new NoJsonItemOverrideList(null) {
+            super(new NoJsonItemOverrideList() {
 
                 @Override
-                @Nonnull
-                public IBakedModel getModelWithOverrides(@Nonnull IBakedModel originalModel, ItemStack stack, @Nullable World world, @Nullable LivingEntity entity) {
-                    IBakedModel ret = ((INoJsonItem) stack.getItem()).getItemModel(stack, world, entity);
-                    ItemOverrideList iol = ret.getOverrides();
-                    if (iol != null) {
-                        ret = iol.getModelWithOverrides(ret, stack, world, entity);
-                    }
-                    return Preconditions.checkNotNull(ret);
+                protected IBakedModel getModel(@Nonnull ItemStack stack, @Nullable World world, @Nullable LivingEntity entity) {
+                    return ((INoJsonItem) stack.getItem()).getItemModel(stack, world, entity);
                 }
 
             });
@@ -100,17 +88,11 @@ public class INoJsonItemHandler implements IItemModelHandler {
     private class LinkedBlockItemModel extends NullModel {
 
         private LinkedBlockItemModel() {
-            super(new NoJsonItemOverrideList(null) {
+            super(new NoJsonItemOverrideList() {
 
                 @Override
-                @Nonnull
-                public IBakedModel getModelWithOverrides(@Nonnull IBakedModel originalModel, ItemStack stack, @Nullable World world, @Nullable LivingEntity entity) {
-                    IBakedModel ret = ((INoJsonItem) (((BlockItem) stack.getItem()).getBlock())).getItemModel(stack, world, entity);
-                    ItemOverrideList iol = ret.getOverrides();
-                    if (iol != null) {
-                        ret = iol.getModelWithOverrides(ret, stack, world, entity);
-                    }
-                    return Preconditions.checkNotNull(ret);
+                protected IBakedModel getModel(@Nonnull ItemStack stack, @Nullable World world, @Nullable LivingEntity entity) {
+                    return ((INoJsonItem) (((BlockItem) stack.getItem()).getBlock())).getItemModel(stack, world, entity);
                 }
 
             });
@@ -118,24 +100,25 @@ public class INoJsonItemHandler implements IItemModelHandler {
 
     }
 
+    private static abstract class NoJsonItemOverrideList extends ItemOverrideList {
 
-    private class NoJsonItemOverrideList extends ItemOverrideList {
+        protected abstract IBakedModel getModel(@Nonnull ItemStack stack, @Nullable World world, @Nullable LivingEntity entity);
 
-        private NoJsonItemOverrideList(INoJsonItem item) {
-            this.item = item;
-        }
-
-        private final INoJsonItem item;
-
-        @Override
         @Nonnull
-        public IBakedModel getModelWithOverrides(@Nonnull IBakedModel originalModel, ItemStack stack, @Nullable World world, @Nullable LivingEntity entity) {
-            return item.getItemModel(stack, world, entity);
+        @Override
+        @SuppressWarnings("ConstantConditions")
+        public final IBakedModel getModelWithOverrides(@Nonnull IBakedModel originalModel, @Nonnull ItemStack stack, @Nullable World world, @Nullable LivingEntity entity) {
+            IBakedModel ret = getModel(stack, world, entity);
+            ItemOverrideList iol = ret.getOverrides();
+            if (iol != null) {
+                ret = iol.getModelWithOverrides(ret, stack, world, entity);
+            }
+            return Preconditions.checkNotNull(ret);
         }
 
     }
 
-    private class NullModel implements IBakedModel {
+    private static class NullModel implements IBakedModel {
 
         private NullModel(ItemOverrideList iol) {
             this.iol = iol;
@@ -143,8 +126,9 @@ public class INoJsonItemHandler implements IItemModelHandler {
 
         private final ItemOverrideList iol;
 
+        @Nonnull
         @Override
-        public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, Random rand) {
+        public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, @Nonnull Random rand) {
             throw new UnsupportedOperationException();
         }
 

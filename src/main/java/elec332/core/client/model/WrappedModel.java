@@ -1,17 +1,16 @@
 package elec332.core.client.model;
 
 import com.google.common.base.Preconditions;
-import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.renderer.model.BakedQuad;
 import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.client.renderer.model.ItemCameraTransforms;
-import net.minecraft.client.renderer.model.ItemCameraTransforms.TransformType;
 import net.minecraft.client.renderer.model.ItemOverrideList;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.ILightReader;
+import net.minecraftforge.client.model.data.EmptyModelData;
 import net.minecraftforge.client.model.data.IDynamicBakedModel;
 import net.minecraftforge.client.model.data.IModelData;
 
@@ -34,13 +33,6 @@ public class WrappedModel implements IDynamicBakedModel {
     /*
      * Vanilla
      */
-
-    @Nonnull
-    @Override
-    @SuppressWarnings("deprecation")
-    public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, @Nonnull Random rand) {
-        return parent.getQuads(state, side, rand);
-    }
 
     @Override
     public boolean isAmbientOcclusion() {
@@ -88,6 +80,12 @@ public class WrappedModel implements IDynamicBakedModel {
 
     @Nonnull
     @Override
+    public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, @Nonnull Random rand) {
+        return getQuads(state, side, rand, EmptyModelData.INSTANCE);
+    }
+
+    @Nonnull
+    @Override
     public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, @Nonnull Random rand, @Nonnull IModelData extraData) {
         return parent.getQuads(state, side, rand, extraData);
     }
@@ -100,11 +98,6 @@ public class WrappedModel implements IDynamicBakedModel {
     @Override
     public boolean doesHandlePerspectives() {
         return parent.doesHandlePerspectives();
-    }
-
-    @Override
-    public IBakedModel handlePerspective(TransformType cameraTransformType, MatrixStack mat) {
-        return parent.handlePerspective(cameraTransformType, mat);
     }
 
     @Nonnull

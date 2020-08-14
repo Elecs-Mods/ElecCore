@@ -1,6 +1,7 @@
 package elec332.core.block;
 
 import com.google.common.base.Preconditions;
+import elec332.core.tile.IActivatableTile;
 import elec332.core.tile.ITileWithDrops;
 import elec332.core.util.BlockProperties;
 import elec332.core.world.WorldHelper;
@@ -34,6 +35,7 @@ import net.minecraft.world.storage.loot.LootContext;
 import net.minecraft.world.storage.loot.LootParameters;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.List;
 import java.util.function.Predicate;
 
@@ -133,14 +135,14 @@ public abstract class AbstractBlock extends Block implements IAbstractBlock {
     @Deprecated
     @SuppressWarnings("deprecation")
     public List<ItemStack> getDrops(@Nonnull BlockState state, @Nonnull LootContext.Builder builder) {
-        Entity entity = Preconditions.checkNotNull(builder.get(LootParameters.THIS_ENTITY));
+        Entity entity = builder.get(LootParameters.THIS_ENTITY);
         BlockPos pos = Preconditions.checkNotNull(builder.get(LootParameters.POSITION));
         ItemStack stack = Preconditions.checkNotNull(builder.get(LootParameters.TOOL));
-        return getDrops(getOriginalDrops(state, builder), builder, entity, entity.world, pos, state, stack);
+        return getDrops(getOriginalDrops(state, builder), builder, entity, builder.getWorld(), pos, state, stack);
     }
 
     @Override
-    public List<ItemStack> getDrops(List<ItemStack> drops, @Nonnull LootContext.Builder builder, Entity entity, World world, BlockPos pos, @Nonnull BlockState state, ItemStack stack) {
+    public List<ItemStack> getDrops(List<ItemStack> drops, @Nonnull LootContext.Builder builder, @Nullable Entity entity, World world, BlockPos pos, @Nonnull BlockState state, ItemStack stack) {
         getTileDrops(drops, world, pos, EnchantmentHelper.getEnchantmentLevel(Enchantments.FORTUNE, stack));
         return drops;
     }
@@ -174,11 +176,17 @@ public abstract class AbstractBlock extends Block implements IAbstractBlock {
     }
 
     @Override
-    protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
+    protected void fillStateContainer(@Nonnull StateContainer.Builder<Block, BlockState> builder) {
         super.fillStateContainer(builder);
         if (this instanceof IWaterLoggable) {
             builder.add(BlockStateProperties.WATERLOGGED);
         }
+    }
+
+    @Override
+    public ActionResultType onBlockActivated(World world, BlockPos pos, BlockState state, PlayerEntity player, Hand hand, BlockRayTraceResult hit) {
+        TileEntity tile = WorldHelper.getTileAt(world, pos);
+        return tile instanceof IActivatableTile ? ((IActivatableTile) tile).onBlockActivated(player, hand, hit) : ActionResultType.PASS;
     }
 
     @SuppressWarnings("all")
@@ -186,7 +194,6 @@ public abstract class AbstractBlock extends Block implements IAbstractBlock {
         return super.getDrops(state, builder);
     }
 
-    @SuppressWarnings("all")
     public final void getTileDrops(List<ItemStack> drops, World world, BlockPos pos, int fortune) {
         TileEntity tile = WorldHelper.getTileAt(world, pos);
         if (tile instanceof ITileWithDrops) {

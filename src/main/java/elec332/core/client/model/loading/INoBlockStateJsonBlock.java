@@ -41,7 +41,7 @@ public interface INoBlockStateJsonBlock extends IBlockModelItemLink {
         @OnlyIn(Dist.CLIENT)
         default VariantList getVariantsFor(BlockState state) {
             Block b = state.getBlock();
-            ModelRotation mr = RenderHelper.getDefaultRotationFromFacing(state.get(BlockProperties.FACING_NORMAL));
+            ModelRotation mr = RenderHelper.getDefaultRotationFromFacing(state.get(BlockProperties.FACING_HORIZONTAL));
             Variant variant = new Variant(Preconditions.checkNotNull(b.getRegistryName()), mr.getRotation(), false, 1);
             return new VariantList(Lists.newArrayList(variant));
         }

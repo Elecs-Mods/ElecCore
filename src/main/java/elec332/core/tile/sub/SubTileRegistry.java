@@ -104,7 +104,7 @@ public enum SubTileRegistry {
         });
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public <T> void registerCapabilityCombiner(@Nonnull Capability<T> capability, @Nonnull Function<List<LazyOptional<T>>, LazyOptional<T>> combiner) {
         Preconditions.checkNotNull(capability, "Capability cannot be null!");
         if (capCombiners.containsKey(capability)) {
@@ -114,7 +114,6 @@ public enum SubTileRegistry {
     }
 
     @Nonnull
-    @SuppressWarnings("unchecked")
     public <T> LazyOptional<T> getCombined(@Nonnull Capability<T> capability, @Nonnull List<LazyOptional<T>> list) {
         list = list.stream()
                 .filter(Objects::nonNull)
@@ -130,9 +129,9 @@ public enum SubTileRegistry {
         if (func == null) {
             throw new IllegalArgumentException("No combiner registered for capability: " + capability.getName());
         }
-        final LazyOptional<T> ret = (LazyOptional<T>) func.apply(list);
+        final LazyOptional<?> ret = (LazyOptional<?>) func.apply(list);
         list.forEach(o -> o.addListener(v -> ret.invalidate()));
-        return ret;
+        return ret.cast();
     }
 
 }

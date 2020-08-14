@@ -32,7 +32,6 @@ import net.minecraftforge.client.ForgeHooksClient;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.client.model.data.EmptyModelData;
 import net.minecraftforge.client.model.data.IModelData;
-import net.minecraftforge.client.model.data.ModelDataMap;
 import net.minecraftforge.registries.ForgeRegistryEntry;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -177,15 +176,10 @@ public class BlockVariantModelHandler implements IModelHandler {
                 }
                 return new ModelCache<Map<String, String>>(base) {
 
-                    @Nonnull
                     @Override
-                    public IModelData getModelData(@Nonnull ILightReader world, @Nonnull BlockPos pos, @Nonnull BlockState state, @Nonnull IModelData tileData) {
-                        if (tileData == EmptyModelData.INSTANCE) {
-                            tileData = new ModelDataMap.Builder().build();
-                        }
-                        tileData.setData(ModelProperties.WORLD, world);
-                        tileData.setData(ModelProperties.POS, pos);
-                        return tileData;
+                    public void addModelData(@Nonnull ILightReader world, @Nonnull BlockPos pos, @Nonnull BlockState state, @Nonnull IModelData modelData) {
+                        modelData.setData(ModelProperties.WORLD, world);
+                        modelData.setData(ModelProperties.POS, pos);
                     }
 
                     @Override

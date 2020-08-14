@@ -21,6 +21,7 @@ import elec332.core.api.registration.IObjectRegister;
 import elec332.core.api.world.IWorldGenManager;
 import elec332.core.loader.SaveHandler;
 import elec332.core.module.DefaultModuleInfo;
+import elec332.core.network.IElecNetworkHandler;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.MinecraftForge;
@@ -55,7 +56,8 @@ public class ElecCoreSetup {
     }
 
     @APIHandlerInject
-    private static INetworkManager networkManager = null;
+    private static INetworkManager<IElecNetworkHandler> networkManager = null;
+
     @APIHandlerInject
     static IWorldGenManager worldGenManager = null;
 
