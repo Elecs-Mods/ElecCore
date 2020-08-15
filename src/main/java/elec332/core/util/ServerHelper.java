@@ -1,12 +1,16 @@
 package elec332.core.util;
 
+import com.google.common.base.Preconditions;
 import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableList;
 import elec332.core.api.network.IMessage;
 import elec332.core.api.network.INetworkHandler;
 import elec332.core.world.WorldHelper;
 import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
@@ -53,6 +57,26 @@ public class ServerHelper {
                 .filter((Predicate<ServerPlayerEntity>) player -> PlayerHelper.getPlayerUUID(player).equals(uuid))
                 .findFirst() //The returned stream is lazy, so this is perfectly fine
                 .orElse(null);
+    }
+
+    /**
+     * Sends a {@link SUpdateTileEntityPacket} with specific information to all players watching the provided {@link TileEntity}
+     *
+     * @param tile The tile to be synchronised
+     * @param id   The packet ID
+     * @param data The packet data
+     */
+    public static void sendTileUpdatePackets(TileEntity tile, int id, CompoundNBT data) {
+        getAllPlayersWatchingBlock(tile.getWorld(), tile.getPos()).forEach(player -> player.connection.sendPacket(new SUpdateTileEntityPacket(tile.getPos(), id, data)));
+    }
+
+    /**
+     * Sends a {@link SUpdateTileEntityPacket} to all players watching the provided {@link TileEntity}
+     *
+     * @param tile The tile to be synchronised
+     */
+    public static void sendTileUpdatePackets(TileEntity tile) {
+        getAllPlayersWatchingBlock(tile.getWorld(), tile.getPos()).forEach(player -> player.connection.sendPacket(Preconditions.checkNotNull(tile.getUpdatePacket())));
     }
 
     /**

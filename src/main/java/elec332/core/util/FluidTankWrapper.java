@@ -80,16 +80,12 @@ public abstract class FluidTankWrapper implements IFluidHandler, IFluidTank, INB
 
     @Override
     public boolean isFluidValid(FluidStack stack) {
-        return getFluid().equals(stack) && canFillFluidType(stack);
+        return getTank().isFluidValid(stack) && canFillFluidType(stack);
     }
 
     @Override
     public int fill(FluidStack resource, FluidAction action) {
-        if (resource == null) {
-            return 0;
-        }
-        FluidStack f = getFluid();
-        if (!f.isEmpty() && !f.isFluidEqual(resource)) {
+        if (resource == null || resource.isEmpty()) {
             return 0;
         }
         if (canFillFluidType(resource)) {
@@ -101,21 +97,20 @@ public abstract class FluidTankWrapper implements IFluidHandler, IFluidTank, INB
     @Nonnull
     @Override
     public FluidStack drain(FluidStack resource, FluidAction doDrain) {
-        FluidStack f = getFluid();
-        if (resource == null || !resource.isFluidEqual(f)) {
+        if (resource == null || resource.isEmpty() || !canDrainFluidType(resource)) {
             return FluidStack.EMPTY;
         }
-        return drain(resource.getAmount(), doDrain);
+        return getTank().drain(resource, doDrain);
     }
 
     @Nonnull
     @Override
     public FluidStack drain(int maxDrain, FluidAction doDrain) {
         FluidStack f = getFluid();
-        if (!canDrainFluidType(f)) {
-            return FluidStack.EMPTY;
+        if (canDrainFluidType(f)) {
+            return getTank().drain(maxDrain, doDrain);
         }
-        return getTank().drain(maxDrain, doDrain);
+        return FluidStack.EMPTY;
     }
 
     @Nonnull

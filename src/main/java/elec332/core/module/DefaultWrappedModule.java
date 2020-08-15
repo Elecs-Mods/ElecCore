@@ -1,7 +1,7 @@
 package elec332.core.module;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import elec332.core.api.module.ElecModule;
 import elec332.core.api.module.IModuleContainer;
 import elec332.core.api.module.IModuleController;
@@ -17,7 +17,7 @@ import javax.annotation.Nonnull;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.List;
+import java.util.Set;
 
 /**
  * Created by Elec332 on 25-9-2016.
@@ -30,8 +30,8 @@ public class DefaultWrappedModule implements IModuleContainer {
         this.owner = moduleInfo.getOwner();
         this.comName = new ResourceLocation(moduleInfo.getCombinedName().toString().toLowerCase());
         this.depB = moduleInfo.autoDisableIfRequirementsNotMet();
-        this.moduleDependencies = ImmutableList.copyOf(moduleInfo.getModuleDependencies());
-        this.modDependencies = ImmutableList.copyOf(moduleInfo.getModDependencies());
+        this.moduleDependencies = ImmutableSet.copyOf(moduleInfo.getModuleDependencies());
+        this.modDependencies = ImmutableSet.copyOf(moduleInfo.getModDependencies());
         this.clazz = moduleInfo.getModuleClass();
         this.alwaysEnabled = moduleInfo.alwaysEnabled();
         this.moduleController = moduleInfo.getModuleController();
@@ -49,8 +49,8 @@ public class DefaultWrappedModule implements IModuleContainer {
     private final ResourceLocation comName;
     private final boolean depB, alwaysEnabled;
     private final Object module;
-    private final List<String> moduleDependencies;
-    private final List<Pair<String, VersionRange>> modDependencies;
+    private final Set<ResourceLocation> moduleDependencies;
+    private final Set<Pair<String, VersionRange>> modDependencies;
     private final IModuleController moduleController;
     private final ModContainer mod;
 
@@ -117,13 +117,13 @@ public class DefaultWrappedModule implements IModuleContainer {
 
     @Nonnull
     @Override
-    public List<Pair<String, VersionRange>> getModDependencies() {
+    public Set<Pair<String, VersionRange>> getModDependencies() {
         return modDependencies;
     }
 
     @Nonnull
     @Override
-    public List<String> getModuleDependencies() {
+    public Set<ResourceLocation> getModuleDependencies() {
         return this.moduleDependencies;
     }
 

@@ -10,6 +10,7 @@ import elec332.core.api.IAPIHandler;
 import elec332.core.api.discovery.IAnnotationDataHandler;
 import elec332.core.api.module.*;
 import elec332.core.api.registration.APIInjectedEvent;
+import elec332.core.module.DefaultModuleInfo;
 import elec332.core.module.DefaultWrappedModule;
 import elec332.core.util.FMLHelper;
 import net.minecraft.util.ResourceLocation;
@@ -17,6 +18,7 @@ import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.EventPriority;
+import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.ModContainer;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.ModLifecycleEvent;
@@ -30,6 +32,7 @@ import org.apache.maven.artifact.versioning.VersionRange;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.*;
@@ -63,15 +66,15 @@ enum ModuleManager implements IModuleManager {
     private static final IModuleController DEFAULT_CONTROLLER;
     private static final BiFunction<Object, IModuleInfo, IModuleContainer> defaultImpl;
 
-    private Set<IModuleContainer> constructedModules, activeModules, activeModules_;
-    private Set<IModuleInfo> discoveredModules;
-    private Map<ResourceLocation, IModuleContainer> activeModuleNames;
+    private final Set<IModuleContainer> constructedModules, activeModules, activeModules_;
+    private final Set<IModuleInfo> discoveredModules;
+    private final Map<ResourceLocation, IModuleContainer> activeModuleNames;
+    private final Map<ResourceLocation, ForgeConfigSpec.BooleanValue> moduleConfig;
+    private final Map<Class<? extends Annotation>, Function<IModuleContainer, Object>> fieldProcessors;
+    private final Set<BiFunction<IAnnotationDataHandler, Function<String, IModuleController>, List<IModuleInfo>>> moduleDiscoverers;
+    private final Set<String> erroredMods;
+    private final AtomicInteger checkCounter;
     private Map<String, IModuleController> moduleControllers;
-    private Map<ResourceLocation, ForgeConfigSpec.BooleanValue> moduleConfig;
-    private Map<Class<? extends Annotation>, Function<IModuleContainer, Object>> fieldProcessors;
-    private Set<BiFunction<IAnnotationDataHandler, Function<String, IModuleController>, List<IModuleInfo>>> moduleDiscoverers;
-    private Set<String> erroredMods;
-    private AtomicInteger checkCounter;
     private boolean locked, loaded;
 
     @APIHandlerInject
@@ -80,8 +83,12 @@ enum ModuleManager implements IModuleManager {
     void gatherAndConstruct() {
         moduleControllers = FMLHelper.getMods().stream()
                 .filter(mc -> mc.getMod() instanceof IModuleController)
+                .peek(mc -> {
+                    IModuleController moduleController = (IModuleController) mc.getMod();
+                    BiFunction<String, String, IModuleInfo.Builder> b2 = (name, clazz) -> new DefaultModuleInfo.Builder(mc.getModId(), moduleController, name, clazz);
+                    moduleController.registerAdditionalModules(ModuleManager.INSTANCE::registerAdditionalModule, (name, clazz) -> b2.apply(name, clazz.getTypeName()), b2);
+                })
                 .collect(Collectors.toMap(ModContainer::getModId, mc -> (IModuleController) mc.getMod()));
-        moduleControllers.values().forEach(moduleController -> moduleController.registerAdditionalModules(ModuleManager.INSTANCE::registerAdditionalModule));
 
         locked = true;
 
@@ -130,7 +137,7 @@ enum ModuleManager implements IModuleManager {
         for (IModuleInfo module : discoveredModules) {
             boolean depsPresent = true;
             Set<String> missingMods = Sets.newHashSet();
-            List<Pair<String, VersionRange>> requirements = module.getModDependencies();
+            Set<Pair<String, VersionRange>> requirements = module.getModDependencies();
             for (Pair<String, VersionRange> dep : requirements) {
                 ArtifactVersion ver = names.get(dep.getLeft());
                 if (ver == null || (dep.getRight() != IModInfo.UNBOUNDED && !dep.getRight().containsVersion(ver))) {
@@ -152,14 +159,13 @@ enum ModuleManager implements IModuleManager {
     }
 
     private List<IModuleInfo> checkModuleDependencies(List<IModuleInfo> list) {
-        Set<String> moduleNames = list.stream()
+        Set<ResourceLocation> moduleNames = list.stream()
                 .map(IModuleInfo::getCombinedName)
-                .map(Object::toString)
                 .collect(Collectors.toSet());
 
         return list.stream()
                 .filter(moduleInfo -> {
-                    List<String> missingDeps = moduleInfo.getModuleDependencies().stream()
+                    List<ResourceLocation> missingDeps = moduleInfo.getModuleDependencies().stream()
                             .filter(Objects::nonNull)
                             .filter(s -> !moduleNames.contains(s))
                             .collect(Collectors.toList());
@@ -184,7 +190,23 @@ enum ModuleManager implements IModuleManager {
                 if (owner == null) {
                     throw new IllegalStateException("Error finding owner mod for module: " + module.getCombinedName());
                 }
-                IModuleContainer module_ = module.getModuleController().wrap(module, defaultImpl);
+                IModuleContainer module_ = module.getModuleController().wrap(module, info -> {
+                    try {
+                        Class<?> clazz = Class.forName(module.getModuleClass());
+                        try {
+                            Constructor<?> c = clazz.getConstructor(IEventBus.class);
+                            if (!FMLHelper.hasFMLModContainer(owner)) {
+                                throw new UnsupportedOperationException();
+                            }
+                            return c.newInstance(FMLHelper.getFMLModContainer(owner).getEventBus());
+                        } catch (Exception e) {
+                            //NBC
+                        }
+                        return clazz.newInstance();
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                }, defaultImpl);
                 if (module_ == null) {
                     continue;
                 }

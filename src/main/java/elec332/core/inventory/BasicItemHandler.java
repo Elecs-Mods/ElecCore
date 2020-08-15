@@ -40,7 +40,7 @@ public class BasicItemHandler implements IItemHandlerModifiable, INBTSerializabl
     public void setStackInSlot(int slot, @Nonnull ItemStack stack) {
         validateSlotIndex(slot);
         ItemStack stackInSlot = this.stacks.get(slot);
-        if (ItemStack.areItemStacksEqual(stackInSlot, stack) || !isItemValid(slot, stack)) {
+        if (ItemStack.areItemStacksEqual(stackInSlot, stack)) {
             return;
         }
         this.stacks.set(slot, stack);
@@ -121,8 +121,9 @@ public class BasicItemHandler implements IItemHandlerModifiable, INBTSerializabl
             if (!simulate) {
                 this.stacks.set(slot, ItemStackHelper.NULL_STACK);
                 onContentsChanged(slot);
+                return existing;
             }
-            return existing;
+            return existing.copy();
         } else {
             if (!simulate) {
                 this.stacks.set(slot, ItemHandlerHelper.copyStackWithSize(existing, existing.getCount() - toExtract));
@@ -141,7 +142,10 @@ public class BasicItemHandler implements IItemHandlerModifiable, INBTSerializabl
 
     @Override
     public void deserializeNBT(CompoundNBT nbt) {
-        setSize(nbt.contains("Size", net.minecraftforge.common.util.Constants.NBT.TAG_INT) ? nbt.getInt("Size") : stacks.size());
+        int size = nbt.contains("Size", net.minecraftforge.common.util.Constants.NBT.TAG_INT) ? nbt.getInt("Size") : stacks.size();
+        if (size > getSlots()) {
+            setSize(size);
+        }
         InventoryHelper.readItemsFromNBT(nbt, stacks);
         onLoad();
     }

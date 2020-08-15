@@ -25,67 +25,67 @@ import javax.annotation.Nullable;
  */
 public interface ISubTileLogic extends ICapabilityProvider {
 
-    public void readFromNBT(CompoundNBT compound);
+    void readFromNBT(CompoundNBT compound);
 
     @Nonnull
-    public CompoundNBT writeToNBT(@Nonnull CompoundNBT compound);
+    CompoundNBT writeToNBT(@Nonnull CompoundNBT compound);
 
     @Nullable
-    public World getWorld();
+    World getWorld();
 
-    public BlockPos getPos();
+    BlockPos getPos();
 
-    public void markDirty();
+    void markDirty();
 
-    public boolean hasWorld();
+    boolean hasWorld();
 
-    public default void onRemoved() {
+    default void onRemoved() {
     }
 
-    public default void neighborChanged(BlockPos neighborPos, Block changedBlock, boolean observer) {
+    default void neighborChanged(BlockPos neighborPos, Block changedBlock, boolean observer) {
     }
 
-    public default boolean removedByPlayer(@Nonnull PlayerEntity player, boolean willHarvest, @Nonnull RayTraceResult hit) {
+    default boolean removedByPlayer(@Nonnull PlayerEntity player, boolean willHarvest, @Nonnull RayTraceResult hit) {
         return false;
     }
 
-    public default boolean canBeRemoved() {
+    default boolean canBeRemoved() {
         return true;
     }
 
-    public default ActionResultType onBlockActivated(PlayerEntity player, Hand hand, RayTraceResult hit) {
+    default ActionResultType onBlockActivated(PlayerEntity player, Hand hand, RayTraceResult hit) {
         return ActionResultType.PASS;
     }
 
-    public default VoxelShape getShape(BlockState state, int data) {
+    default VoxelShape getShape(BlockState state, int data) {
         return VoxelShapes.fullCube();
     }
 
-    default public VoxelShape getSelectionBox(BlockState state, @Nonnull RayTraceResult hit, PlayerEntity player) {
+    default VoxelShape getSelectionBox(BlockState state, @Nonnull RayTraceResult hit, PlayerEntity player) {
         return getShape(state, hit.subHit);
     }
 
     @Nullable
-    public default ItemStack getStack(@Nonnull RayTraceResult hit, PlayerEntity player) {
+    default ItemStack getStack(@Nonnull RayTraceResult hit, PlayerEntity player) {
         return null;
     }
 
-    public default void invalidate() {
+    default void invalidate() {
     }
 
-    public default void onLoad() {
+    default void onLoad() {
     }
 
-    public default void sendInitialLoadPackets() {
+    default void sendInitialLoadPackets() {
     }
 
-    public void sendPacket(int ID, CompoundNBT data);
+    void sendPacket(int ID, CompoundNBT data);
 
-    public default void onDataPacket(int id, CompoundNBT tag) {
+    default void onDataPacket(int id, CompoundNBT tag) {
     }
 
     @Nonnull
     @Override
-    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side);
+    <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side);
 
 }
