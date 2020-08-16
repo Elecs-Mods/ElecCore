@@ -18,6 +18,6 @@ public interface IAnnotationDataProcessor {
      * @param annotationData The ASMDataTable
      * @param state          The current {@link ModLoadingStage}
      */
-    public void processASMData(IAnnotationDataHandler annotationData, ModLoadingStage state);
+    void processASMData(IAnnotationDataHandler annotationData, ModLoadingStage state);
 
 }

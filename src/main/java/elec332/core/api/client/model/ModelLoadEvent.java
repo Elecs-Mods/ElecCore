@@ -21,39 +21,45 @@ import javax.annotation.Nullable;
  * Event that can be used to handle model-related stuff
  */
 @StaticLoad
-@OnlyIn(Dist.CLIENT)
 public class ModelLoadEvent extends Event {
 
     @Nonnull
+    @OnlyIn(Dist.CLIENT)
     public IElecQuadBakery getQuadBakery() {
         throw new UnsupportedOperationException();
     }
 
     @Nonnull
+    @OnlyIn(Dist.CLIENT)
     public IElecModelBakery getModelBakery() {
         throw new UnsupportedOperationException();
     }
 
     @Nonnull
+    @OnlyIn(Dist.CLIENT)
     public IElecTemplateBakery getTemplateBakery() {
         throw new UnsupportedOperationException();
     }
 
+    @OnlyIn(Dist.CLIENT)
     public void registerModel(ResourceLocation mrl, IBakedModel model) {
         throw new UnsupportedOperationException();
     }
 
     @Nullable
+    @OnlyIn(Dist.CLIENT)
     public IBakedModel getModel(ModelResourceLocation mrl) {
         throw new UnsupportedOperationException();
     }
 
     @Nonnull
+    @OnlyIn(Dist.CLIENT)
     public IBakedModel getMissingModel() {
         throw new UnsupportedOperationException();
     }
 
     @Nonnull
+    @OnlyIn(Dist.CLIENT)
     public ModelLoader getModelLoader() {
         throw new UnsupportedOperationException();
     }

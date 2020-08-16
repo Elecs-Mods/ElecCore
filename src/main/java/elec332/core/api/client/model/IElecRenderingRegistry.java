@@ -1,5 +1,6 @@
 package elec332.core.api.client.model;
 
+import elec332.core.api.client.ITESRItem;
 import elec332.core.api.client.ITextureLoader;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -63,6 +64,13 @@ public interface IElecRenderingRegistry {
 
     void setItemRenderer(Item item, TileEntityRenderer<?> renderer);
 
+    void setItemRenderer(Item item, ITESRItem renderer);
+
+    /**
+     * Use with caution!!!
+     * <p>
+     * If possible, use {@link IElecRenderingRegistry#setItemRenderer(Item, ITESRItem)} instead!
+     */
     void setItemRenderer(Item item, ItemStackTileEntityRenderer renderer);
 
 }

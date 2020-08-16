@@ -13,6 +13,7 @@ import elec332.core.api.discovery.AnnotationDataProcessor;
 import elec332.core.api.discovery.IAnnotationData;
 import elec332.core.api.discovery.IAnnotationDataHandler;
 import elec332.core.api.discovery.IAnnotationDataProcessor;
+import elec332.core.api.module.IModuleManager;
 import elec332.core.api.registration.APIInjectedEvent;
 import elec332.core.util.FMLHelper;
 import elec332.core.util.FieldPointer;
@@ -198,6 +199,12 @@ enum APIHandler implements IAnnotationDataProcessor, IAPIHandler {
             }
         }
         return null;
+    }
+
+    @APIHandlerInject
+    @SuppressWarnings("unused")
+    private static void injectModuleManager(IModuleManager moduleManager) {
+        moduleManager.registerUncheckedEventType(APIInjectedEvent.class);
     }
 
     private static class APIInjectedEventImpl<T> extends APIInjectedEvent<T> {

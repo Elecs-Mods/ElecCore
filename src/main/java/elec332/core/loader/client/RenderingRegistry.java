@@ -315,6 +315,11 @@ public final class RenderingRegistry implements IElecRenderingRegistry {
     }
 
     @Override
+    public void setItemRenderer(Item item, ITESRItem renderer) {
+        setItemRenderer(item, new LinkedISTESR(renderer));
+    }
+
+    @Override
     public void setItemRenderer(Item item, final ItemStackTileEntityRenderer renderer) {
         teisrField.set(item, () -> renderer);
     }

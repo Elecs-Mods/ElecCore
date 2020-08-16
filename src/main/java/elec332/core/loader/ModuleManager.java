@@ -9,15 +9,15 @@ import elec332.core.api.APIHandlerInject;
 import elec332.core.api.IAPIHandler;
 import elec332.core.api.discovery.IAnnotationDataHandler;
 import elec332.core.api.module.*;
-import elec332.core.api.registration.APIInjectedEvent;
 import elec332.core.module.DefaultModuleInfo;
 import elec332.core.module.DefaultWrappedModule;
 import elec332.core.util.FMLHelper;
+import net.jodah.typetools.TypeResolver;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.ForgeConfigSpec;
-import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.EventPriority;
+import net.minecraftforge.eventbus.api.GenericEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.ModContainer;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -40,6 +40,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
@@ -61,6 +62,8 @@ enum ModuleManager implements IModuleManager {
         this.erroredMods = Sets.newHashSet();
         this.checkCounter = new AtomicInteger();
         this.moduleConfig = Maps.newHashMap();
+        this.eventBusMap = Maps.newHashMap();
+        this.eventTypes = Sets.newHashSet();
     }
 
     private static final IModuleController DEFAULT_CONTROLLER;
@@ -74,6 +77,8 @@ enum ModuleManager implements IModuleManager {
     private final Set<BiFunction<IAnnotationDataHandler, Function<String, IModuleController>, List<IModuleInfo>>> moduleDiscoverers;
     private final Set<String> erroredMods;
     private final AtomicInteger checkCounter;
+    private final Map<ResourceLocation, WrappedEventbus<FMLCommonSetupEvent>> eventBusMap;
+    private final Set<Class<? extends Event>> eventTypes;
     private Map<String, IModuleController> moduleControllers;
     private boolean locked, loaded;
 
@@ -102,9 +107,16 @@ enum ModuleManager implements IModuleManager {
                     .forEach(discoveredModules::add);
         });
 
+        Set<ResourceLocation> check = Sets.newHashSet();
         discoveredModules.stream()
+                .peek(module -> {
+                    if (!check.add(module.getCombinedName())) {
+                        throw new RuntimeException("Duplicate name found: " + module.getCombinedName());
+                    }
+                })
                 .filter(moduleInfo -> !moduleInfo.alwaysEnabled())
                 .forEach(module -> moduleConfig.put(module.getCombinedName(), module.getModuleController().getModuleConfig(module.getName())));
+        check.clear();
 
         List<IModuleInfo> depCheckModules = checkModDependencies();
         while (true) {
@@ -198,7 +210,9 @@ enum ModuleManager implements IModuleManager {
                             if (!FMLHelper.hasFMLModContainer(owner)) {
                                 throw new UnsupportedOperationException();
                             }
-                            return c.newInstance(FMLHelper.getFMLModContainer(owner).getEventBus());
+                            WrappedEventbus<FMLCommonSetupEvent> eventBus = new WrappedEventbus<>(FMLHelper.getFMLModContainer(owner).getEventBus(), FMLCommonSetupEvent.class, this::testAlwaysEvent);
+                            eventBusMap.put(module.getCombinedName(), eventBus);
+                            return c.newInstance(eventBus);
                         } catch (Exception e) {
                             //NBC
                         }
@@ -230,9 +244,10 @@ enum ModuleManager implements IModuleManager {
                 throw new UnsupportedOperationException();
             }
             final FMLModContainer modContainer = FMLHelper.getFMLModContainer(mc);
-            modContainer.getEventBus().addListener(EventPriority.LOW, (Consumer<? extends RegistryEvent<?>>) evt -> invokeEvent(module, evt));
-            modContainer.getEventBus().addListener(EventPriority.LOW, (Consumer<? extends RegistryEvent.NewRegistry>) evt -> invokeEvent(module, evt));
-            modContainer.getEventBus().addListener(EventPriority.LOW, (Consumer<? extends APIInjectedEvent<?>>) evt -> invokeEvent(module, evt));
+            WrappedEventbus<FMLCommonSetupEvent> eventBus = eventBusMap.computeIfAbsent(module.getCombinedName(), m -> new WrappedEventbus<>(modContainer.getEventBus(), FMLCommonSetupEvent.class, this::testAlwaysEvent));
+            for (Class<? extends Event> type : eventTypes) {
+                eventBus.addListener(EventPriority.NORMAL, false, type, e -> invokeEvent(module, e));
+            }
             modContainer.getEventBus().addListener(EventPriority.LOW, (Consumer<FMLCommonSetupEvent>) cse -> {
                 boolean add = Optional.ofNullable(moduleConfig.get(module.getCombinedName())).map(ForgeConfigSpec.BooleanValue::get).orElse(true);
                 add &= module.alwaysEnabled() || module.getModuleController().isModuleEnabled(module.getName());
@@ -241,9 +256,11 @@ enum ModuleManager implements IModuleManager {
                     ElecCore.logger.info("Successfully registered module " + module.getName() + " from mod " + module.getOwner());
                 }
                 checkCounter.incrementAndGet();
+                eventBus.process(add);
                 if (add) {
                     invokeEvent(module, cse);
-                    modContainer.getEventBus().addListener(EventPriority.LOW, (Consumer<ModLifecycleEvent>) event -> invokeEvent(module, event));
+                    eventBus.runListeners(cse);
+                    eventBus.addListener((Consumer<ModLifecycleEvent>) event -> invokeEvent(module, event));
                     Class<?> objClass = module.getModule().getClass();
                     for (Method method : objClass.getDeclaredMethods()) {
                         if (method.isAnnotationPresent(ElecModule.EventHandler.class)/* || method.isAnnotationPresent(Mod.EventHandler.class)*/) {
@@ -257,12 +274,21 @@ enum ModuleManager implements IModuleManager {
                             ElecModule.EventHandler ann = method.getAnnotation(ElecModule.EventHandler.class);
                             @SuppressWarnings("unchecked") //Checked above
                                     Class<? extends Event> type = (Class<? extends Event>) param;
-                            modContainer.getEventBus().addListener(ann.priority(), ann.receiveCanceled(), type, event -> invokeEvent(module, event));
+                            eventBus.addListener(ann.priority(), ann.receiveCanceled(), type, event -> invokeEvent(module, event));
                         }
                     }
                 }
             });
         }
+    }
+
+    private boolean testAlwaysEvent(Class<?> type) {
+        for (Class<?> clazz : eventTypes) {
+            if (clazz.isAssignableFrom(type)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private void invokeEvent(IModuleContainer module, Object event) {
@@ -355,6 +381,11 @@ enum ModuleManager implements IModuleManager {
         });
     }
 
+    @Override
+    public void registerUncheckedEventType(Class<? extends Event> eventType) {
+        eventTypes.add(eventType);
+    }
+
     @APIHandlerInject
     @SuppressWarnings("unused")
     public void injectModuleManager(IAPIHandler apiHandler) {
@@ -371,6 +402,145 @@ enum ModuleManager implements IModuleManager {
             return DEFAULT_CONTROLLER;
         }
         return ret;
+    }
+
+    private static class WrappedEventbus<E extends Event> implements IEventBus {
+
+        private WrappedEventbus(IEventBus parent, Class<E> type, Predicate<Class<?>> typeFilter) {
+            this.parent = parent;
+            this.listenerType = type;
+            this.typeFilter = typeFilter;
+        }
+
+        private final IEventBus parent;
+        private final Class<E> listenerType;
+        private final Predicate<Class<?>> typeFilter;
+        private Set<Runnable> callbacks = Sets.newHashSet();
+        private final Set<Consumer<E>> listeners = Sets.newHashSet();
+
+        public void runListeners(E event) {
+            listeners.forEach(c -> c.accept(event));
+        }
+
+        public void process(boolean run) {
+            if (run) {
+                callbacks.forEach(Runnable::run);
+                callbacks.clear();
+            }
+            callbacks = null;
+        }
+
+        private boolean doNotAddDirect(Consumer<?> listener) {
+            return !typeFilter.test(TypeResolver.resolveRawArgument(Consumer.class, listener.getClass())) && callbacks != null;
+        }
+
+        @Override
+        public void register(Object target) {
+            if (callbacks != null) {
+                callbacks.add(() -> parent.register(target));
+            } else {
+                parent.register(target);
+            }
+        }
+
+        @Override
+        public <T extends Event> void addListener(final Consumer<T> consumer) {
+            addListener(EventPriority.NORMAL, consumer);
+        }
+
+        @Override
+        public <T extends Event> void addListener(final EventPriority priority, final Consumer<T> consumer) {
+            addListener(priority, false, consumer);
+        }
+
+        @Override
+        @SuppressWarnings("unchecked")
+        public <T extends Event> void addListener(EventPriority priority, boolean receiveCancelled, Consumer<T> consumer) {
+            if (TypeResolver.resolveRawArgument(Consumer.class, consumer.getClass()) == listenerType) {
+                listeners.add((Consumer<E>) consumer);
+                return;
+            }
+            if (doNotAddDirect(consumer)) {
+                callbacks.add(() -> parent.addListener(priority, receiveCancelled, consumer));
+            } else {
+                parent.addListener(priority, receiveCancelled, consumer);
+            }
+        }
+
+        @Override
+        @SuppressWarnings("unchecked")
+        public <T extends Event> void addListener(EventPriority priority, boolean receiveCancelled, Class<T> eventType, Consumer<T> consumer) {
+            if (eventType == listenerType) {
+                listeners.add((Consumer<E>) consumer);
+                return;
+            }
+            if (doNotAddDirect(consumer)) {
+                callbacks.add(() -> parent.addListener(priority, receiveCancelled, eventType, consumer));
+            } else {
+                parent.addListener(priority, receiveCancelled, eventType, consumer);
+            }
+        }
+
+        @Override
+        public <T extends GenericEvent<? extends F>, F> void addGenericListener(Class<F> genericClassFilter, Consumer<T> consumer) {
+            if (doNotAddDirect(consumer)) {
+                callbacks.add(() -> parent.addGenericListener(genericClassFilter, consumer));
+            } else {
+                parent.addGenericListener(genericClassFilter, consumer);
+            }
+        }
+
+        @Override
+        public <T extends GenericEvent<? extends F>, F> void addGenericListener(Class<F> genericClassFilter, EventPriority priority, Consumer<T> consumer) {
+            if (doNotAddDirect(consumer)) {
+                callbacks.add(() -> parent.addGenericListener(genericClassFilter, priority, consumer));
+            } else {
+                parent.addGenericListener(genericClassFilter, priority, consumer);
+            }
+        }
+
+        @Override
+        public <T extends GenericEvent<? extends F>, F> void addGenericListener(Class<F> genericClassFilter, EventPriority priority, boolean receiveCancelled, Consumer<T> consumer) {
+            if (doNotAddDirect(consumer)) {
+                callbacks.add(() -> parent.addGenericListener(genericClassFilter, priority, receiveCancelled, consumer));
+            } else {
+                parent.addGenericListener(genericClassFilter, priority, receiveCancelled, consumer);
+            }
+        }
+
+        @Override
+        public <T extends GenericEvent<? extends F>, F> void addGenericListener(Class<F> genericClassFilter, EventPriority priority, boolean receiveCancelled, Class<T> eventType, Consumer<T> consumer) {
+            if (doNotAddDirect(consumer)) {
+                callbacks.add(() -> parent.addGenericListener(genericClassFilter, priority, receiveCancelled, eventType, consumer));
+            } else {
+                parent.addGenericListener(genericClassFilter, priority, receiveCancelled, eventType, consumer);
+            }
+        }
+
+        @Override
+        public void unregister(Object object) {
+            if (callbacks != null) {
+                callbacks.add(() -> parent.unregister(object));
+            } else {
+                parent.unregister(object);
+            }
+        }
+
+        @Override
+        public boolean post(Event event) {
+            return parent.post(event);
+        }
+
+        @Override
+        public void shutdown() {
+            parent.shutdown();
+        }
+
+        @Override
+        public void start() {
+            parent.start();
+        }
+
     }
 
     static {

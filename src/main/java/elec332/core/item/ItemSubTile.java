@@ -29,7 +29,7 @@ public class ItemSubTile extends AbstractItemBlock {
 
     public ItemSubTile(BlockSubTile block, Properties builder) {
         super(block, builder);
-        MinecraftForge.EVENT_BUS.register(this);
+        MinecraftForge.EVENT_BUS.register(new Listener());
     }
 
     public boolean canBePlaced(@Nonnull BlockItemUseContext context, @Nonnull BlockState state) {
@@ -58,48 +58,54 @@ public class ItemSubTile extends AbstractItemBlock {
     public void onEmptySolidSideClicked(@Nonnull World world, @Nonnull BlockPos clickedPos, @Nonnull TileEntity tile, @Nonnull Direction tileSide, PlayerEntity player, ItemStack stack, BlockState state) {
     }
 
-    @SubscribeEvent //Using onRightClick doesn't work if there's a block directly above the object
-    public void onRightClickBlock(PlayerInteractEvent.RightClickBlock event) {
-        if (event.getItemStack().getItem() != this) {
-            return;
-        }
-        World world = event.getWorld();
-        BlockPos pos = event.getPos();
-        PlayerEntity player = event.getPlayer();
-        ItemStack stack = player.getHeldItem(event.getHand());
-        if (WorldHelper.chunkLoaded(world, pos)) { //You never know...
-            TileEntity tile = WorldHelper.getTileAt(world, pos);
-            Direction face = event.getFace();
-            BlockState state = WorldHelper.getBlockState(world, pos);
-            if (state.getBlock() == getBlock() && tile instanceof TileMultiObject) { //attempt to add object
-                event.setUseItem(Event.Result.DENY);
-                event.setUseBlock(Event.Result.DENY);
-                event.setCanceled(true);
-                if (!world.isRemote) { //All logic on the server side
-                    BlockRayTraceResult hit = RayTraceHelper.retraceBlock(state, world, pos, player);
-                    if (hit != null) { //Can be null
-                        onExistingObjectClicked(tile, hit, player, stack, state);
-                    }
-                }
-                player.swingArm(event.getHand());
-            } else if (face != null) { //attempt to place at face
-                if (Block.hasSolidSide(state, world, pos, face)) {
-                    tile = WorldHelper.getTileAt(world, pos.offset(face));
-                    state = WorldHelper.getBlockState(world, pos.offset(face));
-                    if (state.getBlock() == getBlock() && tile instanceof TileMultiObject) {
-                        event.setUseItem(Event.Result.DENY);
-                        event.setUseBlock(Event.Result.DENY);
-                        event.setCanceled(true);
-                        if (!world.isRemote) { //All logic on the server side
-                            Direction rf = face.getOpposite();
-                            onEmptySolidSideClicked(world, pos, tile, rf, player, stack, state);
+    //If we don't use a subclass, we get client-side classes loading on the server for some reason...
+    private class Listener {
+
+        @SubscribeEvent //Using onRightClick doesn't work if there's a block directly above the object
+        public void onRightClickBlock(PlayerInteractEvent.RightClickBlock event) {
+            if (event.getItemStack().getItem() != ItemSubTile.this) {
+                return;
+            }
+            World world = event.getWorld();
+            BlockPos pos = event.getPos();
+            PlayerEntity player = event.getPlayer();
+            ItemStack stack = player.getHeldItem(event.getHand());
+            if (WorldHelper.chunkLoaded(world, pos)) { //You never know...
+                TileEntity tile = WorldHelper.getTileAt(world, pos);
+                Direction face = event.getFace();
+                BlockState state = WorldHelper.getBlockState(world, pos);
+                if (state.getBlock() == getBlock() && tile instanceof TileMultiObject) { //attempt to add object
+                    event.setUseItem(Event.Result.DENY);
+                    event.setUseBlock(Event.Result.DENY);
+                    event.setCanceled(true);
+                    if (!world.isRemote) { //All logic on the server side
+                        BlockRayTraceResult hit = RayTraceHelper.retraceBlock(state, world, pos, player);
+                        if (hit != null) { //Can be null
+                            onExistingObjectClicked(tile, hit, player, stack, state);
                         }
-                        player.swingArm(event.getHand());
+                    }
+                    player.swingArm(event.getHand());
+                } else if (face != null) { //attempt to place at face
+                    if (Block.hasSolidSide(state, world, pos, face)) {
+                        tile = WorldHelper.getTileAt(world, pos.offset(face));
+                        state = WorldHelper.getBlockState(world, pos.offset(face));
+                        if (state.getBlock() == getBlock() && tile instanceof TileMultiObject) {
+                            event.setUseItem(Event.Result.DENY);
+                            event.setUseBlock(Event.Result.DENY);
+                            event.setCanceled(true);
+                            if (!world.isRemote) { //All logic on the server side
+                                Direction rf = face.getOpposite();
+                                onEmptySolidSideClicked(world, pos, tile, rf, player, stack, state);
+                            }
+                            player.swingArm(event.getHand());
+                        }
                     }
                 }
             }
+
         }
 
     }
+
 
 }

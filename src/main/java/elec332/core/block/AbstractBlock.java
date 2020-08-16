@@ -33,6 +33,8 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 import net.minecraft.world.storage.loot.LootContext;
 import net.minecraft.world.storage.loot.LootParameters;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -53,10 +55,12 @@ public abstract class AbstractBlock extends Block implements IAbstractBlock {
 
     private String unlocalizedName;
 
+    @OnlyIn(Dist.CLIENT)
     public void setBlockRenderType(RenderType renderType) {
         RenderTypeLookup.setRenderLayer(this, renderType);
     }
 
+    @OnlyIn(Dist.CLIENT)
     public void setBlockRenderType(Predicate<RenderType> renderTypes) {
         RenderTypeLookup.setRenderLayer(this, renderTypes);
     }

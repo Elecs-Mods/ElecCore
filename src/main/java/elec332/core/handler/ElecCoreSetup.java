@@ -82,6 +82,8 @@ public class ElecCoreSetup {
             }
             return ret;
         });
+        moduleManager.registerUncheckedEventType(RegistryEvent.class);
+        moduleManager.registerUncheckedEventType(RegistryEvent.NewRegistry.class);
     }
 
     @APIHandlerInject

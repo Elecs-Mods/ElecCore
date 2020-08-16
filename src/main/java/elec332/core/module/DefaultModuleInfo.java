@@ -143,7 +143,7 @@ public class DefaultModuleInfo implements IModuleInfo {
 
         @Override
         public IModuleInfo build() {
-            return new DefaultModuleInfo(owner, name, modDeps, moduleDeps, adrim, ae, clazz, moduleController, new ResourceLocation(owner, name));
+            return new DefaultModuleInfo(owner, name, modDeps, moduleDeps, adrim, ae, clazz, moduleController, new ResourceLocation(owner, name.toLowerCase()));
         }
 
     }

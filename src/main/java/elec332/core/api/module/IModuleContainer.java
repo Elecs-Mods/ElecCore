@@ -12,10 +12,10 @@ import javax.annotation.Nonnull;
 public interface IModuleContainer extends IModuleInfo {
 
     @Nonnull
-    public Object getModule();
+    Object getModule();
 
     @Nonnull
-    public ModContainer getOwnerMod();
+    ModContainer getOwnerMod();
 
     /**
      * Used for invoking events on the module.
@@ -24,6 +24,6 @@ public interface IModuleContainer extends IModuleInfo {
      * @throws Exception If the container failed to dispatch the event to the module,
      *                   or if the module itself threw an exception processing this event
      */
-    public void invokeEvent(Object event) throws Exception;
+    void invokeEvent(Object event) throws Exception;
 
 }

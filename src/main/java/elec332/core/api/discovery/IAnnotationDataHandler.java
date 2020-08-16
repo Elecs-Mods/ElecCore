@@ -15,20 +15,20 @@ import java.util.function.Function;
  */
 public interface IAnnotationDataHandler {
 
-    default public Set<IAnnotationData> getAnnotationList(Class<? extends Annotation> annotationClass) {
+    default Set<IAnnotationData> getAnnotationList(Class<? extends Annotation> annotationClass) {
         return getAnnotationList(Type.getType(annotationClass));
     }
 
-    public Set<IAnnotationData> getAnnotationList(Type annotationType);
+    Set<IAnnotationData> getAnnotationList(Type annotationType);
 
-    public boolean hasWrongSideOnlyAnnotation(String clazz);
+    boolean hasWrongSideOnlyAnnotation(String clazz);
 
-    public Function<Type, Set<IAnnotationData>> getAnnotationsFor(IModFileInfo file);
+    Function<Type, Set<IAnnotationData>> getAnnotationsFor(IModFileInfo file);
 
-    public Function<Type, Set<IAnnotationData>> getAnnotationsFor(ModContainer mc);
+    Function<Type, Set<IAnnotationData>> getAnnotationsFor(ModContainer mc);
 
-    public ModContainer deepSearchOwner(IAnnotationData annotationData);
+    ModContainer deepSearchOwner(IAnnotationData annotationData);
 
-    public String deepSearchOwnerName(IAnnotationData annotationData);
+    String deepSearchOwnerName(IAnnotationData annotationData);
 
 }

@@ -3,6 +3,7 @@ package elec332.core.block;
 import com.google.common.collect.Lists;
 import elec332.core.tile.sub.ISubTileLogic;
 import elec332.core.tile.sub.TileMultiObject;
+import elec332.core.util.FMLHelper;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.material.PushReaction;
@@ -39,7 +40,9 @@ public class BlockSubTile extends AbstractBlock implements ISelectionBoxOverride
     @SuppressWarnings("all")
     public BlockSubTile(Properties builder, Class<? extends ISubTileLogic>... subtiles) {
         super(builder.hardnessAndResistance(5));
-        setBlockRenderType(RenderType.getCutout());
+        if (FMLHelper.getDist().isClient()) {
+            setBlockRenderType(RenderType.getCutout());
+        }
         this.subtiles = subtiles;
     }
 

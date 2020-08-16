@@ -14,6 +14,6 @@ import javax.annotation.Nonnull;
 public interface ITESRItem {
 
     @OnlyIn(Dist.CLIENT)
-    public void renderItem(ItemStack stack, @Nonnull MatrixStack matrixStack, @Nonnull IRenderTypeBuffer renderTypeBuffer, int combinedLightIn, int combinedOverlayIn);
+    void renderItem(ItemStack stack, @Nonnull MatrixStack matrixStack, @Nonnull IRenderTypeBuffer renderTypeBuffer, int combinedLightIn, int combinedOverlayIn);
 
 }
