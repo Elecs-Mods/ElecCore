@@ -3,8 +3,8 @@ package elec332.core.client.model;
 import com.google.common.collect.ImmutableList;
 import elec332.core.api.APIHandlerInject;
 import elec332.core.api.IAPIHandler;
-import elec332.core.api.client.model.IElecModelBakery;
-import elec332.core.api.client.model.IElecTemplateBakery;
+import elec332.core.api.client.model.IModelBakery;
+import elec332.core.api.client.model.ITemplateBakery;
 import elec332.core.api.client.model.model.IModelWithoutQuads;
 import elec332.core.api.client.model.model.IQuadProvider;
 import elec332.core.api.client.model.template.IModelTemplate;
@@ -28,7 +28,7 @@ import java.util.Random;
  */
 @OnlyIn(Dist.CLIENT)
 @SuppressWarnings("all")
-public class ElecModelBakery implements IElecModelBakery {
+public class ElecModelBakery implements IModelBakery {
 
     protected static final ElecModelBakery instance = new ElecModelBakery();
 
@@ -38,7 +38,7 @@ public class ElecModelBakery implements IElecModelBakery {
     private static final List<BakedQuad> EMPTY_LIST;
     private static final ElecQuadBakery quadBakery;
     private static IModelTemplate defaultBlockTemplate, defaultItemTemplate;
-    private static IElecTemplateBakery templateBakery;
+    private static ITemplateBakery templateBakery;
     public static final ItemCameraTransforms DEFAULT_ITEM, DEFAULT_BLOCK;
 
 
@@ -119,7 +119,7 @@ public class ElecModelBakery implements IElecModelBakery {
 
     @APIHandlerInject
     public void injectModelBakery(IAPIHandler apiHandler) {
-        apiHandler.inject(instance, IElecModelBakery.class);
+        apiHandler.inject(instance, IModelBakery.class);
     }
 
     private BakedItemModel _forTemplateNoQuadsI(IModelTemplate template) {
@@ -220,7 +220,7 @@ public class ElecModelBakery implements IElecModelBakery {
     }
 
     @APIHandlerInject
-    public void getTemplates(IElecTemplateBakery templateBakery) {
+    public void getTemplates(ITemplateBakery templateBakery) {
         defaultBlockTemplate = templateBakery.newDefaultBlockTemplate();
         defaultItemTemplate = templateBakery.newDefaultItemTemplate();
         ElecModelBakery.templateBakery = templateBakery;

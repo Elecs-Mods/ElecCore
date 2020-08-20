@@ -91,24 +91,45 @@ public class TileEntityAnnotationProcessor implements IItemRegister {
             name = checkName(name, (String) data.getAnnotationInfo().get("mod"), clazz);
 
             final String finalName = name;
-            toRegister.computeIfAbsent(name.split(":")[0], o -> Sets.newHashSet()).add(() -> {
-                ObjectReference<TileEntityType<?>> ref = new ObjectReference<>();
-                ref.set(RegistryHelper.getTileEntities().getValue(new ResourceLocation(finalName)));
-
-                if (ref.get() == null) {
-                    registerTileEntity(clazz, new ResourceLocation(finalName), ref);
-                }
+            registerTileEntityLater(clazz, new ResourceLocation(name), type -> {
                 if (f != null) {
-                    TileEntityType<?> type = ref.get();
-                    if (type instanceof TileType && ((TileType) type).getTileType() != clazz) {
-                        throw new RuntimeException("Field type mismatch!");
-                    }
                     new FieldPointer(f).set(null, type);
                 }
             });
         } catch (Exception e) {
             ElecCore.logger.error("Error pre-registering tile: " + name, e);
         }
+    }
+
+    public static <T extends TileEntity> Supplier<TileEntityType<T>> registerTileEntityLater(Class<T> clazz, ResourceLocation name) {
+        try {
+            FMLHelper.loadClass(clazz.getName());
+        } catch (Exception e) {
+            //Failed to force-load static fields
+        }
+        ObjectReference<TileEntityType<T>> ref = new ObjectReference<>();
+        registerTileEntityLater(clazz, name, ref);
+        return ref;
+    }
+
+    @SuppressWarnings("unchecked")
+    private static <T extends TileEntity> void registerTileEntityLater(Class<T> clazz, ResourceLocation name_, Consumer<TileEntityType<T>> consumer) {
+        String name = name_.toString();
+        toRegister.computeIfAbsent(name.split(":")[0], o -> Sets.newHashSet()).add(() -> {
+            ObjectReference<TileEntityType<T>> ref = new ObjectReference<>();
+            ref.set((TileEntityType<T>) RegistryHelper.getTileEntities().getValue(new ResourceLocation(name)));
+
+            if (ref.get() == null) {
+                registerTileEntity(clazz, new ResourceLocation(name), ref);
+            }
+            if (consumer != null) {
+                TileEntityType<T> type = ref.get();
+                if (type instanceof TileType && ((TileType<T>) type).getTileType() != clazz) {
+                    throw new RuntimeException("Field type mismatch!");
+                }
+                consumer.accept(type);
+            }
+        });
     }
 
     public static String checkName(String name, String mod, Class<? extends TileEntity> clazz) {
@@ -125,7 +146,7 @@ public class TileEntityAnnotationProcessor implements IItemRegister {
         return registerTileEntity(clazz, rl, new ObjectReference<>());
     }
 
-    private static <T extends TileEntity> TileEntityType<T> registerTileEntity(Class<T> clazz, ResourceLocation rl, ObjectReference<TileEntityType<?>> ref) {
+    private static <T extends TileEntity> TileEntityType<T> registerTileEntity(Class<T> clazz, ResourceLocation rl, ObjectReference<TileEntityType<T>> ref) {
         @SuppressWarnings("rawtypes")
         Supplier s = null;
         try {

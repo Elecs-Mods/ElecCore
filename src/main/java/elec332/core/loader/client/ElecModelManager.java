@@ -7,15 +7,18 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import elec332.core.ElecCore;
+import elec332.core.api.APIHandlerInject;
+import elec332.core.api.IAPIHandler;
 import elec332.core.api.annotations.StaticLoad;
 import elec332.core.api.client.model.loading.IModelHandler;
+import elec332.core.api.client.model.loading.IModelManager;
 import elec332.core.api.client.model.loading.ModelHandler;
 import elec332.core.api.discovery.AnnotationDataProcessor;
 import elec332.core.api.discovery.IAnnotationData;
 import elec332.core.api.discovery.IAnnotationDataHandler;
 import elec332.core.api.discovery.IAnnotationDataProcessor;
+import elec332.core.api.util.ISimpleResourcePack;
 import elec332.core.client.ClientHelper;
-import elec332.core.client.util.InternalResourcePack;
 import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.client.renderer.model.ModelBakery;
 import net.minecraft.client.renderer.model.ModelResourceLocation;
@@ -41,31 +44,42 @@ import java.util.function.Function;
 @StaticLoad
 @OnlyIn(Dist.CLIENT)
 @AnnotationDataProcessor(ModLoadingStage.COMMON_SETUP)
-enum ElecModelManager implements IAnnotationDataProcessor {
+enum ElecModelManager implements IModelManager, IAnnotationDataProcessor {
 
     INSTANCE;
 
     ElecModelManager() {
         this.modelHandlers = Lists.newArrayList();
+        this.allHandlers = Lists.newArrayList();
     }
 
     private static final String FAKE_BLOCKSTATE_JSON = "{ \"variants\": { \"\": { \"model\": \"builtin/missing\" } } }";
     private static final String MISSING_JSON = "{ \"parent\": \"builtin/generated\" }";
-    private List<IModelHandler> modelHandlers;
+    private final List<Object> allHandlers;
+    private final List<IModelHandler> modelHandlers;
+    private boolean locked;
+
+    @Override
+    public void registerModelHandler(Object object) {
+        if (locked) {
+            throw new IllegalStateException();
+        }
+        this.allHandlers.add(object);
+    }
 
     @Override
     public void processASMData(IAnnotationDataHandler asmData, ModLoadingStage state) {
-        List<Object> list = Lists.newArrayList();
         for (IAnnotationData data : asmData.getAnnotationList(ModelHandler.class)) {
             String s = data.getClassName();
             try {
-                list.add(Class.forName(s).newInstance());
+                registerModelHandler(Class.forName(s).newInstance());
             } catch (Exception e) {
                 throw new RuntimeException("Error registering ModelHandler class: " + s, e);
             }
         }
-        List<?> param = ImmutableList.copyOf(list);
-        for (Object o : list) {
+        locked = true;
+        List<?> param = ImmutableList.copyOf(allHandlers);
+        for (Object o : allHandlers) {
             if (o instanceof IModelHandler) {
                 IModelHandler modelHandler = (IModelHandler) o;
                 if (modelHandler.enabled()) {
@@ -76,6 +90,12 @@ enum ElecModelManager implements IAnnotationDataProcessor {
         }
         preHandleModels();
         registerFakeResources();
+    }
+
+    @APIHandlerInject
+    @SuppressWarnings("unused")
+    private void injectModuleManager(IAPIHandler apiHandler) {
+        apiHandler.inject(INSTANCE, IModelManager.class);
     }
 
     public void preHandleModels() {
@@ -91,9 +111,9 @@ enum ElecModelManager implements IAnnotationDataProcessor {
                 .map(IModelHandler::getHandlerModelLocations)
                 .flatMap(Collection::stream)
                 .forEach(rl -> mods.computeIfAbsent(rl.getNamespace(), k -> Sets.newHashSet()).add(rl));
-        mods.keySet().forEach(name -> ClientHelper.addResourcePack(new InternalResourcePack(name + " automodel", name) {
+        mods.keySet().forEach(name -> ClientHelper.addResourcePack(new ISimpleResourcePack() {
 
-            Set<ResourceLocation> objects = mods.get(name);
+            final Set<ResourceLocation> objects = mods.get(name);
 
             @Nonnull
             @Override
@@ -105,7 +125,7 @@ enum ElecModelManager implements IAnnotationDataProcessor {
                 if (isValidBlockState(path)) {
                     return new ByteArrayInputStream(FAKE_BLOCKSTATE_JSON.getBytes());
                 } else if (isValidItemModel(path)) {
-                    return new ByteArrayInputStream(ModelBakery.MISSING_MODEL_MESH.getBytes());
+                    return new ByteArrayInputStream(MISSING_JSON.getBytes());
                 }
                 throw new IllegalArgumentException();
             }
@@ -133,7 +153,7 @@ enum ElecModelManager implements IAnnotationDataProcessor {
                 return false;
             }
 
-        }));
+        }, name));
     }
 
     Set<ModelResourceLocation> registerBakedModels(Map<ResourceLocation, IBakedModel> registry, Function<ModelResourceLocation, IBakedModel> modelGetter, ModelLoader modelLoader) {

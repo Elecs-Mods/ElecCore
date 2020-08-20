@@ -249,6 +249,10 @@ public class RegistryHelper {
         });
     }
 
+    public static <T extends TileEntity> Supplier<TileEntityType<T>> registerTileEntityLater(Class<T> clazz, ResourceLocation name) {
+        return TileEntityAnnotationProcessor.registerTileEntityLater(clazz, name);
+    }
+
     public static <T extends TileEntity> TileEntityType<T> registerTileEntity(Class<T> clazz, ResourceLocation rl) {
         return TileEntityAnnotationProcessor.registerTileEntity(clazz, rl);
     }

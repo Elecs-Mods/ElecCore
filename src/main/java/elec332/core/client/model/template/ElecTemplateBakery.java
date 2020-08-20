@@ -2,7 +2,7 @@ package elec332.core.client.model.template;
 
 import elec332.core.api.APIHandlerInject;
 import elec332.core.api.IAPIHandler;
-import elec332.core.api.client.model.IElecTemplateBakery;
+import elec332.core.api.client.model.ITemplateBakery;
 import elec332.core.api.client.model.template.*;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.util.Direction;
@@ -15,7 +15,7 @@ import javax.annotation.Nonnull;
  * Created by Elec332 on 6-12-2015.
  */
 @OnlyIn(Dist.CLIENT)
-public final class ElecTemplateBakery implements IElecTemplateBakery {
+public final class ElecTemplateBakery implements ITemplateBakery {
 
     private static final ElecTemplateBakery instance = new ElecTemplateBakery();
 
@@ -123,7 +123,7 @@ public final class ElecTemplateBakery implements IElecTemplateBakery {
 
     @APIHandlerInject
     public void injectTemplateBakery(IAPIHandler apiHandler) {
-        apiHandler.inject(instance, IElecTemplateBakery.class);
+        apiHandler.inject(instance, ITemplateBakery.class);
     }
 
 }

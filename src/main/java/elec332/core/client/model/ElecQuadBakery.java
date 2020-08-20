@@ -4,7 +4,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 import elec332.core.api.APIHandlerInject;
 import elec332.core.api.IAPIHandler;
-import elec332.core.api.client.model.IElecQuadBakery;
+import elec332.core.api.client.model.IQuadBakery;
 import elec332.core.api.client.model.model.IQuadProvider;
 import elec332.core.api.client.model.template.IQuadTemplate;
 import elec332.core.api.client.model.template.IQuadTemplateSidedMap;
@@ -30,7 +30,7 @@ import java.util.Random;
  */
 @OnlyIn(Dist.CLIENT)
 @SuppressWarnings({"WeakerAccess", "unused"})
-public class ElecQuadBakery implements IElecQuadBakery {
+public class ElecQuadBakery implements IQuadBakery {
 
     protected static final ElecQuadBakery instance = new ElecQuadBakery();
 
@@ -156,7 +156,7 @@ public class ElecQuadBakery implements IElecQuadBakery {
 
     @APIHandlerInject
     public void injectQuadBakery(IAPIHandler apiHandler) {
-        apiHandler.inject(instance, IElecQuadBakery.class);
+        apiHandler.inject(instance, IQuadBakery.class);
     }
 
     private static class SidedMap implements IQuadProvider {

@@ -17,7 +17,7 @@ public interface IItemModelHandler {
      * @param item The item
      * @return Whether this handler can handle this item
      */
-    public boolean handleItem(Item item);
+    boolean handleItem(Item item);
 
     /**
      * Used to create an identifier for this Item
@@ -26,7 +26,7 @@ public interface IItemModelHandler {
      * @param item The item
      * @return The identifier for this Item
      */
-    public String getIdentifier(Item item);
+    String getIdentifier(Item item);
 
     /**
      * Used to create/fetch the model for this {@param item}
@@ -36,6 +36,6 @@ public interface IItemModelHandler {
      * @param fullResourceLocation The full ModelResourceLocation for this model
      * @return The model for this {@param item}
      */
-    public IBakedModel getModelFor(Item item, String identifier, ModelResourceLocation fullResourceLocation);
+    IBakedModel getModelFor(Item item, String identifier, ModelResourceLocation fullResourceLocation);
 
 }

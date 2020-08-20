@@ -7,7 +7,7 @@ import elec332.core.api.client.ITextureLoader;
  * <p>
  * A combination of {@link IModelLoader} and {@link ITextureLoader}
  * Needs to be registered by calling
- * {@link IElecRenderingRegistry#registerLoader(IModelAndTextureLoader)}
+ * {@link IRenderingRegistry#registerLoader(IModelAndTextureLoader)}
  */
 public interface IModelAndTextureLoader extends IModelLoader, ITextureLoader {
 

@@ -3,9 +3,9 @@ package elec332.core.item;
 import com.google.common.base.Preconditions;
 import elec332.core.api.client.IColoredItem;
 import elec332.core.api.client.IIconRegistrar;
-import elec332.core.api.client.model.IElecModelBakery;
-import elec332.core.api.client.model.IElecQuadBakery;
-import elec332.core.api.client.model.IElecTemplateBakery;
+import elec332.core.api.client.model.IModelBakery;
+import elec332.core.api.client.model.IQuadBakery;
+import elec332.core.api.client.model.ITemplateBakery;
 import elec332.core.client.RenderHelper;
 import elec332.core.client.model.loading.INoJsonItem;
 import net.minecraft.client.renderer.model.IBakedModel;
@@ -113,7 +113,7 @@ public class ItemEnumBased<E extends Enum<E> & IEnumItem> extends AbstractItem i
     }
 
     @Override
-    public void registerModels(IElecQuadBakery quadBakery, IElecModelBakery modelBakery, IElecTemplateBakery templateBakery) {
+    public void registerModels(IQuadBakery quadBakery, IModelBakery modelBakery, ITemplateBakery templateBakery) {
         models = new IBakedModel[values.length];
         for (E e : values) {
             if (nji) {

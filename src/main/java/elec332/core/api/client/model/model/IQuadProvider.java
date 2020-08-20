@@ -16,6 +16,6 @@ import java.util.Random;
 public interface IQuadProvider {
 
     @OnlyIn(Dist.CLIENT)
-    public List<BakedQuad> getBakedQuads(@Nullable BlockState state, Direction side, Random random);
+    List<BakedQuad> getBakedQuads(@Nullable BlockState state, Direction side, Random random);
 
 }

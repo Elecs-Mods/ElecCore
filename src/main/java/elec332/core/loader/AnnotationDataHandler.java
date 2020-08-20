@@ -20,6 +20,7 @@ import net.minecraftforge.forgespi.language.ModFileScanData;
 import org.apache.commons.lang3.tuple.Pair;
 import org.objectweb.asm.Type;
 
+import javax.annotation.Nonnull;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.*;
@@ -55,14 +56,21 @@ enum AnnotationDataHandler {
             asmLoaderMap.put(state, Lists.newArrayList());
         }
         this.hasWrongSideOnly = cls -> AnnotationDataHandler.this.sideOnlyCache.computeIfAbsent(cls,
-                name -> {
-                    Optional<IAnnotationData> dat = asmDataHelper.getAnnotationList(OnlyIn.class).stream().filter(asmData -> asmData.getClassName().equals(cls)).findFirst();
-                    if (!dat.isPresent()) {
-                        return false;
-                    }
-                    ModAnnotation.EnumHolder enumHolder = (ModAnnotation.EnumHolder) dat.get().getAnnotationInfo().get("value");
-                    return !FMLHelper.getDist().toString().equals(enumHolder.getValue());
-                }
+                name -> asmDataHelper.getClassAnnotations(cls).values().stream()
+                        .flatMap(Collection::stream)
+                        .anyMatch(data -> {
+                            if (data.getAnnotationType() == Type.getType(OnlyIn.class)) {
+                                ModAnnotation.EnumHolder enumHolder = (ModAnnotation.EnumHolder) data.getAnnotationInfo().get("value");
+                                if (FMLHelper.getDist().toString().equals(enumHolder.getValue())) {
+                                    return true;
+                                }
+                            }
+                            if (data.getAnnotationInfo().containsKey("onlyIn")) {
+                                ModAnnotation.EnumHolder enumHolder = (ModAnnotation.EnumHolder) data.getAnnotationInfo().get("onlyIn");
+                                return FMLHelper.getDist().toString().equals(enumHolder.getValue());
+                            }
+                            return false;
+                        })
         );
 
         Map<String, ModContainer> pck = Maps.newTreeMap((o1, o2) -> {
@@ -121,6 +129,7 @@ enum AnnotationDataHandler {
         };
 
         final Map<String, SetMultimap<Type, IAnnotationData>> annotationDataM = Maps.newHashMap();
+        final Map<String, SetMultimap<Type, IAnnotationData>> classAnnotations = Maps.newHashMap();
         final Map<IModFileInfo, SetMultimap<Type, IAnnotationData>> annotationDataF = modList.getModFiles().stream()
                 .collect(Collectors.toMap(Function.identity(), mfi -> {
                     ModFile mf = mfi.getFile();
@@ -133,6 +142,7 @@ enum AnnotationDataHandler {
                                     return;
                                 }
                                 Type annType = ad.getAnnotationType();
+                                classAnnotations.computeIfAbsent(annotationData.getClassName(), s -> HashMultimap.create()).put(annType, annotationData);
                                 ret.put(annType, annotationData);
                                 ModContainer mc = modSearcher.apply(annotationData);
                                 if (mc != null) {
@@ -165,6 +175,13 @@ enum AnnotationDataHandler {
             @Override
             public Function<Type, Set<IAnnotationData>> getAnnotationsFor(IModFileInfo file) {
                 return type -> Optional.ofNullable(annotationDataF.get(file)).map(t -> t.get(type)).orElse(ImmutableSet.of());
+            }
+
+            @Nonnull
+            @Override
+            public Map<Type, Collection<IAnnotationData>> getClassAnnotations(String clazz) {
+                SetMultimap<Type, IAnnotationData> ret = classAnnotations.get(clazz);
+                return Collections.unmodifiableMap(ret == null ? Collections.emptyMap() : ret.asMap());
             }
 
             @Override

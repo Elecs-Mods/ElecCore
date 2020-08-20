@@ -1,6 +1,6 @@
 package elec332.core.api.client;
 
-import elec332.core.api.client.model.IElecRenderingRegistry;
+import elec332.core.api.client.model.IRenderingRegistry;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -9,7 +9,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
  * <p>
  * Can be used by objects that need to register textures.
  * Needs to be registered by calling
- * {@link IElecRenderingRegistry#registerLoader(ITextureLoader)}
+ * {@link IRenderingRegistry#registerLoader(ITextureLoader)}
  */
 public interface ITextureLoader {
 

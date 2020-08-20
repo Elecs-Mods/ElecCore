@@ -8,7 +8,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
  * <p>
  * Can be used by objects that need to make models,
  * Needs to be registered by calling
- * {@link IElecRenderingRegistry#registerLoader(IModelLoader)}
+ * {@link IRenderingRegistry#registerLoader(IModelLoader)}
  */
 public interface IModelLoader {
 
@@ -19,6 +19,6 @@ public interface IModelLoader {
      * @param quadBakery The QuadBakery.
      */
     @OnlyIn(Dist.CLIENT)
-    public void registerModels(IElecQuadBakery quadBakery, IElecModelBakery modelBakery, IElecTemplateBakery templateBakery);
+    void registerModels(IQuadBakery quadBakery, IModelBakery modelBakery, ITemplateBakery templateBakery);
 
 }

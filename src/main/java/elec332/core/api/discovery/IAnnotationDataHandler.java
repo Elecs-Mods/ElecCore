@@ -4,7 +4,10 @@ import net.minecraftforge.fml.ModContainer;
 import net.minecraftforge.forgespi.language.IModFileInfo;
 import org.objectweb.asm.Type;
 
+import javax.annotation.Nonnull;
 import java.lang.annotation.Annotation;
+import java.util.Collection;
+import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 
@@ -26,6 +29,9 @@ public interface IAnnotationDataHandler {
     Function<Type, Set<IAnnotationData>> getAnnotationsFor(IModFileInfo file);
 
     Function<Type, Set<IAnnotationData>> getAnnotationsFor(ModContainer mc);
+
+    @Nonnull
+    Map<Type, Collection<IAnnotationData>> getClassAnnotations(String clazz);
 
     ModContainer deepSearchOwner(IAnnotationData annotationData);
 

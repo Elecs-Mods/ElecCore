@@ -1,8 +1,8 @@
 package elec332.core.loader.client;
 
-import elec332.core.api.client.model.IElecModelBakery;
-import elec332.core.api.client.model.IElecQuadBakery;
-import elec332.core.api.client.model.IElecTemplateBakery;
+import elec332.core.api.client.model.IModelBakery;
+import elec332.core.api.client.model.IQuadBakery;
+import elec332.core.api.client.model.ITemplateBakery;
 import elec332.core.api.client.model.ModelLoadEvent;
 import elec332.core.client.RenderHelper;
 import net.minecraft.client.renderer.model.IBakedModel;
@@ -23,7 +23,7 @@ import java.util.function.Function;
 @OnlyIn(Dist.CLIENT)
 class ModelLoadEventImpl extends ModelLoadEvent {
 
-    ModelLoadEventImpl(IElecQuadBakery quadBakery, IElecModelBakery modelBakery, IElecTemplateBakery templateBakery, Map<ResourceLocation, IBakedModel> registry, Function<ModelResourceLocation, IBakedModel> modelGetter, ModelLoader modelLoader) {
+    ModelLoadEventImpl(IQuadBakery quadBakery, IModelBakery modelBakery, ITemplateBakery templateBakery, Map<ResourceLocation, IBakedModel> registry, Function<ModelResourceLocation, IBakedModel> modelGetter, ModelLoader modelLoader) {
         this.quadBakery = quadBakery;
         this.modelBakery = modelBakery;
         this.templateBakery = templateBakery;
@@ -32,28 +32,28 @@ class ModelLoadEventImpl extends ModelLoadEvent {
         this.modelLoader = modelLoader;
     }
 
-    private final IElecQuadBakery quadBakery;
-    private final IElecModelBakery modelBakery;
-    private final IElecTemplateBakery templateBakery;
+    private final IQuadBakery quadBakery;
+    private final IModelBakery modelBakery;
+    private final ITemplateBakery templateBakery;
     private final Map<ResourceLocation, IBakedModel> registry;
     private final Function<ModelResourceLocation, IBakedModel> modelGetter;
     private final ModelLoader modelLoader;
 
     @Override
     @Nonnull
-    public IElecQuadBakery getQuadBakery() {
+    public IQuadBakery getQuadBakery() {
         return quadBakery;
     }
 
     @Override
     @Nonnull
-    public IElecModelBakery getModelBakery() {
+    public IModelBakery getModelBakery() {
         return modelBakery;
     }
 
     @Override
     @Nonnull
-    public IElecTemplateBakery getTemplateBakery() {
+    public ITemplateBakery getTemplateBakery() {
         return templateBakery;
     }
 

@@ -17,21 +17,21 @@ import java.lang.annotation.Target;
 @Target({ElementType.TYPE, ElementType.FIELD})
 public @interface RegisteredTileEntity {
 
-    public String value();
+    String value();
 
     /**
      * Use this to set the mod owner of this tile when auto-detection fails
      *
      * @return The mod owner
      */
-    public String mod() default "";
+    String mod() default "";
 
     /**
      * Use this interface if you want the {@link TileEntityType} to be set automatically
      */
-    public interface TypeSetter {
+    interface TypeSetter {
 
-        public void setTileEntityType(TileEntityType<?> type);
+        void setTileEntityType(TileEntityType<?> type);
 
     }
 

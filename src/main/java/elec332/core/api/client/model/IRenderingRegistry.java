@@ -21,7 +21,7 @@ import java.util.function.Supplier;
 /**
  * Created by Elec332 on 29-10-2016.
  */
-public interface IElecRenderingRegistry {
+public interface IRenderingRegistry {
 
     @Nonnull
     StateContainer<Block, BlockState> registerBlockStateLocation(@Nonnull ResourceLocation location, IProperty<?>... properties);
@@ -69,7 +69,7 @@ public interface IElecRenderingRegistry {
     /**
      * Use with caution!!!
      * <p>
-     * If possible, use {@link IElecRenderingRegistry#setItemRenderer(Item, ITESRItem)} instead!
+     * If possible, use {@link IRenderingRegistry#setItemRenderer(Item, ITESRItem)} instead!
      */
     void setItemRenderer(Item item, ItemStackTileEntityRenderer renderer);
 

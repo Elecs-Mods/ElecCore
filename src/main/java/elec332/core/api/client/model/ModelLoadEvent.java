@@ -25,19 +25,19 @@ public class ModelLoadEvent extends Event {
 
     @Nonnull
     @OnlyIn(Dist.CLIENT)
-    public IElecQuadBakery getQuadBakery() {
+    public IQuadBakery getQuadBakery() {
         throw new UnsupportedOperationException();
     }
 
     @Nonnull
     @OnlyIn(Dist.CLIENT)
-    public IElecModelBakery getModelBakery() {
+    public IModelBakery getModelBakery() {
         throw new UnsupportedOperationException();
     }
 
     @Nonnull
     @OnlyIn(Dist.CLIENT)
-    public IElecTemplateBakery getTemplateBakery() {
+    public ITemplateBakery getTemplateBakery() {
         throw new UnsupportedOperationException();
     }
 

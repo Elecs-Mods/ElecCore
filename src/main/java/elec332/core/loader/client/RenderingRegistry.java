@@ -59,7 +59,7 @@ import java.util.stream.Collectors;
 @StaticLoad
 @OnlyIn(Dist.CLIENT)
 @SuppressWarnings("unused")
-public final class RenderingRegistry implements IElecRenderingRegistry {
+public final class RenderingRegistry implements IRenderingRegistry {
 
     public static RenderingRegistry instance() {
         return instance;
@@ -112,11 +112,11 @@ public final class RenderingRegistry implements IElecRenderingRegistry {
     private AtlasTexture blockTextures;
 
     @APIHandlerInject
-    private IElecQuadBakery quadBakery = null;
+    private IQuadBakery quadBakery = null;
     @APIHandlerInject
-    private IElecModelBakery modelBakery = null;
+    private IModelBakery modelBakery = null;
     @APIHandlerInject
-    private IElecTemplateBakery templateBakery = null;
+    private ITemplateBakery templateBakery = null;
 
     @Nonnull
     @Override
@@ -326,7 +326,7 @@ public final class RenderingRegistry implements IElecRenderingRegistry {
 
     @APIHandlerInject
     public void injectRenderingRegistry(IAPIHandler apiHandler) {
-        apiHandler.inject(instance(), IElecRenderingRegistry.class);
+        apiHandler.inject(instance(), IRenderingRegistry.class);
     }
 
     @SuppressWarnings("all")
@@ -427,7 +427,7 @@ public final class RenderingRegistry implements IElecRenderingRegistry {
         instance.registerLoader(new IModelAndTextureLoader() {
 
             @Override
-            public void registerModels(IElecQuadBakery quadBakery, IElecModelBakery modelBakery, IElecTemplateBakery templateBakery) {
+            public void registerModels(IQuadBakery quadBakery, IModelBakery modelBakery, ITemplateBakery templateBakery) {
                 for (Item item : instance.getAllValidItems()) {
                     if (item instanceof IModelLoader) {
                         ((IModelLoader) item).registerModels(quadBakery, modelBakery, templateBakery);

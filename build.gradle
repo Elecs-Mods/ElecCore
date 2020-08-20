@@ -3,7 +3,7 @@ buildscript {
         gradlePluginPortal()
     }
     dependencies {
-        classpath 'gradle.plugin.nl.elec332.gradle.minecraft:GradleModDev:0.2.1-Beta'
+        classpath 'gradle.plugin.nl.elec332.gradle.minecraft:GradleModDev:0.2.2-Beta'
     }
 }
 

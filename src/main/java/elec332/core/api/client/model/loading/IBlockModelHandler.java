@@ -18,7 +18,7 @@ public interface IBlockModelHandler {
      * @param block The block
      * @return Whether this handler can handle this block
      */
-    public boolean handleBlock(Block block);
+    boolean handleBlock(Block block);
 
     /**
      * Notifies this {@link IBlockModelHandler} of the
@@ -27,7 +27,7 @@ public interface IBlockModelHandler {
      * @param state         The {@link BlockState}
      * @param modelLocation The location of the provided {@link BlockState}
      */
-    default public void notifyModelLocation(BlockState state, ModelResourceLocation modelLocation) {
+    default void notifyModelLocation(BlockState state, ModelResourceLocation modelLocation) {
     }
 
     /**
@@ -38,6 +38,6 @@ public interface IBlockModelHandler {
      * @param fullResourceLocation The full ModelResourceLocation for this model
      * @return The model for this {@param state}
      */
-    public IBakedModel getModelFor(BlockState state, String identifier, ModelResourceLocation fullResourceLocation);
+    IBakedModel getModelFor(BlockState state, String identifier, ModelResourceLocation fullResourceLocation);
 
 }
