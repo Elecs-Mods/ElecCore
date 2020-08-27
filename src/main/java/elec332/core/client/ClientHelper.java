@@ -2,6 +2,7 @@ package elec332.core.client;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
+import elec332.core.api.annotations.StaticLoad;
 import elec332.core.api.util.ISimpleResourcePack;
 import elec332.core.client.util.InternalResourcePack;
 import elec332.core.util.FMLHelper;
@@ -24,6 +25,7 @@ import java.util.stream.Collectors;
 /**
  * Created by Elec332 on 23-12-2019
  */
+@StaticLoad
 @OnlyIn(Dist.CLIENT)
 public class ClientHelper {
 
