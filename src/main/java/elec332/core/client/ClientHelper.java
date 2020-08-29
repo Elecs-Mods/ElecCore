@@ -89,32 +89,34 @@ public class ClientHelper {
 
     static {
         mc = Minecraft.getInstance();
-        addResourcePack(mc.getResourceManager(), new InternalResourcePack("thread_safe_resources", FMLHelper.getModList().getMods().stream().map(ModInfo::getModId).collect(Collectors.toSet())) {
+        if (getMinecraft() != null) { //During data gen the mc instance in null...
+            addResourcePack(mc.getResourceManager(), new InternalResourcePack("thread_safe_resources", FMLHelper.getModList().getMods().stream().map(ModInfo::getModId).collect(Collectors.toSet())) {
 
-            @Nonnull
-            @Override
-            public synchronized InputStream getResourceStream(@Nonnull ResourcePackType type, @Nonnull ResourceLocation location) {
-                String nameSpace = location.getNamespace();
-                if (!Strings.isNullOrEmpty(nameSpace)) {
-                    return resourcePacks.get(nameSpace).stream()
-                            .filter(srp -> srp.resourceExists(type, location))
-                            .findFirst()
-                            .map(srp -> srp.getResourceStream(type, location))
-                            .orElseThrow(NoSuchElementException::new);
+                @Nonnull
+                @Override
+                public synchronized InputStream getResourceStream(@Nonnull ResourcePackType type, @Nonnull ResourceLocation location) {
+                    String nameSpace = location.getNamespace();
+                    if (!Strings.isNullOrEmpty(nameSpace)) {
+                        return resourcePacks.get(nameSpace).stream()
+                                .filter(srp -> srp.resourceExists(type, location))
+                                .findFirst()
+                                .map(srp -> srp.getResourceStream(type, location))
+                                .orElseThrow(NoSuchElementException::new);
+                    }
+                    throw new RuntimeException();
                 }
-                throw new RuntimeException();
-            }
 
-            @Override
-            public synchronized boolean resourceExists(@Nonnull ResourcePackType type, @Nonnull ResourceLocation location) {
-                String nameSpace = location.getNamespace();
-                if (!Strings.isNullOrEmpty(nameSpace)) {
-                    return resourcePacks.get(nameSpace).stream().anyMatch(srp -> srp.resourceExists(type, location));
+                @Override
+                public synchronized boolean resourceExists(@Nonnull ResourcePackType type, @Nonnull ResourceLocation location) {
+                    String nameSpace = location.getNamespace();
+                    if (!Strings.isNullOrEmpty(nameSpace)) {
+                        return resourcePacks.get(nameSpace).stream().anyMatch(srp -> srp.resourceExists(type, location));
+                    }
+                    return false;
                 }
-                return false;
-            }
 
-        });
+            });
+        }
     }
 
 }
