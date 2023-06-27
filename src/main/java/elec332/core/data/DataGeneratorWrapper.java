@@ -3,26 +3,35 @@ package elec332.core.data;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import elec332.core.api.data.IDataGenerator;
+import elec332.core.util.FieldPointer;
 import net.minecraft.data.*;
 import net.minecraftforge.client.model.generators.*;
 import net.minecraftforge.fml.event.lifecycle.GatherDataEvent;
 
 import java.util.Collection;
 import java.util.Comparator;
-import java.util.function.BooleanSupplier;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
+import java.util.function.*;
 
 /**
  * Created by Elec332 on 20-8-2020
  */
-class DataGeneratorWrapper implements Consumer<GatherDataEvent> {
+public class DataGeneratorWrapper implements Consumer<GatherDataEvent> {
 
-    DataGeneratorWrapper(AbstractDataGenerator dataGenerator) {
+    public static Consumer<GatherDataEvent> toEventListener(IDataGenerator dataGenerator) {
+        return new DataGeneratorWrapper(dataGenerator);
+    }
+
+    public static Consumer<GatherDataEvent> withDataConfig(BiConsumer<GatherDataEvent, GatherDataEvent.DataGeneratorConfig> consumer) {
+        return event -> consumer.accept(event, CONFIG_GETTER.apply(event));
+    }
+
+    DataGeneratorWrapper(IDataGenerator dataGenerator) {
         this.dataGenerator = dataGenerator;
     }
 
-    private final AbstractDataGenerator dataGenerator;
+    private static final Function<GatherDataEvent, GatherDataEvent.DataGeneratorConfig> CONFIG_GETTER;
+    private final IDataGenerator dataGenerator;
 
     @Override
     public void accept(GatherDataEvent event) {
@@ -33,7 +42,7 @@ class DataGeneratorWrapper implements Consumer<GatherDataEvent> {
         dataRegistry.dataProviders.forEach(event.getGenerator()::addProvider);
     }
 
-    private static class DataRegistry implements AbstractDataGenerator.DataRegistry {
+    private static class DataRegistry implements IDataGenerator.Registry {
 
         private DataRegistry(GatherDataEvent event) {
             this.event = event;
@@ -154,6 +163,11 @@ class DataGeneratorWrapper implements Consumer<GatherDataEvent> {
             return event.includeReports();
         }
 
+    }
+
+    static {
+        FieldPointer<GatherDataEvent, GatherDataEvent.DataGeneratorConfig> fp = new FieldPointer<>(GatherDataEvent.class, "config");
+        CONFIG_GETTER = fp::get;
     }
 
 }

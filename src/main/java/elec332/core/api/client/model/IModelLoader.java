@@ -19,6 +19,6 @@ public interface IModelLoader {
      * @param quadBakery The QuadBakery.
      */
     @OnlyIn(Dist.CLIENT)
-    void registerModels(IQuadBakery quadBakery, IModelBakery modelBakery, ITemplateBakery templateBakery);
+    void registerModels(IQuadBakery quadBakery);
 
 }

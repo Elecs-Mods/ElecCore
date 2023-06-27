@@ -74,7 +74,6 @@ public final class RenderingRegistry implements IRenderingRegistry {
         textureLoaders = Sets.newHashSet();
         extraItems = Lists.newArrayList();
         extraBlocks = Lists.newArrayList();
-        extraModels = Lists.newArrayList();
         extraTextures = Lists.newArrayList();
         Preconditions.checkNotNull(((FMLModContainer) FMLHelper.findMod("eleccoreloader"))).getEventBus().register(this);
         missingModel = new ObjectReference<>();
@@ -99,7 +98,6 @@ public final class RenderingRegistry implements IRenderingRegistry {
     private final List<Item> extraItems;
     private final List<Block> extraBlocks;
 
-    private final List<ResourceLocation> extraModels;
     private final List<ResourceLocation> extraTextures;
 
     private final ObjectReference<IBakedModel> missingModel;
@@ -113,10 +111,6 @@ public final class RenderingRegistry implements IRenderingRegistry {
 
     @APIHandlerInject
     private IQuadBakery quadBakery = null;
-    @APIHandlerInject
-    private IModelBakery modelBakery = null;
-    @APIHandlerInject
-    private ITemplateBakery templateBakery = null;
 
     @Nonnull
     @Override
@@ -145,13 +139,13 @@ public final class RenderingRegistry implements IRenderingRegistry {
         FakeBlockStateContainer fakeContainer = new FakeBlockStateContainer(block, properties);
         ref.set(fakeContainer);
         mcDefaultStatesAdder.accept(location, fakeContainer);
-        fakeContainer.getValidStates().forEach(state -> ModelLoader.addSpecialModel(BlockModelShapes.getModelLocation(location, state)));
+        fakeContainer.getValidStates().forEach(state ->registerModelLocation(BlockModelShapes.getModelLocation(location, state)));
         return fakeContainer;
     }
 
     @Override
     public void registerModelLocation(ResourceLocation location) {
-        extraModels.add(Preconditions.checkNotNull(location));
+        ModelLoader.addSpecialModel(location);
     }
 
     @Override
@@ -243,27 +237,13 @@ public final class RenderingRegistry implements IRenderingRegistry {
 
     @SubscribeEvent(priority = EventPriority.HIGH)
     public void onJsonModelLoad(ModelLoadEvent event) {
-        for (ResourceLocation mrl : extraModels) {
-            IBakedModel model;
-            try {
-                //IUnbakedModel model_ = ModelLoaderRegistry.getModel(mrl);
-                //model = model_.bake(event.getModelLoader(), ModelLoader.defaultTextureGetter(), new SimpleModelTransform(model_.getDefaultState(), false), DefaultVertexFormats.ITEM);
-                IUnbakedModel model_ = event.getModelLoader().getModelOrMissing(mrl);
-                model = model_.bakeModel(event.getModelLoader(), ModelLoader.defaultTextureGetter(), ModelRotation.X0_Y0, mrl);
-            } catch (Exception e) {
-                model = RenderHelper.getMissingModel();
-                ElecCore.logger.error("Exception loading blockstate for the variant {}: ", new ResourceLocation(mrl.getNamespace(), mrl.getPath()), e);
-            }
-            event.registerModel(mrl, model);
-        }
         for (IModelLoader loader : modelLoaders) {
-            loader.registerModels(event.getQuadBakery(), event.getModelBakery(), event.getTemplateBakery());
+            loader.registerModels(event.getQuadBakery());
         }
     }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public void afterAllModelsBaked(ModelBakeEvent event) {
-        removeJsonErrors(event.getModelLoader(), event.getModelManager(), event.getModelRegistry());
         for (Item item : instance().getAllValidItems()) {
             if (item instanceof ITESRItem) {
                 setItemRenderer(item, new LinkedISTESR((ITESRItem) item));
@@ -286,16 +266,6 @@ public final class RenderingRegistry implements IRenderingRegistry {
     @Override
     public <T extends TileEntity> void setItemRenderer(Item item, Class<T> tile) {
         setItemRenderer(item, RegistryHelper.getTileEntityType(tile));
-    }
-
-    @Override
-    public <T extends TileEntity> void setItemRenderer(Item item, T tile) {
-        setItemRenderer(item, getTESR(tile));
-    }
-
-    @Override
-    public <T extends TileEntity> void setItemRenderer(Item item, TileEntityType<T> tile) {
-        setItemRenderer(item, getTESR(tile));
     }
 
     @Override
@@ -327,30 +297,6 @@ public final class RenderingRegistry implements IRenderingRegistry {
     @APIHandlerInject
     public void injectRenderingRegistry(IAPIHandler apiHandler) {
         apiHandler.inject(instance(), IRenderingRegistry.class);
-    }
-
-    @SuppressWarnings("all")
-    void removeJsonErrors(ModelLoader modelLoader, ModelManager modelManager, Map<ResourceLocation, IBakedModel> modelRegistry) {
-        ElecCore.logger.info("Cleaning up internal Json stuff...");
-        try {
-            //Set<ModelResourceLocation> set = (Set<ModelResourceLocation>) ReflectionHelper.makeFinalFieldModifiable(ModelLoader.class.getDeclaredField("missingVariants")).get(modelLoader);
-            Map<ResourceLocation, Exception> exceptionMap = (Map<ResourceLocation, Exception>) ReflectionHelper.makeFinalFieldModifiable(ModelLoader.class.getDeclaredField("loadingExceptions")).get(modelLoader);
-            //if (ElecCore.removeJSONErrors){
-            //    exceptionMap.clear();
-            //}
-            for (ModelResourceLocation rl : getValidLocations(modelManager, modelRegistry, modelLoader)) {
-                //set.remove(rl);
-                exceptionMap.remove(rl);
-            }
-            ElecModelManager.INSTANCE.cleanModelLoadingExceptions(exceptionMap);
-        } catch (Exception e1) {
-            e1.printStackTrace();
-        }
-        ElecCore.logger.info("Finished cleaning up internal Json stuff.");
-    }
-
-    private Set<ModelResourceLocation> getValidLocations(ModelManager modelManager, Map<ResourceLocation, IBakedModel> modelRegistry, ModelLoader modelLoader) {
-        return ElecModelManager.INSTANCE.registerBakedModels(modelRegistry, modelManager::getModel, modelLoader);
     }
 
     private static class LinkedISTESR extends AbstractTileEntityItemStackRenderer {
@@ -427,15 +373,15 @@ public final class RenderingRegistry implements IRenderingRegistry {
         instance.registerLoader(new IModelAndTextureLoader() {
 
             @Override
-            public void registerModels(IQuadBakery quadBakery, IModelBakery modelBakery, ITemplateBakery templateBakery) {
+            public void registerModels(IQuadBakery quadBakery) {
                 for (Item item : instance.getAllValidItems()) {
                     if (item instanceof IModelLoader) {
-                        ((IModelLoader) item).registerModels(quadBakery, modelBakery, templateBakery);
+                        ((IModelLoader) item).registerModels(quadBakery);
                     }
                 }
                 for (Block block : instance.getAllValidBlocks()) {
                     if (block instanceof IModelLoader) {
-                        ((IModelLoader) block).registerModels(quadBakery, modelBakery, templateBakery);
+                        ((IModelLoader) block).registerModels(quadBakery);
                     }
                 }
             }
@@ -461,11 +407,11 @@ public final class RenderingRegistry implements IRenderingRegistry {
             @OnlyIn(Dist.CLIENT)
             public void bakeModels(ModelBakeEvent event) {
                 instance().missingModel.set(event.getModelManager().getMissingModel());
-                ModLoader.get().postEvent(new ModelLoadEventImpl(instance().quadBakery, instance().modelBakery, instance.templateBakery, event.getModelRegistry(), event.getModelManager()::getModel, event.getModelLoader()));
+                ModLoader.get().postEvent(new ModelLoadEventImpl(instance().quadBakery, event.getModelRegistry(), event.getModelManager()::getModel, event.getModelLoader()));
             }
 
         });
-        teisrField = new FieldPointer<>(Item.class, "ister");
+        teisrField = new FieldPointer<>(Item.class, "ister"); //Forge added this field, so no obfuscation
     }
 
 }

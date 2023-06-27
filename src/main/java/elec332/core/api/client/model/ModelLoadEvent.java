@@ -29,18 +29,6 @@ public class ModelLoadEvent extends Event {
         throw new UnsupportedOperationException();
     }
 
-    @Nonnull
-    @OnlyIn(Dist.CLIENT)
-    public IModelBakery getModelBakery() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Nonnull
-    @OnlyIn(Dist.CLIENT)
-    public ITemplateBakery getTemplateBakery() {
-        throw new UnsupportedOperationException();
-    }
-
     @OnlyIn(Dist.CLIENT)
     public void registerModel(ResourceLocation mrl, IBakedModel model) {
         throw new UnsupportedOperationException();

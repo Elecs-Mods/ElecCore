@@ -2,9 +2,7 @@ package elec332.core.item;
 
 import com.google.common.base.Preconditions;
 import elec332.core.api.client.IIconRegistrar;
-import elec332.core.api.client.model.IModelBakery;
 import elec332.core.api.client.model.IQuadBakery;
-import elec332.core.api.client.model.ITemplateBakery;
 import elec332.core.client.model.loading.INoJsonItem;
 import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -42,8 +40,8 @@ public class ItemTextured extends AbstractItem implements INoJsonItem {
      */
     @Override
     @OnlyIn(Dist.CLIENT)
-    public void registerModels(IQuadBakery quadBakery, IModelBakery modelBakery, ITemplateBakery templateBakery) {
-        model = modelBakery.itemModelForTextures(textures);
+    public void registerModels(IQuadBakery quadBakery) {
+        model = quadBakery.itemModelForTextures(textures);
     }
 
     /**

@@ -5,6 +5,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import elec332.core.ElecCore;
 import elec332.core.api.client.model.loading.IItemModelHandler;
+import elec332.core.api.client.model.loading.ILegacyModelHandler;
 import elec332.core.api.client.model.loading.IModelHandler;
 import elec332.core.api.client.model.loading.ModelHandler;
 import elec332.core.client.ClientHelper;
@@ -30,7 +31,7 @@ import java.util.stream.Collectors;
  * Created by Elec332 on 18-9-2016.
  */
 @ModelHandler
-public class ItemModelHandler implements IModelHandler {
+public class ItemModelHandler implements ILegacyModelHandler {
 
     public ItemModelHandler() {
         itemModelHandlers = Lists.newArrayList();
@@ -43,7 +44,7 @@ public class ItemModelHandler implements IModelHandler {
     private static final BiConsumer<Item, ModelResourceLocation> itemModelRegistry = (item, modelResourceLocation) -> ClientHelper.getMinecraft().getItemRenderer().getItemModelMesher().register(item, modelResourceLocation);
 
     @Override
-    public void getModelHandlers(List<?> list) {
+    public void collectModelHandlers(List<?> list) {
         for (Object o : list) {
             if (o instanceof IItemModelHandler) {
                 itemModelHandlers.add((IItemModelHandler) o);
@@ -78,7 +79,7 @@ public class ItemModelHandler implements IModelHandler {
     }
 
     @Override
-    public void registerBakedModels(Function<ModelResourceLocation, IBakedModel> bakedModelGetter, ModelLoader modelLoader, BiConsumer<ModelResourceLocation, IBakedModel> registry) {
+    public void registerBakedModels(Function<ResourceLocation, IBakedModel> bakedModelGetter, ModelLoader modelLoader, BiConsumer<ResourceLocation, IBakedModel> registry) {
         for (Map.Entry<Item, ModelResourceLocation> entry : itemResourceLocations.entrySet()) {
             ModelResourceLocation mrl = entry.getValue();
             for (IItemModelHandler handler : itemModelHandlers) {

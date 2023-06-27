@@ -3,9 +3,7 @@ package elec332.core.item;
 import com.google.common.base.Preconditions;
 import elec332.core.api.client.IColoredItem;
 import elec332.core.api.client.IIconRegistrar;
-import elec332.core.api.client.model.IModelBakery;
 import elec332.core.api.client.model.IQuadBakery;
-import elec332.core.api.client.model.ITemplateBakery;
 import elec332.core.client.RenderHelper;
 import elec332.core.client.model.loading.INoJsonItem;
 import net.minecraft.client.renderer.model.IBakedModel;
@@ -113,13 +111,13 @@ public class ItemEnumBased<E extends Enum<E> & IEnumItem> extends AbstractItem i
     }
 
     @Override
-    public void registerModels(IQuadBakery quadBakery, IModelBakery modelBakery, ITemplateBakery templateBakery) {
+    public void registerModels(IQuadBakery quadBakery) {
         models = new IBakedModel[values.length];
         for (E e : values) {
             if (nji) {
-                ((INoJsonItem) e).registerModels(quadBakery, modelBakery, templateBakery);
+                ((INoJsonItem) e).registerModels(quadBakery);
             } else {
-                models[e.ordinal()] = modelBakery.itemModelForTextures(textures[e.ordinal()]);
+                models[e.ordinal()] = quadBakery.itemModelForTextures(textures[e.ordinal()]);
             }
         }
     }

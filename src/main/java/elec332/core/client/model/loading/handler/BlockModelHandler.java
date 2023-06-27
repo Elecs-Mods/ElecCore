@@ -5,6 +5,7 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import elec332.core.ElecCore;
 import elec332.core.api.client.model.loading.IBlockModelHandler;
+import elec332.core.api.client.model.loading.ILegacyModelHandler;
 import elec332.core.api.client.model.loading.IModelHandler;
 import elec332.core.api.client.model.loading.ModelHandler;
 import elec332.core.loader.client.RenderingRegistry;
@@ -31,7 +32,7 @@ import java.util.stream.Collectors;
  * Created by Elec332 on 18-9-2016.
  */
 @ModelHandler
-public class BlockModelHandler implements IModelHandler {
+public class BlockModelHandler implements ILegacyModelHandler {
 
     public BlockModelHandler() {
         blockModelHandlers = Lists.newArrayList();
@@ -44,7 +45,7 @@ public class BlockModelHandler implements IModelHandler {
     private Set<ResourceLocation> handledBlocks;
 
     @Override
-    public void getModelHandlers(List<?> list) {
+    public void collectModelHandlers(List<?> list) {
         for (Object o : list) {
             if (o instanceof IBlockModelHandler) {
                 blockModelHandlers.add((IBlockModelHandler) o);
@@ -82,7 +83,7 @@ public class BlockModelHandler implements IModelHandler {
     }
 
     @Override
-    public void registerBakedModels(Function<ModelResourceLocation, IBakedModel> bakedModelGetter, ModelLoader modelLoader, BiConsumer<ModelResourceLocation, IBakedModel> registry) {
+    public void registerBakedModels(Function<ResourceLocation, IBakedModel> bakedModelGetter, ModelLoader modelLoader, BiConsumer<ResourceLocation, IBakedModel> registry) {
         for (Map.Entry<BlockState, ModelResourceLocation> entry : blockResourceLocations.entrySet()) {
             ModelResourceLocation mrl = entry.getValue();
             for (IBlockModelHandler handler : blockModelHandlers) {

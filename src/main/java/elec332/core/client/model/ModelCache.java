@@ -186,7 +186,7 @@ public abstract class ModelCache<K> implements IBakedModel {
     @Nonnull
     @SuppressWarnings("deprecation")
     public ItemCameraTransforms getItemCameraTransforms() {
-        return ElecModelBakery.DEFAULT_BLOCK;
+        return ElecQuadBakery.DEFAULT_BLOCK;
     }
 
     @Override

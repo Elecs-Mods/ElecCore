@@ -41,7 +41,7 @@ public class InitAnnotationProcessor extends AbstractAnnotationProcessor {
                 return;
             }
             @SuppressWarnings("all") //Compile errors
-                    Object instance = instantiate(clazz, false, new Object[0]);
+            Object instance = instantiate(clazz, false, new Object[0]);
             if (instance == null) {
                 return;
             }

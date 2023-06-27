@@ -58,9 +58,13 @@ public interface IRenderingRegistry {
 
     <T extends TileEntity> void setItemRenderer(Item item, Class<T> tile);
 
-    <T extends TileEntity> void setItemRenderer(Item item, T tile);
+    default  <T extends TileEntity> void setItemRenderer(Item item, T tile) {
+        setItemRenderer(item, getTESR(tile));
+    }
 
-    <T extends TileEntity> void setItemRenderer(Item item, TileEntityType<T> tile);
+    default <T extends TileEntity> void setItemRenderer(Item item, TileEntityType<T> tile) {
+        setItemRenderer(item, getTESR(tile));
+    }
 
     void setItemRenderer(Item item, TileEntityRenderer<?> renderer);
 

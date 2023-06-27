@@ -2,6 +2,7 @@ package elec332.core.handler.annotations;
 
 import com.google.common.base.Strings;
 import elec332.core.ElecCore;
+import elec332.core.api.data.IDataGenerator;
 import elec332.core.api.discovery.AnnotationDataProcessor;
 import elec332.core.api.discovery.IAnnotationData;
 import elec332.core.api.discovery.IAnnotationDataHandler;
@@ -9,7 +10,7 @@ import elec332.core.api.discovery.IAnnotationDataProcessor;
 import elec332.core.api.mod.SidedProxy;
 import elec332.core.api.registration.DataGenerator;
 import elec332.core.api.util.IMemberPointer;
-import elec332.core.data.AbstractDataGenerator;
+import elec332.core.data.DataGeneratorWrapper;
 import elec332.core.util.FMLHelper;
 import elec332.core.util.FieldPointer;
 import elec332.core.util.MethodPointer;
@@ -90,10 +91,10 @@ public class ConstructionAnnotationProcessor implements IAnnotationDataProcessor
 
         annotationData.getAnnotationList(DataGenerator.class).forEach(annotation -> {
             Class<?> clazz = annotation.tryLoadClass();
-            if (clazz != null && AbstractDataGenerator.class.isAssignableFrom(clazz)) {
+            if (clazz != null && IDataGenerator.class.isAssignableFrom(clazz)) {
                 try {
-                    AbstractDataGenerator generator = (AbstractDataGenerator) clazz.newInstance();
-                    FMLHelper.getFMLModContainer(annotationData.deepSearchOwner(annotation)).getEventBus().addListener(AbstractDataGenerator.toEventListener(generator));
+                    IDataGenerator generator = (IDataGenerator) clazz.newInstance();
+                    FMLHelper.getFMLModContainer(annotationData.deepSearchOwner(annotation)).getEventBus().addListener(DataGeneratorWrapper.toEventListener(generator));
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }

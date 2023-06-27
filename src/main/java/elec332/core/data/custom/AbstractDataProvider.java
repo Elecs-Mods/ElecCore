@@ -5,6 +5,7 @@ import com.google.common.collect.Sets;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
+import joptsimple.internal.Strings;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.DirectoryCache;
 import net.minecraft.data.IDataProvider;
@@ -24,12 +25,16 @@ import java.util.function.BiConsumer;
  */
 public abstract class AbstractDataProvider implements IDataProvider {
 
+    public AbstractDataProvider(DataGenerator generatorIn) {
+        this(generatorIn, "");
+    }
+
     public AbstractDataProvider(DataGenerator generatorIn, String folder) {
         this.generator = generatorIn;
         this.folder = folder;
     }
 
-    protected static final Gson GSON = (new GsonBuilder()).setPrettyPrinting().create();
+    protected static final Gson GSON = (new GsonBuilder()).setPrettyPrinting().disableHtmlEscaping().create();
     protected final DataGenerator generator;
     private final String folder;
 
@@ -41,7 +46,8 @@ public abstract class AbstractDataProvider implements IDataProvider {
             if (!set.add(Preconditions.checkNotNull(rl))) {
                 throw new IllegalStateException("Duplicate object: " + rl);
             }
-            Path jsonPath = path.resolve("data/" + rl.getNamespace() + "/" + folder + "/" + rl.getPath() + ".json");
+            String folder = Strings.isNullOrEmpty(this.folder) ? "" : this.folder + "/";
+            Path jsonPath = path.resolve(getType().toString() + "/" + rl.getNamespace() + "/" + folder + rl.getPath() + ".json");
             try {
                 String s = GSON.toJson(Preconditions.checkNotNull(obj));
                 @SuppressWarnings("UnstableApiUsage")
@@ -72,5 +78,27 @@ public abstract class AbstractDataProvider implements IDataProvider {
 
     @Nonnull
     public abstract String providerName();
+
+    protected Type getType() {
+        return Type.DATA;
+    }
+
+    public enum Type {
+
+        ASSETS("assets"),
+        DATA("data");
+
+        private final String name;
+
+        Type(String name) {
+            this.name = name;
+        }
+
+        @Override
+        public String toString() {
+            return name;
+        }
+
+    }
 
 }

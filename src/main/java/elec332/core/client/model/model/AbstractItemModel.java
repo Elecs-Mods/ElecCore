@@ -2,9 +2,8 @@ package elec332.core.client.model.model;
 
 import com.google.common.collect.ImmutableList;
 import elec332.core.client.RenderHelper;
-import elec332.core.client.model.ElecModelBakery;
+import elec332.core.client.model.ElecQuadBakery;
 import net.minecraft.block.BlockState;
-import net.minecraft.client.renderer.Vector3f;
 import net.minecraft.client.renderer.model.BakedQuad;
 import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.client.renderer.model.ItemCameraTransforms;
@@ -78,13 +77,8 @@ public abstract class AbstractItemModel implements IBakedModel {
     }
 
     static {
-        DEFAULT_ITEM_TRANSFORM = ElecModelBakery.DEFAULT_ITEM;
+        DEFAULT_ITEM_TRANSFORM = ElecQuadBakery.DEFAULT_ITEM;
         EMPTY_LIST = ImmutableList.of();
-    }
-
-    protected static Vector3f applyTranslationScale(Vector3f vec) {
-        vec.mul(0.0625F);
-        return vec;
     }
 
 }
