@@ -10,12 +10,12 @@ import net.minecraftforge.fml.network.PacketDispatcher;
  */
 public interface IExtendedMessageContext {
 
-    public LogicalSide getReceptionSide();
+    LogicalSide getReceptionSide();
 
-    public PlayerEntity getSender();
+    PlayerEntity getSender();
 
-    public World getWorld();
+    World getWorld();
 
-    public PacketDispatcher getNetworkManager();
+    PacketDispatcher getNetworkManager();
 
 }

@@ -27,7 +27,7 @@ public class PacketReRenderBlock extends AbstractPacketTileAction {
     @Override
     public void processPacket(World world, TileEntity tile, int id, CompoundNBT message, IExtendedMessageContext ctx) {
         if (tile != null) {
-            tile.read(message);
+            tile.read(WorldHelper.getBlockState(world, tile.getPos()), message);
             WorldHelper.markBlockForRenderUpdate(world, tile.getPos());
         }
     }

@@ -3,8 +3,9 @@ package elec332.core.api.network.simple;
 import elec332.core.api.network.IPacketDispatcher;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.util.RegistryKey;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.world.World;
 
 /**
  * Created by Elec332 on 23-10-2016.
@@ -18,7 +19,7 @@ public interface ISimpleNetworkPacketManager {
      *
      * @return The name of this channel
      */
-    public ResourceLocation getChannelName();
+    ResourceLocation getChannelName();
 
 
     /**
@@ -27,7 +28,7 @@ public interface ISimpleNetworkPacketManager {
      *
      * @param message The message to send
      */
-    public void sendToAll(ISimplePacket message);
+    void sendToAll(ISimplePacket message);
 
     /**
      * Send this message to everyone.
@@ -36,7 +37,7 @@ public interface ISimpleNetworkPacketManager {
      * @param message       The message to send
      * @param packetHandler The packet-handler the client has to use
      */
-    public void sendToAll(ISimplePacket message, ISimplePacketHandler packetHandler);
+    void sendToAll(ISimplePacket message, ISimplePacketHandler packetHandler);
 
     /**
      * Send the data provided in the provided {@link ByteBuf} to everyone.
@@ -45,7 +46,7 @@ public interface ISimpleNetworkPacketManager {
      * @param data          The data to send
      * @param packetHandler The packet-handler the client has to use
      */
-    public void sendToAll(ByteBuf data, ISimplePacketHandler packetHandler);
+    void sendToAll(ByteBuf data, ISimplePacketHandler packetHandler);
 
 
     /**
@@ -55,7 +56,7 @@ public interface ISimpleNetworkPacketManager {
      * @param message The message to send
      * @param player  The player to send it to
      */
-    public void sendTo(ISimplePacket message, ServerPlayerEntity player);
+    void sendTo(ISimplePacket message, ServerPlayerEntity player);
 
     /**
      * Send this message to the specified player.
@@ -65,7 +66,7 @@ public interface ISimpleNetworkPacketManager {
      * @param packetHandler The packet-handler the client has to use
      * @param player        The player to send it to
      */
-    public void sendTo(ISimplePacket message, ISimplePacketHandler packetHandler, ServerPlayerEntity player);
+    void sendTo(ISimplePacket message, ISimplePacketHandler packetHandler, ServerPlayerEntity player);
 
     /**
      * Send the data provided in the provided {@link ByteBuf} to the specified player.
@@ -75,7 +76,7 @@ public interface ISimpleNetworkPacketManager {
      * @param packetHandler The packet-handler the client has to use
      * @param player        The player to send it to
      */
-    public void sendTo(ByteBuf data, ISimplePacketHandler packetHandler, ServerPlayerEntity player);
+    void sendTo(ByteBuf data, ISimplePacketHandler packetHandler, ServerPlayerEntity player);
 
 
     /**
@@ -85,7 +86,7 @@ public interface ISimpleNetworkPacketManager {
      * @param message The message to send
      * @param point   The {@link IPacketDispatcher.TargetPoint} around which to send
      */
-    public void sendToAllAround(ISimplePacket message, IPacketDispatcher.TargetPoint point);
+    void sendToAllAround(ISimplePacket message, IPacketDispatcher.TargetPoint point);
 
     /**
      * Send this message to everyone within a certain range of a point defined in the packet.
@@ -95,7 +96,7 @@ public interface ISimpleNetworkPacketManager {
      * @param packetHandler The packet-handler the client has to use
      * @param point         The {@link IPacketDispatcher.TargetPoint} around which to send
      */
-    public void sendToAllAround(ISimplePacket message, ISimplePacketHandler packetHandler, IPacketDispatcher.TargetPoint point);
+    void sendToAllAround(ISimplePacket message, ISimplePacketHandler packetHandler, IPacketDispatcher.TargetPoint point);
 
     /**
      * Send the data provided in the provided {@link ByteBuf} to everyone within a certain range of a point defined in the packet.
@@ -105,7 +106,7 @@ public interface ISimpleNetworkPacketManager {
      * @param packetHandler The packet-handler the client has to use
      * @param point         The {@link IPacketDispatcher.TargetPoint} around which to send
      */
-    public void sendToAllAround(ByteBuf data, ISimplePacketHandler packetHandler, IPacketDispatcher.TargetPoint point);
+    void sendToAllAround(ByteBuf data, ISimplePacketHandler packetHandler, IPacketDispatcher.TargetPoint point);
 
 
     /**
@@ -115,7 +116,7 @@ public interface ISimpleNetworkPacketManager {
      * @param message       The message to send
      * @param dimensionName The dimension to target
      */
-    public void sendToDimension(ISimplePacket message, ResourceLocation dimensionName);
+    void sendToDimension(ISimplePacket message, ResourceLocation dimensionName);
 
     /**
      * Send this message to everyone within the supplied dimension.
@@ -124,7 +125,7 @@ public interface ISimpleNetworkPacketManager {
      * @param message     The message to send
      * @param dimensionId The dimension id to target
      */
-    public void sendToDimension(ISimplePacket message, DimensionType dimensionId);
+    void sendToDimension(ISimplePacket message, RegistryKey<World> dimensionId);
 
     /**
      * Send this message to everyone within the supplied dimension.
@@ -134,7 +135,7 @@ public interface ISimpleNetworkPacketManager {
      * @param packetHandler The packet-handler the client has to use
      * @param dimensionName The dimension to target
      */
-    public void sendToDimension(ISimplePacket message, ISimplePacketHandler packetHandler, ResourceLocation dimensionName);
+    void sendToDimension(ISimplePacket message, ISimplePacketHandler packetHandler, ResourceLocation dimensionName);
 
     /**
      * Send this message to everyone within the supplied dimension.
@@ -144,7 +145,7 @@ public interface ISimpleNetworkPacketManager {
      * @param packetHandler The packet-handler the client has to use
      * @param dimensionId   The dimension id to target
      */
-    public void sendToDimension(ISimplePacket message, ISimplePacketHandler packetHandler, DimensionType dimensionId);
+    void sendToDimension(ISimplePacket message, ISimplePacketHandler packetHandler, RegistryKey<World> dimensionId);
 
     /**
      * Send the data provided in the provided {@link ByteBuf} to everyone within the supplied dimension.
@@ -154,7 +155,7 @@ public interface ISimpleNetworkPacketManager {
      * @param packetHandler The packet-handler the client has to use
      * @param dimensionName The dimension to target
      */
-    public void sendToDimension(ByteBuf data, ISimplePacketHandler packetHandler, ResourceLocation dimensionName);
+    void sendToDimension(ByteBuf data, ISimplePacketHandler packetHandler, ResourceLocation dimensionName);
 
     /**
      * Send the data provided in the provided {@link ByteBuf} to everyone within the supplied dimension.
@@ -164,7 +165,7 @@ public interface ISimpleNetworkPacketManager {
      * @param packetHandler The packet-handler the client has to use
      * @param dimensionId   The dimension id to target
      */
-    public void sendToDimension(ByteBuf data, ISimplePacketHandler packetHandler, DimensionType dimensionId);
+    void sendToDimension(ByteBuf data, ISimplePacketHandler packetHandler, RegistryKey<World> dimensionId);
 
 
     /**
@@ -173,7 +174,7 @@ public interface ISimpleNetworkPacketManager {
      *
      * @param message The message to send
      */
-    public void sendToServer(ISimplePacket message);
+    void sendToServer(ISimplePacket message);
 
     /**
      * Send this message to the server.
@@ -182,7 +183,7 @@ public interface ISimpleNetworkPacketManager {
      * @param message       The message to send
      * @param packetHandler The packet-handler the client has to use
      */
-    public void sendToServer(ISimplePacket message, ISimplePacketHandler packetHandler);
+    void sendToServer(ISimplePacket message, ISimplePacketHandler packetHandler);
 
     /**
      * Send the data provided in the provided {@link ByteBuf} to the server.
@@ -191,26 +192,26 @@ public interface ISimpleNetworkPacketManager {
      * @param data          The data to send
      * @param packetHandler The packet-handler the client has to use
      */
-    public void sendToServer(ByteBuf data, ISimplePacketHandler packetHandler);
+    void sendToServer(ByteBuf data, ISimplePacketHandler packetHandler);
 
 
     /////Packet registering
 
-    public void registerSimplePacket(Class<? extends ISimplePacket> packetType);
+    void registerSimplePacket(Class<? extends ISimplePacket> packetType);
 
-    public void registerSimplePacket(ISimplePacket packet);
+    void registerSimplePacket(ISimplePacket packet);
 
-    public void registerSimplePacketHandler(ISimplePacketHandler packetHandler);
+    void registerSimplePacketHandler(ISimplePacketHandler packetHandler);
 
-    public void registerSimplePacket(Class<? extends ISimplePacket> packetType, ISimplePacketHandler packetHandler);
+    void registerSimplePacket(Class<? extends ISimplePacket> packetType, ISimplePacketHandler packetHandler);
 
-    public void registerSimplePacket(ISimplePacket packet, ISimplePacketHandler packetHandler);
+    void registerSimplePacket(ISimplePacket packet, ISimplePacketHandler packetHandler);
 
     /**
      * Used to get the {@link IPacketDispatcher} used by this {@link ISimpleNetworkPacketManager}
      *
      * @return The {@link IPacketDispatcher} used by this {@link ISimpleNetworkPacketManager}}
      */
-    public IPacketDispatcher getPacketDispatcher();
+    IPacketDispatcher getPacketDispatcher();
 
 }

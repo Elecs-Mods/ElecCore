@@ -10,7 +10,7 @@ import elec332.core.util.ResourceHelper;
 import elec332.core.world.WorldHelper;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.fluid.IFluidState;
+import net.minecraft.fluid.FluidState;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.ListNBT;
@@ -221,7 +221,7 @@ public enum SchematicHelper {
             public TileEntity getTileEntity(BlockPos pos) {
                 CompoundNBT tag = schematic.getTileData(pos.getX(), pos.getY(), pos.getZ());
                 if (tag != null) {
-                    TileEntity.create(tag);
+                    TileEntity.readTileEntity(getBlockState(pos), tag);
                 }
                 return null;
             }
@@ -232,7 +232,7 @@ public enum SchematicHelper {
             }
 
             @Override
-            public IFluidState getFluidState(BlockPos blockPos) {
+            public FluidState getFluidState(BlockPos blockPos) {
                 return null;
             }
 

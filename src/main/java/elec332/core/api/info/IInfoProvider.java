@@ -10,8 +10,8 @@ import javax.annotation.Nonnull;
  */
 public interface IInfoProvider {
 
-    public void addInformation(@Nonnull IInformation information, @Nonnull IInfoDataAccessorBlock hitData);
+    void addInformation(@Nonnull IInformation information, @Nonnull IInfoDataAccessorBlock hitData);
 
-    public void gatherInformation(@Nonnull CompoundNBT tag, @Nonnull ServerPlayerEntity player, @Nonnull IInfoDataAccessorBlock hitData);
+    void gatherInformation(@Nonnull CompoundNBT tag, @Nonnull ServerPlayerEntity player, @Nonnull IInfoDataAccessorBlock hitData);
 
 }

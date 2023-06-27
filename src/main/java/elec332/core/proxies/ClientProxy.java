@@ -6,6 +6,7 @@ import elec332.core.client.RenderHelper;
 import elec332.core.client.util.ClientEventHandler;
 import elec332.core.inventory.window.WindowContainer;
 import elec332.core.inventory.window.WindowGui;
+import elec332.core.util.PlayerHelper;
 import elec332.core.util.RegistryHelper;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
@@ -67,7 +68,7 @@ public class ClientProxy extends CommonProxy {
 
     @Override
     public void addPersonalMessageToPlayer(String s) {
-        getClientPlayer().sendMessage(new StringTextComponent(s));
+        PlayerHelper.sendMessageToPlayer(getClientPlayer(), s);
     }
 
     @Override

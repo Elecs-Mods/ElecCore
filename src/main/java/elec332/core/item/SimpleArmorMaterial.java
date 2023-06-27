@@ -16,13 +16,14 @@ import java.util.function.Supplier;
  */
 public class SimpleArmorMaterial implements IArmorMaterial {
 
-    public SimpleArmorMaterial(String name, int maxDamageFactor, int[] damageReductionAmounts, int enchantability, SoundEvent equipSound, float toughness, Supplier<Ingredient> repairMaterial) {
+    public SimpleArmorMaterial(String name, int maxDamageFactor, int[] damageReductionAmounts, int enchantability, SoundEvent equipSound, float toughness, float knockbackResistance, Supplier<Ingredient> repairMaterial) {
         this.name = name;
         this.maxDamageFactor = maxDamageFactor;
         this.damageReductionAmountArray = damageReductionAmounts;
         this.enchantability = enchantability;
         this.soundEvent = equipSound;
         this.toughness = toughness;
+        this.knockbackResistance = knockbackResistance;
         this.repairMaterial = new LazyValue<>(repairMaterial);
     }
 
@@ -34,6 +35,7 @@ public class SimpleArmorMaterial implements IArmorMaterial {
     private final int enchantability;
     private final SoundEvent soundEvent;
     private final float toughness;
+    private final float knockbackResistance;
     private final LazyValue<Ingredient> repairMaterial;
 
     @Override
@@ -61,6 +63,11 @@ public class SimpleArmorMaterial implements IArmorMaterial {
     @Override
     public Ingredient getRepairMaterial() {
         return this.repairMaterial.getValue();
+    }
+
+    @Override
+    public float getKnockbackResistance() {
+        return this.knockbackResistance;
     }
 
     @Nonnull

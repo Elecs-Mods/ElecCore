@@ -4,10 +4,10 @@ import elec332.core.api.client.model.template.IMutableQuadTemplate;
 import elec332.core.api.client.model.template.IQuadTemplate;
 import elec332.core.client.RenderHelper;
 import elec332.core.util.math.VectorHelper;
-import net.minecraft.client.renderer.Vector3f;
 import net.minecraft.client.renderer.model.ModelRotation;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.util.Direction;
+import net.minecraft.util.math.vector.Vector3f;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 

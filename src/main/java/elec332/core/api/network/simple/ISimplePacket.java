@@ -11,10 +11,10 @@ import javax.annotation.Nullable;
  */
 public interface ISimplePacket {
 
-    public void toBytes(ElecByteBuf byteBuf);
+    void toBytes(ElecByteBuf byteBuf);
 
     @Nullable
-    default public ISimplePacketHandler getPacketHandler() {
+    default ISimplePacketHandler getPacketHandler() {
         return null;
     }
 

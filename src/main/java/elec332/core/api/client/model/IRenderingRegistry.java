@@ -9,7 +9,7 @@ import net.minecraft.client.renderer.texture.AtlasTexture;
 import net.minecraft.client.renderer.tileentity.ItemStackTileEntityRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import net.minecraft.item.Item;
-import net.minecraft.state.IProperty;
+import net.minecraft.state.Property;
 import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
@@ -24,7 +24,7 @@ import java.util.function.Supplier;
 public interface IRenderingRegistry {
 
     @Nonnull
-    StateContainer<Block, BlockState> registerBlockStateLocation(@Nonnull ResourceLocation location, IProperty<?>... properties);
+    StateContainer<Block, BlockState> registerBlockStateLocation(@Nonnull ResourceLocation location, Property<?>... properties);
 
     void registerModelLocation(ResourceLocation location);
 

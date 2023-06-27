@@ -1,8 +1,8 @@
 package elec332.core.api.storage;
 
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.world.storage.SaveHandler;
-import net.minecraft.world.storage.WorldInfo;
+import net.minecraft.world.storage.IServerConfiguration;
+import net.minecraft.world.storage.SaveFormat;
 
 import javax.annotation.Nullable;
 
@@ -29,18 +29,18 @@ public class SaveHandlerWrapper implements IExternalSaveHandler {
     }
 
     @Override
-    public void load(SaveHandler saveHandler, WorldInfo info, CompoundNBT tag) {
+    public void load(SaveFormat.LevelSave levelSave, IServerConfiguration serverInfo, CompoundNBT tag) {
         for (IExternalSaveHandler saveHandler1 : saveHandlers) {
-            saveHandler1.load(saveHandler, info, tag.getCompound(saveHandler1.getName()));
+            saveHandler1.load(levelSave, serverInfo, tag.getCompound(saveHandler1.getName()));
         }
     }
 
     @Nullable
     @Override
-    public CompoundNBT save(SaveHandler saveHandler, WorldInfo info) {
+    public CompoundNBT save(SaveFormat.LevelSave levelSave, IServerConfiguration serverInfo) {
         CompoundNBT ret = new CompoundNBT();
         for (IExternalSaveHandler saveHandler1 : saveHandlers) {
-            CompoundNBT tag = saveHandler1.save(saveHandler, info);
+            CompoundNBT tag = saveHandler1.save(levelSave, serverInfo);
             if (tag != null) {
                 ret.put(saveHandler1.getName(), tag);
             }

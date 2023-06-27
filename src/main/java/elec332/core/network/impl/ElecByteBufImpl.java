@@ -115,7 +115,7 @@ class ElecByteBufImpl extends ElecByteBuf {
 
     @Override
     public ITextComponent readTextComponent() {
-        return ITextComponent.Serializer.fromJson(this.readString());
+        return ITextComponent.Serializer.func_240643_a_(this.readString());
     }
 
     @Override

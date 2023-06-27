@@ -10,10 +10,10 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.RegistryKey;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
-import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.gen.Heightmap;
 
 import java.util.Set;
@@ -23,18 +23,20 @@ import java.util.Set;
  */
 public class StructureTemplate {
 
-    public StructureTemplate(Schematic schematic, GenerationType generationType, DimensionType... dimensions) {
+    @SafeVarargs
+    public StructureTemplate(Schematic schematic, GenerationType generationType, RegistryKey<World>... dimensions) {
         this.schematic = schematic;
         this.generationType = generationType;
         this.dimensions = Sets.newHashSet(dimensions);
     }
 
-    public StructureTemplate(Schematic schematic, DimensionType... dimensions) {
+    @SafeVarargs
+    public StructureTemplate(Schematic schematic, RegistryKey<World>... dimensions) {
         this(schematic, GenerationType.NONE, dimensions);
     }
 
     protected Schematic schematic;
-    protected Set<DimensionType> dimensions;
+    protected Set<RegistryKey<World>> dimensions;
     protected GenerationType generationType;
 
     /**
@@ -91,7 +93,7 @@ public class StructureTemplate {
                                     if (block.hasTileEntity(state)) {
                                         CompoundNBT tileData = schematic.getTileData(x, y, z, worldX, worldY, worldZ);
                                         if (tileData != null) {
-                                            WorldHelper.getTileAt(world, worldPos).read(tileData);
+                                            WorldHelper.getTileAt(world, worldPos).read(state, tileData);
                                             WorldHelper.markBlockForUpdate(world, worldPos);
                                         }
                                     }
@@ -119,7 +121,7 @@ public class StructureTemplate {
         return generationType;
     }
 
-    public Set<DimensionType> getDimensions() {
+    public Set<RegistryKey<World>> getDimensions() {
         return dimensions;
     }
 
@@ -127,7 +129,7 @@ public class StructureTemplate {
         return getDimensions() != null && !getDimensions().isEmpty();
     }
 
-    public boolean canSpawnInDimension(DimensionType dimension) {
+    public boolean canSpawnInDimension(RegistryKey<World> dimension) {
         return !isDimensionRestricted() || getDimensions().contains(dimension);
     }
 

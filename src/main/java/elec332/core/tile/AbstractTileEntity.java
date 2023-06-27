@@ -12,13 +12,14 @@ import elec332.core.util.BlockProperties;
 import elec332.core.util.NBTTypes;
 import elec332.core.util.ServerHelper;
 import elec332.core.world.WorldHelper;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
-import net.minecraft.state.IProperty;
+import net.minecraft.state.Property;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.Direction;
@@ -51,14 +52,14 @@ public class AbstractTileEntity extends TileEntity implements IElecCoreNetworkTi
         return getTileFacing(BlockProperties.FACING_HORIZONTAL);
     }
 
-    public Direction getTileFacing(IProperty<Direction> prop) {
+    public Direction getTileFacing(Property<Direction> prop) {
         return getBlockState().get(prop);
     }
 
     @Override
-    public void read(@Nonnull CompoundNBT compound) {
-        super.read(compound);
-        readLegacy(compound);
+    public void read(@Nonnull BlockState state, @Nonnull CompoundNBT nbt) {
+        super.read(state, nbt);
+        readLegacy(nbt);
     }
 
     public void readLegacy(CompoundNBT tag) {
@@ -161,10 +162,10 @@ public class AbstractTileEntity extends TileEntity implements IElecCoreNetworkTi
     }
 
     @Override
-    public void handleUpdateTag(@Nonnull CompoundNBT tag) {
+    public void handleUpdateTag(BlockState state, @Nonnull CompoundNBT tag) {
         ListNBT p = tag.getList("morePackets_eD", NBTTypes.COMPOUND.getID());
         tag.remove("morePackets_eD");
-        read(tag);
+        read(state, tag);
         onDataPacket(0, tag);
         for (int i = 0; i < p.size(); i++) {
             CompoundNBT tag_ = p.getCompound(i);
@@ -175,7 +176,7 @@ public class AbstractTileEntity extends TileEntity implements IElecCoreNetworkTi
     @Override
     public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket packet) {
         if (packet.getTileEntityType() == 0) {
-            handleUpdateTag(packet.getNbtCompound());
+            handleUpdateTag(WorldHelper.getBlockState(getWorld(), getPos()), packet.getNbtCompound());
         } else {
             onDataPacket(packet.getTileEntityType(), packet.getNbtCompound());
         }

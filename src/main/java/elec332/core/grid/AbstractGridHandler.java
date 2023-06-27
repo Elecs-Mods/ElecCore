@@ -7,6 +7,7 @@ import elec332.core.world.posmap.DefaultMultiWorldPositionedObjectHolder;
 import elec332.core.world.posmap.IMultiWorldPositionedObjectHolder;
 import elec332.core.world.posmap.PositionedObjectHolder;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.RegistryKey;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.IWorld;
@@ -94,7 +95,7 @@ public abstract class AbstractGridHandler<T extends IPositionable> implements IS
         return DefaultMultiWorldPositionedObjectHolder.create();
     }
 
-    protected final Map<Integer, PositionedObjectHolder<T, T>> getObjects() {
+    protected final Map<RegistryKey<World>, PositionedObjectHolder<T, T>> getObjects() {
         return objectsInternal.get().getUnModifiableView();
     }
 

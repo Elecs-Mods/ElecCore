@@ -4,6 +4,7 @@ import cpw.mods.modlauncher.serviceapi.ILaunchPluginService;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorld;
+import net.minecraft.world.server.ServerWorld;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.*;
@@ -33,6 +34,8 @@ public class WorldEventListenerHook implements ILaunchPluginService, Opcodes {
     public boolean processClass(Phase phase, ClassNode classNode, Type classType) {
         if (classType.equals(type)) {
             transformServerChunkProvider(classNode);
+            ServerWorld w;
+            w.markAndNotifyBlock();
             return true;
         }
         return false;

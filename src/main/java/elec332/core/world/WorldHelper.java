@@ -6,46 +6,48 @@ import elec332.core.client.ClientHelper;
 import elec332.core.util.FMLHelper;
 import elec332.core.util.ItemStackHelper;
 import elec332.core.util.PlayerHelper;
+import elec332.core.util.RegistryHelper;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityClassification;
-import net.minecraft.entity.effect.LightningBoltEntity;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.RegistryKey;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.shapes.VoxelShape;
+import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.world.*;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.biome.MobSpawnInfo;
 import net.minecraft.world.chunk.AbstractChunkProvider;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.EmptyChunk;
 import net.minecraft.world.chunk.IChunk;
-import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.gen.ChunkGenerator;
-import net.minecraft.world.gen.GenerationSettings;
 import net.minecraft.world.gen.Heightmap;
+import net.minecraft.world.gen.NoiseChunkGenerator;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.IFeatureConfig;
 import net.minecraft.world.server.ChunkHolder;
 import net.minecraft.world.server.ServerChunkProvider;
 import net.minecraft.world.server.ServerWorld;
-import net.minecraftforge.common.BiomeDictionary;
-import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.items.IItemHandler;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 
@@ -77,6 +79,10 @@ public class WorldHelper {
     public static final int PLACEBLOCK_NO_NEIGHBOR_REACTION_DROPS = 32;
     public static final int PLACEBLOCK_BLOCK_BEING_MOVED = 64;
 
+    public static final RegistryKey<World> OVERWORLD = World.field_234918_g_;
+    public static final RegistryKey<World> NETHER = World.field_234919_h_;
+    public static final RegistryKey<World> END = World.field_234920_i_;
+
     public static boolean isServer(IWorldReader world) {
         return !isClient(world);
     }
@@ -101,8 +107,9 @@ public class WorldHelper {
      * @param generator The chunkgenerator
      * @return whether the provided {@link ChunkGenerator} will generate a roof
      */
-    public static boolean hasCeiling(ChunkGenerator<? extends GenerationSettings> generator) {
-        return generator.getSettings().getBedrockRoofHeight() > 0;
+    public static boolean hasCeiling(ChunkGenerator generator) {
+        return generator instanceof NoiseChunkGenerator && ((NoiseChunkGenerator) generator).field_236080_h_.get().func_236117_e_() < 0;
+        //return generator.getSettings().getBedrockRoofHeight() > 0;
     }
 
     /**
@@ -124,8 +131,8 @@ public class WorldHelper {
      * @param type           The Entity type
      * @param spawnListEntry The spawn entry
      */
-    public static void addBiomeSpawnEntry(Biome biome, EntityClassification type, Biome.SpawnListEntry spawnListEntry) {
-        biome.getSpawns(type).add(spawnListEntry);
+    public static void addBiomeSpawnEntry(Biome biome, EntityClassification type, MobSpawnInfo.Spawners spawnListEntry) {
+        biome.func_242433_b().func_242559_a(type).add(spawnListEntry);
     }
 
     /**
@@ -156,8 +163,8 @@ public class WorldHelper {
      * @param biome The biome
      * @return The biome types opf the provided biome
      */
-    public static Set<BiomeDictionary.Type> getTypes(Biome biome) {
-        return BiomeDictionary.getTypes(biome);
+    public static Set<Biome.Category> getTypes(Biome biome) {
+        return Collections.singleton(biome.getCategory());
     }
 
     /**
@@ -468,8 +475,16 @@ public class WorldHelper {
         world.getPendingBlockTicks().scheduleTick(blockLoc, getBlockAt(world, blockLoc), delay);
     }
 
+    public static RegistryKey<World> getWorldKey(RegistryKey<Dimension> dimensionKey) {
+        return getWorldKey(dimensionKey.func_240901_a_());
+    }
+
+    public static RegistryKey<World> getWorldKey(ResourceLocation type) {
+        return RegistryKey.func_240903_a_(Registry.WORLD_KEY, Preconditions.checkNotNull(type));
+    }
+
     public static DimensionType getDimensionType(IWorldReader world) {
-        return world.getDimension().getType();
+        return world.func_230315_m_();
     }
 
     @Nonnull
@@ -486,48 +501,51 @@ public class WorldHelper {
      * @return The dimension-ID of the specified world.
      */
     @SuppressWarnings("all")
-    public static DimensionType getDimID(IWorld world) {
+    public static RegistryKey<World> getDimID(IWorld world) {
         if (world == null) {
             throw new IllegalArgumentException("Cannot fetch the Dimension-ID from a null world!");
         }
-        if (world.getDimension() == null) {
+        if (!(world instanceof World)) {
             return ElecCore.proxy.getServer().forgeGetWorldMap().entrySet().stream()
                     .filter(e -> e.getValue() == world)
                     .findFirst()
                     .map(Map.Entry::getKey)
                     .orElseThrow(() -> new RuntimeException("Unable to determine the dimension of world: " + world));
         }
-        return world.getDimension().getType();
+        return Preconditions.checkNotNull(((World) world).func_234923_W_());
     }
 
     public static World getWorldByName(ResourceLocation name) {
-        return getWorld(Preconditions.checkNotNull(DimensionType.byName(name)));
+        return getWorld(getWorldKey(name));
     }
 
     @Nullable
-    public static World getWorld(DimensionType dimension) {
+    public static World getWorld(RegistryKey<World> dimension) {
         if (FMLHelper.getLogicalSide() == LogicalSide.CLIENT) {
             World ret = ElecCore.proxy.getClientWorld();
-            if (ret.getDimension().getType() != dimension) {
+            if (ret.func_234923_W_() != dimension) {
                 ret = null;
             }
             return ret;
         }
-        return getServerWorldDirect(dimension);
+        return getServerWorld(dimension);
     }
 
-    public static ServerWorld getServerWorldDirect(DimensionType type) {
+    @Nullable
+    public static ServerWorld getServerWorld(RegistryKey<World> type) {
         return ElecCore.proxy.getServer().getWorld(type);
     }
 
     @Nullable
+    @Deprecated //Remove in 1.17
     public static ServerWorld peekServerWorld(ResourceLocation name) {
-        return peekServerWorld(Preconditions.checkNotNull(DimensionType.byName(name)));
+        return peekServerWorld(getWorldKey(name));
     }
 
     @Nullable
-    public static ServerWorld peekServerWorld(DimensionType type) {
-        return DimensionManager.getWorld(ElecCore.proxy.getServer(), type, false, false);
+    @Deprecated //Remove in 1.17
+    public static ServerWorld peekServerWorld(RegistryKey<World> type) {
+        return ElecCore.proxy.getServer().getWorld(type);
     }
 
     /*
@@ -612,7 +630,7 @@ public class WorldHelper {
      * @param world The world
      * @param vec   The position
      */
-    public static void spawnLightningAt(World world, Vec3d vec) {
+    public static void spawnLightningAt(World world, Vector3d vec) {
         spawnLightningAt(world, vec.x, vec.y, vec.z);
     }
 
@@ -639,7 +657,10 @@ public class WorldHelper {
         //world.playSoundEffect(x, y, z,"random.explode", 10000.0F, 0.8F);
         world.playSound(x, y, z, SoundEvents.ENTITY_LIGHTNING_BOLT_THUNDER, SoundCategory.WEATHER, 10000.0F, 0.8F, true);
         world.playSound(x, y, z, SoundEvents.ENTITY_GENERIC_EXPLODE, SoundCategory.WEATHER, 10000.0F, 0.8F, true);
-        WorldHelper.spawnEntityInWorld(world, new LightningBoltEntity(world, x, y, z, false));
+        WorldHelper.spawnEntityInWorld(world, RegistryHelper.createEntity(EntityType.LIGHTNING_BOLT, world, entity -> {
+            entity.setPosition(x, y, z);
+            entity.setEffectOnly(false);
+        }));
     }
 
 }

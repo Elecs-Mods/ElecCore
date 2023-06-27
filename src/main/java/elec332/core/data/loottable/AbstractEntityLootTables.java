@@ -5,8 +5,8 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import net.minecraft.data.loot.EntityLootTables;
 import net.minecraft.entity.EntityType;
+import net.minecraft.loot.LootTable;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.storage.loot.LootTable;
 
 import javax.annotation.Nonnull;
 import java.util.Map;

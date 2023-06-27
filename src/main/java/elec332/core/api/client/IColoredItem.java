@@ -7,7 +7,7 @@ import net.minecraft.item.ItemStack;
  */
 public interface IColoredItem {
 
-    default public int getColorFromItemStack(ItemStack stack, int tintIndex) {
+    default int getColorFromItemStack(ItemStack stack, int tintIndex) {
         return -1;
     }
 

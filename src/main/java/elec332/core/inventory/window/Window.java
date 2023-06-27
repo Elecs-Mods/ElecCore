@@ -3,6 +3,7 @@ package elec332.core.inventory.window;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import elec332.core.ElecCore;
 import elec332.core.client.RenderHelper;
@@ -21,6 +22,7 @@ import net.minecraft.inventory.container.Container;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.LogicalSide;
@@ -342,11 +344,11 @@ public class Window implements IWidgetContainer, IGuiEventListener {
     public void onPacket(CompoundNBT tag, LogicalSide receiver) {
     }
 
-    public void modifyTooltip(List<String> tooltip, WidgetSlot slot, ItemStack stack, int x, int y) {
+    public void modifyTooltip(List<ITextComponent> tooltip, WidgetSlot slot, ItemStack stack, int x, int y) {
         modifyTooltip(tooltip, slot, x, y);
     }
 
-    public void modifyTooltip(List<String> tooltip, IWidget widget, int mouseX, int mouseY) {
+    public void modifyTooltip(List<ITextComponent> tooltip, IWidget widget, int mouseX, int mouseY) {
         widget.modifyTooltip(tooltip, mouseX, mouseY);
     }
 
@@ -453,20 +455,19 @@ public class Window implements IWidgetContainer, IGuiEventListener {
     }
 
     @OnlyIn(Dist.CLIENT)
-    protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
+    protected void drawGuiContainerForegroundLayer(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY) {
 
     }
 
     @OnlyIn(Dist.CLIENT)
-    protected void drawScreenPre(int mouseX, int mouseY, float partialTicks) {
+    protected void drawScreenPre(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
         GuiDraw.drawDefaultBackground();
     }
 
     @OnlyIn(Dist.CLIENT)
-    protected void drawScreenPost(int mouseX, int mouseY, float partialTicks) {
+    protected void drawScreenPost(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
         RenderSystem.disableLighting();
         RenderSystem.disableDepthTest();
-        RenderSystem.pushMatrix();
         RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
         net.minecraft.client.renderer.RenderHelper.disableStandardItemLighting();
         for (IWidget widget : getWidgets()) {
@@ -485,18 +486,15 @@ public class Window implements IWidgetContainer, IGuiEventListener {
                 }
             }
         }
-        RenderSystem.popMatrix();
         RenderSystem.enableDepthTest();
     }
 
     @OnlyIn(Dist.CLIENT)
-    protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
-        RenderSystem.pushMatrix();
+    protected void drawGuiContainerBackgroundLayer(@Nonnull MatrixStack matrixStack, float partialTicks, int mouseX, int mouseY) {
         drawBackground();
         int k = (width - xSize) / 2;
         int l = (height - ySize) / 2;
-        drawWidgets(k, l, mouseX, mouseY, partialTicks);
-        RenderSystem.popMatrix();
+        drawWidgets(matrixStack, k, l, mouseX, mouseY, partialTicks);
     }
 
     protected void drawBackground() {
@@ -526,15 +524,15 @@ public class Window implements IWidgetContainer, IGuiEventListener {
         }
     }
 
-    protected void drawWidgets(int k, int l, int mouseX, int mouseY, float partialTicks) {
-        RenderSystem.pushMatrix();
+    protected void drawWidgets(@Nonnull MatrixStack matrixStack, int k, int l, int mouseX, int mouseY, float partialTicks) {
+        matrixStack.push();
         RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
         for (IWidget widget : getWidgets()) {
             if (!widget.isHidden()) {
-                widget.draw(this, k, l, translatedMouseX(mouseX), translatedMouseY(mouseY), partialTicks);
+                widget.draw(this, matrixStack, k, l, translatedMouseX(mouseX), translatedMouseY(mouseY), partialTicks);
             }
         }
-        RenderSystem.popMatrix();
+        matrixStack.pop();
     }
 
     @OnlyIn(Dist.CLIENT)

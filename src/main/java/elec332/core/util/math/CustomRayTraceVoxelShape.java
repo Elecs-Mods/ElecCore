@@ -4,10 +4,10 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.shapes.SplitVoxelShape;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.shapes.VoxelShapes;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -64,12 +64,12 @@ public abstract class CustomRayTraceVoxelShape extends SplitVoxelShape {
 
     @Override
     @OnlyIn(Dist.CLIENT)
-    public void forEachEdge(VoxelShapes.ILineConsumer lineConsumer) {
+    public void forEachEdge(@Nonnull VoxelShapes.ILineConsumer lineConsumer) {
         shape.forEachEdge(lineConsumer);
     }
 
     @Override
-    public void forEachBox(VoxelShapes.ILineConsumer lineConsumer) {
+    public void forEachBox(@Nonnull VoxelShapes.ILineConsumer lineConsumer) {
         shape.forEachBox(lineConsumer);
     }
 
@@ -77,12 +77,6 @@ public abstract class CustomRayTraceVoxelShape extends SplitVoxelShape {
     @Override
     public List<AxisAlignedBB> toBoundingBoxList() {
         return shape.toBoundingBoxList();
-    }
-
-    @Override
-    @OnlyIn(Dist.CLIENT)
-    public double min(@Nonnull Direction.Axis p_197764_1_, double p_197764_2_, double p_197764_4_) {
-        return shape.min(p_197764_1_, p_197764_2_, p_197764_4_);
     }
 
     @Override
@@ -98,7 +92,7 @@ public abstract class CustomRayTraceVoxelShape extends SplitVoxelShape {
 
     @Override
     @Nullable
-    public abstract BlockRayTraceResult rayTrace(@Nonnull Vec3d start, @Nonnull Vec3d end, @Nonnull BlockPos pos);
+    public abstract BlockRayTraceResult rayTrace(@Nonnull Vector3d start, @Nonnull Vector3d end, @Nonnull BlockPos pos);
 
     @Nonnull
     @Override
@@ -107,7 +101,7 @@ public abstract class CustomRayTraceVoxelShape extends SplitVoxelShape {
     }
 
     @Override
-    public double getAllowedOffset(Direction.Axis axis, @Nonnull AxisAlignedBB aabb, double p_212430_3_) {
+    public double getAllowedOffset(@Nonnull Direction.Axis axis, @Nonnull AxisAlignedBB aabb, double p_212430_3_) {
         return shape.getAllowedOffset(axis, aabb, p_212430_3_);
     }
 

@@ -9,8 +9,8 @@ import net.minecraft.world.World;
  */
 public interface IRotatable {
 
-    public Direction getFacing();
+    Direction getFacing();
 
-    public boolean rotateBlock(World world, BlockPos pos, Direction sideHit);
+    boolean rotateBlock(World world, BlockPos pos, Direction sideHit);
 
 }

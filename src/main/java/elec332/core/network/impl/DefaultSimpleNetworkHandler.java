@@ -14,8 +14,9 @@ import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.PacketBuffer;
+import net.minecraft.util.RegistryKey;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.world.World;
 
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
@@ -25,7 +26,6 @@ import java.util.function.Supplier;
  */
 class DefaultSimpleNetworkHandler implements ISimpleNetworkPacketManager, BiConsumer<DefaultSimpleNetworkHandler.PacketSimplePacket, Supplier<IExtendedMessageContext>> {
 
-    @SuppressWarnings("all")
     DefaultSimpleNetworkHandler(INetworkHandler networkHandler, ResourceLocation s) {
         this.idToHandler = new Int2ObjectOpenHashMap<>();
         this.handlerToId = new Object2IntOpenHashMap<>();
@@ -69,7 +69,7 @@ class DefaultSimpleNetworkHandler implements ISimpleNetworkPacketManager, BiCons
     }
 
     @Override
-    public void sendToDimension(ISimplePacket message, DimensionType dimensionId) {
+    public void sendToDimension(ISimplePacket message, RegistryKey<World> dimensionId) {
         packetDispatcher.sendToDimension(from(message), dimensionId);
     }
 
@@ -99,7 +99,7 @@ class DefaultSimpleNetworkHandler implements ISimpleNetworkPacketManager, BiCons
     }
 
     @Override
-    public void sendToDimension(ISimplePacket message, ISimplePacketHandler packetHandler, DimensionType dimensionId) {
+    public void sendToDimension(ISimplePacket message, ISimplePacketHandler packetHandler, RegistryKey<World> dimensionId) {
         packetDispatcher.sendToDimension(from(message, packetHandler), dimensionId);
     }
 
@@ -129,7 +129,7 @@ class DefaultSimpleNetworkHandler implements ISimpleNetworkPacketManager, BiCons
     }
 
     @Override
-    public void sendToDimension(ByteBuf data, ISimplePacketHandler packetHandler, DimensionType dimensionId) {
+    public void sendToDimension(ByteBuf data, ISimplePacketHandler packetHandler, RegistryKey<World> dimensionId) {
         packetDispatcher.sendToDimension(from(data, packetHandler), dimensionId);
     }
 

@@ -1,15 +1,15 @@
 package elec332.core.data.loottable;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Sets;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import net.minecraft.item.ItemStack;
+import net.minecraft.loot.*;
+import net.minecraft.loot.conditions.ILootCondition;
+import net.minecraft.loot.functions.ILootFunction;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.storage.loot.LootContext;
-import net.minecraft.world.storage.loot.LootFunction;
-import net.minecraft.world.storage.loot.LootParameter;
-import net.minecraft.world.storage.loot.conditions.ILootCondition;
-import net.minecraft.world.storage.loot.functions.ILootFunction;
+import net.minecraft.util.registry.Registry;
 
 import javax.annotation.Nonnull;
 import java.util.Set;
@@ -21,12 +21,18 @@ import java.util.function.Function;
  */
 public abstract class AbstractLootFunction extends LootFunction {
 
-    protected AbstractLootFunction(ILootCondition[] conditionsIn) {
+    protected AbstractLootFunction(ILootCondition[] conditionsIn, ResourceLocation name, ILootSerializer<? extends ILootFunction> serializer) {
         super(conditionsIn);
         requiredParameters = Sets.newHashSet();
         setRequiredParameters(requiredParameters::add);
+        if (Registry.LOOT_FUNCTION_TYPE.containsKey(name)) {
+            this.type = Preconditions.checkNotNull(Registry.LOOT_FUNCTION_TYPE.getOrDefault(name));
+        } else {
+            this.type = Registry.register(Registry.LOOT_FUNCTION_TYPE, name, new LootFunctionType(serializer));
+        }
     }
 
+    private final LootFunctionType type;
     private final Set<LootParameter<?>> requiredParameters;
 
     @Nonnull
@@ -42,15 +48,17 @@ public abstract class AbstractLootFunction extends LootFunction {
 
     @Nonnull
     @Override
+    public LootFunctionType func_230425_b_() {
+        return type;
+    }
+
+    @Nonnull
+    @Override
     public final Set<LootParameter<?>> getRequiredParameters() {
         return requiredParameters;
     }
 
     public static abstract class Serializer<T extends LootFunction> extends LootFunction.Serializer<T> {
-
-        public Serializer(ResourceLocation name, Class<T> type) {
-            super(name, type);
-        }
 
         @Nonnull
         @Override
@@ -85,8 +93,7 @@ public abstract class AbstractLootFunction extends LootFunction {
 
     public static class SimpleSerializer<T extends LootFunction> extends Serializer<T> {
 
-        public SimpleSerializer(ResourceLocation name, Class<T> type, Function<ILootCondition[], T> constructor) {
-            super(name, type);
+        public SimpleSerializer(Function<ILootCondition[], T> constructor) {
             this.supplier = constructor;
         }
 

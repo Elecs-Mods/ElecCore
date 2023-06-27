@@ -12,7 +12,7 @@ import javax.annotation.Nullable;
  */
 public interface IColoredBlock {
 
-    default public int colorMultiplier(@Nonnull BlockState state, @Nullable IBlockReader worldIn, @Nullable BlockPos pos, int tintIndex) {
+    default int colorMultiplier(@Nonnull BlockState state, @Nullable IBlockReader worldIn, @Nullable BlockPos pos, int tintIndex) {
         return -1;
     }
 

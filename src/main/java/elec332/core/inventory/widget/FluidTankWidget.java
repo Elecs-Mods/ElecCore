@@ -1,5 +1,6 @@
 package elec332.core.inventory.widget;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import elec332.core.client.RenderHelper;
 import elec332.core.client.util.GuiDraw;
@@ -12,6 +13,8 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.IFluidTank;
 import org.lwjgl.opengl.GL11;
+
+import javax.annotation.Nonnull;
 
 /**
  * Created by Elec332 on 31-7-2015.
@@ -52,7 +55,7 @@ public class FluidTankWidget extends Widget {
     public ToolTip getToolTip(double mouseX, double mouseY) {
         String fluid = (fluidStack == null || fluidStack.getFluid() == null) ? null : fluidStack.getFluid().getRegistryName().getNamespace();
         int amount = fluidStack == null ? 0 : fluidStack.getAmount();
-        return new ToolTip(new ToolTip.ColouredString("Fluid: " + fluid + "  Amount: " + amount));
+        return new ToolTip("Fluid: " + fluid + "  Amount: " + amount);
     }
 
     @Override
@@ -62,7 +65,7 @@ public class FluidTankWidget extends Widget {
     }
 
     @Override
-    public void draw(Window gui, int guiX, int guiY, double mouseX, double mouseY, float partialTicks) {
+    public void draw(Window gui, @Nonnull MatrixStack matrixStack, int guiX, int guiY, double mouseX, double mouseY, float partialTicks) {
         RenderSystem.pushMatrix();
         drawFluid(guiX, guiY);
         RenderSystem.popMatrix();

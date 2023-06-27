@@ -3,11 +3,11 @@ package elec332.core.api.client.model;
 import elec332.core.api.client.model.model.IQuadProvider;
 import elec332.core.api.client.model.template.IQuadTemplate;
 import elec332.core.api.client.model.template.IQuadTemplateSidedMap;
-import net.minecraft.client.renderer.Vector3f;
 import net.minecraft.client.renderer.model.BakedQuad;
 import net.minecraft.client.renderer.model.IModelTransform;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.util.Direction;
+import net.minecraft.util.math.vector.Vector3f;
 import net.minecraftforge.client.extensions.IForgeTransformationMatrix;
 
 import java.util.List;

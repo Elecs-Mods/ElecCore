@@ -10,7 +10,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 
 import javax.annotation.Nonnull;
@@ -55,7 +55,7 @@ public class TOPHandlerEntity implements IProbeInfoEntityProvider {
             }
 
             @Override
-            public Vec3d getHitVec() {
+            public Vector3d getHitVec() {
                 return hitData.getHitVec();
             }
 

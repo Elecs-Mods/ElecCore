@@ -10,8 +10,8 @@ import net.minecraft.world.World;
  */
 public interface IWrenchable {
 
-    public ItemStack itemDropped(World world, BlockPos pos);
+    ItemStack itemDropped(World world, BlockPos pos);
 
-    public boolean onWrenched(World world, BlockPos pos, Direction direction);
+    boolean onWrenched(World world, BlockPos pos, Direction direction);
 
 }

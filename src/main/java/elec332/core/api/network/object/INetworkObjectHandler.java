@@ -7,8 +7,9 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.RegistryKey;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -30,7 +31,7 @@ public interface INetworkObjectHandler<N extends INetworkObjectSender<N>> extend
 
     void sendToDimension(int id, ResourceLocation dimensionName);
 
-    void sendToDimension(int id, DimensionType dimensionId);
+    void sendToDimension(int id, RegistryKey<World> dimensionId);
 
     void sendToServer(int id);
 
@@ -44,7 +45,7 @@ public interface INetworkObjectHandler<N extends INetworkObjectSender<N>> extend
 
     void sendToAllAround(int id, CompoundNBT data, IPacketDispatcher.TargetPoint point);
 
-    void sendToDimension(int id, CompoundNBT data, DimensionType dimensionId);
+    void sendToDimension(int id, CompoundNBT data, RegistryKey<World> dimensionId);
 
     void sendToDimension(int id, CompoundNBT data, ResourceLocation dimensionName);
 
@@ -68,7 +69,7 @@ public interface INetworkObjectHandler<N extends INetworkObjectSender<N>> extend
 
     void sendToAllAround(int id, ByteBuf data, IPacketDispatcher.TargetPoint point);
 
-    void sendToDimension(int id, ByteBuf data, DimensionType dimensionId);
+    void sendToDimension(int id, ByteBuf data, RegistryKey<World> dimensionId);
 
     void sendToDimension(int id, ByteBuf data, ResourceLocation dimensionName);
 

@@ -6,7 +6,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.ILightReader;
+import net.minecraft.world.IBlockDisplayReader;
 import net.minecraftforge.client.model.data.IModelData;
 import net.minecraftforge.client.model.data.ModelProperty;
 
@@ -35,11 +35,11 @@ public abstract class SimpleModelCache<K> extends ModelCache<K> {
     protected abstract K get(ItemStack stack);
 
     @Override
-    public final void addModelData(@Nonnull ILightReader world, @Nonnull BlockPos pos, @Nonnull BlockState state, @Nonnull IModelData modelData) {
+    public final void addModelData(@Nonnull IBlockDisplayReader world, @Nonnull BlockPos pos, @Nonnull BlockState state, @Nonnull IModelData modelData) {
         modelData.setData(property, get(world, pos, state));
     }
 
-    protected abstract K get(@Nonnull ILightReader world, @Nonnull BlockPos pos, @Nonnull BlockState state);
+    protected abstract K get(@Nonnull IBlockDisplayReader world, @Nonnull BlockPos pos, @Nonnull BlockState state);
 
     @Override
     protected abstract void bakeQuads(List<BakedQuad> quads, Direction side, K key);

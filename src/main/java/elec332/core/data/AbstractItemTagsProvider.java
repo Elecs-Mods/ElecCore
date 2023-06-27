@@ -1,5 +1,6 @@
 package elec332.core.data;
 
+import net.minecraft.data.BlockTagsProvider;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.ItemTagsProvider;
 
@@ -8,8 +9,8 @@ import net.minecraft.data.ItemTagsProvider;
  */
 public abstract class AbstractItemTagsProvider extends ItemTagsProvider {
 
-    public AbstractItemTagsProvider(DataGenerator generatorIn) {
-        super(generatorIn);
+    public AbstractItemTagsProvider(DataGenerator generatorIn, BlockTagsProvider blockTagsProvider) {
+        super(generatorIn, blockTagsProvider);
     }
 
     @Override

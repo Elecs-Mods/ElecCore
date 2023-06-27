@@ -65,7 +65,7 @@ public class WrappedResourcePack implements IResourcePack {
     }
 
     @Override
-    public void close() throws IOException {
+    public void close() {
         parent.close();
     }
 

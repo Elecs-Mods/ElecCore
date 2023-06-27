@@ -7,6 +7,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.*;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 import org.apache.commons.lang3.tuple.Pair;
@@ -33,7 +34,7 @@ public class RayTraceHelper {
         return retraceBlock(WorldHelper.getBlockState(world, pos), world, pos, player);
     }
 
-    public static Vec3d slightExpand(Vec3d start, Vec3d end) {
+    public static Vector3d slightExpand(Vector3d start, Vector3d end) {
         return end.add(end.subtract(start).normalize().scale(0.002d));
     }
 
@@ -45,16 +46,16 @@ public class RayTraceHelper {
      * @return The player's raytrace vectors
      */
     @Nonnull
-    public static Pair<Vec3d, Vec3d> getRayTraceVectors(PlayerEntity player) {
+    public static Pair<Vector3d, Vector3d> getRayTraceVectors(PlayerEntity player) {
         //player.getLookVec()
-        //Vec3d startPos = new Vec3d(entity.posX, entity.posY + entity.getEyeHeight(), entity.posZ);
-        //Vec3d endPos = startPos.add(new Vec3d(entity.getLookVec().x * length, entity.getLookVec().y * length, entity.getLookVec().z * length));
+        //Vector3d startPos = new Vector3d(entity.posX, entity.posY + entity.getEyeHeight(), entity.posZ);
+        //Vector3d endPos = startPos.add(new Vector3d(entity.getLookVec().x * length, entity.getLookVec().y * length, entity.getLookVec().z * length));
 
 
-        Vec3d headVec = PlayerHelper.getCorrectedEyePosition(player);
-        Vec3d lookVec = player.getLook(0);
+        Vector3d headVec = PlayerHelper.getCorrectedEyePosition(player);
+        Vector3d lookVec = player.getLook(0);
         double reach = PlayerHelper.getBlockReachDistance(player);
-        Vec3d endVec = headVec.add(lookVec.x * reach, lookVec.y * reach, lookVec.z * reach);
+        Vector3d endVec = headVec.add(lookVec.x * reach, lookVec.y * reach, lookVec.z * reach);
         return Pair.of(headVec, endVec);
     }
 
@@ -70,7 +71,7 @@ public class RayTraceHelper {
     @Nullable
     @SuppressWarnings("all")
     public static BlockRayTraceResult retraceBlock(BlockState blockState, World world, BlockPos pos, PlayerEntity player) {
-        Pair<Vec3d, Vec3d> rayTraceVectors = getRayTraceVectors(player);
+        Pair<Vector3d, Vector3d> rayTraceVectors = getRayTraceVectors(player);
         return blockState.getShape(world, pos).rayTrace(rayTraceVectors.getLeft(), rayTraceVectors.getRight(), pos);
         //Old
         //return Block.collisionRayTrace(blockState, world, pos, rayTraceVectors.getLeft(), rayTraceVectors.getRight());
@@ -85,7 +86,7 @@ public class RayTraceHelper {
      * @return The {@link RayTraceResult} from the raytrace
      */
     public static BlockRayTraceResult rayTrace(IBlockReader world, BlockPos start, BlockPos end) {
-        return rayTrace(world, new Vec3d(start), end);
+        return rayTrace(world, Vector3d.copy(start), end);
     }
 
     /**
@@ -96,8 +97,8 @@ public class RayTraceHelper {
      * @param end   The position to raytrace to
      * @return The {@link RayTraceResult} from the raytrace
      */
-    public static BlockRayTraceResult rayTrace(IBlockReader world, Vec3d start, BlockPos end) {
-        return rayTrace(world, start, new Vec3d(end));
+    public static BlockRayTraceResult rayTrace(IBlockReader world, Vector3d start, BlockPos end) {
+        return rayTrace(world, start, Vector3d.copy(end));
     }
 
     /**
@@ -108,7 +109,7 @@ public class RayTraceHelper {
      * @param end   The position to raytrace to
      * @return The {@link RayTraceResult} from the raytrace
      */
-    public static BlockRayTraceResult rayTrace(IBlockReader world, Vec3d start, Vec3d end) {
+    public static BlockRayTraceResult rayTrace(IBlockReader world, Vector3d start, Vector3d end) {
         RayTraceContext rtc = new RayTraceContext(start, end, RayTraceContext.BlockMode.OUTLINE, RayTraceContext.FluidMode.NONE, null);
         return Preconditions.checkNotNull(world).rayTraceBlocks(rtc);
     }
@@ -121,12 +122,12 @@ public class RayTraceHelper {
      * @return The {@link RayTraceResult} from the raytrace
      */
     public static BlockRayTraceResult rayTrace(LivingEntity player, double distance) {
-        Vec3d vec3d = new Vec3d(player.getPosX(), player.getPosY() + player.getEyeHeight(), player.getPosZ());
-        Vec3d vec3d1 = getVectorForRotation(player.rotationPitch, player.rotationYawHead);
-        Vec3d vec3d2 = vec3d.add(vec3d1.x * distance, vec3d1.y * distance, vec3d1.z * distance);
-        RayTraceContext rtc = new RayTraceContext(vec3d, vec3d2, RayTraceContext.BlockMode.OUTLINE, RayTraceContext.FluidMode.NONE, player);
+        Vector3d Vector3d = new Vector3d(player.getPosX(), player.getPosY() + player.getEyeHeight(), player.getPosZ());
+        Vector3d Vector3d1 = getVectorForRotation(player.rotationPitch, player.rotationYawHead);
+        Vector3d Vector3d2 = Vector3d.add(Vector3d1.x * distance, Vector3d1.y * distance, Vector3d1.z * distance);
+        RayTraceContext rtc = new RayTraceContext(Vector3d, Vector3d2, RayTraceContext.BlockMode.OUTLINE, RayTraceContext.FluidMode.NONE, player);
         return player.getEntityWorld().rayTraceBlocks(rtc);
-        //return player.getEntityWorld().rayTraceBlocks(vec3d, vec3d2, RayTraceFluidMode.NEVER, false, true);
+        //return player.getEntityWorld().rayTraceBlocks(Vector3d, Vector3d2, RayTraceFluidMode.NEVER, false, true);
     }
 
     /**
@@ -139,22 +140,22 @@ public class RayTraceHelper {
      * @return The raytrace result, can be null
      */
     @Nullable
-    public static RayTraceResult rayTrace(BlockPos pos, Vec3d start, Vec3d end, AxisAlignedBB boundingBox) {
-        Vec3d vec3d = start.subtract((double) pos.getX(), (double) pos.getY(), (double) pos.getZ());
-        Vec3d vec3d1 = end.subtract((double) pos.getX(), (double) pos.getY(), (double) pos.getZ());
-        return AxisAlignedBB.rayTrace(Collections.singleton(boundingBox), vec3d, vec3d1, pos);
+    public static RayTraceResult rayTrace(BlockPos pos, Vector3d start, Vector3d end, AxisAlignedBB boundingBox) {
+        Vector3d Vector3d = start.subtract((double) pos.getX(), (double) pos.getY(), (double) pos.getZ());
+        Vector3d Vector3d1 = end.subtract((double) pos.getX(), (double) pos.getY(), (double) pos.getZ());
+        return AxisAlignedBB.rayTrace(Collections.singleton(boundingBox), Vector3d, Vector3d1, pos);
 
-        //RayTraceResult raytraceresult = boundingBox.calculateIntercept(vec3d, vec3d1);
+        //RayTraceResult raytraceresult = boundingBox.calculateIntercept(Vector3d, Vector3d1);
         //return raytraceresult == null ? null : new RayTraceResult(raytraceresult.hitVec.add((double) pos.getX(), (double) pos.getY(), (double) pos.getZ()), raytraceresult.sideHit, pos);
     }
 
     //Because this is protected in Entity -_-
-    public static Vec3d getVectorForRotation(float pitch, float yaw) {
+    public static Vector3d getVectorForRotation(float pitch, float yaw) {
         float f = MathHelper.cos(-yaw * 0.017453292F - (float) Math.PI);
         float f1 = MathHelper.sin(-yaw * 0.017453292F - (float) Math.PI);
         float f2 = -MathHelper.cos(-pitch * 0.017453292F);
         float f3 = MathHelper.sin(-pitch * 0.017453292F);
-        return new Vec3d((double) (f1 * f2), (double) f3, (double) (f * f2));
+        return new Vector3d((double) (f1 * f2), (double) f3, (double) (f * f2));
     }
 
 }

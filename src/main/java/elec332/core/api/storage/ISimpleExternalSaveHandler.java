@@ -1,8 +1,8 @@
 package elec332.core.api.storage;
 
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.world.storage.SaveHandler;
-import net.minecraft.world.storage.WorldInfo;
+import net.minecraft.world.storage.IServerConfiguration;
+import net.minecraft.world.storage.SaveFormat;
 
 import java.io.File;
 
@@ -12,13 +12,13 @@ import java.io.File;
 public interface ISimpleExternalSaveHandler extends IExternalSaveHandler {
 
     @Override
-    default public void load(SaveHandler handler, WorldInfo info, CompoundNBT tag) {
-        load(handler.getWorldDirectory());
+    default void load(SaveFormat.LevelSave levelSave, IServerConfiguration serverInfo, CompoundNBT tag) {
+        load(levelSave.getWorldDir().toFile());
     }
 
     @Override
-    default public CompoundNBT save(SaveHandler handler, WorldInfo info) {
-        save(handler.getWorldDirectory());
+    default CompoundNBT save(SaveFormat.LevelSave levelSave, IServerConfiguration serverInfo) {
+        save(levelSave.getWorldDir().toFile());
         return null;
     }
 
@@ -27,13 +27,13 @@ public interface ISimpleExternalSaveHandler extends IExternalSaveHandler {
      *
      * @param worldDirectory The world directory
      */
-    public void load(File worldDirectory);
+    void load(File worldDirectory);
 
     /**
      * Invoked when the save-data should be written to the disk.
      *
      * @param worldDirectory The world directory
      */
-    public void save(File worldDirectory);
+    void save(File worldDirectory);
 
 }

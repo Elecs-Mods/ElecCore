@@ -1,8 +1,8 @@
 package elec332.core.api.storage;
 
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.world.storage.SaveHandler;
-import net.minecraft.world.storage.WorldInfo;
+import net.minecraft.world.storage.IServerConfiguration;
+import net.minecraft.world.storage.SaveFormat;
 
 import javax.annotation.Nullable;
 
@@ -11,12 +11,12 @@ import javax.annotation.Nullable;
  */
 public interface IExternalSaveHandler {
 
-    public String getName();
+    String getName();
 
     /**
      * Invoked when the save-data should be loaded from the disk.
      */
-    public void load(SaveHandler saveHandler, WorldInfo info, CompoundNBT tag);
+    void load(SaveFormat.LevelSave levelSave, IServerConfiguration serverInfo, CompoundNBT tag);
 
     /**
      * Invoked when the save-data should be written to the disk.
@@ -24,12 +24,12 @@ public interface IExternalSaveHandler {
      * @return The version at which the data was saved
      */
     @Nullable
-    public CompoundNBT save(SaveHandler saveHandler, WorldInfo info);
+    CompoundNBT save(SaveFormat.LevelSave levelSave, IServerConfiguration serverInfo);
 
-    default public void nullifyData() {
+    default void nullifyData() {
     }
 
-    default public boolean makeBackups() {
+    default boolean makeBackups() {
         return true;
     }
 

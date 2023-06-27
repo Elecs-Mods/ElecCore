@@ -5,7 +5,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
@@ -21,7 +21,7 @@ public class EntityHelper {
      * @param entity    The entity to be modified
      * @param motionMod The motion that will be added to the entity
      */
-    public static void addMotion(Entity entity, Vec3d motionMod) {
+    public static void addMotion(Entity entity, Vector3d motionMod) {
         entity.setMotion(entity.getMotion().add(motionMod));
     }
 

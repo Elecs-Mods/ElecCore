@@ -7,14 +7,16 @@ import elec332.core.api.network.*;
 import elec332.core.api.network.object.*;
 import elec332.core.api.util.IEntityFilter;
 import elec332.core.util.FMLHelper;
+import elec332.core.world.WorldHelper;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.RegistryKey;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
 import java.util.Iterator;
@@ -159,11 +161,11 @@ class DefaultNetworkObjectManager implements INetworkObjectManager, BiConsumer<D
 
         @Override
         public void sendToDimension(int id, ResourceLocation dimensionId) {
-            sendToDimension(id, Preconditions.checkNotNull(DimensionType.byName(dimensionId)));
+            sendToDimension(id, WorldHelper.getWorldKey(dimensionId));
         }
 
         @Override
-        public void sendToDimension(int id, DimensionType dimensionId) {
+        public void sendToDimension(int id, RegistryKey<World> dimensionId) {
             ByteBuf buf = Unpooled.buffer();
             if (getNetworkObjectSender() != null) {
                 getNetworkObjectSender().writePacket(id, new ElecByteBufImpl(buf));
@@ -206,7 +208,7 @@ class DefaultNetworkObjectManager implements INetworkObjectManager, BiConsumer<D
         }
 
         @Override
-        public void sendToDimension(int id, CompoundNBT data, DimensionType dimensionId) {
+        public void sendToDimension(int id, CompoundNBT data, RegistryKey<World> dimensionId) {
             sendToDimension(id, fromTag(data), dimensionId);
         }
 
@@ -236,7 +238,7 @@ class DefaultNetworkObjectManager implements INetworkObjectManager, BiConsumer<D
         }
 
         @Override
-        public void sendToDimension(int id, ByteBuf data, DimensionType dimensionId) {
+        public void sendToDimension(int id, ByteBuf data, RegistryKey<World> dimensionId) {
             packetDispatcher.sendToDimension(new PacketNetworkObject(b, (byte) id, data), dimensionId);
         }
 

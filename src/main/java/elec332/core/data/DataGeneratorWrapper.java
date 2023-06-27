@@ -4,7 +4,8 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import net.minecraft.data.*;
-import net.minecraftforge.client.model.generators.*;
+import net.minecraftforge.client.model.generators.ExistingFileHelper;
+import net.minecraftforge.client.model.generators.ModelProvider;
 import net.minecraftforge.fml.event.lifecycle.GatherDataEvent;
 
 import java.util.Collection;

@@ -29,7 +29,7 @@ import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.state.IProperty;
+import net.minecraft.state.Property;
 import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
@@ -120,7 +120,7 @@ public final class RenderingRegistry implements IRenderingRegistry {
 
     @Nonnull
     @Override
-    public StateContainer<Block, BlockState> registerBlockStateLocation(@Nonnull ResourceLocation location, IProperty<?>... properties) {
+    public StateContainer<Block, BlockState> registerBlockStateLocation(@Nonnull ResourceLocation location, Property<?>... properties) {
         if (mcDefaultStatesAdder == null) {
             throw new IllegalStateException();
         }
@@ -305,7 +305,7 @@ public final class RenderingRegistry implements IRenderingRegistry {
 
             @Override
             @SuppressWarnings("ConstantConditions")
-            protected void renderItem(ItemStack stack, @Nonnull MatrixStack matrixStack, @Nonnull IRenderTypeBuffer renderTypeBuffer, int combinedLightIn, int combinedOverlayIn) {
+            protected void renderItem(@Nonnull ItemStack stack, @Nonnull MatrixStack matrixStack, @Nonnull IRenderTypeBuffer renderTypeBuffer, int combinedLightIn, int combinedOverlayIn) {
                 renderer.render(null, 0, matrixStack, renderTypeBuffer, combinedLightIn, combinedLightIn);
                 //RenderHelper.renderTileEntityAt(renderer, null, 0, 0, 0, 0);
                 //renderer.render(null, 0, 0, 0, 0, 0);
@@ -362,7 +362,7 @@ public final class RenderingRegistry implements IRenderingRegistry {
         private final ITESRItem itesrItem;
 
         @Override
-        protected void renderItem(ItemStack stack, @Nonnull MatrixStack matrixStack, @Nonnull IRenderTypeBuffer renderTypeBuffer, int combinedLightIn, int combinedOverlayIn) {
+        protected void renderItem(@Nonnull ItemStack stack, @Nonnull MatrixStack matrixStack, @Nonnull IRenderTypeBuffer renderTypeBuffer, int combinedLightIn, int combinedOverlayIn) {
             itesrItem.renderItem(stack, matrixStack, renderTypeBuffer, combinedLightIn, combinedOverlayIn);
         }
 
@@ -396,8 +396,8 @@ public final class RenderingRegistry implements IRenderingRegistry {
 
     private class FakeBlockStateContainer extends StateContainer<Block, BlockState> {
 
-        private FakeBlockStateContainer(Block block, IProperty<?>... properties) {
-            super(block, BlockState::new, Arrays.stream(properties).collect(Collectors.toMap(IProperty::getName, p -> p)));
+        private FakeBlockStateContainer(Block block, Property<?>... properties) {
+            super(Block::getDefaultState, block, BlockState::new, Arrays.stream(properties).collect(Collectors.toMap(Property::getName, p -> p)));
         }
 
         @Nonnull

@@ -7,7 +7,7 @@ import net.minecraft.nbt.INBT;
 import net.minecraft.nbt.ListNBT;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.IForgeRegistryEntry;
@@ -53,7 +53,7 @@ public class NBTBuilder implements INBTSerializable<CompoundNBT>, Supplier<Compo
         return setString(name, uuid.toString());
     }
 
-    public NBTBuilder setVec(String name, Vec3d vec) {
+    public NBTBuilder setVec(String name, Vector3d vec) {
         setDouble(name + "_vecx", vec.x);
         setDouble(name + "_vecy", vec.y);
         setDouble(name + "_vecz", vec.z);
@@ -152,8 +152,8 @@ public class NBTBuilder implements INBTSerializable<CompoundNBT>, Supplier<Compo
         return UUID.fromString(getString(name));
     }
 
-    public Vec3d getVec(String name) {
-        return new Vec3d(getDouble(name + "_vecx"), getDouble(name + "_vecy"), getDouble(name + "_vecz"));
+    public Vector3d getVec(String name) {
+        return new Vector3d(getDouble(name + "_vecx"), getDouble(name + "_vecy"), getDouble(name + "_vecz"));
     }
 
     public DyeColor getColor(String name) {

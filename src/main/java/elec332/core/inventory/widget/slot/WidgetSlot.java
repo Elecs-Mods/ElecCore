@@ -1,6 +1,7 @@
 package elec332.core.inventory.widget.slot;
 
 import com.google.common.collect.Lists;
+import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.datafixers.util.Pair;
 import elec332.core.client.util.GuiDraw;
 import elec332.core.inventory.tooltip.ToolTip;
@@ -58,7 +59,7 @@ public class WidgetSlot extends Widget {
     }
 
     @Override
-    public void draw(Window window, int guiX, int guiY, double mouseX, double mouseY, float partialTicks) {
+    public void draw(Window window, @Nonnull MatrixStack matrixStack, int guiX, int guiY, double mouseX, double mouseY, float partialTicks) {
         if (skipBackground) {
             return;
         }

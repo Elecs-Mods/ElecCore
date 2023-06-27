@@ -17,10 +17,11 @@ import elec332.core.world.WorldHelper;
 import io.netty.buffer.ByteBuf;
 import it.unimi.dsi.fastutil.shorts.Short2ObjectArrayMap;
 import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.util.RegistryKey;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorld;
-import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.world.World;
 import net.minecraftforge.fml.network.NetworkDirection;
 import net.minecraftforge.fml.network.NetworkEvent;
 import net.minecraftforge.fml.network.NetworkInstance;
@@ -151,11 +152,11 @@ class DefaultNetworkHandler implements IElecNetworkHandler, DefaultByteBufFactor
 
     @Override
     public void sendToDimension(IMessage message, ResourceLocation dimensionId) {
-        sendToDimension(message, Preconditions.checkNotNull(DimensionType.byName(dimensionId)));
+        sendToDimension(message, WorldHelper.getWorldKey(dimensionId));
     }
 
     @Override
-    public void sendToDimension(IMessage message, DimensionType dimensionId) {
+    public void sendToDimension(IMessage message, RegistryKey<World> dimensionId) {
         sendTo(message, ServerHelper.getAllPlayersInDimension(dimensionId));
     }
 
@@ -195,7 +196,7 @@ class DefaultNetworkHandler implements IElecNetworkHandler, DefaultByteBufFactor
     }
 
     @Override
-    public void sendToDimension(ISimplePacket message, DimensionType dimensionId) {
+    public void sendToDimension(ISimplePacket message, RegistryKey<World> dimensionId) {
         simpleNetworkPacketManager.sendToDimension(message, dimensionId);
     }
 
@@ -225,7 +226,7 @@ class DefaultNetworkHandler implements IElecNetworkHandler, DefaultByteBufFactor
     }
 
     @Override
-    public void sendToDimension(ISimplePacket message, ISimplePacketHandler packetHandler, DimensionType dimensionId) {
+    public void sendToDimension(ISimplePacket message, ISimplePacketHandler packetHandler, RegistryKey<World> dimensionId) {
         simpleNetworkPacketManager.sendToDimension(message, packetHandler, dimensionId);
     }
 
@@ -255,7 +256,7 @@ class DefaultNetworkHandler implements IElecNetworkHandler, DefaultByteBufFactor
     }
 
     @Override
-    public void sendToDimension(ByteBuf data, ISimplePacketHandler packetHandler, DimensionType dimensionId) {
+    public void sendToDimension(ByteBuf data, ISimplePacketHandler packetHandler, RegistryKey<World> dimensionId) {
         simpleNetworkPacketManager.sendToDimension(data, packetHandler, dimensionId);
     }
 

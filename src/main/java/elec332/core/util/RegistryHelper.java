@@ -6,6 +6,7 @@ import elec332.core.api.util.IClearable;
 import elec332.core.handler.annotations.TileEntityAnnotationProcessor;
 import net.minecraft.block.Block;
 import net.minecraft.enchantment.Enchantment;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.merchant.villager.VillagerProfession;
 import net.minecraft.fluid.Fluid;
@@ -22,12 +23,10 @@ import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.world.biome.Biome;
-import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.world.World;
 import net.minecraft.world.gen.carver.WorldCarver;
 import net.minecraft.world.gen.feature.Feature;
-import net.minecraftforge.common.ModDimension;
+import net.minecraft.world.gen.feature.structure.Structure;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
@@ -46,7 +45,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.Callable;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -170,10 +168,6 @@ public class RegistryHelper {
         return (ForgeRegistry<Effect>) ForgeRegistries.POTIONS;
     }
 
-    public static ForgeRegistry<Biome> getBiomeRegistry() {
-        return (ForgeRegistry<Biome>) ForgeRegistries.BIOMES;
-    }
-
     public static ForgeRegistry<SoundEvent> getSoundEventRegistry() {
         return (ForgeRegistry<SoundEvent>) ForgeRegistries.SOUND_EVENTS;
     }
@@ -198,14 +192,6 @@ public class RegistryHelper {
         return (ForgeRegistry<TileEntityType<?>>) ForgeRegistries.TILE_ENTITIES;
     }
 
-    public static ForgeRegistry<ModDimension> getDimensions() {
-        return (ForgeRegistry<ModDimension>) ForgeRegistries.MOD_DIMENSIONS;
-    }
-
-    public static ForgeRegistry<DimensionType> getDimensionTypes() {
-        return (ForgeRegistry<DimensionType>) RegistryManager.ACTIVE.getRegistry(DimensionType.class);
-    }
-
     public static ForgeRegistry<IRecipeSerializer<?>> getRecipeSerializers() {
         return (ForgeRegistry<IRecipeSerializer<?>>) ForgeRegistries.RECIPE_SERIALIZERS;
     }
@@ -220,6 +206,23 @@ public class RegistryHelper {
 
     public static ForgeRegistry<WorldCarver<?>> getCarvers() {
         return (ForgeRegistry<WorldCarver<?>>) ForgeRegistries.WORLD_CARVERS;
+    }
+
+    public static ForgeRegistry<Structure<?>> getStructures() {
+        return (ForgeRegistry<Structure<?>>) ForgeRegistries.STRUCTURE_FEATURES;
+    }
+
+    public static <T extends Entity> T createEntity(EntityType<T> type, World world) {
+        return createEntity(type, world, null);
+    }
+
+    @Nonnull
+    public static <T extends Entity> T createEntity(EntityType<T> type, World world, Consumer<T> config) {
+        T ret = Preconditions.checkNotNull(type.create(world));
+        if (config != null) {
+            config.accept(ret);
+        }
+        return ret;
     }
 
     @SuppressWarnings("unchecked")
@@ -272,11 +275,6 @@ public class RegistryHelper {
 
     public static Map<Block, Item> getBlockItemMap() {
         return GameData.getBlockItemMap();
-    }
-
-    @SuppressWarnings("deprecation")
-    public static Optional<DimensionType> getDimensionType(ResourceLocation name) {
-        return Registry.DIMENSION_TYPE.getValue(name);
     }
 
     /**

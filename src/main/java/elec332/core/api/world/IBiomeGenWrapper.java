@@ -5,14 +5,12 @@ import net.minecraft.entity.EntityClassification;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.biome.MobSpawnInfo;
 import net.minecraft.world.gen.GenerationStage;
 import net.minecraft.world.gen.carver.ConfiguredCarver;
 import net.minecraft.world.gen.carver.ICarverConfig;
 import net.minecraft.world.gen.carver.WorldCarver;
-import net.minecraft.world.gen.feature.ConfiguredFeature;
-import net.minecraft.world.gen.feature.Feature;
-import net.minecraft.world.gen.feature.IFeatureConfig;
-import net.minecraft.world.gen.feature.NoFeatureConfig;
+import net.minecraft.world.gen.feature.*;
 import net.minecraft.world.gen.feature.structure.Structure;
 import net.minecraft.world.gen.placement.ConfiguredPlacement;
 import net.minecraft.world.gen.placement.IPlacementConfig;
@@ -24,34 +22,36 @@ import net.minecraft.world.gen.placement.Placement;
  */
 public interface IBiomeGenWrapper {
 
-    public Biome getBiome();
+    Biome getBiome();
 
-    default public void addFeature(GenerationStage.Decoration decorationStage, Feature<NoFeatureConfig> feature, Placement<NoPlacementConfig> placement) {
+    default void addFeature(GenerationStage.Decoration decorationStage, Feature<NoFeatureConfig> feature, Placement<NoPlacementConfig> placement) {
         addFeature(decorationStage, feature, placement, IWorldGenRegister.EMPTY_PLACEMENT_CONFIG);
     }
 
-    default public <PC extends IPlacementConfig> void addFeature(GenerationStage.Decoration decorationStage, Feature<NoFeatureConfig> feature, Placement<PC> placement, PC pc) {
+    default <PC extends IPlacementConfig> void addFeature(GenerationStage.Decoration decorationStage, Feature<NoFeatureConfig> feature, Placement<PC> placement, PC pc) {
         addFeature(decorationStage, feature, IWorldGenRegister.EMPTY_FEATURE_CONFIG, placement, pc);
     }
 
-    default public <FC extends IFeatureConfig> void addFeature(GenerationStage.Decoration decorationStage, Feature<FC> feature, FC fc, Placement<NoPlacementConfig> placement) {
+    default <FC extends IFeatureConfig> void addFeature(GenerationStage.Decoration decorationStage, Feature<FC> feature, FC fc, Placement<NoPlacementConfig> placement) {
         addFeature(decorationStage, feature, fc, placement, IWorldGenRegister.EMPTY_PLACEMENT_CONFIG);
     }
 
-    public <FC extends IFeatureConfig, PC extends IPlacementConfig> void addFeature(GenerationStage.Decoration decorationStage, Feature<FC> feature, FC fc, Placement<PC> placement, PC pc);
+    <FC extends IFeatureConfig, PC extends IPlacementConfig> void addFeature(GenerationStage.Decoration decorationStage, Feature<FC> feature, FC fc, Placement<PC> placement, PC pc);
 
-    public <FC extends IFeatureConfig, PC extends IPlacementConfig> void addFeature(GenerationStage.Decoration decorationStage, ConfiguredFeature<FC, ? extends Feature<FC>> configuredFeature, ConfiguredPlacement<PC> placement);
+    <FC extends IFeatureConfig, PC extends IPlacementConfig> void addFeature(GenerationStage.Decoration decorationStage, ConfiguredFeature<FC, ? extends Feature<FC>> configuredFeature, ConfiguredPlacement<PC> placement);
 
-    public <C extends IFeatureConfig> void addFeature(GenerationStage.Decoration decorationStage, ConfiguredFeature<C, ? extends Feature<C>> feature);
+    <C extends IFeatureConfig> void addFeature(GenerationStage.Decoration decorationStage, ConfiguredFeature<C, ? extends Feature<C>> feature);
 
-    public <C extends IFeatureConfig> void addStructure(Structure<C> structure, C config);
+    <C extends IFeatureConfig> void addStructure(Structure<C> structure, C config);
 
-    public <C extends ICarverConfig> void addCarver(GenerationStage.Carving stage, WorldCarver<C> carver, C carverConfig);
+    <C extends IFeatureConfig> void addStructure(StructureFeature<C, Structure<C>> configuredStructure);
 
-    public <C extends ICarverConfig> void addCarver(GenerationStage.Carving stage, ConfiguredCarver<C> carver);
+    <C extends ICarverConfig> void addCarver(GenerationStage.Carving stage, WorldCarver<C> carver, C carverConfig);
 
-    public void addSpawn(EntityClassification type, EntityType<? extends LivingEntity> entityType, int weight, int minGroupCount, int maxGroupCount);
+    <C extends ICarverConfig> void addCarver(GenerationStage.Carving stage, ConfiguredCarver<C> carver);
 
-    public void addSpawn(EntityClassification type, Biome.SpawnListEntry spawnListEntry);
+    void addSpawn(EntityClassification type, EntityType<? extends LivingEntity> entityType, int weight, int minGroupCount, int maxGroupCount);
+
+    void addSpawn(EntityClassification type, MobSpawnInfo.Spawners spawnListEntry);
 
 }

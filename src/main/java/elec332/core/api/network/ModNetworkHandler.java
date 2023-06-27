@@ -12,6 +12,6 @@ import java.lang.annotation.Target;
 @Target(ElementType.FIELD)
 public @interface ModNetworkHandler {
 
-    public String value() default "";
+    String value() default "";
 
 }

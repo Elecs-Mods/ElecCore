@@ -1,15 +1,18 @@
 package elec332.core.inventory.widget;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import elec332.core.inventory.tooltip.ToolTip;
 import elec332.core.inventory.window.IGuiEventListener;
 import elec332.core.inventory.window.IWidgetContainer;
 import elec332.core.inventory.window.Window;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.LogicalSide;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 
@@ -66,14 +69,14 @@ public interface IWidget extends IGuiEventListener {
     boolean charTyped(char typedChar, int keyCode);
 
     @OnlyIn(Dist.CLIENT)
-    void draw(Window window, int guiX, int guiY, double mouseX, double mouseY, float partialTicks);
+    void draw(Window window, @Nonnull MatrixStack matrixStack, int guiX, int guiY, double mouseX, double mouseY, float partialTicks);
 
     boolean isHidden();
 
     @Nullable
     ToolTip getToolTip(double mouseX, double mouseY);
 
-    default void modifyTooltip(List<String> tooltip, int mouseX, int mouseY) {
+    default void modifyTooltip(List<ITextComponent> tooltip, int mouseX, int mouseY) {
     }
 
     default void onWindowClosed(PlayerEntity player) {

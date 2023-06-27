@@ -2,10 +2,11 @@ package elec332.core.data.custom;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonObject;
+import com.google.gson.JsonElement;
 import elec332.core.client.ClientHelper;
 import net.minecraft.client.resources.JsonReloadListener;
 import net.minecraft.profiler.IProfiler;
+import net.minecraft.resources.IReloadableResourceManager;
 import net.minecraft.resources.IResourceManager;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
@@ -39,11 +40,11 @@ public abstract class AbstractDataReader extends JsonReloadListener {
     private final LogicalSide loadSide;
 
     @Override
-    protected final void apply(@Nonnull Map<ResourceLocation, JsonObject> objectIn, @Nonnull IResourceManager resourceManagerIn, @Nonnull IProfiler profilerIn) {
+    protected final void apply(@Nonnull Map<ResourceLocation, JsonElement> objectIn, @Nonnull IResourceManager resourceManagerIn, @Nonnull IProfiler profilerIn) {
         read(objectIn, resourceManagerIn, profilerIn);
     }
 
-    protected abstract void read(@Nonnull Map<ResourceLocation, JsonObject> objects, @Nonnull IResourceManager resourceManager, @Nonnull IProfiler profiler);
+    protected abstract void read(@Nonnull Map<ResourceLocation, JsonElement> objects, @Nonnull IResourceManager resourceManager, @Nonnull IProfiler profiler);
 
     protected void register() {
         if (loadSide.isClient()) {
@@ -51,7 +52,7 @@ public abstract class AbstractDataReader extends JsonReloadListener {
                 ClientHelper.registerReloadListener(this);
             });
         } else {
-            MinecraftForge.EVENT_BUS.addListener((Consumer<FMLServerAboutToStartEvent>) event -> event.getServer().getResourceManager().addReloadListener(AbstractDataReader.this));
+            MinecraftForge.EVENT_BUS.addListener((Consumer<FMLServerAboutToStartEvent>) event -> ((IReloadableResourceManager) event.getServer().getDataPackRegistries().getResourceManager()).addReloadListener(AbstractDataReader.this));
         }
     }
 

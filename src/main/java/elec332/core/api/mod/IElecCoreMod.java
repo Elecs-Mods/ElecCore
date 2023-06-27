@@ -18,19 +18,19 @@ import java.util.function.Consumer;
  */
 public interface IElecCoreMod {
 
-    default public void registerRegisters(Consumer<IObjectRegister<?>> objectHandler, Consumer<IWorldGenRegister> worldHandler) {
+    default void registerRegisters(Consumer<IObjectRegister<?>> objectHandler, Consumer<IWorldGenRegister> worldHandler) {
     }
 
-    default public void registerCommands(CommandDispatcher<CommandSource> commandRegistry) {
+    default void registerCommands(CommandDispatcher<CommandSource> commandRegistry) {
     }
 
-    default public void registerClientCommands(CommandDispatcher<? extends ISuggestionProvider> commandRegistry) {
+    default void registerClientCommands(CommandDispatcher<? extends ISuggestionProvider> commandRegistry) {
     }
 
-    default public void registerSaveHandlers(ISingleRegister<IExternalSaveHandler> saveHandlerRegistry) {
+    default void registerSaveHandlers(ISingleRegister<IExternalSaveHandler> saveHandlerRegistry) {
     }
 
-    default public void afterConstruction() {
+    default void afterConstruction() {
     }
 
 }

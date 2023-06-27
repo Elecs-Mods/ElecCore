@@ -1,5 +1,6 @@
 package elec332.core.client;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -18,7 +19,7 @@ import net.minecraft.client.particle.Particle;
 import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.color.BlockColors;
 import net.minecraft.client.renderer.color.ItemColors;
-import net.minecraft.client.renderer.culling.ClippingHelperImpl;
+import net.minecraft.client.renderer.culling.ClippingHelper;
 import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.client.renderer.model.IModelTransform;
 import net.minecraft.client.renderer.model.ModelRotation;
@@ -36,8 +37,8 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.shapes.VoxelShape;
+import net.minecraft.util.math.vector.*;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -64,6 +65,7 @@ public class RenderHelper {
     private static final Minecraft mc;
     private static final Map<IVertexBuilder, ITessellator> worldRenderTessellators;
     private static final Map<Direction, IForgeTransformationMatrix[]> rotateAroundMap;
+    private static final Map<ModelRotation, Integer> xRotation, yRotation;
     private static IBakedModel nullModel;
 
     @Nonnull
@@ -218,7 +220,7 @@ public class RenderHelper {
     }
 
     public static int drawString(String text, float x, float y, int color) {
-        return getMCFontrenderer().drawString(text, x, y, color);
+        return getMCFontrenderer().drawString(new MatrixStack(), text, x, y, color);
     }
 
     public static void drawExpandedSelectionBoundingBox(@Nonnull AxisAlignedBB aabb) {
@@ -240,10 +242,10 @@ public class RenderHelper {
         double d0 = player.lastTickPosX + (player.getPosX() - player.lastTickPosX) * (double) partialTicks;
         double d1 = player.lastTickPosY + (player.getPosY() - player.lastTickPosY) * (double) partialTicks;
         double d2 = player.lastTickPosZ + (player.getPosZ() - player.lastTickPosZ) * (double) partialTicks;
-        drawSelectionBox(world, pos, shapeOverride, new Vec3d(d0, d1, d2));
+        drawSelectionBox(world, pos, shapeOverride, new Vector3d(d0, d1, d2));
     }
 
-    public static void drawSelectionBox(World world, BlockPos pos, VoxelShape shapeOverride, Vec3d projectedView) {
+    public static void drawSelectionBox(World world, BlockPos pos, VoxelShape shapeOverride, Vector3d projectedView) {
         if (world.getWorldBorder().contains(pos)) {
             MatrixStack stack = new MatrixStack();
             double d0 = projectedView.x;
@@ -254,7 +256,7 @@ public class RenderHelper {
         }
     }
 
-    public static void drawSelectionBox(World world, BlockPos pos, VoxelShape shapeOverride, Vec3d projectedView, MatrixStack renderer, IRenderTypeBuffer buffer) {
+    public static void drawSelectionBox(World world, BlockPos pos, VoxelShape shapeOverride, Vector3d projectedView, MatrixStack renderer, IRenderTypeBuffer buffer) {
         if (world == null || world.getWorldBorder().contains(pos)) {
             double d0 = projectedView.x;
             double d1 = projectedView.y;
@@ -331,7 +333,7 @@ public class RenderHelper {
         if (rotation2 == null) {
             return rotation1;
         }
-        return ModelRotation.getModelRotation(((rotation1.quartersX + rotation2.quartersX)) * 90, ((rotation1.quartersY + rotation2.quartersY)) * 90);
+        return ModelRotation.getModelRotation(xRotation.get(rotation1) + xRotation.get(rotation2), yRotation.get(rotation1) + yRotation.get(rotation2));
     }
 
     @Nonnull
@@ -362,27 +364,27 @@ public class RenderHelper {
     }
 
     @Nonnull
-    public static Vec3d getPlayerVec(float partialTicks) {
+    public static Vector3d getPlayerVec(float partialTicks) {
         PlayerEntity player = ElecCore.proxy.getClientPlayer();
         double dX = player.lastTickPosX + (player.getPosX() - player.lastTickPosX) * partialTicks;
         double dY = player.lastTickPosY + (player.getPosY() - player.lastTickPosY) * partialTicks;
         double dZ = player.lastTickPosZ + (player.getPosZ() - player.lastTickPosZ) * partialTicks;
-        return new Vec3d(dX, dY, dZ);
+        return new Vector3d(dX, dY, dZ);
     }
 
     public static void translateToWorld(float partialTicks) {
-        Vec3d vec = getPlayerVec(partialTicks);
+        Vector3d vec = getPlayerVec(partialTicks);
         RenderSystem.translated(-vec.x, -vec.y, -vec.z);
     }
 
     @Nonnull
-    public static Vec3d getPlayerVec() {
+    public static Vector3d getPlayerVec() {
         PlayerEntity player = ElecCore.proxy.getClientPlayer();
-        return new Vec3d(player.getPosX(), player.getPosY(), player.getPosZ());
+        return new Vector3d(player.getPosX(), player.getPosY(), player.getPosZ());
     }
 
     @Nonnull
-    public static ClippingHelperImpl getPlayerCamera(float partialTicks) {
+    public static ClippingHelper getPlayerCamera(float partialTicks) {
         MatrixStack stack = new MatrixStack();
         ActiveRenderInfo ri = mc.gameRenderer.getActiveRenderInfo();
 
@@ -396,22 +398,22 @@ public class RenderHelper {
 
         Matrix4f matrix4f = stack.getLast().getMatrix();
 
-        ClippingHelperImpl clippingHelperImpl = new ClippingHelperImpl(matrix4f, projection);
+        ClippingHelper clippingHelperImpl = new ClippingHelper(matrix4f, projection);
 
-        Vec3d vec3d = ri.getProjectedView();
-        double d0 = vec3d.getX();
-        double d1 = vec3d.getY();
-        double d2 = vec3d.getZ();
+        Vector3d Vector3d = ri.getProjectedView();
+        double d0 = Vector3d.getX();
+        double d1 = Vector3d.getY();
+        double d2 = Vector3d.getZ();
         clippingHelperImpl.setCameraPosition(d0, d1, d2);
 
         return clippingHelperImpl;
     }
 
-    public static void drawLine(Vec3d from, Vec3d to, Vec3d player, float thickness) {
+    public static void drawLine(Vector3d from, Vector3d to, Vector3d player, float thickness) {
         drawQuad(from, from.add(thickness, thickness, thickness), to, to.add(thickness, thickness, thickness));
     }
 
-    public static void drawQuad(Vec3d v1, Vec3d v2, Vec3d v3, Vec3d v4) {
+    public static void drawQuad(Vector3d v1, Vector3d v2, Vector3d v3, Vector3d v4) {
         tessellator.addVertexWithUV(v1.x, v1.y, v1.z, 0, 0);
         tessellator.addVertexWithUV(v2.x, v2.y, v2.z, 1, 0);
         tessellator.addVertexWithUV(v3.x, v3.y, v3.z, 1, 1);
@@ -419,8 +421,8 @@ public class RenderHelper {
     }
 
     @Nonnull
-    public static Vec3d multiply(Vec3d original, double m) {
-        return new Vec3d(original.x * m, original.y * m, original.z * m);
+    public static Vector3d multiply(Vector3d original, double m) {
+        return new Vector3d(original.x * m, original.y * m, original.z * m);
     }
 
     public static Texture getTextureObject(ResourceLocation location) {
@@ -516,6 +518,15 @@ public class RenderHelper {
                     break;
                 default:
                     throw new IllegalArgumentException();
+            }
+        }
+        xRotation = Maps.newEnumMap(ModelRotation.class);
+        yRotation = Maps.newEnumMap(ModelRotation.class);
+        for (int x = 0; x <= 360; x += 90) {
+            for (int y = 0; y <= 360; y += 90) {
+                ModelRotation rot = Preconditions.checkNotNull(ModelRotation.getModelRotation(x, y));
+                xRotation.put(rot, x);
+                yRotation.put(rot, y);
             }
         }
     }

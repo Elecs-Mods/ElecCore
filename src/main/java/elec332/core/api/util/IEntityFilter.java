@@ -13,9 +13,9 @@ import java.util.stream.Collectors;
  */
 public interface IEntityFilter<P extends Entity> {
 
-    public List<P> filterEntities(List<P> toFilter);
+    List<P> filterEntities(List<P> toFilter);
 
-    public static <E extends Entity> IEntityFilter<E> of(Predicate<E> predicate) {
+    static <E extends Entity> IEntityFilter<E> of(Predicate<E> predicate) {
         return toFilter -> toFilter.stream().filter(predicate).collect(Collectors.toList());
     }
 

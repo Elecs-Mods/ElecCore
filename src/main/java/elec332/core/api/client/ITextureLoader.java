@@ -19,6 +19,6 @@ public interface ITextureLoader {
      * @param iconRegistrar The IIconRegistrar.
      */
     @OnlyIn(Dist.CLIENT)
-    public void registerTextures(IIconRegistrar iconRegistrar);
+    void registerTextures(IIconRegistrar iconRegistrar);
 
 }

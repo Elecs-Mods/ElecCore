@@ -3,8 +3,8 @@ package elec332.core.api.storage;
 import com.google.common.base.Preconditions;
 import elec332.core.api.util.IClearable;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.world.storage.SaveHandler;
-import net.minecraft.world.storage.WorldInfo;
+import net.minecraft.world.storage.IServerConfiguration;
+import net.minecraft.world.storage.SaveFormat;
 import net.minecraftforge.common.util.INBTSerializable;
 
 import javax.annotation.Nullable;
@@ -30,13 +30,13 @@ public class NBTSerializableSaveHandler implements IExternalSaveHandler {
     }
 
     @Override
-    public void load(SaveHandler saveHandler, WorldInfo info, CompoundNBT tag) {
+    public void load(SaveFormat.LevelSave levelSave, IServerConfiguration serverInfo, CompoundNBT tag) {
         nbtSerializable.deserializeNBT(tag);
     }
 
     @Nullable
     @Override
-    public CompoundNBT save(SaveHandler saveHandler, WorldInfo info) {
+    public CompoundNBT save(SaveFormat.LevelSave levelSave, IServerConfiguration serverInfo) {
         return nbtSerializable.serializeNBT();
     }
 

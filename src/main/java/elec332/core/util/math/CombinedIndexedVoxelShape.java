@@ -2,8 +2,8 @@ package elec332.core.util.math;
 
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.shapes.VoxelShape;
+import net.minecraft.util.math.vector.Vector3d;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -25,7 +25,7 @@ public class CombinedIndexedVoxelShape extends CustomRayTraceVoxelShape {
 
     @Override
     @Nullable
-    public BlockRayTraceResult rayTrace(@Nonnull Vec3d start, @Nonnull Vec3d end, @Nonnull BlockPos pos) {
+    public BlockRayTraceResult rayTrace(@Nonnull Vector3d start, @Nonnull Vector3d end, @Nonnull BlockPos pos) {
         BlockRayTraceResult closest = null;
         double closestDist = Double.POSITIVE_INFINITY;
         for (VoxelShape shape : shapes) {

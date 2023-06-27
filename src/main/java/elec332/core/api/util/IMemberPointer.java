@@ -10,22 +10,22 @@ import java.lang.reflect.Member;
 public interface IMemberPointer<M extends AccessibleObject & Member, P, R> {
 
     @SuppressWarnings("unchecked")
-    default public Class<P> getParentType() {
+    default Class<P> getParentType() {
         return (Class<P>) getReflectedMember().getDeclaringClass();
     }
 
-    public Class<R> getType();
+    Class<R> getType();
 
-    default public String getName() {
+    default String getName() {
         return getReflectedMember().getName();
     }
 
-    public boolean isStatic();
+    boolean isStatic();
 
-    default public <A extends Annotation> A getAnnotation(Class<A> annotation) {
+    default <A extends Annotation> A getAnnotation(Class<A> annotation) {
         return getReflectedMember().getAnnotation(annotation);
     }
 
-    public M getReflectedMember();
+    M getReflectedMember();
 
 }

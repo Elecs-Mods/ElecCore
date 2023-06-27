@@ -1,9 +1,9 @@
 package elec332.core.world.posmap;
 
 import com.google.common.collect.Lists;
-import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
-import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
-import net.minecraft.world.dimension.DimensionType;
+import com.google.common.collect.Maps;
+import net.minecraft.util.RegistryKey;
+import net.minecraft.world.World;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -58,31 +58,31 @@ public abstract class DefaultMultiWorldPositionedObjectHolder<T, V> implements I
     }
 
     public DefaultMultiWorldPositionedObjectHolder() {
-        this.objectsInternal = new Int2ObjectArrayMap<>();
+        this.objectsInternal = Maps.newIdentityHashMap();
         this.view = Collections.unmodifiableMap(this.objectsInternal);
         this.callbacks = Lists.newArrayList();
     }
 
     private final List<Consumer<PositionedObjectHolder<T, V>>> callbacks;
-    private final Int2ObjectMap<PositionedObjectHolder<T, V>> objectsInternal;
-    private final Map<Integer, PositionedObjectHolder<T, V>> view;
+    private final Map<RegistryKey<World>, PositionedObjectHolder<T, V>> objectsInternal;
+    private final Map<RegistryKey<World>, PositionedObjectHolder<T, V>> view;
 
     @Nullable
     @Override
-    public PositionedObjectHolder<T, V> get(DimensionType world) {
-        return objectsInternal.get(world.getId());
+    public PositionedObjectHolder<T, V> get(RegistryKey<World> world) {
+        return objectsInternal.get(world);
     }
 
     @Nonnull
     @Override
-    public PositionedObjectHolder<T, V> getOrCreate(DimensionType world) {
+    public PositionedObjectHolder<T, V> getOrCreate(RegistryKey<World> world) {
         PositionedObjectHolder<T, V> ret = get(world);
         if (ret == null) {
             ret = createNew();
             for (Consumer<PositionedObjectHolder<T, V>> callback : callbacks) {
                 callback.accept(ret);
             }
-            objectsInternal.put(world.getId(), ret);
+            objectsInternal.put(world, ret);
         }
         return ret;
     }
@@ -95,7 +95,7 @@ public abstract class DefaultMultiWorldPositionedObjectHolder<T, V> implements I
 
     @Nonnull
     @Override
-    public Map<Integer, PositionedObjectHolder<T, V>> getUnModifiableView() {
+    public Map<RegistryKey<World>, PositionedObjectHolder<T, V>> getUnModifiableView() {
         return view;
     }
 

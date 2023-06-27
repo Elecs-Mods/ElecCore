@@ -18,7 +18,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
 
@@ -73,7 +73,7 @@ public class WailaHandlerBlock implements IComponentProvider, IServerDataProvide
 
             @Nonnull
             @Override
-            public Vec3d getHitVec() {
+            public Vector3d getHitVec() {
                 return getRayTraceResult().getHitVec();
             }
 
@@ -156,7 +156,7 @@ public class WailaHandlerBlock implements IComponentProvider, IServerDataProvide
 
                 @Nonnull
                 @Override
-                public Vec3d getHitVec() {
+                public Vector3d getHitVec() {
                     return accessor.getHitResult().getHitVec();
                 }
 

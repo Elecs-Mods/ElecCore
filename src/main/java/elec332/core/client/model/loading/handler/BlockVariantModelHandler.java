@@ -23,11 +23,11 @@ import net.minecraft.client.renderer.model.*;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.item.ItemStack;
 import net.minecraft.resources.IResource;
-import net.minecraft.state.IProperty;
+import net.minecraft.state.Property;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.ILightReader;
+import net.minecraft.world.IBlockDisplayReader;
 import net.minecraftforge.client.ForgeHooksClient;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.client.model.data.EmptyModelData;
@@ -164,9 +164,9 @@ public class BlockVariantModelHandler implements IModelHandler {
         return new MultiWrappedUnbakedModel(variants) {
 
             @Override
-            protected IBakedModel bakeModel(IUnbakedModel model, int index, @Nonnull ModelBakery modelBakery, @Nonnull Function<Material, TextureAtlasSprite> spriteGetter, @Nonnull IModelTransform transform, @Nonnull ResourceLocation modelLocation) {
+            protected IBakedModel bakeModel(IUnbakedModel model, int index, @Nonnull ModelBakery modelBakery, @Nonnull Function<RenderMaterial, TextureAtlasSprite> spriteGetter, @Nonnull IModelTransform transform, @Nonnull ResourceLocation modelLocation) {
                 TextureOverrideData texOv = data.get(index).getRight();
-                Function<Material, TextureAtlasSprite> spriteGetter_ = spriteGetter;
+                Function<RenderMaterial, TextureAtlasSprite> spriteGetter_ = spriteGetter;
                 if (texOv != null && texOv.containsProperty(props.keySet())) {
                     spriteGetter_ = new TextureOverride(texOv.process(props), spriteGetter);
                 }
@@ -177,7 +177,7 @@ public class BlockVariantModelHandler implements IModelHandler {
                 return new ModelCache<Map<String, String>>(base) {
 
                     @Override
-                    public void addModelData(@Nonnull ILightReader world, @Nonnull BlockPos pos, @Nonnull BlockState state, @Nonnull IModelData modelData) {
+                    public void addModelData(@Nonnull IBlockDisplayReader world, @Nonnull BlockPos pos, @Nonnull BlockState state, @Nonnull IModelData modelData) {
                         modelData.setData(ModelProperties.WORLD, world);
                         modelData.setData(ModelProperties.POS, pos);
                     }
@@ -222,25 +222,25 @@ public class BlockVariantModelHandler implements IModelHandler {
 
     @SuppressWarnings("all")
     private Map<String, String> addNormalProperties(BlockState state, Map<String, String> data) {
-        for (IProperty prop : state.getProperties()) {
+        for (Property prop : state.getProperties()) {
             data.put(prop.getName(), prop.getName(state.get(prop)));
         }
         return data;
     }
 
-    private static class TextureOverride implements Function<Material, TextureAtlasSprite> {
+    private static class TextureOverride implements Function<RenderMaterial, TextureAtlasSprite> {
 
-        private TextureOverride(Map<ResourceLocation, ResourceLocation> data, Function<Material, TextureAtlasSprite> defaultFunc) {
+        private TextureOverride(Map<ResourceLocation, ResourceLocation> data, Function<RenderMaterial, TextureAtlasSprite> defaultFunc) {
             this.data = data;
             this.defaultFunc = defaultFunc;
         }
 
         private final Map<ResourceLocation, ResourceLocation> data;
-        private final Function<Material, TextureAtlasSprite> defaultFunc;
+        private final Function<RenderMaterial, TextureAtlasSprite> defaultFunc;
 
         @Nullable
         @Override
-        public TextureAtlasSprite apply(@Nullable Material input) {
+        public TextureAtlasSprite apply(@Nullable RenderMaterial input) {
             ResourceLocation texLoc = Preconditions.checkNotNull(input).getTextureLocation();
             ResourceLocation actual = data.getOrDefault(texLoc, texLoc);
             return defaultFunc.apply(ForgeHooksClient.getBlockMaterial(actual));

@@ -1,7 +1,7 @@
 package elec332.core.client.util;
 
-import net.minecraft.client.renderer.TransformationMatrix;
 import net.minecraft.client.renderer.model.IModelTransform;
+import net.minecraft.util.math.vector.TransformationMatrix;
 
 /**
  * Created by Elec332 on 28-6-2020

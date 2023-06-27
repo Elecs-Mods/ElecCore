@@ -19,7 +19,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.fluid.IFluidState;
+import net.minecraft.fluid.FluidState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
@@ -30,8 +30,8 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.shapes.VoxelShape;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.capabilities.Capability;
@@ -97,7 +97,7 @@ public class TileMultiObject extends AbstractTileEntity {
 
     @OnlyIn(Dist.CLIENT)
     public VoxelShape getSelectionBox(BlockState state, PlayerEntity player, RayTraceResult last) {
-        Pair<Vec3d, Vec3d> rayTraceVectors = RayTraceHelper.getRayTraceVectors(player);
+        Pair<Vector3d, Vector3d> rayTraceVectors = RayTraceHelper.getRayTraceVectors(player);
         Pair<ISubTileLogic, RayTraceResult> hit = getRayTraceResult(state, rayTraceVectors.getLeft(), RayTraceHelper.slightExpand(rayTraceVectors.getLeft(), last.getHitVec()), getData(pos));
         if (hit != null) {
             return hit.getLeft().getSelectionBox(state, hit.getRight(), player);
@@ -106,9 +106,9 @@ public class TileMultiObject extends AbstractTileEntity {
     }
 
     @Nullable
-    private Pair<ISubTileLogic, RayTraceResult> getRayTraceResult(BlockState state, Vec3d start, Vec3d end, int data) {
+    private Pair<ISubTileLogic, RayTraceResult> getRayTraceResult(BlockState state, Vector3d start, Vector3d end, int data) {
         return subtiles.stream().reduce(null, (s1, s2) -> {
-            Vec3d e = end;
+            Vector3d e = end;
             if (s1 != null) {
                 e = RayTraceHelper.slightExpand(start, s1.getRight().getHitVec());
             }
@@ -132,8 +132,8 @@ public class TileMultiObject extends AbstractTileEntity {
         }
     }
 
-    public boolean removedByPlayer(BlockState state, @Nonnull PlayerEntity player, boolean willHarvest, IFluidState fluid, @Nonnull BlockPos pos) {
-        Pair<Vec3d, Vec3d> rayTraceVectors = RayTraceHelper.getRayTraceVectors(player);
+    public boolean removedByPlayer(BlockState state, @Nonnull PlayerEntity player, boolean willHarvest, FluidState fluid, @Nonnull BlockPos pos) {
+        Pair<Vector3d, Vector3d> rayTraceVectors = RayTraceHelper.getRayTraceVectors(player);
         Pair<ISubTileLogic, RayTraceResult> hit = getRayTraceResult(state, rayTraceVectors.getLeft(), rayTraceVectors.getRight(), getData(pos));
         packetCatcher = Maps.newHashMap();
         if (hit != null && hit.getLeft().removedByPlayer(player, willHarvest, hit.getRight()) && subtiles.stream().allMatch(ISubTileLogic::canBeRemoved)) {
@@ -147,7 +147,7 @@ public class TileMultiObject extends AbstractTileEntity {
         return false;
     }
 
-    public void neighborChanged(BlockPos neighborPos, boolean observer, IFluidState fluid, Block changedBlock) {
+    public void neighborChanged(BlockPos neighborPos, boolean observer, FluidState fluid, Block changedBlock) {
         subtiles.forEach(subTileLogicBase -> subTileLogicBase.neighborChanged(neighborPos, changedBlock, observer));
         if (subtiles.stream().allMatch(ISubTileLogic::canBeRemoved)) {
             Preconditions.checkNotNull(world).setBlockState(pos, fluid.getBlockState(), world.isRemote ? 11 : 3);
@@ -156,7 +156,7 @@ public class TileMultiObject extends AbstractTileEntity {
 
     @SuppressWarnings("unused")
     public ActionResultType onBlockActivated(PlayerEntity player, Hand hand, BlockState state, BlockRayTraceResult rtr) {
-        Pair<Vec3d, Vec3d> rayTraceVectors = RayTraceHelper.getRayTraceVectors(player);
+        Pair<Vector3d, Vector3d> rayTraceVectors = RayTraceHelper.getRayTraceVectors(player);
         Pair<ISubTileLogic, RayTraceResult> hit = getRayTraceResult(state, rayTraceVectors.getLeft(), rayTraceVectors.getRight(), getData(pos));
         return hit != null ? hit.getLeft().onBlockActivated(player, hand, hit.getRight()) : ActionResultType.PASS;
     }
@@ -195,7 +195,7 @@ public class TileMultiObject extends AbstractTileEntity {
     }
 
     @Override
-    public void read(@Nonnull CompoundNBT compound) {
+    public void readLegacy(CompoundNBT compound) {
         ListNBT list = compound.getList("subtiles", NBTTypes.COMPOUND.getID());
         subtiles.clear();
         for (int i = 0; i < list.size(); i++) {
@@ -207,7 +207,7 @@ public class TileMultiObject extends AbstractTileEntity {
         //These 2 lines below cost me 4 hours of my life...
         cachedCaps.forEach((c, v) -> v.invalidate());
         cachedCaps.clear();
-        super.read(compound);
+        super.readLegacy(compound);
     }
 
     @Override

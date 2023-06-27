@@ -5,7 +5,6 @@ import elec332.core.block.BlockSubTile;
 import elec332.core.tile.sub.TileMultiObject;
 import elec332.core.util.math.RayTraceHelper;
 import elec332.core.world.WorldHelper;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BlockItemUseContext;
@@ -86,7 +85,7 @@ public class ItemSubTile extends AbstractItemBlock {
                     }
                     player.swingArm(event.getHand());
                 } else if (face != null) { //attempt to place at face
-                    if (Block.hasSolidSide(state, world, pos, face)) {
+                    if (state.isSolidSide(world, pos, Direction.UP)) {
                         tile = WorldHelper.getTileAt(world, pos.offset(face));
                         state = WorldHelper.getBlockState(world, pos.offset(face));
                         if (state.getBlock() == getBlock() && tile instanceof TileMultiObject) {

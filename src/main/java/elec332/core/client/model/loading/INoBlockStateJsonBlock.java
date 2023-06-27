@@ -11,7 +11,7 @@ import net.minecraft.client.renderer.model.Variant;
 import net.minecraft.client.renderer.model.VariantList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.ILightReader;
+import net.minecraft.world.IBlockDisplayReader;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -33,7 +33,7 @@ public interface INoBlockStateJsonBlock extends IBlockModelItemLink {
         return new ResourceLocation(variant.getModelLocation().toString() + "_overrides");
     }
 
-    default void addAdditionalData(ILightReader world, BlockPos pos, Map<String, String> dataMap) {
+    default void addAdditionalData(IBlockDisplayReader world, BlockPos pos, Map<String, String> dataMap) {
     }
 
     interface RotationImpl extends INoBlockStateJsonBlock {

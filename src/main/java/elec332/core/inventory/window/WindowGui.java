@@ -2,9 +2,10 @@ package elec332.core.inventory.window;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
-import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.matrix.MatrixStack;
 import elec332.core.ElecCore;
 import elec332.core.client.RenderHelper;
+import elec332.core.client.util.GuiDraw;
 import elec332.core.util.InventoryHelper;
 import net.minecraft.client.MainWindow;
 import net.minecraft.client.Minecraft;
@@ -16,8 +17,8 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.container.ClickType;
 import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -59,14 +60,14 @@ public final class WindowGui extends ContainerScreen<WindowContainer> {
         }
     }
 
-    @Override
-    public void setSize(int width, int height) {
-        super.setSize(width, height);
-        window.width = width;
-        window.height = height;
-        window.guiLeft = (this.width - this.xSize) / 2;
-        window.guiTop = (this.height - this.ySize) / 2;
-    }
+//    @Override //Todo: Gone?
+//    public void setSize(int width, int height) {
+//        super.setSize(width, height);
+//        window.width = width;
+//        window.height = height;
+//        window.guiLeft = (this.width - this.xSize) / 2;
+//        window.guiTop = (this.height - this.ySize) / 2;
+//    }
 
     @Override
     public boolean isPauseScreen() {
@@ -80,7 +81,8 @@ public final class WindowGui extends ContainerScreen<WindowContainer> {
     }
 
     @Override
-    protected void handleMouseClick(Slot slotIn, int slotId, int mouseButton, @Nonnull ClickType type) {
+    @SuppressWarnings("ConstantConditions")
+    protected void handleMouseClick(@Nonnull Slot slotIn, int slotId, int mouseButton, @Nonnull ClickType type) {
         window.handleSlotClick(slotIn == null ? null : ((WindowContainer.WidgetLinkedSlot) slotIn).widget, slotId, mouseButton, type);
     }
 
@@ -145,47 +147,40 @@ public final class WindowGui extends ContainerScreen<WindowContainer> {
     }
 
     @Override
-    public void render(int mouseX, int mouseY, float partialTicks) {
-        RenderSystem.pushMatrix();
-        window.drawScreenPre(mouseX, mouseY, partialTicks);
-        RenderSystem.popMatrix();
-        super.render(mouseX, mouseY, partialTicks);
-        RenderSystem.pushMatrix();
-        window.drawScreenPost(mouseX, mouseY, partialTicks);
-        RenderSystem.popMatrix();
+    public void render(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+        matrixStack.push();
+        window.drawScreenPre(matrixStack, mouseX, mouseY, partialTicks);
+        matrixStack.pop();
+        super.render(matrixStack, mouseX, mouseY, partialTicks);
+        matrixStack.push();
+        window.drawScreenPost(matrixStack, mouseX, mouseY, partialTicks);
+        matrixStack.pop();
     }
 
     @Override
-    protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
-        RenderSystem.pushMatrix();
-        window.drawGuiContainerForegroundLayer(mouseX, mouseY);
-        RenderSystem.popMatrix();
+    protected void drawGuiContainerForegroundLayer(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY) {
+        matrixStack.push();
+        window.drawGuiContainerForegroundLayer(matrixStack, mouseX, mouseY);
+        matrixStack.pop();
     }
 
     @Override
-    protected void renderTooltip(ItemStack stack, int x, int y) {
-        List<String> list = InventoryHelper.getTooltip(stack, ElecCore.proxy.getClientPlayer(), Preconditions.checkNotNull(minecraft).gameSettings.advancedItemTooltips);
+    protected void renderTooltip(@Nonnull MatrixStack matrixStack, ItemStack stack, int x, int y) {
+        List<ITextComponent> list = InventoryHelper.getTooltip(stack, ElecCore.proxy.getClientPlayer(), Preconditions.checkNotNull(minecraft).gameSettings.advancedItemTooltips);
         window.modifyTooltip(list, ((WindowContainer.WidgetLinkedSlot) hoveredSlot).widget, stack, x, y);
-        for (int i = 0; i < list.size(); ++i) {
-            if (i == 0) {
-                list.set(i, stack.getRarity().color + list.get(i));
-            } else {
-                list.set(i, TextFormatting.GRAY + list.get(i));
-            }
-        }
 
         FontRenderer font = stack.getItem().getFontRenderer(stack);
         net.minecraftforge.fml.client.gui.GuiUtils.preItemToolTip(stack);
-        this.renderTooltip(list, x, y, (font == null ? this.font : font));
+        GuiDraw.drawHoveringText(matrixStack, list, x, y, (font == null ? this.font : font));
         net.minecraftforge.fml.client.gui.GuiUtils.postItemToolTip();
 
     }
 
     @Override
-    protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
-        RenderSystem.pushMatrix();
-        window.drawGuiContainerBackgroundLayer(partialTicks, mouseX, mouseY);
-        RenderSystem.popMatrix();
+    protected void drawGuiContainerBackgroundLayer(@Nonnull MatrixStack matrixStack, float partialTicks, int mouseX, int mouseY) {
+        matrixStack.push();
+        window.drawGuiContainerBackgroundLayer(matrixStack, partialTicks, mouseX, mouseY);
+        matrixStack.pop();
     }
 
 }

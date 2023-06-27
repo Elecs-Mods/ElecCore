@@ -5,7 +5,7 @@ import com.mojang.blaze3d.vertex.IVertexBuilder;
 import elec332.core.api.client.IRenderMatrix;
 import elec332.core.api.client.ITextureLocation;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.client.renderer.Quaternion;
+import net.minecraft.util.math.vector.Quaternion;
 
 /**
  * Created by Elec332 on 6-7-2020

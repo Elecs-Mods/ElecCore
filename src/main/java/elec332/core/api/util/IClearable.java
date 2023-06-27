@@ -5,6 +5,6 @@ package elec332.core.api.util;
  */
 public interface IClearable {
 
-    public void clear();
+    void clear();
 
 }

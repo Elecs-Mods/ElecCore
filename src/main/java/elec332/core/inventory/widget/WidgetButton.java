@@ -1,6 +1,7 @@
 package elec332.core.inventory.widget;
 
 import com.google.common.collect.Lists;
+import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import elec332.core.client.RenderHelper;
 import elec332.core.client.util.GuiDraw;
@@ -14,6 +15,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import org.lwjgl.opengl.GL11;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.List;
@@ -90,7 +92,7 @@ public class WidgetButton extends Widget {
     }
 
     @Override
-    public void draw(Window gui, int guiX, int guiY, double mouseX, double mouseY, float partialTicks) {
+    public void draw(Window gui, @Nonnull MatrixStack matrixStack, int guiX, int guiY, double mouseX, double mouseY, float partialTicks) {
         if (!isHidden()) {
             RenderSystem.pushMatrix();
             FontRenderer fontrenderer = RenderHelper.getMCFontrenderer();

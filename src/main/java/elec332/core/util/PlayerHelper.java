@@ -1,5 +1,6 @@
 package elec332.core.util;
 
+import com.google.common.base.Preconditions;
 import elec332.core.util.math.RayTraceHelper;
 import net.minecraft.command.ICommandSource;
 import net.minecraft.entity.LivingEntity;
@@ -7,7 +8,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 
@@ -19,6 +20,8 @@ import java.util.UUID;
  */
 public class PlayerHelper {
 
+    public static final UUID DUMMY_UUID = new UUID(0L, 0L);
+
     /**
      * Gets the player's current block reach distance
      *
@@ -26,7 +29,7 @@ public class PlayerHelper {
      * @return The player's current block reach distance
      */
     public static double getBlockReachDistance(PlayerEntity player) {
-        return player.getAttribute(PlayerEntity.REACH_DISTANCE).getValue();
+        return Preconditions.checkNotNull(player.getAttribute(net.minecraftforge.common.ForgeMod.REACH_DISTANCE.get())).getValue();
     }
 
     /**
@@ -35,7 +38,7 @@ public class PlayerHelper {
      * @param player The player
      * @return The corrected eye position
      */
-    public static Vec3d getCorrectedEyePosition(PlayerEntity player) {
+    public static Vector3d getCorrectedEyePosition(PlayerEntity player) {
         double yCoord = player.getPosY();
         if (player.getEntityWorld().isRemote) {
             yCoord += player.getEyeHeight();// - player.getDefaultEyeHeight();
@@ -45,7 +48,7 @@ public class PlayerHelper {
                 yCoord -= 0.08D;
             }
         }
-        return new Vec3d(player.getPosX(), yCoord, player.getPosZ());
+        return new Vector3d(player.getPosX(), yCoord, player.getPosZ());
     }
 
     /**
@@ -75,7 +78,7 @@ public class PlayerHelper {
      * @param s      The message
      */
     public static void sendMessageToPlayer(@Nonnull ICommandSource player, ITextComponent s) {
-        player.sendMessage(s);
+        player.sendMessage(s, DUMMY_UUID);
     }
 
     /**

@@ -14,9 +14,11 @@ import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
-import net.minecraft.fluid.IFluidState;
 import net.minecraft.item.ItemStack;
+import net.minecraft.loot.LootContext;
+import net.minecraft.loot.LootParameters;
 import net.minecraft.state.StateContainer;
 import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.tileentity.TileEntity;
@@ -28,11 +30,10 @@ import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
-import net.minecraft.world.storage.loot.LootContext;
-import net.minecraft.world.storage.loot.LootParameters;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -48,7 +49,7 @@ public abstract class AbstractBlock extends Block implements IAbstractBlock {
 
     public AbstractBlock(Properties builder) {
         super(builder);
-        if (getDefaultState().has(BlockProperties.WATERLOGGED)) {
+        if (getDefaultState().hasProperty(BlockProperties.WATERLOGGED)) {
             setDefaultState(getDefaultState().with(BlockStateProperties.WATERLOGGED, false));
         }
     }
@@ -130,7 +131,7 @@ public abstract class AbstractBlock extends Block implements IAbstractBlock {
 
     @Override
     @Deprecated
-    public boolean removedByPlayer(@Nonnull BlockState state, World world, @Nonnull BlockPos pos, @Nonnull PlayerEntity player, boolean willHarvest, IFluidState fluid) {
+    public boolean removedByPlayer(@Nonnull BlockState state, World world, @Nonnull BlockPos pos, @Nonnull PlayerEntity player, boolean willHarvest, FluidState fluid) {
         return BlockMethods.removedByPlayer(state, world, pos, player, willHarvest, fluid, this);
     }
 
@@ -140,9 +141,9 @@ public abstract class AbstractBlock extends Block implements IAbstractBlock {
     @SuppressWarnings("deprecation")
     public List<ItemStack> getDrops(@Nonnull BlockState state, @Nonnull LootContext.Builder builder) {
         Entity entity = builder.get(LootParameters.THIS_ENTITY);
-        BlockPos pos = Preconditions.checkNotNull(builder.get(LootParameters.POSITION));
+        Vector3d pos = Preconditions.checkNotNull(builder.get(LootParameters.field_237457_g_));
         ItemStack stack = Preconditions.checkNotNull(builder.get(LootParameters.TOOL));
-        return getDrops(getOriginalDrops(state, builder), builder, entity, builder.getWorld(), pos, state, stack);
+        return getDrops(getOriginalDrops(state, builder), builder, entity, builder.getWorld(), new BlockPos(Math.floor(pos.x), Math.floor(pos.y), Math.floor(pos.z)), state, stack);
     }
 
     @Override
@@ -155,7 +156,7 @@ public abstract class AbstractBlock extends Block implements IAbstractBlock {
     @Override
     @SuppressWarnings("deprecation")
     public BlockState updatePostPlacement(@Nonnull BlockState stateIn, Direction facing, BlockState facingState, IWorld worldIn, BlockPos currentPos, BlockPos facingPos) {
-        if (stateIn.has(BlockProperties.WATERLOGGED) && stateIn.get(BlockStateProperties.WATERLOGGED)) {
+        if (stateIn.hasProperty(BlockProperties.WATERLOGGED) && stateIn.get(BlockStateProperties.WATERLOGGED)) {
             worldIn.getPendingFluidTicks().scheduleTick(currentPos, Fluids.WATER, Fluids.WATER.getTickRate(worldIn));
         }
         return super.updatePostPlacement(stateIn, facing, facingState, worldIn, currentPos, facingPos);
@@ -164,8 +165,8 @@ public abstract class AbstractBlock extends Block implements IAbstractBlock {
     @Nonnull
     @Override
     @SuppressWarnings("deprecation")
-    public IFluidState getFluidState(BlockState state) {
-        if (state.has(BlockProperties.WATERLOGGED) && state.get(BlockStateProperties.WATERLOGGED)) {
+    public FluidState getFluidState(BlockState state) {
+        if (state.hasProperty(BlockProperties.WATERLOGGED) && state.get(BlockStateProperties.WATERLOGGED)) {
             return Fluids.WATER.getStillFluidState(false);
         }
         return super.getFluidState(state);
@@ -173,7 +174,7 @@ public abstract class AbstractBlock extends Block implements IAbstractBlock {
 
     @Override
     public boolean propagatesSkylightDown(BlockState state, @Nonnull IBlockReader reader, @Nonnull BlockPos pos) {
-        if (state.has(BlockProperties.WATERLOGGED) && state.get(BlockStateProperties.WATERLOGGED)) {
+        if (state.hasProperty(BlockProperties.WATERLOGGED) && state.get(BlockStateProperties.WATERLOGGED)) {
             return false;
         }
         return super.propagatesSkylightDown(state, reader, pos);

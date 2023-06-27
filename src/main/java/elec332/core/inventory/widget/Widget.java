@@ -1,6 +1,7 @@
 package elec332.core.inventory.widget;
 
 import com.google.common.collect.Lists;
+import com.mojang.blaze3d.matrix.MatrixStack;
 import elec332.core.ElecCore;
 import elec332.core.client.RenderHelper;
 import elec332.core.client.util.GuiDraw;
@@ -16,6 +17,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.LogicalSide;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
@@ -160,7 +162,7 @@ public class Widget implements IWidget {
 
     @Override
     @OnlyIn(Dist.CLIENT)
-    public void draw(Window window, int guiX, int guiY, double mouseX, double mouseY, float partialTicks) {
+    public void draw(Window window, @Nonnull MatrixStack matrixStack, int guiX, int guiY, double mouseX, double mouseY, float partialTicks) {
         if (background != null) {
             RenderHelper.bindTexture(background);
         }

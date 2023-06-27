@@ -35,10 +35,23 @@ public class InventoryHelper {
      * @return The tooltip for the provided {@link ItemStack}
      */
     @OnlyIn(Dist.CLIENT)
-    public static List<String> getTooltip(ItemStack stack, @Nullable PlayerEntity playerIn, boolean advanced) {
-        return stack.getTooltip(playerIn, advanced ? ITooltipFlag.TooltipFlags.ADVANCED : ITooltipFlag.TooltipFlags.NORMAL).stream()
-                .map(ITextComponent::getFormattedText)
+    public static List<String> getStringTooltip(ItemStack stack, @Nullable PlayerEntity playerIn, boolean advanced) {
+        return getTooltip(stack, playerIn, advanced).stream()
+                .map(ITextComponent::getString)
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * Gets the tooltip for an {@link ItemStack}
+     *
+     * @param stack    The {@link ItemStack} you want get the tooltip from
+     * @param playerIn The player holding the stack
+     * @param advanced Whether to display extra data
+     * @return The tooltip for the provided {@link ItemStack}
+     */
+    @OnlyIn(Dist.CLIENT)
+    public static List<ITextComponent> getTooltip(ItemStack stack, @Nullable PlayerEntity playerIn, boolean advanced) {
+        return stack.getTooltip(playerIn, advanced ? ITooltipFlag.TooltipFlags.ADVANCED : ITooltipFlag.TooltipFlags.NORMAL);
     }
 
     /**

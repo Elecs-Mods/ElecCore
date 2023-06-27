@@ -24,7 +24,7 @@ public class MultiWrappedUnbakedModel extends VariantList implements IUnbakedMod
 
     @Nullable
     @Override
-    public final IBakedModel bakeModel(@Nonnull ModelBakery modelBakery, @Nonnull Function<Material, TextureAtlasSprite> spriteGetter, @Nonnull IModelTransform transform, @Nonnull ResourceLocation location) {
+    public final IBakedModel bakeModel(@Nonnull ModelBakery modelBakery, @Nonnull Function<RenderMaterial, TextureAtlasSprite> spriteGetter, @Nonnull IModelTransform transform, @Nonnull ResourceLocation location) {
         List<Variant> states = getVariantList();
         if (states.isEmpty()) {
             return null;
@@ -44,7 +44,7 @@ public class MultiWrappedUnbakedModel extends VariantList implements IUnbakedMod
         return builder.build();
     }
 
-    protected IBakedModel bakeModel(IUnbakedModel model, int index, @Nonnull ModelBakery modelBakery, @Nonnull Function<Material, TextureAtlasSprite> spriteGetter, @Nonnull IModelTransform transform, @Nonnull ResourceLocation modelLocation) {
+    protected IBakedModel bakeModel(IUnbakedModel model, int index, @Nonnull ModelBakery modelBakery, @Nonnull Function<RenderMaterial, TextureAtlasSprite> spriteGetter, @Nonnull IModelTransform transform, @Nonnull ResourceLocation modelLocation) {
         return modelBakery.getBakedModel(modelLocation, transform, spriteGetter);
     }
 

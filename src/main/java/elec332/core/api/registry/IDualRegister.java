@@ -5,6 +5,6 @@ package elec332.core.api.registry;
  */
 public interface IDualRegister<T, V> {
 
-    public boolean register(T t, V v);
+    boolean register(T t, V v);
 
 }

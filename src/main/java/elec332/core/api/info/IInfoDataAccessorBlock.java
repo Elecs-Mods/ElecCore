@@ -9,7 +9,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 
 import javax.annotation.Nonnull;
@@ -22,39 +22,39 @@ public interface IInfoDataAccessorBlock extends IInfoDataAccessor {
 
     @Nonnull
     @Override
-    public PlayerEntity getPlayer();
+    PlayerEntity getPlayer();
 
     @Nonnull
     @Override
-    public World getWorld();
+    World getWorld();
 
     @Nonnull
-    public BlockPos getPos();
-
-    @Nonnull
-    @Override
-    public CompoundNBT getData();
+    BlockPos getPos();
 
     @Nonnull
     @Override
-    public Vec3d getHitVec();
+    CompoundNBT getData();
 
     @Nonnull
-    public Direction getSide();
+    @Override
+    Vector3d getHitVec();
 
     @Nonnull
-    public BlockState getBlockState();
+    Direction getSide();
 
     @Nonnull
-    public Block getBlock();
+    BlockState getBlockState();
+
+    @Nonnull
+    Block getBlock();
 
     @Nullable
-    public TileEntity getTileEntity();
+    TileEntity getTileEntity();
 
     @Nullable
-    public ItemStack getStack();
+    ItemStack getStack();
 
     @Nonnull
-    public BlockRayTraceResult getRayTraceResult();
+    BlockRayTraceResult getRayTraceResult();
 
 }

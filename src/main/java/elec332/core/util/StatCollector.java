@@ -9,22 +9,22 @@ import net.minecraft.util.text.LanguageMap;
  */
 public class StatCollector {
 
-    private static final LanguageMap fallback = new LanguageMap();
+    private static final LanguageMap fallback = LanguageMap.getInstance();
 
     public static String translateToLocal(String key) {
-        return LanguageMap.getInstance().translateKey(key);
+        return LanguageMap.getInstance().func_230503_a_(key);
     }
 
     public static String translateToLocalFormatted(String key, Object... format) {
-        return String.format(LanguageMap.getInstance().translateKey(key), format);
+        return String.format(LanguageMap.getInstance().func_230503_a_(key), format);
     }
 
     public static String translateToFallback(String key) {
-        return fallback.translateKey(key);
+        return fallback.func_230503_a_(key);
     }
 
     public static boolean canTranslate(String key) {
-        return LanguageMap.getInstance().exists(key);
+        return LanguageMap.getInstance().func_230506_b_(key);
     }
 
 }

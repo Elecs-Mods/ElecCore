@@ -1,8 +1,11 @@
 package elec332.core.inventory.widget;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import elec332.core.client.util.GuiDraw;
 import elec332.core.inventory.window.Window;
 import net.minecraft.util.ResourceLocation;
+
+import javax.annotation.Nonnull;
 
 /**
  * Created by Elec332 on 21-8-2015.
@@ -21,7 +24,7 @@ public class WidgetButtonArrow extends WidgetButton {
     }
 
     @Override
-    public void draw(Window gui, int guiX, int guiY, double mouseX, double mouseY, float partialTicks) {
+    public void draw(Window gui, @Nonnull MatrixStack matrixStack, int guiX, int guiY, double mouseX, double mouseY, float partialTicks) {
         bindTexture(new ResourceLocation("eleccore", "buttons.png"));
         int u = this.u;
         int v = this.v;
@@ -44,7 +47,7 @@ public class WidgetButtonArrow extends WidgetButton {
     public enum Direction {
         UP(36, 0, 19, 12, 0, 12), DOWN(55, 0, 19, 12, 0, 12), LEFT(0, 19, 12, 19, 12, 0), RIGHT(0, 0, 12, 19, 12, 0);
 
-        private Direction(int u, int v, int width, int height, int tw, int th) {
+        Direction(int u, int v, int width, int height, int tw, int th) {
             this.u = u;
             this.v = v;
             this.width = width;

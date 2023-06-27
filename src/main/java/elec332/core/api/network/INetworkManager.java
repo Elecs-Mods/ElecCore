@@ -13,18 +13,18 @@ import java.util.function.Supplier;
  */
 public interface INetworkManager<T extends INetworkHandler> {
 
-    public T getNetworkHandler(Object mod);
+    T getNetworkHandler(Object mod);
 
-    public T createNetworkHandler(Object mod, SimpleChannel simpleNetworkWrapper);
+    T createNetworkHandler(Object mod, SimpleChannel simpleNetworkWrapper);
 
-    public T createNetworkHandler(Object mod, ResourceLocation channelName, Supplier<String> networkProtocolVersion, Predicate<String> clientAcceptedVersions, Predicate<String> serverAcceptedVersions);
+    T createNetworkHandler(Object mod, ResourceLocation channelName, Supplier<String> networkProtocolVersion, Predicate<String> clientAcceptedVersions, Predicate<String> serverAcceptedVersions);
 
-    public ISimpleNetworkPacketManager getSimpleNetworkManager(Object mod);
+    ISimpleNetworkPacketManager getSimpleNetworkManager(Object mod);
 
-    public ISimpleNetworkPacketManager getAdditionalSimpleNetworkManager(Object mod, ResourceLocation name);
+    ISimpleNetworkPacketManager getAdditionalSimpleNetworkManager(Object mod, ResourceLocation name);
 
-    public IPacketRegistry newPacketRegistry();
+    IPacketRegistry newPacketRegistry();
 
-    public IExtendedMessageContext wrapMessageContext(NetworkEvent.Context messageContext);
+    IExtendedMessageContext wrapMessageContext(NetworkEvent.Context messageContext);
 
 }

@@ -10,9 +10,9 @@ import elec332.core.util.FMLHelper;
 import elec332.core.world.WorldHelper;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.world.IWorld;
-import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.server.ServerWorld;
-import net.minecraft.world.storage.WorldInfo;
+import net.minecraft.world.storage.IServerConfiguration;
+import net.minecraft.world.storage.SaveFormat;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -38,13 +38,13 @@ public enum SaveHandler {
             }
 
             @Override
-            public CompoundNBT getDataForWriting(net.minecraft.world.storage.SaveHandler handler, WorldInfo info) {
-                return SaveHandler.this.save(handler, info);
+            public CompoundNBT getDataForWriting(SaveFormat.LevelSave levelSave, IServerConfiguration serverInfo) {
+                return SaveHandler.this.save(levelSave, serverInfo);
             }
 
             @Override
-            public void readData(net.minecraft.world.storage.SaveHandler handler, WorldInfo info, CompoundNBT tag) {
-                SaveHandler.this.load(handler, info, tag);
+            public void readData(SaveFormat.LevelSave levelSave, IServerConfiguration serverInfo, CompoundNBT tag) {
+                SaveHandler.this.load(levelSave, serverInfo, tag);
             }
 
         });
@@ -62,37 +62,37 @@ public enum SaveHandler {
         return true;
     }
 
-    private void load(net.minecraft.world.storage.SaveHandler save, WorldInfo worldInfo, CompoundNBT base) {
-        ElecCore.logger.info("Loading world data for: " + worldInfo.getWorldName());
+    private void load(SaveFormat.LevelSave levelSave, IServerConfiguration serverInfo, CompoundNBT base) {
+        ElecCore.logger.info("Loading world data for: " + levelSave.func_237282_a_());
         CompoundNBT tag;
-        Preconditions.checkNotNull(save);
-        Preconditions.checkNotNull(worldInfo);
+        Preconditions.checkNotNull(levelSave);
+        Preconditions.checkNotNull(serverInfo);
         for (ModContainer mc : saveHandlers.keySet()) {
             tag = base.getCompound(mc.getModId());
             for (IExternalSaveHandler saveHandler : saveHandlers.get(mc)) {
                 Preconditions.checkNotNull(saveHandler);
                 Preconditions.checkNotNull(tag);
-                saveHandler.load(save, worldInfo, tag.getCompound(saveHandler.getName()));
+                saveHandler.load(levelSave, serverInfo, tag.getCompound(saveHandler.getName()));
             }
         }
         this.loaded = true;
     }
 
-    private CompoundNBT save(net.minecraft.world.storage.SaveHandler save, WorldInfo worldInfo) {
-        if (!this.loaded && !ElecCore.suppressSpongeIssues && worldInfo.isInitialized()) {
+    private CompoundNBT save(SaveFormat.LevelSave levelSave, IServerConfiguration serverInfo) {
+        if (!this.loaded && !ElecCore.suppressSpongeIssues && serverInfo.func_230407_G_().isInitialized()) {
             ElecCore.logger.error("World is unloading before data has been loaded, skipping data saving...");
             ElecCore.logger.error("This probably happened due to a crash in EG worldgen.");
             ElecCore.logger.error("All external data will be lost.");
             return new CompoundNBT();
         }
-        Preconditions.checkNotNull(save);
-        Preconditions.checkNotNull(worldInfo);
+        Preconditions.checkNotNull(levelSave);
+        Preconditions.checkNotNull(serverInfo);
         CompoundNBT main = new CompoundNBT();
         CompoundNBT tag;
         for (ModContainer mc : saveHandlers.keySet()) {
             tag = new CompoundNBT();
             for (IExternalSaveHandler saveHandler : saveHandlers.get(mc)) {
-                CompoundNBT n = saveHandler.save(save, worldInfo);
+                CompoundNBT n = saveHandler.save(levelSave, serverInfo);
                 if (n != null) {
                     tag.put(saveHandler.getName(), n);
                 }
@@ -121,7 +121,7 @@ public enum SaveHandler {
         }
 
         private boolean isOverworld(IWorld world) {
-            return !world.isRemote() && WorldHelper.getDimID(world) == DimensionType.OVERWORLD && world.getClass() == ServerWorld.class;
+            return !world.isRemote() && WorldHelper.getDimID(world) == WorldHelper.OVERWORLD && world.getClass() == ServerWorld.class;
         }
 
     }

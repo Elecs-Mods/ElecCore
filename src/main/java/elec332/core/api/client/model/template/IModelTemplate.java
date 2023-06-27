@@ -13,9 +13,9 @@ import java.util.List;
 @OnlyIn(Dist.CLIENT)
 public interface IModelTemplate extends IQuadProviderTemplate {
 
-    public List<IQuadTemplate> getGeneralQuads();
+    List<IQuadTemplate> getGeneralQuads();
 
-    public IQuadTemplateSidedMap getSidedQuads();
+    IQuadTemplateSidedMap getSidedQuads();
 
     boolean isAmbientOcclusion();
 
@@ -25,7 +25,6 @@ public interface IModelTemplate extends IQuadProviderTemplate {
 
     TextureAtlasSprite getTexture();
 
-    @SuppressWarnings("deprecation")
     ItemCameraTransforms getItemCameraTransforms();
 
 }

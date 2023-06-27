@@ -20,11 +20,11 @@ import java.util.function.Function;
  */
 public interface IConfigWrapper {
 
-    public static final String CATEGORY_GENERAL = "general";
-    public static final String TOML_EXTENSION = ".toml";
-    public static final String CATEGORY_SPLITTER = ".";
+    String CATEGORY_GENERAL = "general";
+    String TOML_EXTENSION = ".toml";
+    String CATEGORY_SPLITTER = ".";
 
-    public static final List<IConfigElementSerializer> serializers = Lists.newArrayList();
+    List<IConfigElementSerializer> serializers = Lists.newArrayList();
 
     /**
      * Registers a class or object to this {@link IConfigWrapper} in the specified category,
@@ -32,7 +32,7 @@ public interface IConfigWrapper {
      *
      * @param o The instance/class of your configuration
      */
-    default public void registerConfig(Object o, @Nonnull String category, @Nullable String comment) {
+    default void registerConfig(Object o, @Nonnull String category, @Nullable String comment) {
         getSubConfig(category, comment).registerConfig(o);
     }
 
@@ -42,7 +42,7 @@ public interface IConfigWrapper {
      *
      * @param o The instance/class of your configuration
      */
-    public void registerConfig(Object o);
+    void registerConfig(Object o);
 
     /**
      * Registers a class or object to this {@link IConfigWrapper} in the specified category,
@@ -54,7 +54,7 @@ public interface IConfigWrapper {
      * @param category The category the consumer will be run for
      * @param comment  An optional comment for the specified category
      */
-    default public void registerConfigWithInnerClasses(Object obj, @Nonnull String category, @Nullable String comment) {
+    default void registerConfigWithInnerClasses(Object obj, @Nonnull String category, @Nullable String comment) {
         getSubConfig(category, comment).registerConfigWithInnerClasses(obj);
     }
 
@@ -66,7 +66,7 @@ public interface IConfigWrapper {
      *
      * @param obj The top-level instance/class of your configuration
      */
-    public void registerConfigWithInnerClasses(Object obj);
+    void registerConfigWithInnerClasses(Object obj);
 
     /**
      * Runs the consumer through the config builder of this {@link IConfigWrapper} in the specified category
@@ -75,7 +75,7 @@ public interface IConfigWrapper {
      * @param category    The category the consumer will be run for
      * @param comment     An optional comment for the specified category
      */
-    default public void initializeConfig(Consumer<ForgeConfigSpec.Builder> initializer, @Nonnull String category, @Nullable String comment) {
+    default void initializeConfig(Consumer<ForgeConfigSpec.Builder> initializer, @Nonnull String category, @Nullable String comment) {
         getSubConfig(category, comment).registerConfig(builder -> {
             initializer.accept(builder);
             return null;
@@ -87,7 +87,7 @@ public interface IConfigWrapper {
      *
      * @param initializer The config initializer
      */
-    default public void initializeConfig(Consumer<ForgeConfigSpec.Builder> initializer) {
+    default void initializeConfig(Consumer<ForgeConfigSpec.Builder> initializer) {
         registerConfig(builder -> {
             initializer.accept(builder);
             return null;
@@ -101,7 +101,7 @@ public interface IConfigWrapper {
      * @param category The category the object will be registered in
      * @param comment  An optional comment for the specified category
      */
-    default public <T> T registerConfig(Function<ForgeConfigSpec.Builder, T> factory, @Nonnull String category, @Nullable String comment) {
+    default <T> T registerConfig(Function<ForgeConfigSpec.Builder, T> factory, @Nonnull String category, @Nullable String comment) {
         return getSubConfig(category, comment).registerConfig(factory);
     }
 
@@ -110,7 +110,7 @@ public interface IConfigWrapper {
      *
      * @param factory The config factory
      */
-    public <T> T registerConfig(Function<ForgeConfigSpec.Builder, T> factory);
+    <T> T registerConfig(Function<ForgeConfigSpec.Builder, T> factory);
 
     /**
      * Registers an {@link IConfigurableElement} to this {@link IConfigWrapper} in the specified category
@@ -119,7 +119,7 @@ public interface IConfigWrapper {
      * @param category            The category the reconfigurable element will be registered in
      * @param comment             An optional comment for the specified category
      */
-    default public void registerConfigurableElement(IConfigurableElement configurableElement, @Nonnull String category, @Nullable String comment) {
+    default void registerConfigurableElement(IConfigurableElement configurableElement, @Nonnull String category, @Nullable String comment) {
         getSubConfig(category, comment).registerConfigurableElement(configurableElement);
     }
 
@@ -128,7 +128,7 @@ public interface IConfigWrapper {
      *
      * @param configurableElement The reconfigurable element to be registered
      */
-    public void registerConfigurableElement(IConfigurableElement configurableElement);
+    void registerConfigurableElement(IConfigurableElement configurableElement);
 
     /**
      * Used to set a description for the provided configuration category
@@ -138,7 +138,7 @@ public interface IConfigWrapper {
      * @return The instance of this {@link IConfigWrapper}, so this can be chained.
      */
     @Nonnull
-    public IConfigWrapper setCategoryDescription(@Nonnull String category, String description);
+    IConfigWrapper setCategoryDescription(@Nonnull String category, String description);
 
     /**
      * Configures a nested sub-config in the specified category.
@@ -146,7 +146,7 @@ public interface IConfigWrapper {
      * @param category     The category the configurator will run in
      * @param configurator The configurator that will be run in the specified category
      */
-    default public void configureSubConfig(@Nonnull String category, Consumer<IConfigWrapper> configurator) {
+    default void configureSubConfig(@Nonnull String category, Consumer<IConfigWrapper> configurator) {
         configureSubConfig(category, null, configurator);
     }
 
@@ -157,7 +157,7 @@ public interface IConfigWrapper {
      * @param comment      A comment for the specified category
      * @param configurator The configurator that will be run in the specified category
      */
-    default public void configureSubConfig(@Nonnull String category, String comment, Consumer<IConfigWrapper> configurator) {
+    default void configureSubConfig(@Nonnull String category, String comment, Consumer<IConfigWrapper> configurator) {
         if (configurator == null) {
             return;
         }
@@ -170,7 +170,7 @@ public interface IConfigWrapper {
      * @param category The category this config will reside in
      * @return A nested configuration for the specified category.
      */
-    default public IConfigWrapper getSubConfig(@Nonnull String category) {
+    default IConfigWrapper getSubConfig(@Nonnull String category) {
         return getSubConfig(category, null);
     }
 
@@ -182,26 +182,26 @@ public interface IConfigWrapper {
      * @return A nested configuration for the specified category.
      */
     @Nonnull
-    public IConfigWrapper getSubConfig(@Nonnull String category, @Nullable String comment);
+    IConfigWrapper getSubConfig(@Nonnull String category, @Nullable String comment);
 
     /**
      * Registers this config
      */
-    public void register();
+    void register();
 
     /**
      * Used to register a listener for when this configuration gets loaded or has changed
      *
      * @param listener The {@link Runnable} that will be run
      */
-    public void addLoadListener(Runnable listener);
+    void addLoadListener(Runnable listener);
 
     /**
      * Function to check whether this {@link IConfigWrapper} has already been loaded from/saved to disk
      *
      * @return Whether this {@link IConfigWrapper} has already been loaded from/saved to disk
      */
-    public boolean hasBeenLoaded();
+    boolean hasBeenLoaded();
 
     /**
      * Used for checking all registered configuration categories
@@ -209,16 +209,16 @@ public interface IConfigWrapper {
      * @return A {@link Set} of all registered configuration categories
      */
     @Nonnull
-    public Set<String> getRegisteredCategories();
+    Set<String> getRegisteredCategories();
 
     /**
      * Returns the raw currently loaded config data (read-only)
      *
      * @return The currently loaded, read-only, raw config data
      */
-    public UnmodifiableCommentedConfig getRawReadOnlyData();
+    UnmodifiableCommentedConfig getRawReadOnlyData();
 
-    public static void registerConfigElementSerializer(IConfigElementSerializer serializer) {
+    static void registerConfigElementSerializer(IConfigElementSerializer serializer) {
         if (FMLHelper.hasReachedState(ModLoadingStage.ENQUEUE_IMC)) {
             throw new RuntimeException("Cannot register config element serializer after PreInit!");
         }

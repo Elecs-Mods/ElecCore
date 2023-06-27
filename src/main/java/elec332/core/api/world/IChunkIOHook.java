@@ -8,8 +8,8 @@ import net.minecraft.world.chunk.IChunk;
  */
 public interface IChunkIOHook {
 
-    public void chunkLoadedFromDisk(IChunk chunk, CompoundNBT data, IWorldGenManager worldGenManager);
+    void chunkLoadedFromDisk(IChunk chunk, CompoundNBT data, IWorldGenManager worldGenManager);
 
-    public void chunkSavedToDisk(IChunk chunk, CompoundNBT data, IWorldGenManager worldGenManager);
+    void chunkSavedToDisk(IChunk chunk, CompoundNBT data, IWorldGenManager worldGenManager);
 
 }

@@ -6,6 +6,7 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import elec332.core.client.util.AbstractItemOverrideList;
 import elec332.core.loader.client.RenderingRegistry;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.renderer.model.BakedQuad;
@@ -18,7 +19,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.ILightReader;
+import net.minecraft.world.IBlockDisplayReader;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -47,12 +48,12 @@ public abstract class ModelCache<K> implements IBakedModel {
     protected ModelCache(IBakedModel defaultModel) {
         quads = CacheBuilder.newBuilder().expireAfterAccess(2, TimeUnit.MINUTES).build();
         itemModels = CacheBuilder.newBuilder().expireAfterAccess(2, TimeUnit.MINUTES).build();
-        iol = new ItemOverrideList() {
+        iol = new AbstractItemOverrideList() {
 
+            @Nullable
             @Override
-            @Nonnull
-            public IBakedModel getModelWithOverrides(@Nonnull IBakedModel originalModel, @Nonnull ItemStack stack, @Nullable World world, @Nullable LivingEntity entity) {
-                return getModel(stack);
+            protected IBakedModel getModel(@Nonnull IBakedModel model, @Nonnull ItemStack stack, @Nullable World worldIn, @Nullable LivingEntity entityIn) {
+                return ModelCache.this.getModel(stack);
             }
 
         };
@@ -142,7 +143,7 @@ public abstract class ModelCache<K> implements IBakedModel {
 
     @Nonnull
     @Override
-    public final IModelData getModelData(@Nonnull ILightReader world, @Nonnull BlockPos pos, @Nonnull BlockState state, @Nonnull IModelData tileData) {
+    public final IModelData getModelData(@Nonnull IBlockDisplayReader world, @Nonnull BlockPos pos, @Nonnull BlockState state, @Nonnull IModelData tileData) {
         if (tileData == EmptyModelData.INSTANCE) {
             tileData = new ModelDataMap.Builder().build();
         }
@@ -150,7 +151,7 @@ public abstract class ModelCache<K> implements IBakedModel {
         return tileData;
     }
 
-    public void addModelData(@Nonnull ILightReader world, @Nonnull BlockPos pos, @Nonnull BlockState state, @Nonnull IModelData modelData) {
+    public void addModelData(@Nonnull IBlockDisplayReader world, @Nonnull BlockPos pos, @Nonnull BlockState state, @Nonnull IModelData modelData) {
     }
 
     @Override

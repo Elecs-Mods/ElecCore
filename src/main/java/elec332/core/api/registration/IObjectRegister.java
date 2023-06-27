@@ -11,9 +11,9 @@ import net.minecraftforge.registries.IForgeRegistryEntry;
  */
 public interface IObjectRegister<T extends IForgeRegistryEntry<T>> {
 
-    default public void preRegister() {
+    default void preRegister() {
     }
 
-    public void register(IForgeRegistry<T> registry);
+    void register(IForgeRegistry<T> registry);
 
 }

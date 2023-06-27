@@ -1,6 +1,7 @@
 package elec332.core.inventory.widget;
 
 import com.google.common.collect.Lists;
+import com.mojang.blaze3d.matrix.MatrixStack;
 import elec332.core.client.util.GuiDraw;
 import elec332.core.inventory.window.Window;
 import elec332.core.util.NBTBuilder;
@@ -8,6 +9,7 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
+import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.function.IntSupplier;
 
@@ -119,7 +121,7 @@ public class WidgetScrollArea extends Widget {
 
     @Override
     @OnlyIn(Dist.CLIENT)
-    public void draw(Window window, int guiX, int guiY, double mouseX, double mouseY, float partialTicks) {
+    public void draw(Window window, @Nonnull MatrixStack matrixStack, int guiX, int guiY, double mouseX, double mouseY, float partialTicks) {
         drawHollow(guiX, guiY, 0, 0, width, height);
         GuiDraw.drawTexturedModalRect(guiX + x + 1, guiY + y + 1 + (int) ((height - 17) * getScroll()), 180, 113, 12, 15);
     }

@@ -18,7 +18,7 @@ public interface ISchematic {
      * @param pos Coordinate within the local schematic coordinates.
      * @return The blocks located at the specified local schematic coordinates, or null if out of bounds.
      */
-    default public Block getBlock(BlockPos pos) {
+    default Block getBlock(BlockPos pos) {
         return getBlock(pos.getX(), pos.getY(), pos.getZ());
     }
 
@@ -31,7 +31,7 @@ public interface ISchematic {
      * @param z Coordinate z within the local schematic coordinates.
      * @return The blocks located at the specified local schematic coordinates, or null if out of bounds.
      */
-    public Block getBlock(int x, int y, int z);
+    Block getBlock(int x, int y, int z);
 
     /**
      * Gets the data for the tile entity at the specified coordinates, ranging from 0 to the width (x), height (y) and length (z).
@@ -42,7 +42,7 @@ public interface ISchematic {
      * @param z Coordinate z within the local schematic coordinates.
      * @return The data from the tile entity located at the specified local schematic coordinates, or null if not found.
      */
-    public CompoundNBT getTileData(int x, int y, int z, int worldX, int worldY, int worldZ);
+    CompoundNBT getTileData(int x, int y, int z, int worldX, int worldY, int worldZ);
 
     /**
      * Gets the data for the tile entity at the specified coordinates, ranging from 0 to the width (x), height (y) and length (z).
@@ -53,7 +53,7 @@ public interface ISchematic {
      * @param z Coordinate z within the local schematic coordinates.
      * @return The data from the tile entity located at the specified local schematic coordinates, or null if not found.
      */
-    public CompoundNBT getTileData(int x, int y, int z);
+    CompoundNBT getTileData(int x, int y, int z);
 
     /**
      * Gets the {@link BlockState} at the specified coordinates, ranging from 0 to the width (x), height (y) and
@@ -62,7 +62,7 @@ public interface ISchematic {
      * @param pos Coordinate within the local schematic coordinates.
      * @return The metadata for the block at the specified local schematic coordinates.
      */
-    default public BlockState getBlockState(BlockPos pos) {
+    default BlockState getBlockState(BlockPos pos) {
         return getBlockState(pos.getX(), pos.getY(), pos.getZ());
     }
 
@@ -75,20 +75,20 @@ public interface ISchematic {
      * @param z Coordinate z within the local schematic coordinates.
      * @return The metadata for the block at the specified local schematic coordinates.
      */
-    public BlockState getBlockState(int x, int y, int z);
+    BlockState getBlockState(int x, int y, int z);
 
-    public short getBlockLength();
+    short getBlockLength();
 
-    public short getBlockWidth();
+    short getBlockWidth();
 
-    public short getBlockHeight();
+    short getBlockHeight();
 
     /**
      * Horizon sets the "ground" or how far down to translate this.
      *
      * @return The horizon for this schematic.
      */
-    default public short getHorizon() {
+    default short getHorizon() {
         return 0;
     }
 
@@ -100,7 +100,7 @@ public interface ISchematic {
      * @param z The z coordinate in world-space this is to be centered on.
      * @return The area in world space that this schematic will fill.
      */
-    default public Area getAreaFromWorldCoordinates(int x, int y, int z) {
+    default Area getAreaFromWorldCoordinates(int x, int y, int z) {
         int minX, maxX, minY, maxY, minZ, maxZ;
         int width = getBlockWidth(), height = getBlockHeight(), length = getBlockLength(), horizon = getHorizon();
         if (width % 2 == 0) {

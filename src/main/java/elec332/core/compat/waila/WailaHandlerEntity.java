@@ -10,7 +10,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
 
@@ -53,7 +53,7 @@ public class WailaHandlerEntity implements IEntityComponentProvider, IServerData
 
             @Nullable
             @Override
-            public Vec3d getHitVec() {
+            public Vector3d getHitVec() {
                 return null;
             }
         };
@@ -89,7 +89,7 @@ public class WailaHandlerEntity implements IEntityComponentProvider, IServerData
             }
 
             @Override
-            public Vec3d getHitVec() {
+            public Vector3d getHitVec() {
                 return accessor.getHitResult().getHitVec();
             }
 

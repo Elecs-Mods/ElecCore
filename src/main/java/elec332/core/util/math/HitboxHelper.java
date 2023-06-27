@@ -4,10 +4,10 @@ import com.google.common.collect.ImmutableList;
 import elec332.core.util.ObjectReference;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.shapes.IBooleanFunction;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.shapes.VoxelShapes;
+import net.minecraft.util.math.vector.Vector3d;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -23,7 +23,7 @@ public class HitboxHelper {
         return VoxelShapes.compare(shape1, shape2, IBooleanFunction.AND);
     }
 
-    public static boolean doesShapeContain(VoxelShape shape, Vec3d pos) {
+    public static boolean doesShapeContain(VoxelShape shape, Vector3d pos) {
         return doesShapeContain(shape, pos.x, pos.y, pos.z);
     }
 

@@ -25,6 +25,7 @@ import elec332.core.network.IElecNetworkHandler;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModContainer;
@@ -90,9 +91,9 @@ public class ElecCoreSetup {
     private static void registerModHandlers(IElecCoreModHandler modHandler) {
         modHandler.registerSimpleFieldHandler(ModNetworkHandler.class, networkManager::getNetworkHandler);
         modHandler.registerModHandler((mc, mod) -> {
-            MinecraftForge.EVENT_BUS.addListener((Consumer<FMLServerStartingEvent>) e -> {
-                mod.registerCommands(e.getCommandDispatcher());
-                mod.registerClientCommands(e.getCommandDispatcher()); //Todo: Move when forge add client commands back
+            MinecraftForge.EVENT_BUS.addListener((Consumer<RegisterCommandsEvent>) e -> {
+                mod.registerCommands(e.getDispatcher());
+                mod.registerClientCommands(e.getDispatcher()); //Todo: Move when forge adds client commands back
             });
         });
         modHandler.registerModHandler((mc, mod) -> mod.registerSaveHandlers(saveHandler -> SaveHandler.INSTANCE.registerSaveHandler(mc, saveHandler)));

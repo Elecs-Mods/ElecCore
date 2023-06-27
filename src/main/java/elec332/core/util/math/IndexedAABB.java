@@ -3,7 +3,7 @@ package elec332.core.util.math;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MutableBoundingBox;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.vector.Vector3d;
 
 import javax.annotation.Nonnull;
 
@@ -33,7 +33,7 @@ public class IndexedAABB extends AxisAlignedBB {
         this(AxisAlignedBB.toImmutable(mutableBoundingBox), index);
     }
 
-    public IndexedAABB(Vec3d min, Vec3d max, int index) {
+    public IndexedAABB(Vector3d min, Vector3d max, int index) {
         super(min, max);
         this.index = index;
     }
@@ -78,7 +78,7 @@ public class IndexedAABB extends AxisAlignedBB {
 
     @Override
     @Nonnull
-    public IndexedAABB offset(Vec3d vec) {
+    public IndexedAABB offset(Vector3d vec) {
         return new IndexedAABB(super.offset(vec), index);
     }
 
@@ -95,7 +95,7 @@ public class IndexedAABB extends AxisAlignedBB {
     }
 
     @Override
-    public boolean intersects(Vec3d min, Vec3d max) {
+    public boolean intersects(Vector3d min, Vector3d max) {
         return this.intersects(Math.min(min.x, max.x), Math.min(min.y, max.y), Math.min(min.z, max.z), Math.max(min.x, max.x), Math.max(min.y, max.y), Math.max(min.z, max.z));
     }
 
@@ -111,7 +111,7 @@ public class IndexedAABB extends AxisAlignedBB {
 
     @Nullable
     @Override
-    public RayTraceResult calculateIntercept(@Nonnull Vec3d vecA, @Nonnull Vec3d vecB, @Nullable BlockPos pos) {
+    public RayTraceResult calculateIntercept(@Nonnull Vector3d vecA, @Nonnull Vector3d vecB, @Nullable BlockPos pos) {
         RayTraceResult ret = super.calculateIntercept(vecA, vecB, pos);
         if (ret != null) {
             ret.subHit = index;

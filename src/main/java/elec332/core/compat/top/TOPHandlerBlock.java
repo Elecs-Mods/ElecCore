@@ -18,7 +18,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 
 import javax.annotation.Nonnull;
@@ -76,7 +76,7 @@ public class TOPHandlerBlock implements IProbeInfoProvider {
 
             @Nonnull
             @Override
-            public Vec3d getHitVec() {
+            public Vector3d getHitVec() {
                 return hitData.getHitVec();
             }
 

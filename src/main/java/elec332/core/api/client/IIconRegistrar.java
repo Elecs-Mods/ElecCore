@@ -17,11 +17,11 @@ public interface IIconRegistrar {
      * @param location The sprite location
      * @return The registered sprite
      */
-    public TextureAtlasSprite registerSprite(ResourceLocation location);
+    TextureAtlasSprite registerSprite(ResourceLocation location);
 
     /**
      * @return The underlying {@link AtlasTexture}
      */
-    public AtlasTexture getTextureMap();
+    AtlasTexture getTextureMap();
 
 }

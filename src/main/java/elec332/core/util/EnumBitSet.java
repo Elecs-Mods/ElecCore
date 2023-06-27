@@ -80,7 +80,7 @@ public class EnumBitSet<E extends Enum<E>> extends AbstractSet<E> implements Clo
             return false;
         }
         long oldElements = elements;
-        elements &= ~(1L << ((Enum) e).ordinal());
+        elements &= ~(1L << ((Enum<?>) e).ordinal());
         return elements != oldElements;
     }
 

@@ -6,10 +6,12 @@ import elec332.core.api.client.model.loading.ModelHandler;
 import elec332.core.client.RenderHelper;
 import elec332.core.client.model.loading.IBlockModelItemLink;
 import elec332.core.client.model.loading.INoJsonItem;
+import elec332.core.client.util.AbstractItemOverrideList;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.model.*;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
@@ -100,18 +102,17 @@ public class INoJsonItemHandler implements IItemModelHandler {
 
     }
 
-    private static abstract class NoJsonItemOverrideList extends ItemOverrideList {
+    private static abstract class NoJsonItemOverrideList extends AbstractItemOverrideList {
 
         protected abstract IBakedModel getModel(@Nonnull ItemStack stack, @Nullable World world, @Nullable LivingEntity entity);
 
-        @Nonnull
+        @Nullable
         @Override
-        @SuppressWarnings("ConstantConditions")
-        public final IBakedModel getModelWithOverrides(@Nonnull IBakedModel originalModel, @Nonnull ItemStack stack, @Nullable World world, @Nullable LivingEntity entity) {
+        protected IBakedModel getModel(@Nonnull IBakedModel model, @Nonnull ItemStack stack, @Nullable World world, @Nullable LivingEntity entity) {
             IBakedModel ret = getModel(stack, world, entity);
             ItemOverrideList iol = ret.getOverrides();
             if (iol != null) {
-                ret = iol.getModelWithOverrides(ret, stack, world, entity);
+                ret = iol.func_239290_a_(ret, stack, (ClientWorld) world, entity);
             }
             return Preconditions.checkNotNull(ret);
         }

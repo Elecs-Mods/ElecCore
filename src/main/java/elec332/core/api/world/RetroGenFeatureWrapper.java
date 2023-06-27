@@ -1,10 +1,10 @@
 package elec332.core.api.world;
 
+import com.mojang.serialization.Codec;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IWorld;
+import net.minecraft.world.ISeedReader;
 import net.minecraft.world.gen.ChunkGenerator;
-import net.minecraft.world.gen.GenerationSettings;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.IFeatureConfig;
 
@@ -17,13 +17,13 @@ import java.util.function.Function;
  */
 public class RetroGenFeatureWrapper<C extends IFeatureConfig> extends Feature<C> implements IRetroGenFeature<C> {
 
-    public RetroGenFeatureWrapper(Feature<C> parent, ResourceLocation name) {
-        this(parent, c -> name.toString());
+    public RetroGenFeatureWrapper(Feature<C> parent, Codec<C> codec, ResourceLocation name) {
+        this(parent, codec, c -> name.toString());
         setRegistryName(name);
     }
 
-    public RetroGenFeatureWrapper(Feature<C> parent, Function<C, String> namer) {
-        super(parent.configFactory);
+    public RetroGenFeatureWrapper(Feature<C> parent, Codec<C> codec, Function<C, String> namer) {
+        super(codec);
         this.parent = parent;
         this.namer = namer;
     }
@@ -32,8 +32,8 @@ public class RetroGenFeatureWrapper<C extends IFeatureConfig> extends Feature<C>
     private final Function<C, String> namer;
 
     @Override
-    public boolean place(@Nonnull IWorld worldIn, @Nonnull ChunkGenerator<? extends GenerationSettings> generator, @Nonnull Random rand, @Nonnull BlockPos pos, @Nonnull C config) {
-        return parent.place(worldIn, generator, rand, pos, config);
+    public boolean func_241855_a(@Nonnull ISeedReader worldIn, @Nonnull ChunkGenerator generator, @Nonnull Random rand, @Nonnull BlockPos pos, @Nonnull C config) {
+        return parent.func_241855_a(worldIn, generator, rand, pos, config);
     }
 
     @Override

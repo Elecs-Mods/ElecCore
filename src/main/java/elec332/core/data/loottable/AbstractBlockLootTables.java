@@ -10,14 +10,13 @@ import elec332.core.item.AbstractItemBlock;
 import net.minecraft.block.Block;
 import net.minecraft.data.loot.BlockLootTables;
 import net.minecraft.item.ItemStack;
+import net.minecraft.loot.*;
+import net.minecraft.loot.conditions.ILootCondition;
+import net.minecraft.loot.functions.CopyNbt;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IItemProvider;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.storage.loot.*;
-import net.minecraft.world.storage.loot.conditions.ILootCondition;
-import net.minecraft.world.storage.loot.functions.CopyNbt;
-import net.minecraft.world.storage.loot.functions.LootFunctionManager;
 
 import javax.annotation.Nonnull;
 import java.util.Map;
@@ -117,7 +116,7 @@ public abstract class AbstractBlockLootTables extends BlockLootTables {
     private static class CopyAllTileNBT extends AbstractLootFunction {
 
         private CopyAllTileNBT(ILootCondition[] conditionsIn) {
-            super(conditionsIn);
+            super(conditionsIn, new ResourceLocation("eleccore", "copy_all_tile_nbt"), new SimpleSerializer<>(CopyAllTileNBT::new));
         }
 
         @Nonnull
@@ -135,10 +134,6 @@ public abstract class AbstractBlockLootTables extends BlockLootTables {
             requires.accept(LootParameters.BLOCK_ENTITY);
         }
 
-    }
-
-    static {
-        LootFunctionManager.registerFunction(new AbstractLootFunction.SimpleSerializer<>(new ResourceLocation("eleccore", "copy_all_tile_nbt"), CopyAllTileNBT.class, CopyAllTileNBT::new));
     }
 
 }

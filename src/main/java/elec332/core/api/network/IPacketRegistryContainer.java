@@ -13,6 +13,6 @@ public interface IPacketRegistryContainer {
      *
      * @param packetRegistry The packet registry to register the packets to
      */
-    public void registerPacketsTo(IPacketRegistry packetRegistry);
+    void registerPacketsTo(IPacketRegistry packetRegistry);
 
 }

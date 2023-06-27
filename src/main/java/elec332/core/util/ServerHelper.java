@@ -11,9 +11,9 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.RegistryKey;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.server.ChunkHolder;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
@@ -128,7 +128,7 @@ public class ServerHelper {
      * @param dimension The dimension ID
      * @return All players in the provided dimension
      */
-    public static List<ServerPlayerEntity> getAllPlayersInDimension(final DimensionType dimension) {
+    public static List<ServerPlayerEntity> getAllPlayersInDimension(final RegistryKey<World> dimension) {
         return getOnlinePlayers().stream()
                 .filter((Predicate<ServerPlayerEntity>) player -> WorldHelper.getDimID(player.getEntityWorld()) == dimension)
                 .collect(Collectors.toList());
@@ -141,7 +141,7 @@ public class ServerHelper {
      * @param message        The message to be sent
      * @param networkHandler The network-handler who has to send the messages
      */
-    public static void sendMessageToAllPlayersInDimension(DimensionType dimension, IMessage message, INetworkHandler networkHandler) {
+    public static void sendMessageToAllPlayersInDimension(RegistryKey<World> dimension, IMessage message, INetworkHandler networkHandler) {
         getAllPlayersInDimension(dimension).forEach(playerMP -> networkHandler.sendTo(message, playerMP));
     }
 
