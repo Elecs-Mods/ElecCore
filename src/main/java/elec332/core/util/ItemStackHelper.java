@@ -1,8 +1,9 @@
 package elec332.core.util;
 
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.ContainerHelper;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -35,21 +36,21 @@ public class ItemStackHelper {
     }
 
     /**
-     * loads an {@link ItemStack} from the provided {@link CompoundNBT}
+     * loads an {@link ItemStack} from the provided {@link CompoundTag}
      *
      * @param tag The NBT data
-     * @return The {@link ItemStack} loaded from the provided {@link CompoundNBT}
+     * @return The {@link ItemStack} loaded from the provided {@link CompoundTag}
      */
-    public static ItemStack loadItemStackFromNBT(CompoundNBT tag) {
-        return ItemStack.read(tag);
+    public static ItemStack loadItemStackFromNBT(CompoundTag tag) {
+        return ItemStack.of(tag);
     }
 
     public static ItemStack getAndSplit(List<ItemStack> stacks, int index, int amount) {
-        return net.minecraft.inventory.ItemStackHelper.getAndSplit(stacks, index, amount);
+        return ContainerHelper.removeItem(stacks, index, amount);
     }
 
     public static ItemStack getAndRemove(List<ItemStack> stacks, int index) {
-        return net.minecraft.inventory.ItemStackHelper.getAndRemove(stacks, index);
+        return ContainerHelper.takeItem(stacks, index);
     }
 
     private static ItemStack getNullStack() {

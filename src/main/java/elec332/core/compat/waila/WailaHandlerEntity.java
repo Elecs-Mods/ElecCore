@@ -9,8 +9,8 @@ import mcp.mobius.waila.api.IServerDataProvider;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
 
@@ -24,7 +24,7 @@ import java.util.List;
 public class WailaHandlerEntity implements IEntityComponentProvider, IServerDataProvider<Entity> {
 
     @Override
-    public void appendServerData(CompoundNBT data, ServerPlayerEntity player, World world, Entity entity) {
+    public void appendServerData(CompoundTag data, ServerPlayerEntity player, World world, Entity entity) {
         IInfoDataAccessorEntity dataAccessorEntity = new IInfoDataAccessorEntity() {
 
             @Nonnull
@@ -47,13 +47,13 @@ public class WailaHandlerEntity implements IEntityComponentProvider, IServerData
 
             @Nonnull
             @Override
-            public CompoundNBT getData() {
+            public CompoundTag getData() {
                 return data;
             }
 
             @Nullable
             @Override
-            public Vector3d getHitVec() {
+            public Vec3d getHitVec() {
                 return null;
             }
         };
@@ -84,12 +84,12 @@ public class WailaHandlerEntity implements IEntityComponentProvider, IServerData
 
             @Nonnull
             @Override
-            public CompoundNBT getData() {
+            public CompoundTag getData() {
                 return accessor.getServerData();
             }
 
             @Override
-            public Vector3d getHitVec() {
+            public Vec3d getHitVec() {
                 return accessor.getHitResult().getHitVec();
             }
 

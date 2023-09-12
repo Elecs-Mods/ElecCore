@@ -1,6 +1,6 @@
 package elec332.core.grid;
 
-import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.util.Direction;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
@@ -15,19 +15,19 @@ import javax.annotation.Nullable;
 public interface ITileEntityLink extends IPositionable, ICapabilityProvider {
 
     @Nullable
-    TileEntity getTileEntity();
+    public TileEntity getTileEntity();
 
     @Nonnull
     @Override
-    <C> LazyOptional<C> getCapability(@Nonnull Capability<C> cap, @Nullable Direction side);
+    <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side);
 
     @Nullable
-    default Class<?> getInformationType() {
+    default public Class getInformationType() {
         return null;
     }
 
     @Nullable
-    default Object getInformation() {
+    default public Object getInformation() {
         return null;
     }
 

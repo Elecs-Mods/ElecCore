@@ -1,52 +1,33 @@
 package elec332.core.util;
 
-import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
-import elec332.core.api.util.IClearable;
 import elec332.core.handler.annotations.TileEntityAnnotationProcessor;
-import net.minecraft.block.Block;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.merchant.villager.VillagerProfession;
-import net.minecraft.fluid.Fluid;
-import net.minecraft.inventory.container.ContainerType;
-import net.minecraft.item.Item;
-import net.minecraft.item.crafting.IRecipe;
-import net.minecraft.item.crafting.IRecipeSerializer;
-import net.minecraft.item.crafting.SpecialRecipeSerializer;
-import net.minecraft.nbt.INBT;
-import net.minecraft.potion.Effect;
-import net.minecraft.potion.Potion;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityType;
-import net.minecraft.util.Direction;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.SoundEvent;
-import net.minecraft.world.World;
-import net.minecraft.world.gen.carver.WorldCarver;
-import net.minecraft.world.gen.feature.Feature;
-import net.minecraft.world.gen.feature.structure.Structure;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.CapabilityManager;
-import net.minecraftforge.common.capabilities.ICapabilityProvider;
-import net.minecraftforge.common.capabilities.ICapabilitySerializable;
-import net.minecraftforge.common.util.INBTSerializable;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.event.AttachCapabilitiesEvent;
-import net.minecraftforge.eventbus.api.EventPriority;
-import net.minecraftforge.fml.ModContainer;
-import net.minecraftforge.fml.ModLoadingStage;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.fml.javafmlmod.FMLModContainer;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Registry;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.npc.VillagerProfession;
+import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.item.alchemy.Potion;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.item.Item;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.dimension.DimensionType;
+import net.minecraft.world.level.levelgen.feature.Feature;
+import net.minecraftforge.common.world.ForgeWorldPreset;
 import net.minecraftforge.registries.*;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.Map;
-import java.util.concurrent.Callable;
-import java.util.function.Consumer;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -54,103 +35,6 @@ import java.util.function.Supplier;
  * Created by Elec332 on 5-4-2016.
  */
 public class RegistryHelper {
-
-    /**
-     * Registers an empty cabability, meaning that it has no serialization and no default implementation.
-     *
-     * @param clazz The capability type
-     */
-    public static <T> void registerEmptyCapability(Class<T> clazz) {
-        registerCapability(clazz, new Capability.IStorage<T>() {
-
-            @Override
-            public INBT writeNBT(Capability capability, Object instance, Direction side) {
-                throw new UnsupportedOperationException();
-            }
-
-            @Override
-            public void readNBT(Capability capability, Object instance, Direction side, INBT nbt) {
-                throw new UnsupportedOperationException();
-            }
-
-        }, () -> {
-            throw new UnsupportedOperationException();
-        });
-    }
-
-    public static <T> void registerCapability(Class<T> clazz, Capability.IStorage<T> storage, Callable<? extends T> factory) {
-        if (FMLHelper.hasReachedState(ModLoadingStage.COMMON_SETUP)) {
-            CapabilityManager.INSTANCE.register(clazz, storage, factory);
-        } else {
-            if (FMLHelper.getActiveModContainer() != null && !FMLHelper.getActiveModContainer().getModId().equals("minecraft")) {
-                FMLHelper.getActiveModEventBus().addListener(EventPriority.HIGH, (Consumer<FMLCommonSetupEvent>) event -> CapabilityManager.INSTANCE.register(clazz, storage, factory));
-            } else {
-                ModContainer c = FMLHelper.getOwner(clazz);
-                if (c instanceof FMLModContainer) {
-                    ((FMLModContainer) c).getEventBus().addListener(EventPriority.HIGH, (Consumer<FMLCommonSetupEvent>) event -> CapabilityManager.INSTANCE.register(clazz, storage, factory));
-                } else {
-                    throw new UnsupportedOperationException();
-                }
-            }
-        }
-    }
-
-    public static <C> void registerCapability(AttachCapabilitiesEvent<?> event, ResourceLocation key, Capability<C> capability, C instance) {
-        Preconditions.checkNotNull(key);
-        Preconditions.checkNotNull(capability);
-        Preconditions.checkNotNull(instance);
-        final LazyOptional<C> ref = LazyOptional.of(() -> instance);
-        if (instance instanceof INBTSerializable) {
-            event.addCapability(key, new ICapabilitySerializable<INBT>() {
-
-                @Override
-                public INBT serializeNBT() {
-                    return ((INBTSerializable<?>) instance).serializeNBT();
-                }
-
-                @Override
-                @SuppressWarnings({"unchecked", "rawtypes"})
-                public void deserializeNBT(INBT nbt) {
-                    ((INBTSerializable) instance).deserializeNBT(nbt);
-                }
-
-                @Nonnull
-                @Override
-                public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-                    return capability.orEmpty(cap, ref);
-                }
-
-            });
-        } else {
-            event.addCapability(key, new ICapabilityProvider() {
-
-                @Nonnull
-                @Override
-                public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-                    return capability.orEmpty(cap, ref);
-                }
-
-            });
-        }
-        event.addListener(ref::invalidate);
-        if (instance instanceof IClearable) {
-            event.addListener(((IClearable) instance)::clear);
-        }
-    }
-
-    public static <T extends IForgeRegistryEntry<T>> ForgeRegistry<T> createRegistry(ResourceLocation name, Class<T> type, Consumer<RegistryBuilder<T>> modifier) {
-        RegistryBuilder<T> b = new RegistryBuilder<>();
-        b.setName(Preconditions.checkNotNull(name));
-        b.setType(Preconditions.checkNotNull(type));
-        if (modifier != null) {
-            modifier.accept(b);
-        }
-        return (ForgeRegistry<T>) b.create();
-    }
-
-    public static <T extends IForgeRegistryEntry<T>, C extends IForgeRegistry.AddCallback<T> & IForgeRegistry.ClearCallback<T> & IForgeRegistry.CreateCallback<T>> ForgeRegistry<T> createRegistry(ResourceLocation registryName, Class<T> registryType, int minId, int maxId, C callback) {
-        return (ForgeRegistry<T>) new RegistryBuilder<T>().setName(registryName).addCallback(callback).setType(registryType).setIDRange(minId, maxId).create();
-    }
 
     public static ForgeRegistry<Block> getBlockRegistry() {
         return (ForgeRegistry<Block>) ForgeRegistries.BLOCKS;
@@ -160,20 +44,20 @@ public class RegistryHelper {
         return (ForgeRegistry<Item>) ForgeRegistries.ITEMS;
     }
 
-    public static ForgeRegistry<Fluid> getFluidRegistry() {
-        return (ForgeRegistry<Fluid>) ForgeRegistries.FLUIDS;
+    public static ForgeRegistry<Potion> getPotionRegistry() {
+        return (ForgeRegistry<Potion>) ForgeRegistries.POTIONS;
     }
 
-    public static ForgeRegistry<Effect> getPotionRegistry() {
-        return (ForgeRegistry<Effect>) ForgeRegistries.POTIONS;
+    public static ForgeRegistry<Biome> getBiomeRegistry() {
+        return (ForgeRegistry<Biome>) ForgeRegistries.BIOMES;
     }
 
     public static ForgeRegistry<SoundEvent> getSoundEventRegistry() {
         return (ForgeRegistry<SoundEvent>) ForgeRegistries.SOUND_EVENTS;
     }
 
-    public static ForgeRegistry<Potion> getPotionTypesRegistry() {
-        return (ForgeRegistry<Potion>) ForgeRegistries.POTION_TYPES;
+    public static ForgeRegistry<MobEffect> getPotionEffectsRegistry() {
+        return (ForgeRegistry<MobEffect>) ForgeRegistries.MOB_EFFECTS;
     }
 
     public static ForgeRegistry<Enchantment> getEnchantmentRegistry() {
@@ -188,50 +72,33 @@ public class RegistryHelper {
         return (ForgeRegistry<EntityType<?>>) ForgeRegistries.ENTITIES;
     }
 
-    public static ForgeRegistry<TileEntityType<?>> getTileEntities() {
-        return (ForgeRegistry<TileEntityType<?>>) ForgeRegistries.TILE_ENTITIES;
+    public static ForgeRegistry<BlockEntityType<?>> getTileEntities() {
+        return (ForgeRegistry<BlockEntityType<?>>) ForgeRegistries.BLOCK_ENTITIES;
     }
 
-    public static ForgeRegistry<IRecipeSerializer<?>> getRecipeSerializers() {
-        return (ForgeRegistry<IRecipeSerializer<?>>) ForgeRegistries.RECIPE_SERIALIZERS;
+    public static ForgeRegistry<ForgeWorldPreset> getDimensionTypes() {
+        return (ForgeRegistry<ForgeWorldPreset>) ForgeRegistries.WORLD_TYPES.get();
     }
 
-    public static ForgeRegistry<ContainerType<?>> getContainers() {
-        return (ForgeRegistry<ContainerType<?>>) ForgeRegistries.CONTAINERS;
+    public static ForgeRegistry<RecipeSerializer<?>> getRecipeSerializers() {
+        return (ForgeRegistry<RecipeSerializer<?>>) ForgeRegistries.RECIPE_SERIALIZERS;
+    }
+
+    public static ForgeRegistry<MenuType<?>> getContainers() {
+        return (ForgeRegistry<MenuType<?>>) ForgeRegistries.CONTAINERS;
     }
 
     public static ForgeRegistry<Feature<?>> getFeatures() {
         return (ForgeRegistry<Feature<?>>) ForgeRegistries.FEATURES;
     }
 
-    public static ForgeRegistry<WorldCarver<?>> getCarvers() {
-        return (ForgeRegistry<WorldCarver<?>>) ForgeRegistries.WORLD_CARVERS;
-    }
-
-    public static ForgeRegistry<Structure<?>> getStructures() {
-        return (ForgeRegistry<Structure<?>>) ForgeRegistries.STRUCTURE_FEATURES;
-    }
-
-    public static <T extends Entity> T createEntity(EntityType<T> type, World world) {
-        return createEntity(type, world, null);
-    }
-
-    @Nonnull
-    public static <T extends Entity> T createEntity(EntityType<T> type, World world, Consumer<T> config) {
-        T ret = Preconditions.checkNotNull(type.create(world));
-        if (config != null) {
-            config.accept(ret);
-        }
-        return ret;
-    }
-
     @SuppressWarnings("unchecked")
-    public static <T extends TileEntity> TileEntityType<T> getTileEntityType(Class<T> clazz) {
-        Collection<TileEntityType<T>> types = Lists.newArrayList();
+    public static <T extends BlockEntity> BlockEntityType<T> getTileEntityType(Class<T> clazz) {
+        Collection<BlockEntityType<T>> types = Lists.newArrayList();
         getTileEntities().forEach(type -> {
-            TileEntity tile = type.create();
+            BlockEntity tile = type.create(BlockPos.ZERO, Blocks.AIR.defaultBlockState());
             if (tile != null && tile.getClass() == clazz) {
-                types.add((TileEntityType<T>) type);
+                types.add((BlockEntityType<T>) type);
             }
         });
         if (types.size() == 1) {
@@ -240,7 +107,6 @@ public class RegistryHelper {
         throw new UnsupportedOperationException("Multiple registered types");
     }
 
-    @SuppressWarnings("ConstantConditions")
     public static <T extends TileEntity> TileEntityType<T> registerTileEntity(ResourceLocation id, Supplier<T> builder) {
         return registerTileEntity(id, new TileEntityType<T>(builder, null, null) {
 
@@ -250,10 +116,6 @@ public class RegistryHelper {
             }
 
         });
-    }
-
-    public static <T extends TileEntity> Supplier<TileEntityType<T>> registerTileEntityLater(Class<T> clazz, ResourceLocation name) {
-        return TileEntityAnnotationProcessor.registerTileEntityLater(clazz, name);
     }
 
     public static <T extends TileEntity> TileEntityType<T> registerTileEntity(Class<T> clazz, ResourceLocation rl) {
@@ -275,6 +137,11 @@ public class RegistryHelper {
 
     public static Map<Block, Item> getBlockItemMap() {
         return GameData.getBlockItemMap();
+    }
+
+    @SuppressWarnings("deprecation")
+    public static Optional<DimensionType> getDimensionType(ResourceLocation name) {
+        return Registry.DIMENSION_TYPE.getValue(name);
     }
 
     /**

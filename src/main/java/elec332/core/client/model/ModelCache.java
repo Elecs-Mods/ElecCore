@@ -6,20 +6,19 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import elec332.core.client.util.AbstractItemOverrideList;
-import elec332.core.loader.client.RenderingRegistry;
-import net.minecraft.block.BlockState;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.model.BakedQuad;
-import net.minecraft.client.renderer.model.IBakedModel;
+import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.renderer.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.model.ItemOverrideList;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.util.Direction;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockDisplayReader;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.IEnviromentBlockReader;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -48,12 +47,12 @@ public abstract class ModelCache<K> implements IBakedModel {
     protected ModelCache(IBakedModel defaultModel) {
         quads = CacheBuilder.newBuilder().expireAfterAccess(2, TimeUnit.MINUTES).build();
         itemModels = CacheBuilder.newBuilder().expireAfterAccess(2, TimeUnit.MINUTES).build();
-        iol = new AbstractItemOverrideList() {
+        iol = new ItemOverrideList() {
 
-            @Nullable
             @Override
-            protected IBakedModel getModel(@Nonnull IBakedModel model, @Nonnull ItemStack stack, @Nullable World worldIn, @Nullable LivingEntity entityIn) {
-                return ModelCache.this.getModel(stack);
+            @Nonnull
+            public IBakedModel getModelWithOverrides(@Nonnull IBakedModel originalModel, @Nonnull ItemStack stack, @Nullable World world, @Nullable LivingEntity entity) {
+                return getModel(stack);
             }
 
         };
@@ -95,17 +94,32 @@ public abstract class ModelCache<K> implements IBakedModel {
 
     public final IBakedModel getModel(ItemStack stack) {
         K key = get(stack);
-        return getModel(key);
+        Callable<IBakedModel> loader = () -> new WrappedModel(ModelCache.this) {
+
+            Map<Direction, List<BakedQuad>> quads = ModelCache.this.getQuads(key);
+
+            @Nonnull
+            @Override
+            public List<BakedQuad> getQuads(BlockState state, Direction side, @Nonnull Random rand) {
+                return quads.get(side);
+            }
+
+        };
+        try {
+            return debug ? loader.call() : itemModels.get(Preconditions.checkNotNull(key), loader);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public final IBakedModel getModel(K key) {
         Callable<IBakedModel> loader = () -> new WrappedModel(ModelCache.this) {
 
-            private final Map<Direction, List<BakedQuad>> quads = ModelCache.this.getQuads(key);
+            Map<Direction, List<BakedQuad>> quads = ModelCache.this.getQuads(key);
 
             @Nonnull
             @Override
-            public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, @Nonnull Random rand, @Nonnull IModelData extraData) {
+            public List<BakedQuad> getQuads(BlockState state, Direction side, @Nonnull Random rand) {
                 return quads.get(side);
             }
 
@@ -126,7 +140,7 @@ public abstract class ModelCache<K> implements IBakedModel {
     @Nonnull
     @Override
     @SuppressWarnings("deprecation")
-    public final List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, @Nonnull Random rand) {
+    public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, @Nonnull Random rand) {
         if (needsModelData()) {
             if (defaultModel == null) {
                 throw new UnsupportedOperationException();
@@ -143,7 +157,7 @@ public abstract class ModelCache<K> implements IBakedModel {
 
     @Nonnull
     @Override
-    public final IModelData getModelData(@Nonnull IBlockDisplayReader world, @Nonnull BlockPos pos, @Nonnull BlockState state, @Nonnull IModelData tileData) {
+    public IModelData getModelData(@Nonnull IEnviromentBlockReader world, @Nonnull BlockPos pos, @Nonnull BlockState state, @Nonnull IModelData tileData) {
         if (tileData == EmptyModelData.INSTANCE) {
             tileData = new ModelDataMap.Builder().build();
         }
@@ -151,7 +165,8 @@ public abstract class ModelCache<K> implements IBakedModel {
         return tileData;
     }
 
-    public void addModelData(@Nonnull IBlockDisplayReader world, @Nonnull BlockPos pos, @Nonnull BlockState state, @Nonnull IModelData modelData) {
+    public void addModelData(@Nonnull IEnviromentBlockReader world, @Nonnull BlockPos pos, @Nonnull BlockState state, @Nonnull IModelData modelData) {
+
     }
 
     @Override
@@ -164,11 +179,6 @@ public abstract class ModelCache<K> implements IBakedModel {
         return defaultModel == null || defaultModel.isGui3d();
     }
 
-    @Override //isSideLit
-    public boolean func_230044_c_() {
-        return defaultModel != null && defaultModel.func_230044_c_();
-    }
-
     @Override
     public boolean isBuiltInRenderer() {
         return defaultModel != null && defaultModel.isBuiltInRenderer();
@@ -177,7 +187,7 @@ public abstract class ModelCache<K> implements IBakedModel {
     @Override
     @Nonnull
     public TextureAtlasSprite getParticleTexture() {
-        return RenderingRegistry.instance().getBlockTextures().getSprite(getTextureLocation());
+        return Minecraft.getInstance().getTextureMap().getAtlasSprite(getTextureLocation().toString());
     }
 
     @Nonnull

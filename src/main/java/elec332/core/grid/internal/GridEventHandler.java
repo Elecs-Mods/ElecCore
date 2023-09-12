@@ -1,14 +1,9 @@
 package elec332.core.grid.internal;
 
-import elec332.core.api.APIHandlerInject;
 import elec332.core.api.annotations.StaticLoad;
-import elec332.core.api.world.IWorldEventHook;
-import elec332.core.api.world.IWorldGenManager;
-import net.minecraft.block.BlockState;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
+import net.minecraft.world.server.ServerChunkProvider;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.world.BlockEvent;
@@ -69,33 +64,20 @@ class GridEventHandler {
         }
     }
 
-//    @SubscribeEvent
-//    public void worldLoad(WorldEvent.Load event) {
-//        if (!(event.getWorld() instanceof World)) {
-//            throw new RuntimeException();
-//        }
-//        World world = (World) event.getWorld();
-//        if (!world.isRemote()) {
-//            //world.removeEventListener(WorldEventHandler.INSTANCE);
-//            //world.addEventListener(WorldEventHandler.INSTANCE);
-//            ServerChunkProvider scp = (ServerChunkProvider) world.getChunkProvider();
-////            if (!(scp instanceof WrappedServerChunkProvider)) {
-////                world.chunkProvider = new WrappedServerChunkProvider(scp);
-////            }
-//        }
-//    }
-
-    @APIHandlerInject
-    @SuppressWarnings({"Convert2Lambda", "Anonymous2MethodRef"}) //ClassCastExceptions ffs
-    private static void registerBlockChangedHook(IWorldGenManager worldGenManager) {
-        worldGenManager.registerBlockChangedHook(new IWorldEventHook() {
-
-            @Override
-            public void markBlockChanged(IWorld world, BlockPos pos, BlockState oldState, BlockState newState) {
-                GridEventInputHandler.INSTANCE.worldBlockUpdate(world, pos, oldState, newState);
+    @SubscribeEvent
+    public void worldLoad(WorldEvent.Load event) {
+        if (!(event.getWorld() instanceof World)) {
+            throw new RuntimeException();
+        }
+        World world = (World) event.getWorld();
+        if (!world.isRemote()) {
+            //world.removeEventListener(WorldEventHandler.INSTANCE);
+            //world.addEventListener(WorldEventHandler.INSTANCE);
+            ServerChunkProvider scp = (ServerChunkProvider) world.getChunkProvider();
+            if (!(scp instanceof WrappedServerChunkProvider)) {
+                world.chunkProvider = new WrappedServerChunkProvider(scp);
             }
-
-        });
+        }
     }
 
     static {

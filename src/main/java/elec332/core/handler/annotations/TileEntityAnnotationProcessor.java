@@ -14,11 +14,11 @@ import elec332.core.util.FieldPointer;
 import elec332.core.util.ObjectReference;
 import elec332.core.util.RegistryHelper;
 import elec332.core.util.function.FuncHelper;
-import net.minecraft.block.Block;
-import net.minecraft.item.Item;
-import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.tileentity.TileEntityType;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.ModContainer;
 import net.minecraftforge.fml.javafmlmod.FMLModContainer;
@@ -41,13 +41,13 @@ public class TileEntityAnnotationProcessor implements IItemRegister {
 
     @APIHandlerInject
     private static IAnnotationDataHandler asmData;
-    private static final Map<Class<?>, TileEntityType<?>> typeReference = Maps.newIdentityHashMap();
+    private static final Map<Class, TileEntityType> typeReference = Maps.newIdentityHashMap();
     private static final Map<String, Set<Runnable>> toRegister = Maps.newHashMap();
 
     @Nullable
     @SuppressWarnings("unchecked")
     public static <T extends TileEntity> TileEntityType<T> getTileType(Class<T> clazz) {
-        return (TileEntityType<T>) typeReference.get(clazz);
+        return typeReference.get(clazz);
     }
 
     @Override
@@ -88,11 +88,27 @@ public class TileEntityAnnotationProcessor implements IItemRegister {
                 f = null;
             }
             final Class<? extends TileEntity> clazz = clazz_;
-            name = checkName(name, (String) data.getAnnotationInfo().get("mod"), clazz);
+            if (!name.contains(":")) {
+                String mod = (String) data.getAnnotationInfo().get("mod");
+                if (Strings.isNullOrEmpty(mod)) {
+                    mod = FMLHelper.getOwnerName(clazz);
+                }
+                name = mod + ":" + name;
+            }
 
             final String finalName = name;
-            registerTileEntityLater(clazz, new ResourceLocation(name), type -> {
+            toRegister.computeIfAbsent(name.split(":")[0], o -> Sets.newHashSet()).add(() -> {
+                ObjectReference<TileEntityType<?>> ref = new ObjectReference<>();
+                ref.set(RegistryHelper.getTileEntities().getValue(new ResourceLocation(finalName)));
+
+                if (ref.get() == null) {
+                    registerTileEntity(clazz, new ResourceLocation(finalName), ref);
+                }
                 if (f != null) {
+                    TileEntityType<?> type = ref.get();
+                    if (type instanceof TileType && ((TileType) type).getTileType() != clazz) {
+                        throw new RuntimeException("Field type mismatch!");
+                    }
                     new FieldPointer(f).set(null, type);
                 }
             });
@@ -101,53 +117,11 @@ public class TileEntityAnnotationProcessor implements IItemRegister {
         }
     }
 
-    public static <T extends TileEntity> Supplier<TileEntityType<T>> registerTileEntityLater(Class<T> clazz, ResourceLocation name) {
-        try {
-            FMLHelper.loadClass(clazz.getName());
-        } catch (Exception e) {
-            //Failed to force-load static fields
-        }
-        ObjectReference<TileEntityType<T>> ref = new ObjectReference<>();
-        registerTileEntityLater(clazz, name, ref);
-        return ref;
-    }
-
-    @SuppressWarnings("unchecked")
-    private static <T extends TileEntity> void registerTileEntityLater(Class<T> clazz, ResourceLocation name_, Consumer<TileEntityType<T>> consumer) {
-        String name = name_.toString();
-        toRegister.computeIfAbsent(name.split(":")[0], o -> Sets.newHashSet()).add(() -> {
-            ObjectReference<TileEntityType<T>> ref = new ObjectReference<>();
-            ref.set((TileEntityType<T>) RegistryHelper.getTileEntities().getValue(new ResourceLocation(name)));
-
-            if (ref.get() == null) {
-                registerTileEntity(clazz, new ResourceLocation(name), ref);
-            }
-            if (consumer != null) {
-                TileEntityType<T> type = ref.get();
-                if (type instanceof TileType && ((TileType<T>) type).getTileType() != clazz) {
-                    throw new RuntimeException("Field type mismatch!");
-                }
-                consumer.accept(type);
-            }
-        });
-    }
-
-    public static String checkName(String name, String mod, Class<? extends TileEntity> clazz) {
-        if (!name.contains(":")) {
-            if (Strings.isNullOrEmpty(mod)) {
-                mod = FMLHelper.getOwnerName(clazz);
-            }
-            name = mod + ":" + name;
-        }
-        return name;
-    }
-
     public static <T extends TileEntity> TileEntityType<T> registerTileEntity(Class<T> clazz, ResourceLocation rl) {
         return registerTileEntity(clazz, rl, new ObjectReference<>());
     }
 
-    private static <T extends TileEntity> TileEntityType<T> registerTileEntity(Class<T> clazz, ResourceLocation rl, ObjectReference<TileEntityType<T>> ref) {
-        @SuppressWarnings("rawtypes")
+    private static <T extends TileEntity> TileEntityType<T> registerTileEntity(Class<T> clazz, ResourceLocation rl, ObjectReference<TileEntityType<?>> ref) {
         Supplier s = null;
         try {
             Constructor<? extends TileEntity> c = clazz.getDeclaredConstructor(TileEntityType.class);
@@ -173,7 +147,7 @@ public class TileEntityAnnotationProcessor implements IItemRegister {
             throw new RuntimeException();
         }
         @SuppressWarnings("unchecked")
-        TileEntityType<T> tt = new TileType<T>(s, clazz);
+        TileEntityType<T> tt = new TileType<>(s, clazz);
         typeReference.put(clazz, tt);
         ref.set(tt);
         return RegistryHelper.registerTileEntity(rl, tt);

@@ -6,48 +6,40 @@ import elec332.core.client.ClientHelper;
 import elec332.core.util.FMLHelper;
 import elec332.core.util.ItemStackHelper;
 import elec332.core.util.PlayerHelper;
-import elec332.core.util.RegistryHelper;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityClassification;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.item.ItemEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.RegistryKey;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.SoundEvents;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.world.*;
-import net.minecraft.world.biome.Biome;
-import net.minecraft.world.biome.MobSpawnInfo;
-import net.minecraft.world.chunk.AbstractChunkProvider;
-import net.minecraft.world.chunk.Chunk;
-import net.minecraft.world.chunk.EmptyChunk;
-import net.minecraft.world.chunk.IChunk;
-import net.minecraft.world.gen.ChunkGenerator;
-import net.minecraft.world.gen.Heightmap;
-import net.minecraft.world.gen.NoiseChunkGenerator;
-import net.minecraft.world.gen.feature.ConfiguredFeature;
-import net.minecraft.world.gen.feature.Feature;
-import net.minecraft.world.gen.feature.IFeatureConfig;
-import net.minecraft.world.server.ChunkHolder;
-import net.minecraft.world.server.ServerChunkProvider;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.server.level.ChunkHolder;
+import net.minecraft.server.level.ServerChunkCache;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LightningBolt;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.*;
+import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.chunk.ChunkAccess;
+import net.minecraft.world.level.chunk.ChunkSource;
+import net.minecraft.world.level.chunk.EmptyLevelChunk;
+import net.minecraft.world.level.chunk.LevelChunk;
+import net.minecraft.world.level.dimension.DimensionType;
+import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
+import net.minecraft.world.level.levelgen.feature.Feature;
+import net.minecraft.world.level.levelgen.feature.configurations.FeatureConfiguration;
+import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.common.BiomeDictionary;
 import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.items.IItemHandler;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 
@@ -79,61 +71,27 @@ public class WorldHelper {
     public static final int PLACEBLOCK_NO_NEIGHBOR_REACTION_DROPS = 32;
     public static final int PLACEBLOCK_BLOCK_BEING_MOVED = 64;
 
-    public static final RegistryKey<World> OVERWORLD = World.field_234918_g_;
-    public static final RegistryKey<World> NETHER = World.field_234919_h_;
-    public static final RegistryKey<World> END = World.field_234920_i_;
-
-    public static boolean isServer(IWorldReader world) {
-        return !isClient(world);
+    public static ChunkHolder.PlayerProvider getPlayerManager(ServerLevel world) {
+        return world.getChunkSource().chunkMap;
     }
 
-    public static boolean isClient(IWorldReader world) {
-        return Preconditions.checkNotNull(world).isRemote();
+    public static void enqueueChunkRelightChecks(LevelChunk chunk) {
+        chunk.getLevel().getLightEngine().updateSectionStatus(chunk.getPos().getMiddleBlockPosition(64), true);
+//        chunk.getLevel().getLightEngine()..runUpdates(chunk.getPos().toLong());//.getChunkProvider().getLightManager().func_215571_a(chunk.getPos(), true);
+//        chunk.enqueueRelightChecks();
     }
 
-    public static ChunkHolder.IPlayerProvider getPlayerManager(ServerWorld world) {
-        return world.getChunkProvider().chunkManager;
-    }
-
-    public static void enqueueChunkRelightChecks(Chunk chunk) {
-        //todo: ??? chunk.getWorld().getChunkProvider().markLightChanged(LightType.BLOCK, SectionPos.from(chunk.getPos(), chunk.getHeight()));
-        chunk.getWorld().getChunkProvider().getLightManager().enableLightSources(chunk.getPos(), true);
-        //chunk.enqueueRelightChecks();
-    }
-
-    /**
-     * Returns whether the provided {@link ChunkGenerator} will generate a roof
-     *
-     * @param generator The chunkgenerator
-     * @return whether the provided {@link ChunkGenerator} will generate a roof
-     */
-    public static boolean hasCeiling(ChunkGenerator generator) {
-        return generator instanceof NoiseChunkGenerator && ((NoiseChunkGenerator) generator).field_236080_h_.get().func_236117_e_() < 0;
-        //return generator.getSettings().getBedrockRoofHeight() > 0;
-    }
-
-    /**
-     * Gets the top block at the given position for the given type
-     *
-     * @param world The world
-     * @param pos   The position to check
-     * @param type  The heightmap type to use
-     * @return The same position at the top non-air block
-     */
-    public static BlockPos getTopBlock(IWorldReader world, BlockPos pos, Heightmap.Type type) {
-        return new BlockPos(pos.getX(), world.getHeight(type, pos.getX(), pos.getZ()), pos.getZ());
-    }
-
-    /**
-     * Adds a spawn entry to the specified biome
-     *
-     * @param biome          The biome
-     * @param type           The Entity type
-     * @param spawnListEntry The spawn entry
-     */
-    public static void addBiomeSpawnEntry(Biome biome, EntityClassification type, MobSpawnInfo.Spawners spawnListEntry) {
-        biome.func_242433_b().func_242559_a(type).add(spawnListEntry);
-    }
+//    /**
+//     * Adds a spawn entry to the specified biome
+//     *
+//     * @param biome          The biome
+//     * @param type           The Entity type
+//     * @param spawnListEntry The spawn entry
+//     */
+//    public static void addBiomeSpawnEntry(Biome biome, MobCategory type, Biome.SpawnListEntry spawnListEntry) {
+//        biome.getSpawns(type).add(spawnListEntry);
+//        //biome.getMobSettings().getMobs().
+//    }
 
     /**
      * Gets the internal feature of this feature configuration
@@ -142,8 +100,8 @@ public class WorldHelper {
      * @param <T>               The configuration type
      * @return The internal feature of this feature configuration
      */
-    public static <T extends IFeatureConfig, F extends Feature<T>> F getFeature(ConfiguredFeature<T, F> configuredFeature) {
-        return configuredFeature.feature;
+    public static <T extends FeatureConfiguration, F extends Feature<T>> F getFeature(ConfiguredFeature<T, F> configuredFeature) {
+        return configuredFeature.feature();
     }
 
     /**
@@ -153,8 +111,8 @@ public class WorldHelper {
      * @param <T>               The configuration type
      * @return The internal configuration of this feature configuration
      */
-    public static <T extends IFeatureConfig, F extends Feature<T>> T getFeatureConfiguration(ConfiguredFeature<T, F> configuredFeature) {
-        return configuredFeature.config;
+    public static <T extends FeatureConfiguration> T getFeatureConfiguration(ConfiguredFeature<T, ?> configuredFeature) {
+        return configuredFeature.config();
     }
 
     /**
@@ -163,8 +121,9 @@ public class WorldHelper {
      * @param biome The biome
      * @return The biome types opf the provided biome
      */
-    public static Set<Biome.Category> getTypes(Biome biome) {
-        return Collections.singleton(biome.getCategory());
+    @SuppressWarnings("deprecation")
+    public static Set<BiomeDictionary.Type> getTypes(Biome biome) {
+        return BiomeDictionary.getTypes(ResourceKey.create(Registry.BIOME_REGISTRY, Preconditions.checkNotNull(biome.getRegistryName())));
     }
 
     /**
@@ -174,8 +133,8 @@ public class WorldHelper {
      * @param pos   The position
      * @return The biome at the specified location
      */
-    public static Biome getBiome(World world, BlockPos pos) {
-        return world.getBiome(pos);
+    public static Biome getBiome(Level world, BlockPos pos) {
+        return world.getBiome(pos).value();
     }
 
     /**
@@ -185,8 +144,8 @@ public class WorldHelper {
      * @param entity The entity to be spawned
      * @return Whether the entity has been spawned in the world
      */
-    public static boolean spawnEntityInWorld(IWorldWriter world, Entity entity) {
-        return world.addEntity(entity);
+    public static boolean spawnEntityInWorld(LevelWriter world, Entity entity) {
+        return world.addFreshEntity(entity);
     }
 
     /*
@@ -211,8 +170,8 @@ public class WorldHelper {
      * @param pos   The position
      * @param block The block that has been changed
      */
-    public static void notifyNeighborsOfStateChange(World world, BlockPos pos, Block block) {
-        Preconditions.checkNotNull(world).notifyNeighborsOfStateChange(pos, block);
+    public static void notifyNeighborsOfStateChange(Level world, BlockPos pos, Block block) {
+        world.updateNeighbourForOutputSignal(pos, block);
     }
 
     /**
@@ -226,12 +185,12 @@ public class WorldHelper {
     }
 
     /**
-     * Serializes the position of the provided4 {@link Chunk} to a long
+     * Serializes the position of the provided4 {@link ChunkAccess} to a long
      *
-     * @param chunk The {@link Chunk}
+     * @param chunk The {@link ChunkAccess}
      * @return The serialized long
      */
-    public static long longFromChunk(Chunk chunk) {
+    public static long longFromChunk(ChunkAccess chunk) {
         return longFromChunkPos(chunk.getPos());
     }
 
@@ -242,7 +201,7 @@ public class WorldHelper {
      * @param pos   The chunk position
      * @return The chunk at the provided position
      */
-    public static IChunk getChunk(IWorld world, ChunkPos pos) {
+    public static ChunkAccess getChunk(LevelReader world, ChunkPos pos) {
         return world.getChunk(pos.x, pos.z);
     }
 
@@ -268,8 +227,8 @@ public class WorldHelper {
      *              {@link WorldHelper#PLACEBLOCK_NO_NEIGHBOR_REACTION}, {@link WorldHelper#PLACEBLOCK_NO_NEIGHBOR_REACTION_DROPS}, {@link WorldHelper#PLACEBLOCK_BLOCK_BEING_MOVED}
      *              (flags can be added together)
      */
-    public static void setBlockState(IWorldWriter world, BlockPos pos, BlockState state, int flags) {
-        Preconditions.checkNotNull(world).setBlockState(pos, state, flags);
+    public static void setBlockState(LevelWriter world, BlockPos pos, BlockState state, int flags) {
+        world.setBlock(pos, state, flags);
     }
 
     /**
@@ -278,16 +237,11 @@ public class WorldHelper {
      * @param world The world in which the position is located
      * @param pos   The position
      */
-    public static void markBlockForUpdate(World world, BlockPos pos) {
-        if (world == null) {
-            return;
-        }
-        if (!world.isRemote) {
-            ((ServerWorld) world).getChunkProvider().markBlockChanged(pos);
-            //((ServerWorld) world).getPlayerChunkMap().markBlockForUpdate(pos);
+    public static void markBlockForUpdate(Level world, BlockPos pos) {
+        if (!world.isClientSide()) {
+            ((ServerLevel) world).getChunkSource().blockChanged(pos);
         } else {
             markBlockForRenderUpdate(world, pos);
-            //world.markBlockRangeForRenderUpdate(pos, pos);
         }
     }
 
@@ -298,9 +252,9 @@ public class WorldHelper {
      * @param from  The starting position
      * @param to    The end position
      */
-    public static void markBlockRangeForRenderUpdate(World world, BlockPos from, BlockPos to) {
-        if (isClient(world)) {
-            ClientHelper.getMinecraft().worldRenderer.markBlockRangeForRenderUpdate(from.getX(), from.getY(), from.getZ(), to.getX(), to.getY(), to.getZ());
+    public static void markBlockRangeForRenderUpdate(Level world, BlockPos from, BlockPos to) {
+        if (world.isClientSide()) {
+            ClientHelper.getMinecraft().levelRenderer.setBlocksDirty(from.getX(), from.getY(), from.getZ(), to.getX(), to.getY(), to.getZ());
         }
     }
 
@@ -312,29 +266,23 @@ public class WorldHelper {
      * @return Whether the chunk in which the provided coordinate is located is loaded
      */
     @SuppressWarnings("all")
-    public static boolean chunkLoaded(IWorld world, BlockPos pos) {
+    public static boolean chunkLoaded(Level world, BlockPos pos) {
         if (world == null) {
             return false;
         }
         ChunkPos cp = chunkPosFromBlockPos(pos);
-        AbstractChunkProvider chunkProvider = world.getChunkProvider();
-        if (!chunkProvider.isChunkLoaded(cp)) {
+        ChunkSource chunkProvider = world.getChunkSource();
+        if (!chunkProvider.hasChunk(cp.x, cp.z)) {
             return false;
         }
-        boolean b1;
-        Chunk chunk = chunkProvider.getChunk(cp.x, cp.z, false);
+        ChunkAccess chunk = chunkProvider.getChunk(cp.x, cp.z, false);
         if (chunk == null) {
             return false;
         }
-        if (chunkProvider instanceof ServerChunkProvider) {
-            if (((ServerChunkProvider) chunkProvider).world.getServer().isServerStopped()) {
-                return false;
-            }
-            b1 = ((ServerChunkProvider) chunkProvider).chunkExists(cp.x, cp.z);
-        } else {
-            b1 = !(chunk instanceof EmptyChunk);
+        if (chunkProvider instanceof ServerChunkCache && ((ServerChunkCache) chunkProvider).level.getServer().isStopped()) {
+            return false;
         }
-        return b1;// && chunk.isLoaded();
+        return !(chunk instanceof EmptyLevelChunk);
     }
 
     /**
@@ -345,9 +293,9 @@ public class WorldHelper {
      * @param pos   The position
      */
     @SuppressWarnings("all")
-    public static void markBlockForRenderUpdate(World world, BlockPos pos) {
-        if (Preconditions.checkNotNull(world).isRemote) {
-            world.notifyBlockUpdate(pos, null, null, PLACEBLOCK_RENDERMAIN);
+    public static void markBlockForRenderUpdate(Level world, BlockPos pos) {
+        if (world.isClientSide()) {
+            world.sendBlockUpdated(pos, null, null, PLACEBLOCK_RENDERMAIN);
         }
         //world.markBlockRangeForRenderUpdate(pos, pos);
     }
@@ -361,8 +309,8 @@ public class WorldHelper {
      * @param zCoord   The Z coordinate
      * @param force    The force of the explosion
      */
-    public static void spawnExplosion(World worldObj, double xCoord, double yCoord, double zCoord, float force) {
-        Preconditions.checkNotNull(worldObj).createExplosion(null, xCoord, yCoord, zCoord, force * 4, Explosion.Mode.DESTROY);
+    public static void spawnExplosion(Level worldObj, double xCoord, double yCoord, double zCoord, float force) {
+        worldObj.explode(null, xCoord, yCoord, zCoord, force * 4, Explosion.BlockInteraction.DESTROY);
     }
 
     /*
@@ -402,14 +350,14 @@ public class WorldHelper {
 
     /**
      * Drops all contents of the provided {@link IItemHandler} into the world at the specified coordinates.
-     * Adheres to the {@link net.minecraft.world.GameRules}
+     * Adheres to the {@link net.minecraft.world.level.GameRules}
      * Does _NOT_ clear the inventory!
      *
      * @param world     The world
      * @param pos       The drop location
      * @param inventory The inventory to be dropped
      */
-    public static void dropInventoryItems(World world, BlockPos pos, IItemHandler inventory) {
+    public static void dropInventoryItems(Level world, BlockPos pos, IItemHandler inventory) {
         for (int i = 0; i < inventory.getSlots(); i++) {
             ItemStack stack = inventory.getStackInSlot(i);
             if (ItemStackHelper.isStackValid(stack)) {
@@ -420,20 +368,20 @@ public class WorldHelper {
 
     /**
      * Drops the provided {@link ItemStack} at the specified coordinates, with a bit of randomness.
-     * Adheres to the {@link net.minecraft.world.GameRules}
+     * Adheres to the {@link net.minecraft.world.level.GameRules}
      *
      * @param world    The world in which to drop the item(s)
      * @param blockLoc The position at which to drop the item(s)
      * @param stack    The {@link ItemStack} to be dropped
      */
     @SuppressWarnings("UnusedReturnValue")
-    public static boolean dropStack(World world, BlockPos blockLoc, ItemStack stack) {
+    public static boolean dropStack(Level world, BlockPos blockLoc, ItemStack stack) {
         return dropStack(world, blockLoc.getX(), blockLoc.getY(), blockLoc.getZ(), stack);
     }
 
     /**
      * Drops the provided {@link ItemStack} at the specified coordinates, with a bit of randomness.
-     * Adheres to the {@link net.minecraft.world.GameRules}
+     * Adheres to the {@link net.minecraft.world.level.GameRules}
      *
      * @param world     The world in which to drop the item(s)
      * @param x         The X coordinate
@@ -441,14 +389,14 @@ public class WorldHelper {
      * @param z         The Z coordinate
      * @param itemStack The {@link ItemStack} to be dropped
      */
-    public static boolean dropStack(World world, int x, int y, int z, ItemStack itemStack) {
-        if (!world.isRemote() && world.getGameRules().getBoolean(GameRules.DO_TILE_DROPS)) {
+    public static boolean dropStack(Level world, int x, int y, int z, ItemStack itemStack) {
+        if (!world.isClientSide() && world.getGameRules().getBoolean(GameRules.RULE_DOBLOCKDROPS)) {
             float f = 0.7F;
-            double d0 = (double) (world.rand.nextFloat() * f) + (double) (1.0F - f) * 0.5D;
-            double d1 = (double) (world.rand.nextFloat() * f) + (double) (1.0F - f) * 0.5D;
-            double d2 = (double) (world.rand.nextFloat() * f) + (double) (1.0F - f) * 0.5D;
+            double d0 = (double) (world.random.nextFloat() * f) + (double) (1.0F - f) * 0.5D;
+            double d1 = (double) (world.random.nextFloat() * f) + (double) (1.0F - f) * 0.5D;
+            double d2 = (double) (world.random.nextFloat() * f) + (double) (1.0F - f) * 0.5D;
             ItemEntity ItemEntity = new ItemEntity(world, (double) x + d0, (double) y + d1, (double) z + d2, itemStack);
-            ItemEntity.setDefaultPickupDelay();
+            ItemEntity.setDefaultPickUpDelay();
             return WorldHelper.spawnEntityInWorld(world, ItemEntity);
         }
         return false;
@@ -460,7 +408,7 @@ public class WorldHelper {
      * @param world    The world
      * @param blockLoc The position to be updated
      */
-    public static void scheduleBlockUpdate(IWorld world, BlockPos blockLoc) {
+    public static void scheduleBlockUpdate(LevelAccessor world, BlockPos blockLoc) {
         scheduleBlockUpdate(world, blockLoc, 1);
     }
 
@@ -471,24 +419,16 @@ public class WorldHelper {
      * @param blockLoc The position to be updated
      * @param delay    The delay in ticks
      */
-    public static void scheduleBlockUpdate(IWorld world, BlockPos blockLoc, int delay) {
-        world.getPendingBlockTicks().scheduleTick(blockLoc, getBlockAt(world, blockLoc), delay);
+    public static void scheduleBlockUpdate(LevelAccessor world, BlockPos blockLoc, int delay) {
+        world.scheduleTick(blockLoc, getBlockAt(world, blockLoc), delay);
     }
 
-    public static RegistryKey<World> getWorldKey(RegistryKey<Dimension> dimensionKey) {
-        return getWorldKey(dimensionKey.func_240901_a_());
-    }
-
-    public static RegistryKey<World> getWorldKey(ResourceLocation type) {
-        return RegistryKey.func_240903_a_(Registry.WORLD_KEY, Preconditions.checkNotNull(type));
-    }
-
-    public static DimensionType getDimensionType(IWorldReader world) {
-        return world.func_230315_m_();
+    public static DimensionType getDimensionType(LevelReader world) {
+        return world.dimensionType();
     }
 
     @Nonnull
-    public static ResourceLocation getDimName(IWorld world) {
+    public static ResourceLocation getDimName(Level world) {
         return Preconditions.checkNotNull(getDimID(world).getRegistryName());
     }
 
@@ -501,51 +441,39 @@ public class WorldHelper {
      * @return The dimension-ID of the specified world.
      */
     @SuppressWarnings("all")
-    public static RegistryKey<World> getDimID(IWorld world) {
+    public static ResourceKey<Level> getDimID(Level world) {
         if (world == null) {
             throw new IllegalArgumentException("Cannot fetch the Dimension-ID from a null world!");
         }
-        if (!(world instanceof World)) {
+        ResourceKey<Level> dim = world.dimension();
+        if (dim == null) {
             return ElecCore.proxy.getServer().forgeGetWorldMap().entrySet().stream()
                     .filter(e -> e.getValue() == world)
                     .findFirst()
                     .map(Map.Entry::getKey)
                     .orElseThrow(() -> new RuntimeException("Unable to determine the dimension of world: " + world));
         }
-        return Preconditions.checkNotNull(((World) world).func_234923_W_());
+        return dim;
     }
 
-    public static World getWorldByName(ResourceLocation name) {
-        return getWorld(getWorldKey(name));
+    public static Level getWorldByName(ResourceLocation name) {
+        return getWorld(ResourceKey.create(Registry.DIMENSION_REGISTRY, name));
     }
 
     @Nullable
-    public static World getWorld(RegistryKey<World> dimension) {
+    public static Level getWorld(ResourceKey<Level> dimension) {
         if (FMLHelper.getLogicalSide() == LogicalSide.CLIENT) {
-            World ret = ElecCore.proxy.getClientWorld();
-            if (ret.func_234923_W_() != dimension) {
-                ret = null;
+            Level ret = ElecCore.proxy.getClientWorld();
+            if (ret.dimension().equals(dimension)) {
+                return ret;
             }
-            return ret;
+            return null;
         }
-        return getServerWorld(dimension);
+        return getServerWorldDirect(dimension);
     }
 
-    @Nullable
-    public static ServerWorld getServerWorld(RegistryKey<World> type) {
-        return ElecCore.proxy.getServer().getWorld(type);
-    }
-
-    @Nullable
-    @Deprecated //Remove in 1.17
-    public static ServerWorld peekServerWorld(ResourceLocation name) {
-        return peekServerWorld(getWorldKey(name));
-    }
-
-    @Nullable
-    @Deprecated //Remove in 1.17
-    public static ServerWorld peekServerWorld(RegistryKey<World> type) {
-        return ElecCore.proxy.getServer().getWorld(type);
+    public static ServerLevel getServerWorldDirect(ResourceKey<Level> type) {
+        return ElecCore.proxy.getServer().getLevel(type);
     }
 
     /*
@@ -570,14 +498,14 @@ public class WorldHelper {
     }*/
 
     /**
-     * Gets the {@link TileEntity} at the specified location
+     * Gets the {@link BlockEntity} at the specified location
      *
      * @param world The world
      * @param loc   The position
-     * @return The {@link TileEntity} at the specified location
+     * @return The {@link BlockEntity} at the specified location
      */
-    public static TileEntity getTileAt(IBlockReader world, BlockPos loc) {
-        return Preconditions.checkNotNull(world).getTileEntity(loc);
+    public static BlockEntity getTileAt(BlockGetter world, BlockPos loc) {
+        return world.getBlockEntity(loc);
     }
 
     /**
@@ -587,7 +515,7 @@ public class WorldHelper {
      * @param loc   The position
      * @return The {@link Block} at the specified location
      */
-    public static Block getBlockAt(IBlockReader world, BlockPos loc) {
+    public static Block getBlockAt(BlockGetter world, BlockPos loc) {
         return getBlockState(world, loc).getBlock();
     }
 
@@ -598,19 +526,8 @@ public class WorldHelper {
      * @param pos   The position
      * @return The {@link BlockState} at the specified location
      */
-    public static BlockState getBlockState(IBlockReader world, BlockPos pos) {
-        return Preconditions.checkNotNull(world).getBlockState(pos);
-    }
-
-    /**
-     * Gets the {@link VoxelShape} at the specified location
-     *
-     * @param world The world
-     * @param pos   The position
-     * @return The {@link VoxelShape} at the specified location
-     */
-    public static VoxelShape getShape(IBlockReader world, BlockPos pos) {
-        return getBlockState(world, pos).getShape(world, pos);
+    public static BlockState getBlockState(BlockGetter world, BlockPos pos) {
+        return world.getBlockState(pos);
     }
 
     /**
@@ -619,9 +536,9 @@ public class WorldHelper {
      * @param player The player
      * @param range  The maximum raytracing range
      */
-    public static void spawnLightningAtLookVec(PlayerEntity player, Double range) {
-        RayTraceResult position = PlayerHelper.getPosPlayerIsLookingAt(player, range);
-        spawnLightningAt(player.getEntityWorld(), position.getHitVec());
+    public static void spawnLightningAtLookVec(Player player, double range) {
+        HitResult position = PlayerHelper.getPosPlayerIsLookingAt(player, range);
+        spawnLightningAt(player.getLevel(), position.getLocation());
     }
 
     /**
@@ -630,7 +547,7 @@ public class WorldHelper {
      * @param world The world
      * @param vec   The position
      */
-    public static void spawnLightningAt(World world, Vector3d vec) {
+    public static void spawnLightningAt(Level world, Vec3 vec) {
         spawnLightningAt(world, vec.x, vec.y, vec.z);
     }
 
@@ -640,8 +557,8 @@ public class WorldHelper {
      * @param world    The world
      * @param blockPos The position
      */
-    public static void spawnLightningAt(World world, BlockPos blockPos) {
-        spawnLightningAt(world, blockPos.getX(), blockPos.getY(), blockPos.getZ());
+    public static void spawnLightningAt(Level world, BlockPos blockPos) {
+        spawnLightningAt(world, blockPos.getX() + 0.5, blockPos.getY() + 0.5, blockPos.getZ() + 0.5);
     }
 
     /**
@@ -652,15 +569,13 @@ public class WorldHelper {
      * @param y     Y coordinate
      * @param z     Z coordinate
      */
-    public static void spawnLightningAt(World world, double x, double y, double z) {
-        //world.playSoundEffect(x, y, z,"ambient.weather.thunder", 10000.0F, 0.8F);
-        //world.playSoundEffect(x, y, z,"random.explode", 10000.0F, 0.8F);
-        world.playSound(x, y, z, SoundEvents.ENTITY_LIGHTNING_BOLT_THUNDER, SoundCategory.WEATHER, 10000.0F, 0.8F, true);
-        world.playSound(x, y, z, SoundEvents.ENTITY_GENERIC_EXPLODE, SoundCategory.WEATHER, 10000.0F, 0.8F, true);
-        WorldHelper.spawnEntityInWorld(world, RegistryHelper.createEntity(EntityType.LIGHTNING_BOLT, world, entity -> {
-            entity.setPosition(x, y, z);
-            entity.setEffectOnly(false);
-        }));
+    public static void spawnLightningAt(Level world, double x, double y, double z) {
+//        world.playSound(null, x, y, z, SoundEvents.ENTITY_LIGHTNING_BOLT_THUNDER, SoundCategory.WEATHER, 10000.0F, 0.8F, true);
+//        world.playSound(null, x, y, z, SoundEvents.ENTITY_GENERIC_EXPLODE, SoundCategory.WEATHER, 10000.0F, 0.8F, true);
+        LightningBolt lightningbolt = Preconditions.checkNotNull(EntityType.LIGHTNING_BOLT.create(world));
+        lightningbolt.moveTo(x, y, z);
+        lightningbolt.setVisualOnly(false);
+        WorldHelper.spawnEntityInWorld(world, lightningbolt);
     }
 
 }

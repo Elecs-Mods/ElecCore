@@ -1,7 +1,6 @@
 package elec332.core.inventory.widget;
 
 import com.google.common.collect.Lists;
-import com.mojang.blaze3d.matrix.MatrixStack;
 import elec332.core.ElecCore;
 import elec332.core.client.RenderHelper;
 import elec332.core.client.util.GuiDraw;
@@ -11,13 +10,12 @@ import elec332.core.inventory.window.Window;
 import elec332.core.network.packets.PacketSyncWidget;
 import elec332.core.network.packets.PacketWidgetDataToServer;
 import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.LogicalSide;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
@@ -80,16 +78,16 @@ public class Widget implements IWidget {
     public void updateProgressbar(int value) {
     }
 
-    public final void sendNBTChangesToPlayer(ServerPlayerEntity player, CompoundNBT tagCompound) {
+    public final void sendNBTChangesToPlayer(ServerPlayerEntity player, CompoundTag tagCompound) {
         ElecCore.networkHandler.sendTo(new PacketSyncWidget(tagCompound, container, this), player);
     }
 
-    public final void sendNBTChangesToServer(CompoundNBT tagCompound) {
+    public final void sendNBTChangesToServer(CompoundTag tagCompound) {
         ElecCore.networkHandler.sendToServer(new PacketWidgetDataToServer(tagCompound, container, this));
     }
 
     @Override
-    public final void readNBTChangesFromPacket(CompoundNBT tagCompound, LogicalSide receiver) {
+    public final void readNBTChangesFromPacket(CompoundTag tagCompound, LogicalSide receiver) {
         if (receiver == LogicalSide.CLIENT) {
             readNBTChangesFromPacket(tagCompound);
         } else {
@@ -97,10 +95,10 @@ public class Widget implements IWidget {
         }
     }
 
-    public void readNBTChangesFromPacket(CompoundNBT tagCompound) {
+    public void readNBTChangesFromPacket(CompoundTag tagCompound) {
     }
 
-    public void readNBTChangesFromPacketServerSide(CompoundNBT tagCompound) {
+    public void readNBTChangesFromPacketServerSide(CompoundTag tagCompound) {
     }
 
     @Override
@@ -162,7 +160,7 @@ public class Widget implements IWidget {
 
     @Override
     @OnlyIn(Dist.CLIENT)
-    public void draw(Window window, @Nonnull MatrixStack matrixStack, int guiX, int guiY, double mouseX, double mouseY, float partialTicks) {
+    public void draw(Window window, int guiX, int guiY, double mouseX, double mouseY, float partialTicks) {
         if (background != null) {
             RenderHelper.bindTexture(background);
         }

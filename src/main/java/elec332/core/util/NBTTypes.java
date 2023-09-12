@@ -7,26 +7,27 @@ import net.minecraft.nbt.*;
  */
 public enum NBTTypes {
 
-    END(EndNBT.INSTANCE),                       //0
-    BYTE(ByteNBT.ZERO),                         //1
-    SHORT(ShortNBT.valueOf((short) 0)),         //2
-    INT(IntNBT.valueOf(0)),                     //3
-    LONG(LongNBT.valueOf(0)),                   //4
-    FLOAT(FloatNBT.valueOf(0)),                 //5
-    DOUBLE(DoubleNBT.ZERO),                     //6
-    BYTE_ARRAY(new ByteArrayNBT(new byte[0])),  //7
-    STRING(StringNBT.valueOf("")),              //8
-    LIST(new ListNBT()),                        //9
-    COMPOUND(new CompoundNBT()),                //10
-    INT_ARRAY(new IntArrayNBT(new int[0]));     //11
+    END(EndTag.INSTANCE),                       //0
+    BYTE(ByteTag.ZERO),                         //1
+    SHORT(ShortTag.valueOf((short) 0)),         //2
+    INT(IntTag.valueOf(0)),                     //3
+    LONG(LongTag.valueOf(0)),                   //4
+    FLOAT(FloatTag.valueOf(0)),                 //5
+    DOUBLE(DoubleTag.valueOf(0)),               //6
+    BYTE_ARRAY(new ByteArrayTag(new byte[0])),  //7
+    STRING(StringTag.valueOf("")),              //8
+    LIST(new ListTag()),                        //9
+    COMPOUND(new CompoundTag()),                //10
+    INT_ARRAY(new IntArrayTag(new int[0])),     //11
+    LONG_ARRAY(new LongArrayTag(new long[0]));  //12
 
     ///##########################///
 
-    NBTTypes(INBT nbtBase) {
+    NBTTypes(Tag nbtBase) {
         this(nbtBase.getId(), nbtBase.getClass());
     }
 
-    NBTTypes(byte i, Class<? extends INBT> clazz) {
+    NBTTypes(byte i, Class<? extends Tag> clazz) {
         this.ID = i;
         this.clazz = clazz;
         if (i != ordinal()) {
@@ -35,13 +36,13 @@ public enum NBTTypes {
     }
 
     private final byte ID;
-    private final Class<? extends INBT> clazz;
+    private final Class<? extends Tag> clazz;
 
     public byte getID() {
         return ID;
     }
 
-    public Class<? extends INBT> getClazz() {
+    public Class<? extends Tag> getClazz() {
         return clazz;
     }
 
@@ -49,7 +50,7 @@ public enum NBTTypes {
         return i == ID;
     }
 
-    public static Class<? extends INBT> getClass(int i) {
+    public static Class<? extends Tag> getClass(int i) {
         for (NBTTypes data : NBTTypes.values()) {
             if (data.ID == i) {
                 return data.clazz;

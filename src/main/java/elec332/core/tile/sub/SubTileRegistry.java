@@ -4,7 +4,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 
@@ -28,8 +28,8 @@ public enum SubTileRegistry {
     private final Map<ResourceLocation, Class<? extends SubTileLogicBase>> registry = Maps.newHashMap();
     private final Map<Class<? extends SubTileLogicBase>, ResourceLocation> registryInverse = Maps.newHashMap();
     private final Map<ResourceLocation, Function<SubTileLogicBase.Data, SubTileLogicBase>> constructors = Maps.newHashMap();
-    private final Map<Capability<?>, Function<List<?>, ?>> capCombiners = Maps.newHashMap();
-    private final Set<Capability<?>> cacheables = Sets.newHashSet();
+    private final Map<Capability, Function<List<?>, ?>> capCombiners = Maps.newHashMap();
+    private final Set<Capability> cacheables = Sets.newHashSet();
 
     @SuppressWarnings("all")
     public void registerSubTile(@Nonnull Class<? extends ISubTileLogic> clazz, @Nonnull ResourceLocation name) {
@@ -104,7 +104,7 @@ public enum SubTileRegistry {
         });
     }
 
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    @SuppressWarnings("unchecked")
     public <T> void registerCapabilityCombiner(@Nonnull Capability<T> capability, @Nonnull Function<List<LazyOptional<T>>, LazyOptional<T>> combiner) {
         Preconditions.checkNotNull(capability, "Capability cannot be null!");
         if (capCombiners.containsKey(capability)) {
@@ -114,6 +114,7 @@ public enum SubTileRegistry {
     }
 
     @Nonnull
+    @SuppressWarnings("unchecked")
     public <T> LazyOptional<T> getCombined(@Nonnull Capability<T> capability, @Nonnull List<LazyOptional<T>> list) {
         list = list.stream()
                 .filter(Objects::nonNull)
@@ -129,9 +130,9 @@ public enum SubTileRegistry {
         if (func == null) {
             throw new IllegalArgumentException("No combiner registered for capability: " + capability.getName());
         }
-        final LazyOptional<?> ret = (LazyOptional<?>) func.apply(list);
+        final LazyOptional<T> ret = (LazyOptional<T>) func.apply(list);
         list.forEach(o -> o.addListener(v -> ret.invalidate()));
-        return ret.cast();
+        return ret;
     }
 
 }

@@ -11,10 +11,10 @@ import java.util.function.Function;
  */
 public interface IElecCoreModHandler {
 
-    void registerSimpleFieldHandler(Class<? extends Annotation> annotation, Function<ModContainer, Object> func);
+    public void registerSimpleFieldHandler(Class<? extends Annotation> annotation, Function<ModContainer, Object> func);
 
-    void registerModHandler(BiConsumer<ModContainer, IElecCoreMod> handler);
+    public void registerModHandler(BiConsumer<ModContainer, IElecCoreMod> handler);
 
-    void registerConstructionModHandler(BiConsumer<ModContainer, IElecCoreMod> handler);
+    public void registerConstructionModHandler(BiConsumer<ModContainer, IElecCoreMod> handler);
 
 }

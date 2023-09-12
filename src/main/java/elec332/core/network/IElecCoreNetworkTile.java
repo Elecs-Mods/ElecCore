@@ -1,7 +1,7 @@
 package elec332.core.network;
 
 import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.CompoundTag;
 
 /**
  * Created by Elec332 on 25-8-2015.
@@ -17,7 +17,7 @@ public interface IElecCoreNetworkTile {
      * @param ID     The message ID
      * @param data   The message data
      */
-    public void onPacketReceivedFromClient(ServerPlayerEntity sender, int ID, CompoundNBT data);
+    public void onPacketReceivedFromClient(ServerPlayerEntity sender, int ID, CompoundTag data);
 
     /**
      * Gets called when a message has been received from the server
@@ -25,6 +25,6 @@ public interface IElecCoreNetworkTile {
      * @param id  The message ID
      * @param tag The message data
      */
-    public void onDataPacket(int id, CompoundNBT tag);
+    public void onDataPacket(int id, CompoundTag tag);
 
 }

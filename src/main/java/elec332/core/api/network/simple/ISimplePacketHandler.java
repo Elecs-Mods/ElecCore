@@ -11,6 +11,6 @@ import elec332.core.api.network.IExtendedMessageContext;
  */
 public interface ISimplePacketHandler {
 
-    void onPacket(ElecByteBuf data, IExtendedMessageContext messageContext, ISimpleNetworkPacketManager networkHandler);
+    public void onPacket(ElecByteBuf data, IExtendedMessageContext messageContext, ISimpleNetworkPacketManager networkHandler);
 
 }

@@ -2,15 +2,15 @@ package elec332.core.util;
 
 import com.google.common.base.Preconditions;
 import elec332.core.util.math.RayTraceHelper;
-import net.minecraft.command.ICommandSource;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.Util;
+import net.minecraft.commands.CommandSource;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
 
 import javax.annotation.Nonnull;
 import java.util.UUID;
@@ -20,15 +20,13 @@ import java.util.UUID;
  */
 public class PlayerHelper {
 
-    public static final UUID DUMMY_UUID = new UUID(0L, 0L);
-
     /**
      * Gets the player's current block reach distance
      *
      * @param player The player
      * @return The player's current block reach distance
      */
-    public static double getBlockReachDistance(PlayerEntity player) {
+    public static double getBlockReachDistance(Player player) {
         return Preconditions.checkNotNull(player.getAttribute(net.minecraftforge.common.ForgeMod.REACH_DISTANCE.get())).getValue();
     }
 
@@ -38,17 +36,17 @@ public class PlayerHelper {
      * @param player The player
      * @return The corrected eye position
      */
-    public static Vector3d getCorrectedEyePosition(PlayerEntity player) {
-        double yCoord = player.getPosY();
-        if (player.getEntityWorld().isRemote) {
+    public static Vec3 getCorrectedEyePosition(Player player) {
+        double yCoord = player.getY();
+        if (player.getLevel().isClientSide()) {
             yCoord += player.getEyeHeight();// - player.getDefaultEyeHeight();
         } else {
             yCoord += player.getEyeHeight();
-            if (player instanceof ServerPlayerEntity && player.isSneaking()) {
+            if (player instanceof ServerPlayer && player.isCrouching()) {
                 yCoord -= 0.08D;
             }
         }
-        return new Vector3d(player.getPosX(), yCoord, player.getPosZ());
+        return new Vec3(player.getX(), yCoord, player.getZ());
     }
 
     /**
@@ -57,7 +55,7 @@ public class PlayerHelper {
      * @param player The player
      * @return The specified player's UUID
      */
-    public static UUID getPlayerUUID(PlayerEntity player) {
+    public static UUID getPlayerUUID(Player player) {
         return player.getGameProfile().getId();
     }
 
@@ -67,8 +65,8 @@ public class PlayerHelper {
      * @param player The player
      * @param s      The message
      */
-    public static void sendMessageToPlayer(@Nonnull ICommandSource player, String s) {
-        sendMessageToPlayer(player, new StringTextComponent(s));
+    public static void sendMessageToPlayer(@Nonnull CommandSource player, String s) {
+        sendMessageToPlayer(player, new TextComponent(s));
     }
 
     /**
@@ -77,8 +75,8 @@ public class PlayerHelper {
      * @param player The player
      * @param s      The message
      */
-    public static void sendMessageToPlayer(@Nonnull ICommandSource player, ITextComponent s) {
-        player.sendMessage(s, DUMMY_UUID);
+    public static void sendMessageToPlayer(@Nonnull CommandSource player, TextComponent s) {
+        player.sendMessage(s, Util.NIL_UUID);
     }
 
     /**
@@ -86,9 +84,9 @@ public class PlayerHelper {
      *
      * @param player The player
      */
-    public static void activateFlight(PlayerEntity player) {
-        player.abilities.allowFlying = true;
-        player.sendPlayerAbilities();
+    public static void activateFlight(Player player) {
+        player.getAbilities().mayfly = true;
+        player.onUpdateAbilities();
     }
 
     /**
@@ -96,12 +94,12 @@ public class PlayerHelper {
      *
      * @param player The player
      */
-    public static void deactivateFlight(PlayerEntity player) {
-        player.abilities.allowFlying = false;
-        if (player.abilities.isFlying) {
-            player.abilities.isFlying = false;
+    public static void deactivateFlight(Player player) {
+        player.getAbilities().mayfly = false;
+        if (player.getAbilities().flying) {
+            player.getAbilities().flying = false;
         }
-        player.sendPlayerAbilities();
+        player.onUpdateAbilities();
     }
 
     /**
@@ -110,8 +108,8 @@ public class PlayerHelper {
      * @param attacker The player smiting the target
      * @param target   The entity that will be dead very soon
      */
-    public static void smiteEntity(PlayerEntity attacker, LivingEntity target) {
-        EntityHelper.smiteEntity(DamageSource.causePlayerDamage(attacker), target);
+    public static void smiteEntity(Player attacker, LivingEntity target) {
+        EntityHelper.smiteEntity(DamageSource.playerAttack(attacker), target);
     }
 
     /**
@@ -120,8 +118,8 @@ public class PlayerHelper {
      * @param player The player
      * @return Whether the specified player is in creative
      */
-    public static boolean isPlayerInCreative(PlayerEntity player) {
-        return player.abilities.isCreativeMode;
+    public static boolean isPlayerInCreative(Player player) {
+        return player.isCreative();
     }
 
     /**
@@ -129,9 +127,9 @@ public class PlayerHelper {
      *
      * @param player The player from which to start the raytracing
      * @param range  The raytracing range
-     * @return The {@link RayTraceResult} from the raytrace
+     * @return The {@link HitResult} from the raytrace
      */
-    public static RayTraceResult getPosPlayerIsLookingAt(PlayerEntity player, double range) {
+    public static HitResult getPosPlayerIsLookingAt(Player player, double range) {
         return RayTraceHelper.rayTrace(player, range);
     }
 
@@ -142,8 +140,8 @@ public class PlayerHelper {
      * @param player2 Player 2
      * @return Whether Player 1 and Player 2 are the same player
      */
-    public static boolean arePlayersEqual(PlayerEntity player1, PlayerEntity player2) {
-        return player1.getUniqueID() == player2.getUniqueID();
+    public static boolean arePlayersEqual(Player player1, Player player2) {
+        return player1.getUUID() == player2.getUUID();
     }
 
 }

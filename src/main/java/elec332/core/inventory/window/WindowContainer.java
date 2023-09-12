@@ -3,11 +3,12 @@ package elec332.core.inventory.window;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.mojang.datafixers.util.Pair;
 import elec332.core.ElecCore;
 import elec332.core.inventory.widget.slot.WidgetSlot;
 import elec332.core.network.packets.PacketWindowData;
 import elec332.core.proxies.CommonProxy;
+import net.minecraft.client.renderer.texture.AtlasTexture;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.IInventory;
@@ -16,10 +17,10 @@ import net.minecraft.inventory.container.ClickType;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.IContainerListener;
 import net.minecraft.inventory.container.Slot;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.NonNullList;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -266,6 +267,13 @@ public final class WindowContainer extends Container {
             return widget.getItemStackLimit(stack);
         }
 
+        @Nullable
+        @OnlyIn(Dist.CLIENT)
+        @Override
+        public String getSlotTexture() {
+            return widget.getSlotTexture();
+        }
+
         @Nonnull
         @Override
         public ItemStack decrStackSize(int amount) {
@@ -283,17 +291,35 @@ public final class WindowContainer extends Container {
             return widget.isEnabled();
         }
 
-        @Nullable
+        @Nonnull
+        @OnlyIn(Dist.CLIENT)
         @Override
-        public Pair<ResourceLocation, ResourceLocation> getBackground() {
-            return widget.getBackground();
+        public ResourceLocation getBackgroundLocation() {
+            return widget.getBackgroundLocation();
+        }
+
+        @OnlyIn(Dist.CLIENT)
+        @Override
+        public void setBackgroundLocation(@Nonnull ResourceLocation texture) {
+            widget.setBackgroundLocation(texture);
+        }
+
+        @Override
+        public void setBackgroundName(@Nullable String name) {
+            widget.setBackgroundName(name);
+        }
+
+        @OnlyIn(Dist.CLIENT)
+        @Override
+        public TextureAtlasSprite getBackgroundSprite() {
+            return widget.getBackgroundSprite();
         }
 
         @Nonnull
+        @OnlyIn(Dist.CLIENT)
         @Override
-        public Slot setBackground(@Nonnull ResourceLocation atlas, @Nonnull ResourceLocation sprite) {
-            widget.setBackground(atlas, sprite);
-            return this;
+        protected AtlasTexture getBackgroundMap() {
+            return widget.getBackgroundMap();
         }
 
         @Override
@@ -384,7 +410,7 @@ public final class WindowContainer extends Container {
         }
 
         @Override
-        public void sendPacket(CompoundNBT tag) {
+        public void sendPacket(CompoundTag tag) {
             PacketWindowData packet = new PacketWindowData(WindowContainer.this, tag);
             if (!thePlayer.getEntityWorld().isRemote) {
                 ElecCore.networkHandler.sendTo(packet, (ServerPlayerEntity) thePlayer);

@@ -1,20 +1,17 @@
 package elec332.core.inventory.widget;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.platform.GlStateManager;
 import elec332.core.client.RenderHelper;
 import elec332.core.client.util.GuiDraw;
 import elec332.core.inventory.tooltip.ToolTip;
 import elec332.core.inventory.window.Window;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.IFluidTank;
 import org.lwjgl.opengl.GL11;
-
-import javax.annotation.Nonnull;
 
 /**
  * Created by Elec332 on 31-7-2015.
@@ -38,7 +35,7 @@ public class FluidTankWidget extends Widget {
         if (capacity != tank.getCapacity() || fluidStack != null && !fluidStack.isFluidStackIdentical(tank.getFluid()) || tank.getFluid() != null) {
             for (IWidgetListener iCrafting : crafters) {
                 if (iCrafting instanceof ServerPlayerEntity) {
-                    CompoundNBT tag = new CompoundNBT();
+                    CompoundTag tag = new CompoundTag();
                     if (tank.getFluid() != null) {
                         tank.getFluid().writeToNBT(tag);
                     }
@@ -55,20 +52,20 @@ public class FluidTankWidget extends Widget {
     public ToolTip getToolTip(double mouseX, double mouseY) {
         String fluid = (fluidStack == null || fluidStack.getFluid() == null) ? null : fluidStack.getFluid().getRegistryName().getNamespace();
         int amount = fluidStack == null ? 0 : fluidStack.getAmount();
-        return new ToolTip("Fluid: " + fluid + "  Amount: " + amount);
+        return new ToolTip(new ToolTip.ColouredString("Fluid: " + fluid + "  Amount: " + amount));
     }
 
     @Override
-    public void readNBTChangesFromPacket(CompoundNBT tagCompound) {
+    public void readNBTChangesFromPacket(CompoundTag tagCompound) {
         this.fluidStack = FluidStack.loadFluidStackFromNBT(tagCompound);
         this.capacity = tagCompound.getInt("capacity_TANK");
     }
 
     @Override
-    public void draw(Window gui, @Nonnull MatrixStack matrixStack, int guiX, int guiY, double mouseX, double mouseY, float partialTicks) {
-        RenderSystem.pushMatrix();
+    public void draw(Window gui, int guiX, int guiY, double mouseX, double mouseY, float partialTicks) {
+        GlStateManager.pushMatrix();
         drawFluid(guiX, guiY);
-        RenderSystem.popMatrix();
+        GlStateManager.popMatrix();
         GL11.glColor4f(1, 1, 1, 1);
         int rH = height - 11 + 1; //First pixel
         int p = rH % 6;

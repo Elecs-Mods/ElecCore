@@ -1,14 +1,14 @@
 package elec332.core.client.model.renderer;
 
+import net.minecraft.client.renderer.entity.model.RendererModel;
 import net.minecraft.client.renderer.model.Model;
-import net.minecraft.client.renderer.model.ModelRenderer;
 
 import javax.annotation.Nonnull;
 
 /**
  * Created by Elec332 on 6-7-2020
  */
-public class ElecModelRenderer extends ModelRenderer {
+public class ElecModelRenderer extends RendererModel {
 
     public ElecModelRenderer(Model model) {
         super(model);
@@ -20,13 +20,13 @@ public class ElecModelRenderer extends ModelRenderer {
 
     @Nonnull
     @Override
-    public ModelRenderer addBox(float x, float y, float z, float width, float height, float depth) {
+    public RendererModel addBox(float x, float y, float z, int width, int height, int depth) {
         throw new UnsupportedOperationException();
     }
 
     @Nonnull
     @Override
-    public ModelRenderer addBox(float x, float y, float z, float width, float height, float depth, boolean mirrorIn) {
+    public RendererModel addBox(float x, float y, float z, int width, int height, int depth, boolean mirrorIn) {
         throw new UnsupportedOperationException();
     }
 
@@ -34,12 +34,6 @@ public class ElecModelRenderer extends ModelRenderer {
     @Override
     public ElecModelRenderer setTextureSize(int textureWidthIn, int textureHeightIn) {
         super.setTextureSize(textureWidthIn, textureHeightIn);
-        return this;
-    }
-
-    @Nonnull
-    public ElecModelRenderer addBoxLegacy(String partName, float x, float y, float z, int width, int height, int depth, float delta, int texX, int texY) {
-        super.addBox(partName, x, y, z, width, height, depth, delta, texX, texY);
         return this;
     }
 

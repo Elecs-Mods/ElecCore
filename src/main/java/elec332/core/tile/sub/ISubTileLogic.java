@@ -1,18 +1,15 @@
 package elec332.core.tile.sub;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Direction;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.util.math.shapes.VoxelShapes;
-import net.minecraft.world.World;
+import net.minecraft.core.Direction;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.util.LazyOptional;
@@ -25,67 +22,67 @@ import javax.annotation.Nullable;
  */
 public interface ISubTileLogic extends ICapabilityProvider {
 
-    void readFromNBT(CompoundNBT compound);
+    public void readFromNBT(CompoundTag compound);
 
     @Nonnull
-    CompoundNBT writeToNBT(@Nonnull CompoundNBT compound);
+    public CompoundTag writeToNBT(@Nonnull CompoundTag compound);
 
     @Nullable
-    World getWorld();
+    public Level getWorld();
 
-    BlockPos getPos();
+    public BlockPos getPos();
 
-    void markDirty();
+    public void markDirty();
 
-    boolean hasWorld();
+    public boolean hasWorld();
 
-    default void onRemoved() {
+    public default void onRemoved() {
     }
 
-    default void neighborChanged(BlockPos neighborPos, Block changedBlock, boolean observer) {
+    public default void neighborChanged(BlockPos neighborPos, Block changedBlock, boolean observer) {
     }
 
-    default boolean removedByPlayer(@Nonnull PlayerEntity player, boolean willHarvest, @Nonnull RayTraceResult hit) {
+    public default boolean removedByPlayer(@Nonnull Player player, boolean willHarvest, @Nonnull BlockHitResult hit) {
         return false;
     }
 
-    default boolean canBeRemoved() {
+    public default boolean canBeRemoved() {
         return true;
     }
 
-    default ActionResultType onBlockActivated(PlayerEntity player, Hand hand, RayTraceResult hit) {
-        return ActionResultType.PASS;
+    public default boolean onBlockActivated(Player player, Hand hand, BlockHitResult hit) {
+        return false;
     }
 
-    default VoxelShape getShape(BlockState state, int data) {
+    public default VoxelShape getShape(BlockState state, int data) {
         return VoxelShapes.fullCube();
     }
 
-    default VoxelShape getSelectionBox(BlockState state, @Nonnull RayTraceResult hit, PlayerEntity player) {
+    default public VoxelShape getSelectionBox(BlockState state, @Nonnull BlockHitResult hit, Player player) {
         return getShape(state, hit.subHit);
     }
 
     @Nullable
-    default ItemStack getStack(@Nonnull RayTraceResult hit, PlayerEntity player) {
+    public default ItemStack getStack(@Nonnull BlockHitResult hit, Player player) {
         return null;
     }
 
-    default void invalidate() {
+    public default void invalidate() {
     }
 
-    default void onLoad() {
+    public default void onLoad() {
     }
 
-    default void sendInitialLoadPackets() {
+    public default void sendInitialLoadPackets() {
     }
 
-    void sendPacket(int ID, CompoundNBT data);
+    public void sendPacket(int ID, CompoundTag data);
 
-    default void onDataPacket(int id, CompoundNBT tag) {
+    public default void onDataPacket(int id, CompoundTag tag) {
     }
 
     @Nonnull
     @Override
-    <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side);
+    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side);
 
 }

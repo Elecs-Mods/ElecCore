@@ -14,6 +14,6 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 public @interface RegisteredMultiPart {
 
-    String value();
+    public String value();
 
 }

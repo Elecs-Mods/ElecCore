@@ -13,7 +13,7 @@ import javax.annotation.Nullable;
 /**
  * Created by Elec332 on 19-1-2020
  */
-@ElecModule(owner = ElecCore.MODID, name = "TOPCompat", modDependencies = ModNames.THE_ONE_PROBE)
+@ElecModule(owner = ElecCore.MODID, name = "WailaCompat", modDependencies = ModNames.THE_ONE_PROBE)
 public class TOPCompatHandler implements Function<ITheOneProbe, Void> { //Function and not a Consumer... :/
 
     @ElecModule.EventHandler

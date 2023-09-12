@@ -7,9 +7,9 @@ import com.google.common.collect.Sets;
 import elec332.core.grid.IStructureWorldEventHandler;
 import elec332.core.handler.ElecCoreRegistrar;
 import elec332.core.world.DimensionCoordinate;
-import net.minecraft.block.BlockState;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.BlockPos;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
@@ -35,8 +35,9 @@ public enum GridEventInputHandler {
     private final Queue<DimensionCoordinate> bud, notify;
     private final Map<IStructureWorldEventHandler, Set<DimensionCoordinate>> chunkAdd, chunkRemove;
 
+
     public void worldBlockUpdate(IWorld world, BlockPos pos, BlockState oldState, BlockState newState) {
-        if (!world.isRemote() && (newState.getBlock().hasTileEntity(newState)) || oldState.getBlock().hasTileEntity(oldState)) {
+        if (!world.isRemote()/* && (newState.getBlock().hasTileEntity(newState)) || oldState.getBlock().hasTileEntity(oldState)*/) {
             bud.add(new DimensionCoordinate(world, pos));
         }
     }

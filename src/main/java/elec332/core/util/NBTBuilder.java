@@ -1,13 +1,13 @@
 package elec332.core.util;
 
 import com.google.common.base.Preconditions;
-import net.minecraft.item.DyeColor;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.INBT;
-import net.minecraft.nbt.ListNBT;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.IForgeRegistryEntry;
@@ -20,24 +20,25 @@ import java.util.function.Supplier;
 /**
  * Created by Elec332 on 27-7-2018
  * <p>
- * Builder for {@link CompoundNBT}
- * Can be used to chain writes to a {@link CompoundNBT}
+ * Builder for {@link CompoundTag}
+ * Can be used to chain writes to a {@link CompoundTag}
  */
-public class NBTBuilder implements INBTSerializable<CompoundNBT>, Supplier<CompoundNBT> {
+@SuppressWarnings("unused")
+public class NBTBuilder implements INBTSerializable<CompoundTag>, Supplier<CompoundTag> {
 
-    public static NBTBuilder from(CompoundNBT tag) {
+    public static NBTBuilder from(CompoundTag tag) {
         return new NBTBuilder(tag);
     }
 
     public NBTBuilder() {
-        this(new CompoundNBT());
+        this(new CompoundTag());
     }
 
-    public NBTBuilder(CompoundNBT tag) {
+    public NBTBuilder(CompoundTag tag) {
         this.tag = Preconditions.checkNotNull(tag);
     }
 
-    private CompoundNBT tag;
+    private CompoundTag tag;
 
     /////////////////////////////
 
@@ -46,14 +47,14 @@ public class NBTBuilder implements INBTSerializable<CompoundNBT>, Supplier<Compo
     }
 
     public NBTBuilder setBlockPos(String name, BlockPos pos) {
-        return setLong(name, pos.toLong());
+        return setLong(name, pos.asLong());
     }
 
     public NBTBuilder setUUID(String name, UUID uuid) {
         return setString(name, uuid.toString());
     }
 
-    public NBTBuilder setVec(String name, Vector3d vec) {
+    public NBTBuilder setVec(String name, Vec3 vec) {
         setDouble(name + "_vecx", vec.x);
         setDouble(name + "_vecy", vec.y);
         setDouble(name + "_vecz", vec.z);
@@ -83,7 +84,7 @@ public class NBTBuilder implements INBTSerializable<CompoundNBT>, Supplier<Compo
         return setTag(name, tag.serializeNBT());
     }
 
-    public NBTBuilder setTag(String name, INBT tag) {
+    public NBTBuilder setTag(String name, Tag tag) {
         this.tag.put(name, tag);
         return this;
     }
@@ -145,15 +146,15 @@ public class NBTBuilder implements INBTSerializable<CompoundNBT>, Supplier<Compo
     }
 
     public BlockPos getBlockPos(String name) {
-        return BlockPos.fromLong(getLong(name));
+        return BlockPos.of(getLong(name));
     }
 
     public UUID getUUID(String name) {
         return UUID.fromString(getString(name));
     }
 
-    public Vector3d getVec(String name) {
-        return new Vector3d(getDouble(name + "_vecx"), getDouble(name + "_vecy"), getDouble(name + "_vecz"));
+    public Vec3 getVec(String name) {
+        return new Vec3(getDouble(name + "_vecx"), getDouble(name + "_vecy"), getDouble(name + "_vecz"));
     }
 
     public DyeColor getColor(String name) {
@@ -176,15 +177,15 @@ public class NBTBuilder implements INBTSerializable<CompoundNBT>, Supplier<Compo
     }
 
     @SuppressWarnings("unchecked")
-    public <N extends INBT> void getDeserialized(String name, INBTSerializable<N> serializable) {
+    public <N extends Tag> void getDeserialized(String name, INBTSerializable<N> serializable) {
         serializable.deserializeNBT((N) getTag(name));
     }
 
-    public INBT getTag(String name) {
+    public Tag getTag(String name) {
         return this.tag.get(name);
     }
 
-    public CompoundNBT getCompound(String name) {
+    public CompoundTag getCompound(String name) {
         return this.tag.getCompound(name);
     }
 
@@ -224,7 +225,7 @@ public class NBTBuilder implements INBTSerializable<CompoundNBT>, Supplier<Compo
         return this.tag.getIntArray(name);
     }
 
-    public ListNBT getTagList(String name, int type) {
+    public ListTag getTagList(String name, int type) {
         return this.tag.getList(name, type);
     }
 
@@ -235,7 +236,7 @@ public class NBTBuilder implements INBTSerializable<CompoundNBT>, Supplier<Compo
     /////////////////////////////
 
     public byte getTagId(String name) {
-        return this.tag.getTagId(name);
+        return this.tag.getTagType(name);
     }
 
     public boolean contains(String name) {
@@ -266,12 +267,12 @@ public class NBTBuilder implements INBTSerializable<CompoundNBT>, Supplier<Compo
     /////////////////////////////
 
     @Override
-    public CompoundNBT serializeNBT() {
-        return tag;
+    public CompoundTag serializeNBT() {
+        return tag.copy();
     }
 
     @Override
-    public void deserializeNBT(CompoundNBT nbt) {
+    public void deserializeNBT(CompoundTag nbt) {
         if (this.tag.isEmpty()) {
             this.tag = nbt;
         } else {
@@ -280,7 +281,7 @@ public class NBTBuilder implements INBTSerializable<CompoundNBT>, Supplier<Compo
     }
 
     @Override
-    public CompoundNBT get() {
+    public CompoundTag get() {
         return serializeNBT();
     }
 

@@ -1,8 +1,8 @@
 package elec332.core.client.model.loading;
 
 import elec332.core.api.client.model.IModelAndTextureLoader;
-import net.minecraft.block.BlockState;
-import net.minecraft.client.renderer.model.IBakedModel;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.client.resources.model.BakedModel;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 

@@ -1,7 +1,7 @@
 package elec332.core.api.info;
 
 import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.CompoundTag;
 
 import javax.annotation.Nonnull;
 
@@ -10,8 +10,8 @@ import javax.annotation.Nonnull;
  */
 public interface IInfoProvider {
 
-    void addInformation(@Nonnull IInformation information, @Nonnull IInfoDataAccessorBlock hitData);
+    public void addInformation(@Nonnull IInformation information, @Nonnull IInfoDataAccessorBlock hitData);
 
-    void gatherInformation(@Nonnull CompoundNBT tag, @Nonnull ServerPlayerEntity player, @Nonnull IInfoDataAccessorBlock hitData);
+    public void gatherInformation(@Nonnull CompoundTag tag, @Nonnull ServerPlayerEntity player, @Nonnull IInfoDataAccessorBlock hitData);
 
 }

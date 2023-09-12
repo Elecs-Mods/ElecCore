@@ -6,7 +6,7 @@ import java.util.function.Predicate;
 /**
  * Created by Elec332 on 23-8-2015.
  */
-public class WidgetEnumChange<E extends Enum<E>> extends WidgetButton {
+public class WidgetEnumChange<E extends Enum> extends WidgetButton {
 
     public WidgetEnumChange(int x, int y, int width, int height, Class<E> clazz, Predicate<E> predicate) {
         this(x, y, width, height, clazz);
@@ -98,6 +98,7 @@ public class WidgetEnumChange<E extends Enum<E>> extends WidgetButton {
         }
     }
 
+    @SuppressWarnings("all")
     private void distributeEvents() {
         listener.accept(getEnum());
     }

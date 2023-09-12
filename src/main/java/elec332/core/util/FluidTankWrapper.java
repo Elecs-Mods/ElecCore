@@ -1,6 +1,6 @@
 package elec332.core.util;
 
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.IFluidTank;
@@ -15,7 +15,7 @@ import java.util.function.Supplier;
  * <p>
  * An {@link IFluidHandler} wrapper for an {@link IFluidTank}
  */
-public abstract class FluidTankWrapper implements IFluidHandler, IFluidTank, INBTSerializable<CompoundNBT> {
+public abstract class FluidTankWrapper implements IFluidHandler, IFluidTank, INBTSerializable<CompoundTag> {
 
     /**
      * Creates a new fluid handler with the specified capacity
@@ -80,12 +80,16 @@ public abstract class FluidTankWrapper implements IFluidHandler, IFluidTank, INB
 
     @Override
     public boolean isFluidValid(FluidStack stack) {
-        return getTank().isFluidValid(stack) && canFillFluidType(stack);
+        return getFluid().equals(stack) && canFillFluidType(stack);
     }
 
     @Override
     public int fill(FluidStack resource, FluidAction action) {
-        if (resource == null || resource.isEmpty()) {
+        if (resource == null) {
+            return 0;
+        }
+        FluidStack f = getFluid();
+        if (!f.isEmpty() && !f.isFluidEqual(resource)) {
             return 0;
         }
         if (canFillFluidType(resource)) {
@@ -97,20 +101,21 @@ public abstract class FluidTankWrapper implements IFluidHandler, IFluidTank, INB
     @Nonnull
     @Override
     public FluidStack drain(FluidStack resource, FluidAction doDrain) {
-        if (resource == null || resource.isEmpty() || !canDrainFluidType(resource)) {
+        FluidStack f = getFluid();
+        if (resource == null || !resource.isFluidEqual(f)) {
             return FluidStack.EMPTY;
         }
-        return getTank().drain(resource, doDrain);
+        return drain(resource.getAmount(), doDrain);
     }
 
     @Nonnull
     @Override
     public FluidStack drain(int maxDrain, FluidAction doDrain) {
         FluidStack f = getFluid();
-        if (canDrainFluidType(f)) {
-            return getTank().drain(maxDrain, doDrain);
+        if (!canDrainFluidType(f)) {
+            return FluidStack.EMPTY;
         }
-        return FluidStack.EMPTY;
+        return getTank().drain(maxDrain, doDrain);
     }
 
     @Nonnull
@@ -148,18 +153,18 @@ public abstract class FluidTankWrapper implements IFluidHandler, IFluidTank, INB
     }
 
     @Override
-    public CompoundNBT serializeNBT() {
+    public CompoundTag serializeNBT() {
         if (getTank() instanceof FluidTankWrapper) {
             return ((FluidTankWrapper) getTank()).serializeNBT();
         } else if (getTank() instanceof FluidTank) {
-            return ((FluidTank) getTank()).writeToNBT(new CompoundNBT());
+            return ((FluidTank) getTank()).writeToNBT(new CompoundTag());
         } else {
             throw new UnsupportedOperationException();
         }
     }
 
     @Override
-    public void deserializeNBT(CompoundNBT nbt) {
+    public void deserializeNBT(CompoundTag nbt) {
         if (getTank() instanceof FluidTankWrapper) {
             ((FluidTankWrapper) getTank()).deserializeNBT(nbt);
         } else if (getTank() instanceof FluidTank) {

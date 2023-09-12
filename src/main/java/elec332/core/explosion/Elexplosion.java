@@ -1,12 +1,11 @@
 package elec332.core.explosion;
 
 import elec332.core.world.WorldHelper;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.entity.Entity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.core.BlockPos;
 
 /**
  * Created by Elec332 on 13-8-2015.
@@ -15,7 +14,7 @@ import net.minecraft.world.World;
  */
 public class Elexplosion extends AbstractExplosion {
 
-    public Elexplosion(World world, Entity entity, double x, double y, double z, float size) {
+    public Elexplosion(Level world, Entity entity, double x, double y, double z, float size) {
         super(world, entity, x, y, z, size);
     }
 
@@ -26,18 +25,17 @@ public class Elexplosion extends AbstractExplosion {
 
     @Override
     protected void doExplode() {
-        if (!this.getWorld().isRemote) {
+        if (!this.getWorld().isClientSide()) {
             for (int x = (int) -this.getRadius(); x < this.getRadius(); x++) {
                 for (int y = (int) -this.getRadius(); y < this.getRadius(); y++) {
                     for (int z = (int) -this.getRadius(); z < this.getRadius(); z++) {
-                        BlockPos targetPosition = this.getLocation().add(x, y, z);
-                        double dist = Math.sqrt(getLocation().distanceSq(targetPosition));
+                        BlockPos targetPosition = this.getLocation().offset(x, y, z);
+                        double dist = Math.sqrt(getLocation().distSqr(targetPosition));
                         if (dist < this.getRadius()) {
                             BlockState state = WorldHelper.getBlockState(getWorld(), targetPosition);
-                            Block block = state.getBlock();
-                            if (block != null && !block.isAir(state, getWorld(), targetPosition) && state.getBlockHardness(getWorld(), targetPosition.toImmutable()) >= 0) {
-                                if (dist < this.getRadius() - 1 || getWorld().rand.nextFloat() > 0.7) {
-                                    getWorld().setBlockState(targetPosition, Blocks.AIR.getDefaultState(), 3);
+                            if (!state.isAir() && state.getExplosionResistance(getWorld(), targetPosition.immutable(), this) >= 0) {
+                                if (dist < this.getRadius() - 1 || getWorld().random.nextFloat() > 0.7) {
+                                    getWorld().setBlock(targetPosition, Blocks.AIR.defaultBlockState(), 3);
                                 }
                             }
                         }

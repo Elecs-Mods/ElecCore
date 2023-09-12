@@ -21,13 +21,13 @@ import elec332.core.proxies.CommonProxy;
 import elec332.core.util.FMLHelper;
 import elec332.core.util.LoadTimer;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.server.ServerAboutToStartEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent;
 import net.minecraftforge.fml.event.lifecycle.InterModProcessEvent;
-import net.minecraftforge.fml.event.server.FMLServerAboutToStartEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -123,7 +123,7 @@ public class ElecCore implements IModuleController, IElecCoreMod {
         loadTimer.endPhase(event);
     }
 
-    private void onServerAboutToStart(FMLServerAboutToStartEvent event) {
+    private void onServerAboutToStart(ServerAboutToStartEvent event) {
         GridEventInputHandler.INSTANCE.reloadHandlers();
     }
 

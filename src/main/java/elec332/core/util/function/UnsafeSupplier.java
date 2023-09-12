@@ -3,8 +3,8 @@ package elec332.core.util.function;
 /**
  * Created by Elec332 on 26-1-2019
  */
-public interface UnsafeSupplier<T> {
+public interface UnsafeSupplier<T, E extends Throwable> {
 
-    public T get() throws Exception;
+    T get() throws E;
 
 }

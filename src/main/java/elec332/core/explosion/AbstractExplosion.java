@@ -1,15 +1,14 @@
 package elec332.core.explosion;
 
 import elec332.core.util.EntityHelper;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.Explosion;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.level.Explosion;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.world.ExplosionEvent;
 
@@ -23,13 +22,13 @@ import java.util.List;
  */
 public abstract class AbstractExplosion extends Explosion {
 
-    public AbstractExplosion(World world, Entity entity, double x, double y, double z, float size) {
-        super(world, entity, x, y, z, size, false, Mode.DESTROY);
+    public AbstractExplosion(Level world, Entity entity, double x, double y, double z, float size) {
+        super(world, entity, x, y, z, size, false, BlockInteraction.DESTROY);
         this.world = world;
         this.location = new BlockPos((int) x, (int) y, (int) z);
     }
 
-    private final World world;
+    private final Level world;
     private final BlockPos location;
 
     /**
@@ -68,43 +67,43 @@ public abstract class AbstractExplosion extends Explosion {
      * @param power  The blast power
      */
     protected void damageEntities(float radius, float power) {
-        if (!world.isRemote) {
+        if (!world.isClientSide()) {
             radius *= 2.0f;
             BlockPos minCoord = new BlockPos(location);
             float minR = -radius - 1;
             float maxR = radius + 1;
-            minCoord.add(minR, minR, minR);
+            minCoord = minCoord.offset(minR, minR, minR);
             BlockPos maxCoord = new BlockPos(location);
-            maxCoord.add(maxR, maxR, maxR);
-            List<LivingEntity> allEntities = world.getEntitiesWithinAABB(LivingEntity.class, new AxisAlignedBB(minCoord, maxCoord));
+            maxCoord = maxCoord.offset(maxR, maxR, maxR);
+            List<LivingEntity> allEntities = world.getEntitiesOfClass(LivingEntity.class, new AABB(minCoord, maxCoord));
             allEntities.sort((Comparator<Entity>) (o1, o2) -> (int) (getDistance(o1) - getDistance(o2)));
             for (Entity entity : allEntities) {
                 double distance = getDistance(entity) / radius;
                 if (distance <= 1.0D) {
-                    double xDifference = entity.getPosX() - location.getX();
-                    double yDifference = entity.getPosY() - location.getY();
-                    double zDifference = entity.getPosZ() - location.getZ();
-                    double d1 = MathHelper.sqrt(xDifference * xDifference + yDifference * yDifference + zDifference * zDifference);
+                    double xDifference = entity.getX() - location.getX();
+                    double yDifference = entity.getY() - location.getY();
+                    double zDifference = entity.getZ() - location.getZ();
+                    double d1 = Math.sqrt(xDifference * xDifference + yDifference * yDifference + zDifference * zDifference);
                     xDifference /= d1;
                     yDifference /= d1;
                     zDifference /= d1;
-                    Vector3d motionMod = new Vector3d(xDifference, yDifference, zDifference);
-                    double density = Explosion.getBlockDensity(new Vector3d(location.getX(), location.getY(), location.getZ()), entity);
+                    Vec3 motionMod = new Vec3(xDifference, yDifference, zDifference);
+                    double density = Explosion.getSeenPercent(new Vec3(location.getX(), location.getY(), location.getZ()), entity);
                     double d2 = (1.0D - distance) * density;
                     int damage = (int) ((d2 * d2 + d2) / 2.0D * 8.0D * power + 1.0D);
-                    entity.attackEntityFrom(DamageSource.causeExplosionDamage(this), damage);
-                    EntityHelper.addMotion(entity, motionMod.mul(d2, d2, d2));
+                    entity.hurt(DamageSource.explosion(this), damage);
+                    EntityHelper.addMotion(entity, motionMod.multiply(d2, d2, d2));
                 }
             }
         }
     }
 
     private double getDistance(Entity entity) {
-        return MathHelper.sqrt(entity.getDistanceSq(location.getX(), location.getY(), location.getZ()));
+        return Math.sqrt(entity.distanceToSqr(location.getX(), location.getY(), location.getZ()));
     }
 
     public final float getRadius() {
-        return this.size;
+        return this.radius;
     }
 
 
@@ -112,19 +111,14 @@ public abstract class AbstractExplosion extends Explosion {
         return location;
     }
 
-    public final World getWorld() {
+    public final Level getWorld() {
         return world;
     }
 
-    /**
-     * Make vanilla functions useless
-     */
     @Override
-    public void doExplosionA() {
-    }
-
-    @Override
-    public void doExplosionB(boolean p_77279_1_) {
+    public final void finalizeExplosion(boolean particles) {
+        clearToBlow();
+        super.finalizeExplosion(particles);
     }
 
 }

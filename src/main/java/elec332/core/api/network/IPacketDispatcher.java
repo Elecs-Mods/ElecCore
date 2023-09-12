@@ -3,11 +3,11 @@ package elec332.core.api.network;
 import elec332.core.api.util.IEntityFilter;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.RegistryKey;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.BlockPos;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
+import net.minecraft.world.dimension.DimensionType;
 
 import java.util.List;
 import java.util.stream.Stream;
@@ -22,7 +22,7 @@ public interface IPacketDispatcher extends ElecByteBuf.Factory {
      *
      * @return The name of this channel
      */
-    ResourceLocation getChannelName();
+    public ResourceLocation getChannelName();
 
     /**
      * Send this message to everyone.
@@ -30,7 +30,7 @@ public interface IPacketDispatcher extends ElecByteBuf.Factory {
      *
      * @param message The message to send
      */
-    void sendToAll(IMessage message);
+    public void sendToAll(IMessage message);
 
     /**
      * Send this message to the specified players.
@@ -39,7 +39,7 @@ public interface IPacketDispatcher extends ElecByteBuf.Factory {
      * @param message      The message to send
      * @param playerFilter The selector that determines what players to send the message to.
      */
-    default void sendTo(IMessage message, IEntityFilter<ServerPlayerEntity> playerFilter, MinecraftServer server) {
+    default public void sendTo(IMessage message, IEntityFilter<ServerPlayerEntity> playerFilter, MinecraftServer server) {
         for (ServerPlayerEntity player : playerFilter.filterEntities(server.getPlayerList().getPlayers())) {
             sendTo(message, player);
         }
@@ -52,7 +52,7 @@ public interface IPacketDispatcher extends ElecByteBuf.Factory {
      * @param message The message to send
      * @param players The players to send it to
      */
-    default void sendTo(IMessage message, List<ServerPlayerEntity> players) {
+    default public void sendTo(IMessage message, List<ServerPlayerEntity> players) {
         players.forEach(p -> sendTo(message, p));
     }
 
@@ -63,7 +63,7 @@ public interface IPacketDispatcher extends ElecByteBuf.Factory {
      * @param message The message to send
      * @param players The players to send it to
      */
-    default void sendTo(IMessage message, Stream<ServerPlayerEntity> players) {
+    default public void sendTo(IMessage message, Stream<ServerPlayerEntity> players) {
         players.forEach(p -> sendTo(message, p));
     }
 
@@ -74,7 +74,7 @@ public interface IPacketDispatcher extends ElecByteBuf.Factory {
      * @param message The message to send
      * @param player  The player to send it to
      */
-    void sendTo(IMessage message, ServerPlayerEntity player);
+    public void sendTo(IMessage message, ServerPlayerEntity player);
 
     /**
      * Send this message to everyone within a certain range of a point defined in the packet.
@@ -84,7 +84,7 @@ public interface IPacketDispatcher extends ElecByteBuf.Factory {
      * @param world   The world in which the point is located
      * @param range   The range
      */
-    default <M extends IMessage & ILocatedPacket> void sendToAllAround(M message, World world, double range) {
+    default public <M extends IMessage & ILocatedPacket> void sendToAllAround(M message, World world, double range) {
         sendToAllAround(message, message.getTargetPoint(world, range));
     }
 
@@ -97,7 +97,7 @@ public interface IPacketDispatcher extends ElecByteBuf.Factory {
      * @param pos     The position around which to send
      * @param range   The range around the position
      */
-    void sendToAllAround(IMessage message, IWorld world, BlockPos pos, double range);
+    public void sendToAllAround(IMessage message, IWorld world, BlockPos pos, double range);
 
     /**
      * Send this message to everyone within a certain range of a point.
@@ -106,7 +106,7 @@ public interface IPacketDispatcher extends ElecByteBuf.Factory {
      * @param message The message to send
      * @param point   The {@link TargetPoint} around which to send
      */
-    void sendToAllAround(IMessage message, TargetPoint point);
+    public void sendToAllAround(IMessage message, TargetPoint point);
 
     /**
      * Send this message to everyone within the supplied dimension.
@@ -115,7 +115,7 @@ public interface IPacketDispatcher extends ElecByteBuf.Factory {
      * @param message       The message to send
      * @param dimensionName The dimension to target
      */
-    void sendToDimension(IMessage message, ResourceLocation dimensionName);
+    public void sendToDimension(IMessage message, ResourceLocation dimensionName);
 
     /**
      * Send this message to everyone within the supplied dimension.
@@ -124,7 +124,7 @@ public interface IPacketDispatcher extends ElecByteBuf.Factory {
      * @param message     The message to send
      * @param dimensionId The dimension id to target
      */
-    void sendToDimension(IMessage message, RegistryKey<World> dimensionId);
+    public void sendToDimension(IMessage message, DimensionType dimensionId);
 
     /**
      * Send this message to the server.
@@ -132,9 +132,9 @@ public interface IPacketDispatcher extends ElecByteBuf.Factory {
      *
      * @param message The message to send
      */
-    void sendToServer(IMessage message);
+    public void sendToServer(IMessage message);
 
-    class TargetPoint {
+    public static class TargetPoint {
 
         /**
          * A target point
@@ -145,7 +145,7 @@ public interface IPacketDispatcher extends ElecByteBuf.Factory {
          * @param z         The Z coordinate
          * @param range     The range
          */
-        public TargetPoint(RegistryKey<World> dimension, double x, double y, double z, double range) {
+        public TargetPoint(DimensionType dimension, double x, double y, double z, double range) {
             this.x = x;
             this.y = y;
             this.z = z;
@@ -157,7 +157,7 @@ public interface IPacketDispatcher extends ElecByteBuf.Factory {
         public final double y;
         public final double z;
         public final double range;
-        public final RegistryKey<World> dimension;
+        public final DimensionType dimension;
 
     }
 

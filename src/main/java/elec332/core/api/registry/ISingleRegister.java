@@ -5,6 +5,6 @@ package elec332.core.api.registry;
  */
 public interface ISingleRegister<T> {
 
-    boolean register(T t);
+    public boolean register(T t);
 
 }

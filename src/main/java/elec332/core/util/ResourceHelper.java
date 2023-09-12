@@ -1,7 +1,7 @@
 package elec332.core.util;
 
 import elec332.core.ElecCore;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 
 import javax.annotation.Nonnull;
 import java.io.FileNotFoundException;

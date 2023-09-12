@@ -15,6 +15,6 @@ public interface ICallbackProcessor {
      *
      * @param callbacks All (instantiated) classes annotated with {@link RegisteredCallback}
      */
-    void getCallbacks(List<?> callbacks);
+    public void getCallbacks(List<?> callbacks);
 
 }

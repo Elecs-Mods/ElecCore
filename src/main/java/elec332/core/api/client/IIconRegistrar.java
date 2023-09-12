@@ -1,8 +1,8 @@
 package elec332.core.api.client;
 
-import net.minecraft.client.renderer.texture.AtlasTexture;
+import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 
 /**
  * Created by Elec332 on 9-12-2015.
@@ -17,11 +17,11 @@ public interface IIconRegistrar {
      * @param location The sprite location
      * @return The registered sprite
      */
-    TextureAtlasSprite registerSprite(ResourceLocation location);
+    public TextureAtlasSprite registerSprite(ResourceLocation location);
 
     /**
-     * @return The underlying {@link AtlasTexture}
+     * @return The underlying {@link TextureAtlas}
      */
-    AtlasTexture getTextureMap();
+    public TextureAtlas getTextureMap();
 
 }

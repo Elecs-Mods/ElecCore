@@ -8,8 +8,8 @@ import java.util.Set;
 public interface ISingleObjectRegistry<T> extends ISingleRegister<T> {
 
     @Override
-    boolean register(T t);
+    public boolean register(T t);
 
-    Set<T> getAllRegisteredObjects();
+    public Set<T> getAllRegisteredObjects();
 
 }

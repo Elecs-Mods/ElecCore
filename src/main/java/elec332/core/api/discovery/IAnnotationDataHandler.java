@@ -4,10 +4,7 @@ import net.minecraftforge.fml.ModContainer;
 import net.minecraftforge.forgespi.language.IModFileInfo;
 import org.objectweb.asm.Type;
 
-import javax.annotation.Nonnull;
 import java.lang.annotation.Annotation;
-import java.util.Collection;
-import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 
@@ -18,23 +15,20 @@ import java.util.function.Function;
  */
 public interface IAnnotationDataHandler {
 
-    default Set<IAnnotationData> getAnnotationList(Class<? extends Annotation> annotationClass) {
+    default public Set<IAnnotationData> getAnnotationList(Class<? extends Annotation> annotationClass) {
         return getAnnotationList(Type.getType(annotationClass));
     }
 
-    Set<IAnnotationData> getAnnotationList(Type annotationType);
+    public Set<IAnnotationData> getAnnotationList(Type annotationType);
 
-    boolean hasWrongSideOnlyAnnotation(String clazz);
+    public boolean hasWrongSideOnlyAnnotation(String clazz);
 
-    Function<Type, Set<IAnnotationData>> getAnnotationsFor(IModFileInfo file);
+    public Function<Type, Set<IAnnotationData>> getAnnotationsFor(IModFileInfo file);
 
-    Function<Type, Set<IAnnotationData>> getAnnotationsFor(ModContainer mc);
+    public Function<Type, Set<IAnnotationData>> getAnnotationsFor(ModContainer mc);
 
-    @Nonnull
-    Map<Type, Collection<IAnnotationData>> getClassAnnotations(String clazz);
+    public ModContainer deepSearchOwner(IAnnotationData annotationData);
 
-    ModContainer deepSearchOwner(IAnnotationData annotationData);
-
-    String deepSearchOwnerName(IAnnotationData annotationData);
+    public String deepSearchOwnerName(IAnnotationData annotationData);
 
 }

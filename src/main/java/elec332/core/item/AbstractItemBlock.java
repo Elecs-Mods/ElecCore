@@ -1,9 +1,8 @@
 package elec332.core.item;
 
-import net.minecraft.block.Block;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.item.BlockItem;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.world.item.ItemStack;
 
 import javax.annotation.Nonnull;
 
@@ -33,10 +32,6 @@ public abstract class AbstractItemBlock extends BlockItem implements IAbstractIt
     @Override
     public String getTranslationKey(ItemStack stack) {
         return ItemMethods.getUnlocalizedName(stack, this);
-    }
-
-    public static CompoundNBT getTileData(ItemStack stack) {
-        return stack.getOrCreateChildTag(AbstractItemBlock.TILE_DATA_TAG);
     }
 
 }

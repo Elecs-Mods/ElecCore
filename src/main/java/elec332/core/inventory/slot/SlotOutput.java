@@ -2,9 +2,7 @@ package elec332.core.inventory.slot;
 
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.container.Slot;
-import net.minecraft.item.ItemStack;
-
-import javax.annotation.Nonnull;
+import net.minecraft.world.item.ItemStack;
 
 /**
  * Created by Elec332 on 5-5-2015.
@@ -16,7 +14,7 @@ public class SlotOutput extends Slot {
     }
 
     @Override
-    public boolean isItemValid(@Nonnull ItemStack stack) {
+    public boolean isItemValid(ItemStack stack) {
         return false;
     }
 

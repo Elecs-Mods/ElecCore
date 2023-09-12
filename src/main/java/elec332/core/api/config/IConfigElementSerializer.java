@@ -27,7 +27,7 @@ public interface IConfigElementSerializer {
      * @return The config entry for the {@param type} and the provided parameters, null if not supported.
      */
     @Nullable
-    ForgeConfigSpec.ConfigValue<?> makeConfigEntry(Class<?> type, Object instance, Field field, Configurable data, ForgeConfigSpec.Builder config, Object defaultValue, String comment);
+    public ForgeConfigSpec.ConfigValue makeConfigEntry(Class<?> type, Object instance, Field field, Configurable data, ForgeConfigSpec.Builder config, Object defaultValue, String comment);
 
     /**
      * Gets the value from the config property and makes sure its a type that the field accepts
@@ -36,9 +36,9 @@ public interface IConfigElementSerializer {
      * @param configValue The forge config property
      * @return The value from the config property, a value which the field can accept
      */
-    default Object getFieldValue(Field field, ForgeConfigSpec.ConfigValue<?> configValue) {
+    default public Object getFieldValue(Field field, ForgeConfigSpec.ConfigValue configValue) {
         if (field.getType().isArray()) {
-            return ((List<?>) configValue.get()).toArray((Object[]) Array.newInstance(field.getType().getComponentType(), 0));
+            return ((List) configValue.get()).toArray((Object[]) Array.newInstance(field.getType().getComponentType(), 0));
         }
         return configValue.get();
     }

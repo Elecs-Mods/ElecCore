@@ -15,52 +15,52 @@ import java.util.Map;
  */
 public interface IAnnotationData {
 
-    ModFile getFile();
+    public ModFile getFile();
 
-    default String getAnnotationName() {
+    default public String getAnnotationName() {
         return getAnnotationType().toString();
     }
 
-    Type getAnnotationType();
+    public Type getAnnotationType();
 
-    Map<String, Object> getAnnotationInfo();
+    public Map<String, Object> getAnnotationInfo();
 
-    default String getClassName() {
+    default public String getClassName() {
         return getClassType().getClassName();
     }
 
     @Nullable
-    default Class<?> tryLoadClass() {
+    default public Class<?> tryLoadClass() {
         if (hasWrongSideOnlyAnnotation()) {
             return null;
         }
         return loadClass();
     }
 
-    Class<?> loadClass();
+    public Class<?> loadClass();
 
-    Type getClassType();
+    public Type getClassType();
 
-    String getMemberName();
+    public String getMemberName();
 
-    boolean isField();
+    public boolean isField();
 
-    String getFieldName();
+    public String getFieldName();
 
-    Field getField();
+    public Field getField();
 
-    Class<?> getFieldType();
+    public Class<?> getFieldType();
 
-    boolean isMethod();
+    public boolean isMethod();
 
-    String getMethodName();
+    public String getMethodName();
 
-    Method getMethod();
+    public Method getMethod();
 
-    Type[] getMethodParameterTypes();
+    public Type[] getMethodParameterTypes();
 
-    Class<?>[] getMethodParameters();
+    public Class<?>[] getMethodParameters();
 
-    boolean hasWrongSideOnlyAnnotation();
+    public boolean hasWrongSideOnlyAnnotation();
 
 }

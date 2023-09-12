@@ -67,7 +67,6 @@ public class IdentityList<E> extends AbstractList<E> {
     }
 
     @Override
-    @SuppressWarnings("ListIndexOfReplaceableByContains")
     public boolean contains(Object var1) {
         return this.indexOf(var1) >= 0;
     }

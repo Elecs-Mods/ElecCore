@@ -8,17 +8,17 @@ import mcjty.theoneprobe.api.IProbeHitData;
 import mcjty.theoneprobe.api.IProbeInfo;
 import mcjty.theoneprobe.api.IProbeInfoProvider;
 import mcjty.theoneprobe.api.ProbeMode;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 import javax.annotation.Nonnull;
@@ -40,7 +40,7 @@ public class TOPHandlerBlock implements IProbeInfoProvider {
         if (rtr == null) {
             return;
         }
-        final CompoundNBT tag = new CompoundNBT();
+        final CompoundTag tag = new CompoundTag();
         final TileEntity tile = WorldHelper.getTileAt(world, hitData.getPos());
         IInfoDataAccessorBlock infoAccessor = new IInfoDataAccessorBlock() {
 
@@ -64,7 +64,7 @@ public class TOPHandlerBlock implements IProbeInfoProvider {
 
             @Nonnull
             @Override
-            public CompoundNBT getData() {
+            public CompoundTag getData() {
                 return tag;
             }
 
@@ -76,7 +76,7 @@ public class TOPHandlerBlock implements IProbeInfoProvider {
 
             @Nonnull
             @Override
-            public Vector3d getHitVec() {
+            public Vec3d getHitVec() {
                 return hitData.getHitVec();
             }
 

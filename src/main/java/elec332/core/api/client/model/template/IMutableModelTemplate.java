@@ -10,18 +10,19 @@ import java.util.List;
  */
 public interface IMutableModelTemplate extends IModelTemplate {
 
-    IMutableModelTemplate setGeneralQuads(List<IQuadTemplate> generalQuads);
+    public IMutableModelTemplate setGeneralQuads(List<IQuadTemplate> generalQuads);
 
-    IMutableModelTemplate setSidedQuads(IQuadTemplateSidedMap sidedQuads);
+    public IMutableModelTemplate setSidedQuads(IQuadTemplateSidedMap sidedQuads);
 
-    IMutableModelTemplate setAmbientOcclusion(boolean ao);
+    public IMutableModelTemplate setAmbientOcclusion(boolean ao);
 
-    IMutableModelTemplate setGui3d(boolean gui3d);
+    public IMutableModelTemplate setGui3d(boolean gui3d);
 
-    IMutableModelTemplate setBuiltIn(boolean builtIn);
+    public IMutableModelTemplate setBuiltIn(boolean builtIn);
 
-    IMutableModelTemplate setTexture(TextureAtlasSprite texture);
+    public IMutableModelTemplate setTexture(TextureAtlasSprite texture);
 
-    IMutableModelTemplate setItemCameraTransforms(ItemCameraTransforms transforms);
+    @SuppressWarnings("deprecation")
+    public IMutableModelTemplate setItemCameraTransforms(ItemCameraTransforms transforms);
 
 }

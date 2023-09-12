@@ -1,13 +1,10 @@
 package elec332.core.client.util;
 
-import com.mojang.blaze3d.vertex.IVertexBuilder;
 import elec332.core.api.client.ITessellator;
 import elec332.core.client.RenderHelper;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.util.math.vector.Matrix4f;
-import net.minecraft.util.math.vector.Vector4f;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.model.pipeline.VertexBufferConsumer;
@@ -26,27 +23,20 @@ public class ElecTessellator implements ITessellator {
     }
 
     public ElecTessellator(Tessellator tessellator) {
-        this(tessellator.getBuffer(), tessellator);
-    }
-
-    public ElecTessellator(IVertexBuilder worldRenderer) {
-        this(worldRenderer, null);
-    }
-
-    private ElecTessellator(IVertexBuilder worldRenderer, Tessellator tessellator) {
-        this.worldRenderer = worldRenderer;
+        this.worldRenderer = tessellator.getBuffer();
         this.tessellator = tessellator;
-        this.matrix = null;
-        setBrightness(RenderHelper.MAX_BRIGHTNESS);
-        setColorRGBA_F(1, 1, 1, 0.5f);
+    }
+
+    public ElecTessellator(BufferBuilder worldRenderer) {
+        this.worldRenderer = worldRenderer;
+        this.tessellator = null;
     }
 
     private final Tessellator tessellator;
-    private final IVertexBuilder worldRenderer;
+    private final BufferBuilder worldRenderer;
     private VertexBufferConsumer vertexBufferConsumer;
     private int brightness1, brightness2;
     private int color1, color2, color3, color4;
-    private Matrix4f matrix;
 
     @Override
     public void setBrightness(int brightness) {
@@ -86,73 +76,35 @@ public class ElecTessellator implements ITessellator {
     }
 
     @Override
-    public void setMatrix(Matrix4f matrix) {
-        this.matrix = matrix;
-    }
-
-    @Override
-    public void clearMatrix() {
-        setMatrix(null);
-    }
-
-    @Override
     public void startDrawingWorldBlock() {
-        if (worldRenderer instanceof BufferBuilder) {
-            ((BufferBuilder) worldRenderer).begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
-        } else {
-            throw new UnsupportedOperationException();
-        }
+        worldRenderer.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
     }
 
     @Override
     public void startDrawingGui() {
-        if (worldRenderer instanceof BufferBuilder) {
-            ((BufferBuilder) worldRenderer).begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
-        } else {
-            throw new UnsupportedOperationException();
-        }
+        worldRenderer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
     }
 
     @Override
-    public void addVertexWithUV(Matrix4f matrix, double x, double y, double z, float u, float v) {
-        Vector4f vector4f = new Vector4f((float) x, (float) y, (float) z, 1.0F);
-        vector4f.transform(matrix);
-        addVertexWithUV_(vector4f.getX(), vector4f.getY(), vector4f.getZ(), u, v);
-    }
-
-    @Override
-    public void addVertexWithUV(double x, double y, double z, float u, float v) {
-        if (matrix == null) {
-            addVertexWithUV_(x, y, z, u, v);
-        } else {
-            addVertexWithUV(matrix, x, y, z, u, v);
-        }
-    }
-
-    private void addVertexWithUV_(double x, double y, double z, float u, float v) {
+    public void addVertexWithUV(double x, double y, double z, double u, double v) {
         worldRenderer.pos(x, y, z);
-        worldRenderer.color(color1, color2, color3, color4);
+        drawColor();
         worldRenderer.tex(u, v); //tex
         worldRenderer.lightmap(brightness1, brightness2); //lightmap
-        worldRenderer.normal(0, 1, 0);
         worldRenderer.endVertex();
     }
 
     @Nonnull
     @Override
-    public IVertexBuilder getVertexBuilder() {
+    public BufferBuilder getBuffer() {
         return worldRenderer;
     }
 
     @Override
     public void draw() {
         if (tessellator == null) {
-            if (worldRenderer instanceof BufferBuilder) {
-                RenderHelper.drawBuffer((BufferBuilder) this.worldRenderer);
-                return;
-            } else {
-                throw new UnsupportedOperationException();
-            }
+            RenderHelper.drawBuffer(this.worldRenderer);
+            return;
         }
         tessellator.draw();
     }
@@ -161,9 +113,13 @@ public class ElecTessellator implements ITessellator {
     @Override
     public VertexBufferConsumer getVertexBufferConsumer() {
         if (vertexBufferConsumer == null) {
-            vertexBufferConsumer = new VertexBufferConsumer(worldRenderer);
+            vertexBufferConsumer = new VertexBufferConsumer(getBuffer());
         }
         return vertexBufferConsumer;
+    }
+
+    private void drawColor() {
+        worldRenderer.color(color1, color2, color3, color4);
     }
 
 }

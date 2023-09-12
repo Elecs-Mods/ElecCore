@@ -9,6 +9,6 @@ import net.minecraft.world.World;
  */
 public interface IWindowHandler {
 
-    Window createWindow(PlayerEntity player, World world, ElecByteBuf data);
+    public Window createWindow(PlayerEntity player, World world, ElecByteBuf data);
 
 }

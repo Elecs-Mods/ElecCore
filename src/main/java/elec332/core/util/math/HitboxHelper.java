@@ -2,12 +2,11 @@ package elec332.core.util.math;
 
 import com.google.common.collect.ImmutableList;
 import elec332.core.util.ObjectReference;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.shapes.IBooleanFunction;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.util.math.shapes.VoxelShapes;
-import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.core.Direction;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -19,16 +18,12 @@ import java.util.stream.Stream;
  */
 public class HitboxHelper {
 
-    public static boolean collides(VoxelShape shape1, VoxelShape shape2) {
-        return VoxelShapes.compare(shape1, shape2, IBooleanFunction.AND);
-    }
-
-    public static boolean doesShapeContain(VoxelShape shape, Vector3d pos) {
+    public static boolean doesShapeContain(VoxelShape shape, Vec3 pos) {
         return doesShapeContain(shape, pos.x, pos.y, pos.z);
     }
 
     public static boolean doesShapeContain(VoxelShape shape, double x, double y, double z) {
-        return shape.contains(x, y, z);
+        return shape.toAabbs().stream().anyMatch(aabb -> aabb.contains(x, y, z));
     }
 
     public static VoxelShape combineShapes(VoxelShape... shapes) {
@@ -40,7 +35,7 @@ public class HitboxHelper {
     }
 
     public static VoxelShape combineShapes(Collection<VoxelShape> shapes) {
-        VoxelShape ret = shapes.stream().map(HitboxHelper::unwrap).reduce(VoxelShapes.empty(), VoxelShapes::or);
+        VoxelShape ret = shapes.stream().map(HitboxHelper::unwrap).reduce(Shapes.empty(), Shapes::or);
         if (shapes.stream().noneMatch(s -> s instanceof CustomRayTraceVoxelShape)) {
             return ret;
         }
@@ -48,24 +43,24 @@ public class HitboxHelper {
     }
 
     public static VoxelShape rotateFromDown(VoxelShape shape, final Direction facing) {
-        final ObjectReference<VoxelShape> shapeRef = ObjectReference.of(VoxelShapes.empty());
-        shape.forEachBox((x1, y1, z1, x2, y2, z2) -> shapeRef.set(VoxelShapes.or(shapeRef.get(), VoxelShapes.create(HitboxHelper.rotateFromDown(new AxisAlignedBB(x1, y1, z1, x2, y2, z2), facing)))));
+        final ObjectReference<VoxelShape> shapeRef = ObjectReference.of(Shapes.empty());
+        shape.forAllBoxes((x1, y1, z1, x2, y2, z2) -> shapeRef.set(Shapes.or(shapeRef.get(), Shapes.create(HitboxHelper.rotateFromDown(new AABB(x1, y1, z1, x2, y2, z2), facing)))));
         return shapeRef.get();
     }
 
     @SuppressWarnings("all")
-    public static AxisAlignedBB rotateFromDown(AxisAlignedBB aabb, Direction facing) {
+    public static AABB rotateFromDown(AABB aabb, Direction facing) {
         switch (facing) {
             case UP:
-                return new AxisAlignedBB(aabb.minX, 1 - aabb.minY, 1 - aabb.minZ, aabb.maxX, 1 - aabb.maxY, 1 - aabb.maxZ);
+                return new AABB(aabb.minX, 1 - aabb.minY, 1 - aabb.minZ, aabb.maxX, 1 - aabb.maxY, 1 - aabb.maxZ);
             case NORTH:
-                return new AxisAlignedBB(aabb.minX, 1 - aabb.minZ, aabb.minY, aabb.maxX, 1 - aabb.maxZ, aabb.maxY);
+                return new AABB(aabb.minX, 1 - aabb.minZ, aabb.minY, aabb.maxX, 1 - aabb.maxZ, aabb.maxY);
             case EAST:
-                return new AxisAlignedBB(1 - aabb.minY, aabb.minX, aabb.minZ, 1 - aabb.maxY, aabb.maxX, aabb.maxZ);
+                return new AABB(1 - aabb.minY, aabb.minX, aabb.minZ, 1 - aabb.maxY, aabb.maxX, aabb.maxZ);
             case SOUTH:
-                return new AxisAlignedBB(aabb.minX, aabb.minZ, 1 - aabb.minY, aabb.maxX, aabb.maxZ, 1 - aabb.maxY);
+                return new AABB(aabb.minX, aabb.minZ, 1 - aabb.minY, aabb.maxX, aabb.maxZ, 1 - aabb.maxY);
             case WEST:
-                return new AxisAlignedBB(aabb.minY, 1 - aabb.minX, aabb.minZ, aabb.maxY, 1 - aabb.maxX, aabb.maxZ);
+                return new AABB(aabb.minY, 1 - aabb.minX, aabb.minZ, aabb.maxY, 1 - aabb.maxX, aabb.maxZ);
             default:
                 return aabb;
         }

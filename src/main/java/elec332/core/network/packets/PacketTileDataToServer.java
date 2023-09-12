@@ -5,8 +5,8 @@ import elec332.core.network.IElecCoreNetworkTile;
 import elec332.core.util.NBTBuilder;
 import elec332.core.world.WorldHelper;
 import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.TileEntity;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.block.entity.BlockEntity;
 
 /**
  * Created by Elec332 on 15-8-2015.
@@ -17,12 +17,12 @@ public class PacketTileDataToServer extends AbstractPacket {
     public PacketTileDataToServer() {
     }
 
-    public PacketTileDataToServer(IElecCoreNetworkTile tile, int ID, CompoundNBT data) {
+    public PacketTileDataToServer(IElecCoreNetworkTile tile, int ID, CompoundTag data) {
         super(new NBTBuilder().setInteger("PacketId", ID).setTag("data", data).setBlockPos(((TileEntity) tile).getPos()).serializeNBT());
     }
 
     @Override
-    public void onMessageThreadSafe(CompoundNBT message, IExtendedMessageContext ctx) {
+    public void onMessageThreadSafe(CompoundTag message, IExtendedMessageContext ctx) {
         NBTBuilder data = new NBTBuilder(message);
         int ID = data.getInteger("PacketId");
         ServerPlayerEntity sender = (ServerPlayerEntity) ctx.getSender();

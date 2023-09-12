@@ -1,8 +1,7 @@
 package elec332.core.api.module;
 
 import elec332.core.api.discovery.IAnnotationDataHandler;
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.eventbus.api.Event;
+import net.minecraft.resources.ResourceLocation;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -23,7 +22,7 @@ public interface IModuleManager {
      * @return All modules currently active
      */
     @Nonnull
-    Set<IModuleContainer> getActiveModules();
+    public Set<IModuleContainer> getActiveModules();
 
     /**
      * Gets a active module by its name
@@ -32,7 +31,7 @@ public interface IModuleManager {
      * @return The module corresponding to the supplied name
      */
     @Nullable
-    IModuleContainer getActiveModule(ResourceLocation module);
+    public IModuleContainer getActiveModule(ResourceLocation module);
 
     /**
      * Registers a field processor;
@@ -41,7 +40,7 @@ public interface IModuleManager {
      * @param annotation The field annotation
      * @param function   The function that will provide the value for the annotated field
      */
-    void registerFieldProcessor(Class<? extends Annotation> annotation, Function<IModuleContainer, Object> function);
+    public void registerFieldProcessor(Class<? extends Annotation> annotation, Function<IModuleContainer, Object> function);
 
     /**
      * This function allows other mods to implement their own way of marking/annotating/... modules.
@@ -53,21 +52,13 @@ public interface IModuleManager {
      *
      * @param discoverer The module discoverer.
      */
-    void registerModuleDiscoverer(BiFunction<IAnnotationDataHandler, Function<String, IModuleController>, List<IModuleInfo>> discoverer);
+    public void registerModuleDiscoverer(BiFunction<IAnnotationDataHandler, Function<String, IModuleController>, List<IModuleInfo>> discoverer);
 
     /**
      * Invokes an event on all modules currently active
      *
      * @param event The event to be invoked on all modules
      */
-    void invokeEvent(Object event);
-
-    /**
-     * When an event type gets registered with this function, it will always be passed on to the module, regardless whether it is enabled or not
-     * Use this for (custom) events that should always be processed (Example: ElecCore registers Registry events as an unchecked event type)
-     *
-     * @param eventType The Event type
-     */
-    void registerUncheckedEventType(Class<? extends Event> eventType);
+    public void invokeEvent(Object event);
 
 }

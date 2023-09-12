@@ -1,9 +1,9 @@
 package elec332.core.api.client.model.template;
 
+import net.minecraft.client.renderer.Vector3f;
 import net.minecraft.client.renderer.model.ModelRotation;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.util.Direction;
-import net.minecraft.util.math.vector.Vector3f;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -13,53 +13,53 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 @OnlyIn(Dist.CLIENT)
 public interface IQuadTemplate {
 
-    Vector3f getV1();
+    public Vector3f getV1();
 
-    Vector3f getV2();
+    public Vector3f getV2();
 
-    TextureAtlasSprite getTexture();
+    public TextureAtlasSprite getTexture();
 
-    Direction getSide();
+    public Direction getSide();
 
-    ModelRotation getRotation();
+    public ModelRotation getRotation();
 
-    IUVData getUVData();
+    public IUVData getUVData();
 
-    int getTintIndex();
+    public int getTintIndex();
 
-    interface IUVData {
+    public interface IUVData {
 
-        float getUMin();
+        public float getUMin();
 
-        float getVMin();
+        public float getVMin();
 
-        float getUMax();
+        public float getUMax();
 
-        float getVMax();
+        public float getVMax();
 
     }
 
-    interface IMutableUVData extends IUVData {
+    public interface IMutableUVData extends IUVData {
 
-        IMutableUVData setUMin(float f);
+        public IMutableUVData setUMin(float f);
 
-        IMutableUVData setVMin(float f);
+        public IMutableUVData setVMin(float f);
 
-        IMutableUVData setUMax(float f);
+        public IMutableUVData setUMax(float f);
 
-        IMutableUVData setVMax(float f);
-
-        @Override
-        float getUMin();
+        public IMutableUVData setVMax(float f);
 
         @Override
-        float getVMin();
+        public float getUMin();
 
         @Override
-        float getUMax();
+        public float getVMin();
 
         @Override
-        float getVMax();
+        public float getUMax();
+
+        @Override
+        public float getVMax();
 
     }
 

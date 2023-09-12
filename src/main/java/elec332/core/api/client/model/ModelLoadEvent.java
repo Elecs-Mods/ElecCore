@@ -1,9 +1,9 @@
 package elec332.core.api.client.model;
 
 import elec332.core.api.annotations.StaticLoad;
-import net.minecraft.client.renderer.model.IBakedModel;
+import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.renderer.model.ModelResourceLocation;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.model.ModelLoader;
@@ -21,45 +21,39 @@ import javax.annotation.Nullable;
  * Event that can be used to handle model-related stuff
  */
 @StaticLoad
+@OnlyIn(Dist.CLIENT)
 public class ModelLoadEvent extends Event {
 
     @Nonnull
-    @OnlyIn(Dist.CLIENT)
-    public IQuadBakery getQuadBakery() {
+    public IElecQuadBakery getQuadBakery() {
         throw new UnsupportedOperationException();
     }
 
     @Nonnull
-    @OnlyIn(Dist.CLIENT)
-    public IModelBakery getModelBakery() {
+    public IElecModelBakery getModelBakery() {
         throw new UnsupportedOperationException();
     }
 
     @Nonnull
-    @OnlyIn(Dist.CLIENT)
-    public ITemplateBakery getTemplateBakery() {
+    public IElecTemplateBakery getTemplateBakery() {
         throw new UnsupportedOperationException();
     }
 
-    @OnlyIn(Dist.CLIENT)
     public void registerModel(ResourceLocation mrl, IBakedModel model) {
         throw new UnsupportedOperationException();
     }
 
     @Nullable
-    @OnlyIn(Dist.CLIENT)
     public IBakedModel getModel(ModelResourceLocation mrl) {
         throw new UnsupportedOperationException();
     }
 
     @Nonnull
-    @OnlyIn(Dist.CLIENT)
     public IBakedModel getMissingModel() {
         throw new UnsupportedOperationException();
     }
 
     @Nonnull
-    @OnlyIn(Dist.CLIENT)
     public ModelLoader getModelLoader() {
         throw new UnsupportedOperationException();
     }

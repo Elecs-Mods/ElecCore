@@ -7,10 +7,10 @@ import javax.annotation.Nullable;
  */
 public interface INetworkObjectManager {
 
-    <N extends INetworkObjectReceiver<S>, S extends INetworkObjectSender<S>> INetworkObjectHandler<?> registerNetworkObject(N networkObject);
+    public <N extends INetworkObjectReceiver> INetworkObjectHandler<?> registerNetworkObject(N networkObject);
 
-    <R extends INetworkObjectReceiver<S>, S extends INetworkObjectSender<S>> INetworkObjectHandler<S> registerNetworkObject(@Nullable R networkObjectR, @Nullable S networkObjectS);
+    public <R extends INetworkObjectReceiver, S extends INetworkObjectSender> INetworkObjectHandler<S> registerNetworkObject(@Nullable R networkObjectR, @Nullable S networkObjectS);
 
-    <N extends INetworkObject<N>> INetworkObjectHandler<N> registerSpecialNetworkObject(N networkObject);
+    public <N extends INetworkObject> INetworkObjectHandler<N> registerSpecialNetworkObject(N networkObject);
 
 }

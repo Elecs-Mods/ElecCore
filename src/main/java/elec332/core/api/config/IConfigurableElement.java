@@ -12,7 +12,7 @@ import javax.annotation.Nonnull;
  */
 public interface IConfigurableElement {
 
-    void registerProperties(@Nonnull ForgeConfigSpec.Builder config, ModConfig.Type type);
+    public void registerProperties(@Nonnull ForgeConfigSpec.Builder config, ModConfig.Type type);
 
     /**
      * Gets called when the config file is initially loaded
@@ -20,7 +20,7 @@ public interface IConfigurableElement {
      * <p>
      * Use this to reload e.g. fields with the values from the defined properties
      */
-    default void load() {
+    public default void load() {
     }
 
 }

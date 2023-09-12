@@ -1,12 +1,12 @@
 package elec332.core.util;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.World;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 
 import javax.annotation.Nullable;
 
@@ -21,8 +21,8 @@ public class EntityHelper {
      * @param entity    The entity to be modified
      * @param motionMod The motion that will be added to the entity
      */
-    public static void addMotion(Entity entity, Vector3d motionMod) {
-        entity.setMotion(entity.getMotion().add(motionMod));
+    public static void addMotion(Entity entity, Vec3 motionMod) {
+        entity.setDeltaMovement(entity.getDeltaMovement().add(motionMod));
     }
 
     /**
@@ -33,7 +33,7 @@ public class EntityHelper {
      * @return The new entity, created from the provided name
      */
     @Nullable
-    public static Entity createEntity(ResourceLocation name, World world) {
+    public static Entity createEntity(ResourceLocation name, Level world) {
         EntityType<?> entityType = RegistryHelper.getEntities().getValue(name);
         return entityType == null ? null : entityType.create(world);
     }
@@ -46,8 +46,7 @@ public class EntityHelper {
      */
     public static void smiteEntity(DamageSource source, LivingEntity target) {  //non-buggy version by InfinityRaider
         target.setHealth(0);
-        target.onDeath(source);
-        //target.setDead();
+        target.die(source);
     }
 
 }

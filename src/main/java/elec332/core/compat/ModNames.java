@@ -8,7 +8,7 @@ import net.minecraftforge.common.ForgeMod;
  */
 public class ModNames {
 
-    public static final String FORGE = ForgeMod.getInstance().getModId();
+    public static final String FORGE = ForgeMod.getInstance().;
     public static final String ELECCORE = ElecCore.MODID;
     public static final String WAILA = "waila";
     public static final String FORESTRY = "forestry";

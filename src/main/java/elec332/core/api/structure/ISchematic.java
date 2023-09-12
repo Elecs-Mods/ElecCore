@@ -1,10 +1,10 @@
 package elec332.core.api.structure;
 
 import elec332.core.api.util.Area;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.core.BlockPos;
 
 /**
  * Created by Elec332 on 11-11-2015.
@@ -18,7 +18,7 @@ public interface ISchematic {
      * @param pos Coordinate within the local schematic coordinates.
      * @return The blocks located at the specified local schematic coordinates, or null if out of bounds.
      */
-    default Block getBlock(BlockPos pos) {
+    default public Block getBlock(BlockPos pos) {
         return getBlock(pos.getX(), pos.getY(), pos.getZ());
     }
 
@@ -31,7 +31,7 @@ public interface ISchematic {
      * @param z Coordinate z within the local schematic coordinates.
      * @return The blocks located at the specified local schematic coordinates, or null if out of bounds.
      */
-    Block getBlock(int x, int y, int z);
+    public Block getBlock(int x, int y, int z);
 
     /**
      * Gets the data for the tile entity at the specified coordinates, ranging from 0 to the width (x), height (y) and length (z).
@@ -42,7 +42,7 @@ public interface ISchematic {
      * @param z Coordinate z within the local schematic coordinates.
      * @return The data from the tile entity located at the specified local schematic coordinates, or null if not found.
      */
-    CompoundNBT getTileData(int x, int y, int z, int worldX, int worldY, int worldZ);
+    public CompoundTag getTileData(int x, int y, int z, int worldX, int worldY, int worldZ);
 
     /**
      * Gets the data for the tile entity at the specified coordinates, ranging from 0 to the width (x), height (y) and length (z).
@@ -53,7 +53,7 @@ public interface ISchematic {
      * @param z Coordinate z within the local schematic coordinates.
      * @return The data from the tile entity located at the specified local schematic coordinates, or null if not found.
      */
-    CompoundNBT getTileData(int x, int y, int z);
+    public CompoundTag getTileData(int x, int y, int z);
 
     /**
      * Gets the {@link BlockState} at the specified coordinates, ranging from 0 to the width (x), height (y) and
@@ -62,7 +62,7 @@ public interface ISchematic {
      * @param pos Coordinate within the local schematic coordinates.
      * @return The metadata for the block at the specified local schematic coordinates.
      */
-    default BlockState getBlockState(BlockPos pos) {
+    default public BlockState getBlockState(BlockPos pos) {
         return getBlockState(pos.getX(), pos.getY(), pos.getZ());
     }
 
@@ -75,20 +75,20 @@ public interface ISchematic {
      * @param z Coordinate z within the local schematic coordinates.
      * @return The metadata for the block at the specified local schematic coordinates.
      */
-    BlockState getBlockState(int x, int y, int z);
+    public BlockState getBlockState(int x, int y, int z);
 
-    short getBlockLength();
+    public short getBlockLength();
 
-    short getBlockWidth();
+    public short getBlockWidth();
 
-    short getBlockHeight();
+    public short getBlockHeight();
 
     /**
      * Horizon sets the "ground" or how far down to translate this.
      *
      * @return The horizon for this schematic.
      */
-    default short getHorizon() {
+    default public short getHorizon() {
         return 0;
     }
 
@@ -100,7 +100,7 @@ public interface ISchematic {
      * @param z The z coordinate in world-space this is to be centered on.
      * @return The area in world space that this schematic will fill.
      */
-    default Area getAreaFromWorldCoordinates(int x, int y, int z) {
+    default public Area getAreaFromWorldCoordinates(int x, int y, int z) {
         int minX, maxX, minY, maxY, minZ, maxZ;
         int width = getBlockWidth(), height = getBlockHeight(), length = getBlockLength(), horizon = getHorizon();
         if (width % 2 == 0) {

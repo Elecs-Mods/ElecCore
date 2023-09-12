@@ -7,16 +7,14 @@ import elec332.core.api.network.*;
 import elec332.core.api.network.object.*;
 import elec332.core.api.util.IEntityFilter;
 import elec332.core.util.FMLHelper;
-import elec332.core.world.WorldHelper;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.RegistryKey;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.World;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.dimension.DimensionType;
 
 import javax.annotation.Nullable;
 import java.util.Iterator;
@@ -27,6 +25,7 @@ import java.util.function.Supplier;
 /**
  * Created by Elec332 on 23-10-2016.
  */
+@SuppressWarnings("all")
 class DefaultNetworkObjectManager implements INetworkObjectManager, BiConsumer<DefaultNetworkObjectManager.PacketNetworkObject, Supplier<IExtendedMessageContext>> {
 
     DefaultNetworkObjectManager(INetworkHandler handler) {
@@ -36,20 +35,19 @@ class DefaultNetworkObjectManager implements INetworkObjectManager, BiConsumer<D
         this.i = 0;
     }
 
-    private final IPacketDispatcher packetDispatcher;
-    private final List<NOH<?>> packetStuff;
+    private IPacketDispatcher packetDispatcher;
+    private final List<NOH> packetStuff;
     private byte i;
 
     @Override
-    @SuppressWarnings("unchecked")
-    public <N extends INetworkObjectReceiver<S>, S extends INetworkObjectSender<S>> INetworkObjectHandler<?> registerNetworkObject(N networkObject) {
+    public <N extends INetworkObjectReceiver> INetworkObjectHandler<?> registerNetworkObject(N networkObject) {
         if (networkObject instanceof INetworkObjectSender) {
-            return registerNetworkObject(networkObject, (S) networkObject);
+            return registerNetworkObject(networkObject, (INetworkObjectSender) networkObject);
         }
         if (!FMLHelper.isInModInitialisation()) {
             throw new IllegalStateException();
         }
-        NOH<S> ret = new NOH<>(i, null, networkObject);
+        NOH<?> ret = new NOH(i, null, networkObject);
         packetStuff.add(ret);
         i++;
         networkObject.setNetworkObjectHandler(ret);
@@ -57,11 +55,11 @@ class DefaultNetworkObjectManager implements INetworkObjectManager, BiConsumer<D
     }
 
     @Override
-    public <R extends INetworkObjectReceiver<S>, S extends INetworkObjectSender<S>> INetworkObjectHandler<S> registerNetworkObject(@Nullable R networkObjectR, @Nullable S networkObjectS) {
+    public <N extends INetworkObjectReceiver, S extends INetworkObjectSender> INetworkObjectHandler<S> registerNetworkObject(@Nullable N networkObjectR, @Nullable S networkObjectS) {
         if (!FMLHelper.isInModInitialisation() || (networkObjectS == null && networkObjectR == null)) {
             throw new IllegalStateException();
         }
-        NOH<S> ret = new NOH<>(i, networkObjectS, networkObjectR);
+        NOH<S> ret = new NOH<S>(i, networkObjectS, networkObjectR);
         packetStuff.add(ret);
         i++;
 
@@ -80,11 +78,11 @@ class DefaultNetworkObjectManager implements INetworkObjectManager, BiConsumer<D
     }
 
     @Override
-    public <N extends INetworkObject<N>> INetworkObjectHandler<N> registerSpecialNetworkObject(N networkObject) {
+    public <N extends INetworkObject> INetworkObjectHandler<N> registerSpecialNetworkObject(N networkObject) {
         if (!FMLHelper.isInModInitialisation()) {
             throw new IllegalStateException();
         }
-        NOH<N> ret = new NOH<>(i, networkObject, networkObject);
+        NOH<N> ret = new NOH<N>(i, networkObject, networkObject);
         packetStuff.add(ret);
         i++;
         networkObject.setNetworkObjectHandler(ret);
@@ -93,26 +91,31 @@ class DefaultNetworkObjectManager implements INetworkObjectManager, BiConsumer<D
 
     @Override
     public void accept(PacketNetworkObject message, Supplier<IExtendedMessageContext> extendedMessageContext) {
-        ElecCore.tickHandler.registerCall(() -> {
-            Iterator<NOH<?>> iterator = packetStuff.iterator();
-            NOH<?> noh = iterator.next();
-            while (!noh.handle(message)) {
-                noh = iterator.next();
+        ElecCore.tickHandler.registerCall(new Runnable() {
+
+            @Override
+            public void run() {
+                Iterator<NOH> iterator = packetStuff.iterator();
+                NOH noh = iterator.next();
+                while (!noh.handle(message)) {
+                    noh = iterator.next();
+                }
             }
+
         }, extendedMessageContext.get().getReceptionSide());
     }
 
-    private class NOH<T extends INetworkObjectSender<T>> implements INetworkObjectHandler<T>, DefaultByteBufFactory {
+    private class NOH<T extends INetworkObjectSender> implements INetworkObjectHandler<T>, DefaultByteBufFactory {
 
-        private NOH(byte i, @Nullable T obj, @Nullable INetworkObjectReceiver<T> receiver) {
+        private NOH(byte i, @Nullable T obj, @Nullable INetworkObjectReceiver receiver) {
             this.b = i;
             this.obj = obj;
             this.receiver = receiver;
         }
 
-        private final byte b;
-        private final T obj;
-        private final INetworkObjectReceiver<T> receiver;
+        private byte b;
+        private T obj;
+        private INetworkObjectReceiver receiver;
 
         @Override
         public void sendToAll(int id) {
@@ -161,11 +164,11 @@ class DefaultNetworkObjectManager implements INetworkObjectManager, BiConsumer<D
 
         @Override
         public void sendToDimension(int id, ResourceLocation dimensionId) {
-            sendToDimension(id, WorldHelper.getWorldKey(dimensionId));
+            sendToDimension(id, Preconditions.checkNotNull(DimensionType.byName(dimensionId)));
         }
 
         @Override
-        public void sendToDimension(int id, RegistryKey<World> dimensionId) {
+        public void sendToDimension(int id, DimensionType dimensionId) {
             ByteBuf buf = Unpooled.buffer();
             if (getNetworkObjectSender() != null) {
                 getNetworkObjectSender().writePacket(id, new ElecByteBufImpl(buf));
@@ -183,42 +186,42 @@ class DefaultNetworkObjectManager implements INetworkObjectManager, BiConsumer<D
         }
 
         @Override
-        public void sendToAll(int id, CompoundNBT data) {
+        public void sendToAll(int id, CompoundTag data) {
             sendToAll(id, fromTag(data));
         }
 
         @Override
-        public void sendTo(int id, CompoundNBT data, IEntityFilter<ServerPlayerEntity> playerFilter, MinecraftServer server) {
+        public void sendTo(int id, CompoundTag data, IEntityFilter<ServerPlayerEntity> playerFilter, MinecraftServer server) {
             sendTo(id, fromTag(data), playerFilter, server);
         }
 
         @Override
-        public void sendTo(int id, CompoundNBT data, List<ServerPlayerEntity> players) {
+        public void sendTo(int id, CompoundTag data, List<ServerPlayerEntity> players) {
             sendTo(id, fromTag(data), players);
         }
 
         @Override
-        public void sendTo(int id, CompoundNBT data, ServerPlayerEntity player) {
+        public void sendTo(int id, CompoundTag data, ServerPlayerEntity player) {
             sendTo(id, fromTag(data), player);
         }
 
         @Override
-        public void sendToAllAround(int id, CompoundNBT data, IPacketDispatcher.TargetPoint point) {
+        public void sendToAllAround(int id, CompoundTag data, IPacketDispatcher.TargetPoint point) {
             sendToAllAround(id, fromTag(data), point);
         }
 
         @Override
-        public void sendToDimension(int id, CompoundNBT data, RegistryKey<World> dimensionId) {
+        public void sendToDimension(int id, CompoundTag data, DimensionType dimensionId) {
             sendToDimension(id, fromTag(data), dimensionId);
         }
 
         @Override
-        public void sendToDimension(int id, CompoundNBT data, ResourceLocation dimensionId) {
+        public void sendToDimension(int id, CompoundTag data, ResourceLocation dimensionId) {
             sendToDimension(id, fromTag(data), dimensionId);
         }
 
         @Override
-        public void sendToServer(int id, CompoundNBT data) {
+        public void sendToServer(int id, CompoundTag data) {
             sendToServer(id, fromTag(data));
         }
 
@@ -238,7 +241,7 @@ class DefaultNetworkObjectManager implements INetworkObjectManager, BiConsumer<D
         }
 
         @Override
-        public void sendToDimension(int id, ByteBuf data, RegistryKey<World> dimensionId) {
+        public void sendToDimension(int id, ByteBuf data, DimensionType dimensionId) {
             packetDispatcher.sendToDimension(new PacketNetworkObject(b, (byte) id, data), dimensionId);
         }
 
@@ -258,16 +261,16 @@ class DefaultNetworkObjectManager implements INetworkObjectManager, BiConsumer<D
             return obj;
         }
 
-        private ByteBuf fromTag(CompoundNBT tag) {
+        private ByteBuf fromTag(CompoundTag tag) {
             ElecByteBuf buf = new ElecByteBufImpl(Unpooled.buffer());
-            buf.writeCompoundNBTToBuffer(tag);
+            buf.writeCompoundTagToBuffer(tag);
             return buf;
         }
 
         private boolean handle(PacketNetworkObject packet) {
             if (packet.i == b) {
                 try {
-                    Preconditions.checkNotNull(receiver).onPacket(packet.i2, new ElecByteBufImpl(packet.data));
+                    receiver.onPacket(packet.i2, new ElecByteBufImpl(packet.data));
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
@@ -280,7 +283,6 @@ class DefaultNetworkObjectManager implements INetworkObjectManager, BiConsumer<D
 
     public static class PacketNetworkObject implements IMessage {
 
-        @SuppressWarnings("unused")
         public PacketNetworkObject() {
         }
 
@@ -290,8 +292,8 @@ class DefaultNetworkObjectManager implements INetworkObjectManager, BiConsumer<D
             this.data = buf;
         }
 
-        private byte i, i2;
-        private ByteBuf data;
+        byte i, i2;
+        ByteBuf data;
 
         @Override
         public void fromBytes(PacketBuffer buf) {

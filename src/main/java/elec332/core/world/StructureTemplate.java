@@ -6,15 +6,16 @@ import elec332.core.api.structure.GenerationType;
 import elec332.core.api.structure.ISchematic;
 import elec332.core.api.util.Area;
 import elec332.core.world.schematic.Schematic;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.RegistryKey;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-import net.minecraft.world.chunk.Chunk;
-import net.minecraft.world.gen.Heightmap;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.EntityBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.chunk.LevelChunk;
+import net.minecraft.world.level.levelgen.Heightmap;
 
 import java.util.Set;
 
@@ -24,19 +25,19 @@ import java.util.Set;
 public class StructureTemplate {
 
     @SafeVarargs
-    public StructureTemplate(Schematic schematic, GenerationType generationType, RegistryKey<World>... dimensions) {
+    public StructureTemplate(Schematic schematic, GenerationType generationType, ResourceKey<Level>... dimensions) {
         this.schematic = schematic;
         this.generationType = generationType;
         this.dimensions = Sets.newHashSet(dimensions);
     }
 
     @SafeVarargs
-    public StructureTemplate(Schematic schematic, RegistryKey<World>... dimensions) {
+    public StructureTemplate(Schematic schematic, ResourceKey<Level>... dimensions) {
         this(schematic, GenerationType.NONE, dimensions);
     }
 
     protected Schematic schematic;
-    protected Set<RegistryKey<World>> dimensions;
+    protected Set<ResourceKey<Level>> dimensions;
     protected GenerationType generationType;
 
     /**
@@ -45,8 +46,8 @@ public class StructureTemplate {
      * @param location The coordinates
      * @param world    The world
      */
-    public void generateStructure(BlockPos location, World world) {
-        if (!world.isRemote) { /* You never know what someone else might be trying to do */
+    public void generateStructure(BlockPos location, Level world) {
+        if (!world.isClientSide()) { /* You never know what someone else might be trying to do */
             int xCoord = location.getX();
             int yCoord = location.getY();
             int zCoord = location.getZ();
@@ -58,7 +59,7 @@ public class StructureTemplate {
                     yCoord = 16;
                     break;
                 case SURFACE:
-                    yCoord = world.getHeight(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, location).getY();
+                    yCoord = world.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, location.getX(), location.getZ());
                     break;
                 case NONE:
                     break;
@@ -87,13 +88,13 @@ public class StructureTemplate {
                             BlockState state = schematic.getBlockState(schematicPos);
 
                             if (block != null) {
-                                WorldHelper.setBlockState(world, worldPos, Blocks.AIR.getDefaultState(), 2);
-                                if (!block.isAir(state, world, worldPos)) {
+                                WorldHelper.setBlockState(world, worldPos, Blocks.AIR.defaultBlockState(), 2);
+                                if (!state.isAir()) {
                                     WorldHelper.setBlockState(world, worldPos, state, 2);
-                                    if (block.hasTileEntity(state)) {
-                                        CompoundNBT tileData = schematic.getTileData(x, y, z, worldX, worldY, worldZ);
+                                    if (block instanceof EntityBlock) {
+                                        CompoundTag tileData = schematic.getTileData(x, y, z, worldX, worldY, worldZ);
                                         if (tileData != null) {
-                                            WorldHelper.getTileAt(world, worldPos).read(state, tileData);
+                                            WorldHelper.getTileAt(world, worldPos).load(tileData);
                                             WorldHelper.markBlockForUpdate(world, worldPos);
                                         }
                                     }
@@ -104,8 +105,8 @@ public class StructureTemplate {
                 }
                 for (int i = chunkX; i < chunkX + (schematicArea.getBlockWidth() >> 4); i++) {
                     for (int j = chunkZ; j < chunkZ + (schematicArea.getBlockLength() >> 4); j++) {
-                        Chunk chunk = world.getChunk(chunkX, chunkZ);
-                        chunk.setModified(true);
+                        LevelChunk chunk = world.getChunk(chunkX, chunkZ);
+                        chunk.setUnsaved(true);
                         WorldHelper.enqueueChunkRelightChecks(chunk);
                     }
                 }
@@ -121,7 +122,7 @@ public class StructureTemplate {
         return generationType;
     }
 
-    public Set<RegistryKey<World>> getDimensions() {
+    public Set<ResourceKey<Level>> getDimensions() {
         return dimensions;
     }
 
@@ -129,7 +130,7 @@ public class StructureTemplate {
         return getDimensions() != null && !getDimensions().isEmpty();
     }
 
-    public boolean canSpawnInDimension(RegistryKey<World> dimension) {
+    public boolean canSpawnInDimension(ResourceKey<Level> dimension) {
         return !isDimensionRestricted() || getDimensions().contains(dimension);
     }
 

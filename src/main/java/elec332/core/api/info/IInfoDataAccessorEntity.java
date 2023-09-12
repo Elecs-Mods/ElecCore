@@ -2,8 +2,8 @@ package elec332.core.api.info;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 import javax.annotation.Nonnull;
@@ -16,21 +16,21 @@ public interface IInfoDataAccessorEntity extends IInfoDataAccessor {
 
     @Nonnull
     @Override
-    PlayerEntity getPlayer();
+    public PlayerEntity getPlayer();
 
     @Nonnull
-    Entity getEntity();
-
-    @Nonnull
-    @Override
-    World getWorld();
+    public Entity getEntity();
 
     @Nonnull
     @Override
-    CompoundNBT getData();
+    public World getWorld();
+
+    @Nonnull
+    @Override
+    public CompoundTag getData();
 
     @Nullable
     @Override
-    Vector3d getHitVec();
+    public Vec3d getHitVec();
 
 }

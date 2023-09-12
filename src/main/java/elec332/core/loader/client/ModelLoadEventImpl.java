@@ -1,13 +1,13 @@
 package elec332.core.loader.client;
 
-import elec332.core.api.client.model.IModelBakery;
-import elec332.core.api.client.model.IQuadBakery;
-import elec332.core.api.client.model.ITemplateBakery;
+import elec332.core.api.client.model.IElecModelBakery;
+import elec332.core.api.client.model.IElecQuadBakery;
+import elec332.core.api.client.model.IElecTemplateBakery;
 import elec332.core.api.client.model.ModelLoadEvent;
 import elec332.core.client.RenderHelper;
-import net.minecraft.client.renderer.model.IBakedModel;
+import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.renderer.model.ModelResourceLocation;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.model.ModelLoader;
@@ -23,7 +23,7 @@ import java.util.function.Function;
 @OnlyIn(Dist.CLIENT)
 class ModelLoadEventImpl extends ModelLoadEvent {
 
-    ModelLoadEventImpl(IQuadBakery quadBakery, IModelBakery modelBakery, ITemplateBakery templateBakery, Map<ResourceLocation, IBakedModel> registry, Function<ModelResourceLocation, IBakedModel> modelGetter, ModelLoader modelLoader) {
+    ModelLoadEventImpl(IElecQuadBakery quadBakery, IElecModelBakery modelBakery, IElecTemplateBakery templateBakery, Map<ResourceLocation, IBakedModel> registry, Function<ModelResourceLocation, IBakedModel> modelGetter, ModelLoader modelLoader) {
         this.quadBakery = quadBakery;
         this.modelBakery = modelBakery;
         this.templateBakery = templateBakery;
@@ -32,28 +32,28 @@ class ModelLoadEventImpl extends ModelLoadEvent {
         this.modelLoader = modelLoader;
     }
 
-    private final IQuadBakery quadBakery;
-    private final IModelBakery modelBakery;
-    private final ITemplateBakery templateBakery;
+    private final IElecQuadBakery quadBakery;
+    private final IElecModelBakery modelBakery;
+    private final IElecTemplateBakery templateBakery;
     private final Map<ResourceLocation, IBakedModel> registry;
     private final Function<ModelResourceLocation, IBakedModel> modelGetter;
     private final ModelLoader modelLoader;
 
     @Override
     @Nonnull
-    public IQuadBakery getQuadBakery() {
+    public IElecQuadBakery getQuadBakery() {
         return quadBakery;
     }
 
     @Override
     @Nonnull
-    public IModelBakery getModelBakery() {
+    public IElecModelBakery getModelBakery() {
         return modelBakery;
     }
 
     @Override
     @Nonnull
-    public ITemplateBakery getTemplateBakery() {
+    public IElecTemplateBakery getTemplateBakery() {
         return templateBakery;
     }
 

@@ -15,24 +15,24 @@ import javax.annotation.Nullable;
 public interface IInformation {
 
     @Nonnull
-    InfoMod getProviderType();
+    public InfoMod getProviderType();
 
-    default void addInformation(@Nonnull String line) {
+    default public void addInformation(@Nonnull String line) {
         addInformation(new StringTextComponent(Preconditions.checkNotNull(line)));
     }
 
-    void addInformation(@Nonnull ITextComponent text);
+    public void addInformation(@Nonnull ITextComponent text);
 
     @Nonnull
-    Object getInformationComponent();
+    public Object getInformationComponent();
 
     @Nullable
-    default Boolean isDebugMode() {
+    default public Boolean isDebugMode() {
         return null;
     }
 
     @Nullable
-    default Boolean isExtendedMode() {
+    default public Boolean isExtendedMode() {
         return null;
     }
 

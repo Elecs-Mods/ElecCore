@@ -11,8 +11,8 @@ import java.util.List;
 @OnlyIn(Dist.CLIENT)
 public interface IQuadProviderTemplate {
 
-    List<IQuadTemplate> getGeneralQuads();
+    public List<IQuadTemplate> getGeneralQuads();
 
-    IQuadTemplateSidedMap getSidedQuads();
+    public IQuadTemplateSidedMap getSidedQuads();
 
 }

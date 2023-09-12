@@ -12,13 +12,13 @@ public interface IMessage {
      *
      * @param buf
      */
-    void fromBytes(PacketBuffer buf);
+    public void fromBytes(PacketBuffer buf);
 
     /**
      * Deconstruct your message into the supplied byte buffer
      *
      * @param buf
      */
-    void toBytes(PacketBuffer buf);
+    public void toBytes(PacketBuffer buf);
 
 }

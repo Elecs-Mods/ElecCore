@@ -4,7 +4,7 @@ import com.google.common.collect.Sets;
 import net.minecraft.resources.IResourcePack;
 import net.minecraft.resources.ResourcePackType;
 import net.minecraft.resources.data.IMetadataSectionSerializer;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -46,7 +46,7 @@ public abstract class InternalResourcePack implements IResourcePack {
 
     @Nonnull
     @Override
-    public Collection<ResourceLocation> getAllResourceLocations(@Nonnull ResourcePackType type, @Nonnull String nameSpace, @Nonnull String pathIn, int maxDepth, @Nonnull Predicate<String> filter) {
+    public Collection<ResourceLocation> getAllResourceLocations(@Nonnull ResourcePackType type, @Nonnull String pathIn, int maxDepth, @Nonnull Predicate<String> filter) {
         return Collections.emptyList();
     }
 

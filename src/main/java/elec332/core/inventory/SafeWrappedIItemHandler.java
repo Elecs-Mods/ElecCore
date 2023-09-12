@@ -2,7 +2,7 @@ package elec332.core.inventory;
 
 import elec332.core.api.util.IClearable;
 import elec332.core.util.ItemStackHelper;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.IItemHandlerModifiable;
 
 import javax.annotation.Nonnull;

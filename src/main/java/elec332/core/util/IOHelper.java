@@ -1,16 +1,16 @@
 package elec332.core.util;
 
 import elec332.core.ElecCore;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.CompressedStreamTools;
+import elec332.core.util.function.UnsafeBiConsumer;
+import elec332.core.util.function.UnsafeConsumer;
+import elec332.core.util.function.UnsafeFunction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtIo;
 import net.minecraftforge.fml.loading.FMLPaths;
 import org.apache.commons.io.FileUtils;
 
 import javax.annotation.Nonnull;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -38,7 +38,7 @@ public class IOHelper {
         return FMLPaths.CONFIGDIR.get();
     }
 
-    public static final IObjectIO<CompoundNBT> NBT_IO, NBT_COMPRESSED_IO;
+    public static final IObjectIO<CompoundTag> NBT_IO, NBT_COMPRESSED_IO;
 
     /**
      * Makes sure the folder exists, tries to create it if it doesn't.
@@ -141,6 +141,40 @@ public class IOHelper {
         return new File(file.getCanonicalPath() + "_back");
     }
 
+    public static <T extends InputStream, R> R tryInputStream(T is, UnsafeFunction<T, R, IOException> reader) throws IOException {
+        R ret;
+        try {
+            ret = reader.apply(is);
+        } catch (Throwable t) {
+            try {
+                is.close();
+            } catch (Throwable t2) {
+                t.addSuppressed(t2);
+            }
+            throw t;
+        }
+        is.close();
+        return ret;
+    }
+
+    public static <T extends OutputStream, W> void tryOutputStream(T os, W writable, UnsafeBiConsumer<T, W, IOException> writer) throws IOException {
+        tryClosable(os, os2 -> writer.accept(os2, writable));
+    }
+
+    public static <T extends Closeable> void tryClosable(T c, UnsafeConsumer<T, IOException> consumer) throws IOException {
+        try {
+            consumer.accept(c);
+        } catch (Throwable t) {
+            try {
+                c.close();
+            } catch (Throwable t2) {
+                t.addSuppressed(t2);
+            }
+            throw t;
+        }
+        c.close();
+    }
+
     /**
      * Utility class used to write objects to a file
      */
@@ -153,8 +187,8 @@ public class IOHelper {
          * @param obj  The object to be written to the specified file
          * @throws IOException When the operation has failed
          */
-        default public void write(File file, T obj) throws IOException {
-            throw new UnsupportedOperationException();
+        default void write(File file, T obj) throws IOException {
+            tryOutputStream(new FileOutputStream(file), obj, this::write);
         }
 
         /**
@@ -164,54 +198,72 @@ public class IOHelper {
          * @return The object read from the specified file
          * @throws IOException When the operation has failed
          */
-        default public T read(File file) throws IOException {
-            throw new UnsupportedOperationException();
+        default T read(File file) throws IOException {
+            return tryInputStream(new FileInputStream(file), this::read);
         }
+
+        /**
+         * Attempts to write an object to a file
+         *
+         * @param os The output stream
+         * @param obj  The object to be written to the specified file
+         * @throws IOException When the operation has failed
+         */
+        void write(OutputStream os, T obj) throws IOException;
+
+        /**
+         * Attempts to read an object from a file
+         *
+         * @param is The input stream
+         * @return The object read from the specified file
+         * @throws IOException When the operation has failed
+         */
+        T read(InputStream is) throws IOException;
 
         /**
          * @return A default value, gets called when the read has failed
          */
-        default public T returnOnReadFail() {
+        default T returnOnReadFail() {
             throw new RuntimeException();
         }
 
     }
 
     static {
-        NBT_IO = new IObjectIO<CompoundNBT>() {
+        NBT_IO = new IObjectIO<>() {
 
             @Override
-            public void write(File file, CompoundNBT obj) throws IOException {
-                CompressedStreamTools.write(obj, file);
+            public void write(OutputStream os, CompoundTag obj) throws IOException {
+                tryOutputStream(new DataOutputStream(os), obj, (os2, obj2) -> NbtIo.write(obj2, os2));
             }
 
             @Override
-            public CompoundNBT read(File file) throws IOException {
-                return CompressedStreamTools.read(file);
+            public CompoundTag read(InputStream is) throws IOException {
+                return tryInputStream(new ObjectInputStream(is), NbtIo::read);
             }
 
             @Override
-            public CompoundNBT returnOnReadFail() {
-                return new CompoundNBT();
+            public CompoundTag returnOnReadFail() {
+                return new CompoundTag();
             }
 
         };
 
-        NBT_COMPRESSED_IO = new IObjectIO<CompoundNBT>() {
+        NBT_COMPRESSED_IO = new IObjectIO<>() {
 
             @Override
-            public void write(File file, CompoundNBT obj) throws IOException {
-                CompressedStreamTools.writeCompressed(obj, new FileOutputStream(file));
+            public void write(OutputStream os, CompoundTag obj) throws IOException {
+                NbtIo.writeCompressed(obj, os);
             }
 
             @Override
-            public CompoundNBT read(File file) throws IOException {
-                return CompressedStreamTools.readCompressed(new FileInputStream(file));
+            public CompoundTag read(InputStream is) throws IOException {
+                return NbtIo.readCompressed(is);
             }
 
             @Override
-            public CompoundNBT returnOnReadFail() {
-                return new CompoundNBT();
+            public CompoundTag returnOnReadFail() {
+                return new CompoundTag();
             }
 
         };

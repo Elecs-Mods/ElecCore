@@ -1,7 +1,7 @@
 package elec332.core.grid;
 
 import elec332.core.world.DimensionCoordinate;
-import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.World;
 
 import java.util.Set;

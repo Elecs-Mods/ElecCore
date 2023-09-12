@@ -4,8 +4,8 @@ import com.google.common.collect.*;
 import elec332.core.api.util.IClearable;
 import elec332.core.world.WorldHelper;
 import it.unimi.dsi.fastutil.longs.Long2ObjectLinkedOpenHashMap;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.ChunkPos;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.ChunkPos;
 
 import javax.annotation.Nonnull;
 import java.util.Collection;
@@ -152,7 +152,7 @@ public class PositionedObjectHolder<T, V> implements IClearable {
      */
     public Set<ChunkPos> getChunks() {
         Set<ChunkPos> ret = Sets.newHashSet();
-        for (AbstractPositionChunk chunk : positionedMap.values()) {
+        for (AbstractPositionChunk<T, V> chunk : positionedMap.values()) {
             ret.add(chunk.pos);
         }
         return ret;
@@ -276,6 +276,7 @@ public class PositionedObjectHolder<T, V> implements IClearable {
 
     public static class MultiMapPositionChunk<T> extends AbstractPositionChunk<Set<T>, T> {
 
+        @SuppressWarnings("UnstableApiUsage")
         public MultiMapPositionChunk(ChunkPos pos) {
             super(pos);
             this.posMap = HashMultimap.create();
@@ -339,13 +340,13 @@ public class PositionedObjectHolder<T, V> implements IClearable {
          * @param pos    The position that has changed
          * @param add    True if the object was added, false if the object was removed
          */
-        public void onChange(V object, BlockPos pos, boolean add);
+        void onChange(V object, BlockPos pos, boolean add);
 
     }
 
     public static <T, V> PositionedObjectHolder<T, V> immutableCopy(PositionedObjectHolder<T, V> original) {
 
-        return new PositionedObjectHolder<T, V>(original.positionedMap, p -> {
+        return new PositionedObjectHolder<>(original.positionedMap, p -> {
             throw new UnsupportedOperationException();
         }) {
 

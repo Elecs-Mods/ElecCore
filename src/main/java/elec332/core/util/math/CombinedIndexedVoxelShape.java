@@ -1,9 +1,9 @@
 package elec332.core.util.math;
 
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.shapes.VoxelShape;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -25,15 +25,15 @@ public class CombinedIndexedVoxelShape extends CustomRayTraceVoxelShape {
 
     @Override
     @Nullable
-    public BlockRayTraceResult rayTrace(@Nonnull Vector3d start, @Nonnull Vector3d end, @Nonnull BlockPos pos) {
-        BlockRayTraceResult closest = null;
+    public BlockHitResult clip(@Nonnull Vec3 start, @Nonnull Vec3 end, @Nonnull BlockPos pos) {
+        BlockHitResult closest = null;
         double closestDist = Double.POSITIVE_INFINITY;
         for (VoxelShape shape : shapes) {
-            BlockRayTraceResult hit = shape.rayTrace(start, end, pos);
+            BlockHitResult hit = shape.clip(start, end, pos);
             if (hit == null) {
                 continue;
             }
-            double dist = hit.getHitVec().squareDistanceTo(start);
+            double dist = hit.getLocation().distanceToSqr(start);
             if (closestDist < dist) {
                 continue;
             }

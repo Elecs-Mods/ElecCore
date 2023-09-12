@@ -1,23 +1,24 @@
 package elec332.core.client.util;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.client.renderer.model.ItemCameraTransforms;
-import net.minecraft.client.renderer.tileentity.ItemStackTileEntityRenderer;
-import net.minecraft.item.ItemStack;
-
-import javax.annotation.Nonnull;
+import net.minecraft.client.model.geom.EntityModelSet;
+import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
+import net.minecraft.world.item.ItemStack;
 
 /**
  * Created by Elec332 on 23-12-2019
  */
-public abstract class AbstractTileEntityItemStackRenderer extends ItemStackTileEntityRenderer {
+public abstract class AbstractTileEntityItemStackRenderer extends BlockEntityWithoutLevelRenderer {
 
-    @Override
-    public void func_239207_a_(@Nonnull ItemStack stack, @Nonnull ItemCameraTransforms.TransformType transformType, @Nonnull MatrixStack matrixStack, @Nonnull IRenderTypeBuffer renderTypeBuffer, int combinedLightIn, int combinedOverlayIn) {
-        renderItem(stack, matrixStack, renderTypeBuffer, combinedLightIn, combinedOverlayIn);
+    public AbstractTileEntityItemStackRenderer(BlockEntityRenderDispatcher p_172550_, EntityModelSet p_172551_) {
+        super(p_172550_, p_172551_);
     }
 
-    protected abstract void renderItem(@Nonnull ItemStack stack, @Nonnull MatrixStack matrixStack, @Nonnull IRenderTypeBuffer renderTypeBuffer, int combinedLightIn, int combinedOverlayIn);
+    @Override
+    public final void renderByItem(ItemStack itemStackIn) {
+        renderItem(itemStackIn);
+    }
+
+    protected abstract void renderItem(ItemStack stack);
 
 }

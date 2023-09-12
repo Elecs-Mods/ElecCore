@@ -13,13 +13,13 @@ import java.util.List;
 @OnlyIn(Dist.CLIENT)
 public interface IQuadTemplateSidedMap {
 
-    void setQuadsForSide(Direction side, @Nonnull List<IQuadTemplate> newQuads);
+    public void setQuadsForSide(Direction side, @Nonnull List<IQuadTemplate> newQuads);
 
-    void addQuadsForSide(Direction side, List<IQuadTemplate> toAdd);
+    public void addQuadsForSide(Direction side, List<IQuadTemplate> toAdd);
 
-    void addQuadForSide(Direction side, IQuadTemplate toAdd);
+    public void addQuadForSide(Direction side, IQuadTemplate toAdd);
 
     @Nonnull
-    List<IQuadTemplate> getForSide(Direction side);
+    public List<IQuadTemplate> getForSide(Direction side);
 
 }

@@ -7,6 +7,6 @@ import net.minecraft.world.World;
  */
 public interface ILocatedPacket {
 
-    IPacketDispatcher.TargetPoint getTargetPoint(World world, double range);
+    public IPacketDispatcher.TargetPoint getTargetPoint(World world, double range);
 
 }

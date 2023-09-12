@@ -1,16 +1,15 @@
 package elec332.core.api.module;
 
 import com.google.common.base.Strings;
-import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.forgespi.language.IModInfo;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.maven.artifact.versioning.VersionRange;
 
 import javax.annotation.Nonnull;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Created by Elec332 on 8-10-2016.
@@ -23,19 +22,19 @@ public interface IModuleInfo {
      * @return The modId
      */
     @Nonnull
-    String getOwner();
+    public String getOwner();
 
     /**
      * @return The name of this module
      */
     @Nonnull
-    String getName();
+    public String getName();
 
     /**
      * @return The ResourceLocation of this module, so: owner:name
      */
     @Nonnull
-    ResourceLocation getCombinedName();
+    public ResourceLocation getCombinedName();
 
     /**
      * When true, this module will load even if some of the dependencies are missing,
@@ -44,7 +43,7 @@ public interface IModuleInfo {
      * @return Whether this module should automatically disable when some of the
      * dependencies are missing.
      */
-    boolean autoDisableIfRequirementsNotMet();
+    public boolean autoDisableIfRequirementsNotMet();
 
     /**
      * Returns an array of modId's this module depends on
@@ -56,7 +55,7 @@ public interface IModuleInfo {
      * @return The mod dependencies
      */
     @Nonnull
-    Set<Pair<String, VersionRange>> getModDependencies();
+    public List<Pair<String, VersionRange>> getModDependencies();
 
     /**
      * Returns an array of module names this module depends on.
@@ -66,7 +65,7 @@ public interface IModuleInfo {
      * @return The mod dependencies
      */
     @Nonnull
-    Set<ResourceLocation> getModuleDependencies();
+    public List<String> getModuleDependencies();
 
     /**
      * The main module class that needs to be invoked to load the module.
@@ -74,7 +73,7 @@ public interface IModuleInfo {
      * @return The main module class
      */
     @Nonnull
-    String getModuleClass();
+    public String getModuleClass();
 
     /**
      * If true, this module cannot be disabled
@@ -82,19 +81,19 @@ public interface IModuleInfo {
      *
      * @return Whether the module-controller can disable this module.
      */
-    boolean alwaysEnabled();
+    public boolean alwaysEnabled();
 
     /**
      * @return The module-controller for this module
      */
     @Nonnull
-    IModuleController getModuleController();
+    public IModuleController getModuleController();
 
-    static Set<Pair<String, VersionRange>> parseDependencyInfo(String modDependencies) {
+    public static List<Pair<String, VersionRange>> parseDependencyInfo(String modDependencies) {
         try {
             List<Pair<String, VersionRange>> ret = Lists.newArrayList();
             if (Strings.isNullOrEmpty(modDependencies)) {
-                return ImmutableSet.of();
+                return ImmutableList.of();
             }
             String[] parts = modDependencies.split(";");
             for (String s : parts) {
@@ -108,24 +107,10 @@ public interface IModuleInfo {
                 }
                 ret.add(Pair.of(split[0], version));
             }
-            return ImmutableSet.copyOf(ret);
+            return ImmutableList.copyOf(ret);
         } catch (Exception e) {
             throw new RuntimeException("Failed to parse dependency info!", e);
         }
-    }
-
-    interface Builder {
-
-        Builder noAutoDisableIfRequirementsNotMet();
-
-        Builder addModDependency(String name, VersionRange version);
-
-        Builder addModuleDependency(ResourceLocation moduleName);
-
-        Builder alwaysEnabled();
-
-        IModuleInfo build();
-
     }
 
 }

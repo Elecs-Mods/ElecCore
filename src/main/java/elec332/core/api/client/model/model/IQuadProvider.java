@@ -1,6 +1,6 @@
 package elec332.core.api.client.model.model;
 
-import net.minecraft.block.BlockState;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.client.renderer.model.BakedQuad;
 import net.minecraft.util.Direction;
 import net.minecraftforge.api.distmarker.Dist;
@@ -16,6 +16,6 @@ import java.util.Random;
 public interface IQuadProvider {
 
     @OnlyIn(Dist.CLIENT)
-    List<BakedQuad> getBakedQuads(@Nullable BlockState state, Direction side, Random random);
+    public List<BakedQuad> getBakedQuads(@Nullable BlockState state, Direction side, Random random);
 
 }

@@ -6,7 +6,6 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import elec332.core.ElecCore;
 import elec332.core.api.registration.RegisteredTileEntity;
 import elec332.core.tile.AbstractTileEntity;
 import elec332.core.util.ItemStackHelper;
@@ -14,24 +13,19 @@ import elec332.core.util.NBTTypes;
 import elec332.core.util.math.HitboxHelper;
 import elec332.core.util.math.IndexedBlockPos;
 import elec332.core.util.math.RayTraceHelper;
-import elec332.core.world.WorldHelper;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.fluid.FluidState;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.ListNBT;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Direction;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.fluid.IFluidState;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
 import net.minecraft.util.Hand;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.capabilities.Capability;
@@ -60,6 +54,7 @@ public class TileMultiObject extends AbstractTileEntity {
         }
     }
 
+    @SuppressWarnings("all")
     public TileMultiObject() {
         subtiles = Lists.newArrayList();
         cachedCaps = Maps.newHashMap();
@@ -70,7 +65,7 @@ public class TileMultiObject extends AbstractTileEntity {
     private final Map<Capability<?>, LazyOptional<?>> cachedCaps;
     private long worldTime;
     private Set<BlockPos> posSet = Sets.newHashSet();
-    private Map<Integer, CompoundNBT> packetCatcher;
+    private Map<Integer, CompoundTag> packetCatcher;
 
     public boolean shouldRefresh(long newTime, BlockPos otherPos) {
         if (worldTime != newTime) {
@@ -96,19 +91,28 @@ public class TileMultiObject extends AbstractTileEntity {
     }
 
     @OnlyIn(Dist.CLIENT)
-    public VoxelShape getSelectionBox(BlockState state, PlayerEntity player, RayTraceResult last) {
-        Pair<Vector3d, Vector3d> rayTraceVectors = RayTraceHelper.getRayTraceVectors(player);
-        Pair<ISubTileLogic, RayTraceResult> hit = getRayTraceResult(state, rayTraceVectors.getLeft(), RayTraceHelper.slightExpand(rayTraceVectors.getLeft(), last.getHitVec()), getData(pos));
+    public VoxelShape getSelectionBox(BlockState state, Player player, BlockHitResult last) {
+        Pair<Vec3, Vec3> rayTraceVectors = RayTraceHelper.getRayTraceVectors(player);
+        Pair<ISubTileLogic, BlockHitResult> hit = getRayTraceResult(state, rayTraceVectors.getLeft(), RayTraceHelper.slightExpand(rayTraceVectors.getLeft(), last.getLocation()), getData(pos));
         if (hit != null) {
             return hit.getLeft().getSelectionBox(state, hit.getRight(), player);
         }
         return null;
     }
 
+    /*
+        public RayTraceResult getRayTraceResult(Vec3d start, Vec3d end, @Nonnull RayTraceResult original, @Nonnull BlockPos pos) {
+            Pair<ISubTileLogic, RayTraceResult> ret = getRayTraceResult(start, RayTraceHelper.slightExpand(start, original.getHitVec()), getData(pos));
+            if (ret != null) {
+                return ret.getRight();
+            }
+            return null;
+        }
+    /**/
     @Nullable
-    private Pair<ISubTileLogic, RayTraceResult> getRayTraceResult(BlockState state, Vector3d start, Vector3d end, int data) {
+    private Pair<ISubTileLogic, RayTraceResult> getRayTraceResult(BlockState state, Vec3d start, Vec3d end, int data) {
         return subtiles.stream().reduce(null, (s1, s2) -> {
-            Vector3d e = end;
+            Vec3d e = end;
             if (s1 != null) {
                 e = RayTraceHelper.slightExpand(start, s1.getRight().getHitVec());
             }
@@ -122,6 +126,7 @@ public class TileMultiObject extends AbstractTileEntity {
         }, (a, b) -> a);
     }
 
+
     public void onRemoved() {
         cachedCaps.clear();
         subtiles.forEach(ISubTileLogic::onRemoved);
@@ -132,8 +137,8 @@ public class TileMultiObject extends AbstractTileEntity {
         }
     }
 
-    public boolean removedByPlayer(BlockState state, @Nonnull PlayerEntity player, boolean willHarvest, FluidState fluid, @Nonnull BlockPos pos) {
-        Pair<Vector3d, Vector3d> rayTraceVectors = RayTraceHelper.getRayTraceVectors(player);
+    public boolean removedByPlayer(BlockState state, @Nonnull PlayerEntity player, boolean willHarvest, IFluidState fluid, @Nonnull BlockPos pos) {
+        Pair<Vec3d, Vec3d> rayTraceVectors = RayTraceHelper.getRayTraceVectors(player);
         Pair<ISubTileLogic, RayTraceResult> hit = getRayTraceResult(state, rayTraceVectors.getLeft(), rayTraceVectors.getRight(), getData(pos));
         packetCatcher = Maps.newHashMap();
         if (hit != null && hit.getLeft().removedByPlayer(player, willHarvest, hit.getRight()) && subtiles.stream().allMatch(ISubTileLogic::canBeRemoved)) {
@@ -147,7 +152,7 @@ public class TileMultiObject extends AbstractTileEntity {
         return false;
     }
 
-    public void neighborChanged(BlockPos neighborPos, boolean observer, FluidState fluid, Block changedBlock) {
+    public void neighborChanged(BlockPos neighborPos, boolean observer, IFluidState fluid, Block changedBlock) {
         subtiles.forEach(subTileLogicBase -> subTileLogicBase.neighborChanged(neighborPos, changedBlock, observer));
         if (subtiles.stream().allMatch(ISubTileLogic::canBeRemoved)) {
             Preconditions.checkNotNull(world).setBlockState(pos, fluid.getBlockState(), world.isRemote ? 11 : 3);
@@ -155,10 +160,10 @@ public class TileMultiObject extends AbstractTileEntity {
     }
 
     @SuppressWarnings("unused")
-    public ActionResultType onBlockActivated(PlayerEntity player, Hand hand, BlockState state, BlockRayTraceResult rtr) {
-        Pair<Vector3d, Vector3d> rayTraceVectors = RayTraceHelper.getRayTraceVectors(player);
+    public boolean onBlockActivated(PlayerEntity player, Hand hand, BlockState state, BlockRayTraceResult rtr) {
+        Pair<Vec3d, Vec3d> rayTraceVectors = RayTraceHelper.getRayTraceVectors(player);
         Pair<ISubTileLogic, RayTraceResult> hit = getRayTraceResult(state, rayTraceVectors.getLeft(), rayTraceVectors.getRight(), getData(pos));
-        return hit != null ? hit.getLeft().onBlockActivated(player, hand, hit.getRight()) : ActionResultType.PASS;
+        return hit != null && hit.getLeft().onBlockActivated(player, hand, hit.getRight());
     }
 
     public ItemStack getStack(@Nonnull RayTraceResult hit, PlayerEntity player) {
@@ -172,7 +177,7 @@ public class TileMultiObject extends AbstractTileEntity {
     }
 
     @Override
-    public void sendPacket(int ID, CompoundNBT data) {
+    public void sendPacket(int ID, CompoundTag data) {
         if (packetCatcher != null) {
             packetCatcher.put(ID, data);
             return;
@@ -182,11 +187,11 @@ public class TileMultiObject extends AbstractTileEntity {
 
     @Override
     @Nonnull
-    public CompoundNBT write(CompoundNBT compound) {
-        ListNBT stD = new ListNBT();
+    public CompoundTag write(CompoundTag compound) {
+        ListTag stD = new ListTag();
         subtiles.forEach(logic -> {
             ResourceLocation name = SubTileRegistry.INSTANCE.getRegistryName(logic.getClass());
-            CompoundNBT tag = logic.writeToNBT(new CompoundNBT());
+            CompoundTag tag = logic.writeToNBT(new CompoundTag());
             tag.putString("strln", name.toString());
             stD.add(tag);
         });
@@ -195,11 +200,11 @@ public class TileMultiObject extends AbstractTileEntity {
     }
 
     @Override
-    public void readLegacy(CompoundNBT compound) {
-        ListNBT list = compound.getList("subtiles", NBTTypes.COMPOUND.getID());
+    public void read(@Nonnull CompoundTag compound) {
+        ListTag list = compound.getList("subtiles", NBTTypes.COMPOUND.getID());
         subtiles.clear();
         for (int i = 0; i < list.size(); i++) {
-            CompoundNBT tag = list.getCompound(i);
+            CompoundTag tag = list.getCompound(i);
             SubTileLogicBase logic = SubTileRegistry.INSTANCE.invoke(new ResourceLocation(tag.getString("strln")), new SubTileLogicBase.Data(this, i + 10));
             logic.readFromNBT(tag);
             subtiles.add(logic);
@@ -207,7 +212,7 @@ public class TileMultiObject extends AbstractTileEntity {
         //These 2 lines below cost me 4 hours of my life...
         cachedCaps.forEach((c, v) -> v.invalidate());
         cachedCaps.clear();
-        super.readLegacy(compound);
+        super.read(compound);
     }
 
     @Override
@@ -220,13 +225,6 @@ public class TileMultiObject extends AbstractTileEntity {
     @Override
     public void onLoad() {
         subtiles.forEach(SubTileLogicBase::onLoad);
-        if (WorldHelper.isServer(getWorld())) {
-            ElecCore.tickHandler.registerCall(() -> {
-                if (subtiles.stream().allMatch(ISubTileLogic::canBeRemoved)) {
-                    WorldHelper.setBlockState(getWorld(), getPos(), Blocks.AIR.getDefaultState(), 3);
-                }
-            }, getWorld());
-        }
     }
 
     @Override
@@ -235,7 +233,7 @@ public class TileMultiObject extends AbstractTileEntity {
     }
 
     @Override
-    public void onDataPacket(int id, CompoundNBT tag) {
+    public void onDataPacket(int id, CompoundTag tag) {
         if (id >= 10) { //First 10 ID's are reserved for internal use
             SubTileLogicBase st = subtiles.get(id - 10);
             st.onDataPacket(tag.getInt("kid"), tag.getCompound("data"));

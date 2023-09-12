@@ -11,14 +11,15 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 @OnlyIn(Dist.CLIENT)
 public interface IModelWithoutQuads {
 
-    boolean isAmbientOcclusion();
+    public boolean isAmbientOcclusion();
 
-    boolean isGui3d();
+    public boolean isGui3d();
 
-    boolean isBuiltInRenderer();
+    public boolean isBuiltInRenderer();
 
-    TextureAtlasSprite getParticleTexture();
+    public TextureAtlasSprite getParticleTexture();
 
-    ItemCameraTransforms getItemCameraTransforms();
+    @SuppressWarnings("deprecation")
+    public ItemCameraTransforms getItemCameraTransforms();
 
 }

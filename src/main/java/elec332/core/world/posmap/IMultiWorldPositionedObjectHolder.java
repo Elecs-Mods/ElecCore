@@ -2,9 +2,9 @@ package elec332.core.world.posmap;
 
 import elec332.core.api.util.IClearable;
 import elec332.core.world.WorldHelper;
-import net.minecraft.util.RegistryKey;
-import net.minecraft.world.IWorld;
-import net.minecraft.world.World;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.Level;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -27,7 +27,7 @@ public interface IMultiWorldPositionedObjectHolder<T, V> extends IClearable {
      * @return The {@link PositionedObjectHolder} for the specified dimension, can be null
      */
     @Nullable
-    default PositionedObjectHolder<T, V> get(IWorld world) {
+    default PositionedObjectHolder<T, V> get(Level world) {
         return get(WorldHelper.getDimID(world));
     }
 
@@ -39,7 +39,7 @@ public interface IMultiWorldPositionedObjectHolder<T, V> extends IClearable {
      * @return The {@link PositionedObjectHolder} for the specified dimension
      */
     @Nonnull
-    default PositionedObjectHolder<T, V> getOrCreate(IWorld world) {
+    default PositionedObjectHolder<T, V> getOrCreate(Level world) {
         return getOrCreate(WorldHelper.getDimID(world));
     }
 
@@ -51,7 +51,7 @@ public interface IMultiWorldPositionedObjectHolder<T, V> extends IClearable {
      * @return The {@link PositionedObjectHolder} for the specified dimension-ID, can be null
      */
     @Nullable
-    PositionedObjectHolder<T, V> get(RegistryKey<World> world);
+    PositionedObjectHolder<T, V> get(ResourceKey<Level> world);
 
     /**
      * Gets the {@link PositionedObjectHolder} for the specified dimension-ID,
@@ -61,7 +61,7 @@ public interface IMultiWorldPositionedObjectHolder<T, V> extends IClearable {
      * @return The {@link PositionedObjectHolder} for the specified dimension-ID
      */
     @Nonnull
-    PositionedObjectHolder<T, V> getOrCreate(RegistryKey<World> world);
+    PositionedObjectHolder<T, V> getOrCreate(ResourceKey<Level> world);
 
     /**
      * @return A collection of all underlying {@link PositionedObjectHolder}'s
@@ -73,7 +73,7 @@ public interface IMultiWorldPositionedObjectHolder<T, V> extends IClearable {
      * @return A map with all underlying {@link PositionedObjectHolder}'s including the dimension it belongs to
      */
     @Nonnull
-    Map<RegistryKey<World>, PositionedObjectHolder<T, V>> getUnModifiableView();
+    Map<ResourceLocation, PositionedObjectHolder<T, V>> getUnModifiableView();
 
     /**
      * Add a callback, gets called when a new {@link PositionedObjectHolder} is created

@@ -4,9 +4,9 @@ import com.google.common.base.MoreObjects;
 import elec332.core.api.network.ElecByteBuf;
 import elec332.core.util.ItemStackHelper;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import org.apache.commons.lang3.Validate;
 
@@ -30,14 +30,14 @@ class ElecByteBufImpl extends ElecByteBuf {
     private ByteBuf buf;
 
     @Override
-    public ElecByteBuf writeCompoundNBTToBuffer(@Nullable CompoundNBT tag) {
+    public ElecByteBuf writeCompoundTagToBuffer(@Nullable CompoundTag tag) {
         writeCompoundTag(tag);
         return this;
     }
 
     @Nullable
     @Override
-    public CompoundNBT readCompoundNBTFromBuffer() {
+    public CompoundTag readCompoundTagFromBuffer() {
         return readCompoundTag();
     }
 
@@ -115,7 +115,7 @@ class ElecByteBufImpl extends ElecByteBuf {
 
     @Override
     public ITextComponent readTextComponent() {
-        return ITextComponent.Serializer.func_240643_a_(this.readString());
+        return ITextComponent.Serializer.fromJson(this.readString());
     }
 
     @Override

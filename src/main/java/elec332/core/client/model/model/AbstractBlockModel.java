@@ -2,12 +2,12 @@ package elec332.core.client.model.model;
 
 import com.google.common.collect.ImmutableList;
 import elec332.core.api.client.model.model.IModelWithoutQuads;
-import elec332.core.client.RenderHelper;
 import elec332.core.client.model.ElecModelBakery;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.model.BakedQuad;
 import net.minecraft.client.renderer.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -37,7 +37,7 @@ public abstract class AbstractBlockModel implements IModelWithoutQuads {
 
     @Override
     public TextureAtlasSprite getParticleTexture() {
-        return RenderHelper.getBlockTextures().getSprite(getTextureLocation());
+        return Minecraft.getInstance().getTextureMap().getAtlasSprite(getTextureLocation().toString());
     }
 
     public abstract ResourceLocation getTextureLocation();

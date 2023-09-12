@@ -26,13 +26,13 @@ public @interface AnnotationDataProcessor {
      *
      * @return The (array of) ModLoadingStage(s) in which to load this.
      */
-    ModLoadingStage[] value();
+    public ModLoadingStage[] value();
 
     /**
      * The importance of this {@link IAnnotationDataProcessor}, higher = earlier processing
      *
      * @return Importance of this {@link IAnnotationDataProcessor}
      */
-    int importance() default -1;
+    public int importance() default -1;
 
 }

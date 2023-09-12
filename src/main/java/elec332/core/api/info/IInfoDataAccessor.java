@@ -1,8 +1,8 @@
 package elec332.core.api.info;
 
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 import javax.annotation.Nonnull;
@@ -18,7 +18,7 @@ public interface IInfoDataAccessor {
      * @return The player
      */
     @Nonnull
-    PlayerEntity getPlayer();
+    public PlayerEntity getPlayer();
 
     /**
      * The world in which the object is located
@@ -26,16 +26,16 @@ public interface IInfoDataAccessor {
      * @return The world
      */
     @Nonnull
-    World getWorld();
+    public World getWorld();
 
     @Nonnull
-    CompoundNBT getData();
+    public CompoundTag getData();
 
     /**
      * The exact position at which the object was hit
      *
      * @return The hit vec
      */
-    Vector3d getHitVec();
+    public Vec3d getHitVec();
 
 }

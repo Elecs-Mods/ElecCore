@@ -2,11 +2,11 @@ package elec332.core.world.schematic;
 
 import com.google.common.collect.Maps;
 import elec332.core.api.structure.ISchematic;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.ListNBT;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.core.BlockPos;
 
 import java.util.Map;
 
@@ -18,12 +18,7 @@ import java.util.Map;
  */
 public class Schematic implements ISchematic {
 
-    protected final ListNBT tileDataList;
-    private short width, height, length, horizon; //Horizon sets the "ground" or how far down to translate this.
-    protected BlockState[] blocks;
-    private Map<BlockPos, CompoundNBT> tiles;
-
-    protected Schematic(ListNBT tileEntities, short width, short height, short length, short horizon, BlockState[] blocks) {
+    protected Schematic(ListTag tileEntities, short width, short height, short length, short horizon, BlockState[] blocks) {
         this.tileDataList = tileEntities;
         this.width = width;
         this.height = height;
@@ -34,13 +29,18 @@ public class Schematic implements ISchematic {
         reloadTileMap();
     }
 
+    protected final ListTag tileDataList;
+    private final short width, height, length, horizon; //Horizon sets the "ground" or how far down to translate this.
+    protected final BlockState[] blocks;
+    private final Map<BlockPos, CompoundTag> tiles;
+
     /**
      * Reloads the tile data in the schematic.
      */
     private void reloadTileMap() {
         tiles.clear();
         for (int i = 0; i < tileDataList.size(); i++) {
-            CompoundNBT tag = tileDataList.getCompound(i).copy();
+            CompoundTag tag = tileDataList.getCompound(i).copy();
             BlockPos pos = new BlockPos(tag.getInt("x"), tag.getInt("y"), tag.getInt("z"));
             tiles.put(pos, tag);
         }
@@ -70,8 +70,8 @@ public class Schematic implements ISchematic {
      * @return The data from the tile entity located at the specified local schematic coordinates, or null if not found.
      */
     @Override
-    public CompoundNBT getTileData(int x, int y, int z, int worldX, int worldY, int worldZ) {
-        CompoundNBT tag = getTileData(x, y, z);
+    public CompoundTag getTileData(int x, int y, int z, int worldX, int worldY, int worldZ) {
+        CompoundTag tag = getTileData(x, y, z);
         if (tag != null) {
             tag.putInt("x", worldX);
             tag.putInt("y", worldY);
@@ -91,8 +91,8 @@ public class Schematic implements ISchematic {
      * @return The data from the tile entity located at the specified local schematic coordinates, or null if not found.
      */
     @Override
-    public CompoundNBT getTileData(int x, int y, int z) {
-        CompoundNBT tag = tiles.get(new BlockPos(x, y, z));
+    public CompoundTag getTileData(int x, int y, int z) {
+        CompoundTag tag = tiles.get(new BlockPos(x, y, z));
         if (tag != null) {
             return tag.copy();
         }

@@ -1,6 +1,6 @@
 package elec332.core.api.util;
 
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
 
 /*
  * This class was originally created by Lumaceon.

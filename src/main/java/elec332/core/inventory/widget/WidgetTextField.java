@@ -1,20 +1,18 @@
 package elec332.core.inventory.widget;
 
 import com.google.common.collect.Lists;
-import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.platform.GlStateManager;
 import elec332.core.client.ClientHelper;
 import elec332.core.client.RenderHelper;
 import elec332.core.inventory.window.Window;
 import elec332.core.util.FMLHelper;
 import elec332.core.util.NBTBuilder;
+import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
-import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -26,7 +24,7 @@ public class WidgetTextField extends Widget {
     public WidgetTextField(int x, int y, int width, int height, String msg) {
         super(x, y, 0, 0, width, height);
         if (FMLHelper.getLogicalSide().isClient()) {
-            textField = new net.minecraft.client.gui.widget.TextFieldWidget(RenderHelper.getMCFontrenderer(), x, y, width, height, new StringTextComponent(msg));
+            textField = new TextFieldWidget(RenderHelper.getMCFontrenderer(), x, y, width, height, msg);
             ClientHelper.getKeyboardListener().enableRepeatEvents(true);
         } else {
             textField = null;
@@ -131,17 +129,17 @@ public class WidgetTextField extends Widget {
     }
 
     @Override
-    public void readNBTChangesFromPacketServerSide(CompoundNBT tagCompound) {
+    public void readNBTChangesFromPacketServerSide(CompoundTag tagCompound) {
         runListeners(tagCompound.getString("txt"));
     }
 
     @Override
     @OnlyIn(Dist.CLIENT)
-    public void draw(Window window, @Nonnull MatrixStack matrixStack, int guiX, int guiY, double mouseX, double mouseY, float partialTicks) {
-        RenderSystem.pushMatrix();
-        RenderSystem.translatef(guiX, guiY, 0);
-        getTextField().renderButton(matrixStack, (int) mouseX, (int) mouseX, partialTicks);
-        RenderSystem.popMatrix();
+    public void draw(Window window, int guiX, int guiY, double mouseX, double mouseY, float partialTicks) {
+        GlStateManager.pushMatrix();
+        GlStateManager.translatef(guiX, guiY, 0);
+        getTextField().renderButton((int) mouseX, (int) mouseX, partialTicks);
+        GlStateManager.popMatrix();
     }
 
     @OnlyIn(Dist.CLIENT)
@@ -150,8 +148,8 @@ public class WidgetTextField extends Widget {
     }
 
     @OnlyIn(Dist.CLIENT)
-    private net.minecraft.client.gui.widget.TextFieldWidget getTextField() {
-        return (net.minecraft.client.gui.widget.TextFieldWidget) textField;
+    private TextFieldWidget getTextField() {
+        return (TextFieldWidget) textField;
     }
 
 }

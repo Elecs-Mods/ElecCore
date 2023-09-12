@@ -7,13 +7,11 @@ import net.minecraft.world.gen.feature.IFeatureConfig;
  */
 public interface IRetroGenFeatureConfig extends IFeatureConfig {
 
-    String getName();
+    public String getName();
 
-    default String getGenKey() {
-        return "generated";
-    }
+    public String getGenKey();
 
-    default boolean shouldRetroGen(boolean hasInitialGen) {
+    default public boolean shouldRetroGen(boolean hasInitialGen) {
         return !hasInitialGen;
     }
 

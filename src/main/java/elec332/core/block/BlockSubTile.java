@@ -3,20 +3,17 @@ package elec332.core.block;
 import com.google.common.collect.Lists;
 import elec332.core.tile.sub.ISubTileLogic;
 import elec332.core.tile.sub.TileMultiObject;
-import elec332.core.util.FMLHelper;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.block.material.PushReaction;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.fluid.FluidState;
-import net.minecraft.item.ItemStack;
-import net.minecraft.loot.LootContext;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ActionResultType;
+import net.minecraft.fluid.IFluidState;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.shapes.ISelectionContext;
@@ -25,6 +22,7 @@ import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
+import net.minecraft.world.storage.loot.LootContext;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -40,9 +38,6 @@ public class BlockSubTile extends AbstractBlock implements ISelectionBoxOverride
     @SuppressWarnings("all")
     public BlockSubTile(Properties builder, Class<? extends ISubTileLogic>... subtiles) {
         super(builder.hardnessAndResistance(5));
-        if (FMLHelper.getDist().isClient()) {
-            setBlockRenderType(RenderType.getCutout());
-        }
         this.subtiles = subtiles;
     }
 
@@ -78,6 +73,12 @@ public class BlockSubTile extends AbstractBlock implements ISelectionBoxOverride
 
     @Nonnull
     @Override
+    public BlockRenderLayer getRenderLayer() {
+        return BlockRenderLayer.CUTOUT;
+    }
+
+    @Nonnull
+    @Override
     @SuppressWarnings("deprecation")
     public PushReaction getPushReaction(BlockState state) {
         return PushReaction.DESTROY;
@@ -93,7 +94,7 @@ public class BlockSubTile extends AbstractBlock implements ISelectionBoxOverride
 
     @Override
     @SuppressWarnings("deprecation")
-    public boolean removedByPlayer(@Nonnull BlockState state, World world, @Nonnull BlockPos pos, @Nonnull PlayerEntity player, boolean willHarvest, FluidState fluid) {
+    public boolean removedByPlayer(@Nonnull BlockState state, World world, @Nonnull BlockPos pos, @Nonnull PlayerEntity player, boolean willHarvest, IFluidState fluid) {
         TileMultiObject tile = getTileEntity(world, pos, TileMultiObject.class);
         return tile.removedByPlayer(state, player, willHarvest, fluid, pos);
     }
@@ -120,12 +121,12 @@ public class BlockSubTile extends AbstractBlock implements ISelectionBoxOverride
     }
 
     @Override
-    public List<ItemStack> getDrops(List<ItemStack> drops, @Nonnull LootContext.Builder builder, @Nullable Entity entity, World world, BlockPos pos, @Nonnull BlockState state, ItemStack stack) {
+    public List<ItemStack> getDrops(List<ItemStack> drops, @Nonnull LootContext.Builder builder, Entity entity, World world, BlockPos pos, @Nonnull BlockState state, ItemStack stack) {
         return Lists.newArrayList();
     }
 
     @Override
-    public ActionResultType onBlockActivated(World world, BlockPos pos, BlockState state, PlayerEntity player, Hand hand, BlockRayTraceResult hit) {
+    public boolean onBlockActivated(World world, BlockPos pos, BlockState state, PlayerEntity player, Hand hand, BlockRayTraceResult hit) {
         TileMultiObject tile = getTileEntity(world, pos, TileMultiObject.class);
         return tile.onBlockActivated(player, hand, state, hit);
     }

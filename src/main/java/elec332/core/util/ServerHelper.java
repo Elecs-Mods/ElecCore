@@ -1,22 +1,18 @@
 package elec332.core.util;
 
-import com.google.common.base.Preconditions;
 import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableList;
 import elec332.core.api.network.IMessage;
 import elec332.core.api.network.INetworkHandler;
 import elec332.core.world.WorldHelper;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.play.server.SUpdateTileEntityPacket;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.RegistryKey;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-import net.minecraft.world.server.ChunkHolder;
-import net.minecraft.world.server.ServerWorld;
-import net.minecraftforge.fml.server.ServerLifecycleHooks;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ChunkHolder;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.level.Level;
+import net.minecraftforge.server.ServerLifecycleHooks;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -31,7 +27,7 @@ public class ServerHelper {
     /**
      * @return All online players
      */
-    public static List<ServerPlayerEntity> getOnlinePlayers() {
+    public static List<ServerPlayer> getOnlinePlayers() {
         return getMinecraftServer().getPlayerList().getPlayers();
     }
 
@@ -42,41 +38,21 @@ public class ServerHelper {
      * @return Whether the specified player is online
      */
     public static boolean isPlayerOnline(UUID uuid) {
-        return getOnlinePlayers().stream().anyMatch((Predicate<ServerPlayerEntity>) player -> PlayerHelper.getPlayerUUID(player).equals(uuid));
+        return getOnlinePlayers().stream().anyMatch((Predicate<ServerPlayer>) player -> PlayerHelper.getPlayerUUID(player).equals(uuid));
     }
 
     /**
-     * Gets a {@link ServerPlayerEntity} by its UUID, returns null if the player is offline/not found
+     * Gets a {@link ServerPlayer} by its UUID, returns null if the player is offline/not found
      *
      * @param uuid The player UUID
      * @return The player whose UUID matches the one provided, can be null
      */
     @Nullable
-    public static ServerPlayerEntity getPlayer(UUID uuid) {
+    public static ServerPlayer getPlayer(UUID uuid) {
         return getOnlinePlayers().stream()
-                .filter((Predicate<ServerPlayerEntity>) player -> PlayerHelper.getPlayerUUID(player).equals(uuid))
+                .filter((Predicate<ServerPlayer>) player -> PlayerHelper.getPlayerUUID(player).equals(uuid))
                 .findFirst() //The returned stream is lazy, so this is perfectly fine
                 .orElse(null);
-    }
-
-    /**
-     * Sends a {@link SUpdateTileEntityPacket} with specific information to all players watching the provided {@link TileEntity}
-     *
-     * @param tile The tile to be synchronised
-     * @param id   The packet ID
-     * @param data The packet data
-     */
-    public static void sendTileUpdatePackets(TileEntity tile, int id, CompoundNBT data) {
-        getAllPlayersWatchingBlock(tile.getWorld(), tile.getPos()).forEach(player -> player.connection.sendPacket(new SUpdateTileEntityPacket(tile.getPos(), id, data)));
-    }
-
-    /**
-     * Sends a {@link SUpdateTileEntityPacket} to all players watching the provided {@link TileEntity}
-     *
-     * @param tile The tile to be synchronised
-     */
-    public static void sendTileUpdatePackets(TileEntity tile) {
-        getAllPlayersWatchingBlock(tile.getWorld(), tile.getPos()).forEach(player -> player.connection.sendPacket(Preconditions.checkNotNull(tile.getUpdatePacket())));
     }
 
     /**
@@ -87,7 +63,7 @@ public class ServerHelper {
      * @param pos   The position
      * @return All players who need to be notified of chenges to the specified location
      */
-    public static List<ServerPlayerEntity> getAllPlayersWatchingBlock(World world, BlockPos pos) {
+    public static List<ServerPlayer> getAllPlayersWatchingBlock(Level world, BlockPos pos) {
         return getAllPlayersWatchingBlock(world, pos.getX(), pos.getZ());
     }
 
@@ -100,11 +76,10 @@ public class ServerHelper {
      * @param z     The z coordinate
      * @return All players who need to be notified of chenges to the specified location
      */
-    public static List<ServerPlayerEntity> getAllPlayersWatchingBlock(World world, int x, int z) {
-        if (world instanceof ServerWorld) {
-            ChunkHolder.IPlayerProvider playerManager = WorldHelper.getPlayerManager((ServerWorld) world);
-            return playerManager.getTrackingPlayers(WorldHelper.chunkPosFromBlockPos(new BlockPos(x, 0, z)), false)
-                    .collect(Collectors.toList());
+    public static List<ServerPlayer> getAllPlayersWatchingBlock(Level world, int x, int z) {
+        if (world instanceof ServerLevel) {
+            ChunkHolder.PlayerProvider playerManager = WorldHelper.getPlayerManager((ServerLevel) world);
+            return playerManager.getPlayers(WorldHelper.chunkPosFromBlockPos(new BlockPos(x, 0, z)), false);
         }
         return ImmutableList.of();
     }
@@ -118,7 +93,7 @@ public class ServerHelper {
      * @param message        The message to be sent
      * @param networkHandler The network-handler who has to send the messages
      */
-    public static void sendMessageToAllPlayersWatchingBlock(World world, BlockPos pos, IMessage message, INetworkHandler networkHandler) {
+    public static void sendMessageToAllPlayersWatchingBlock(Level world, BlockPos pos, IMessage message, INetworkHandler networkHandler) {
         getAllPlayersWatchingBlock(world, pos).forEach(player -> networkHandler.sendTo(message, player));
     }
 
@@ -128,9 +103,9 @@ public class ServerHelper {
      * @param dimension The dimension ID
      * @return All players in the provided dimension
      */
-    public static List<ServerPlayerEntity> getAllPlayersInDimension(final RegistryKey<World> dimension) {
+    public static List<ServerPlayer> getAllPlayersInDimension(final ResourceKey<Level> dimension) {
         return getOnlinePlayers().stream()
-                .filter((Predicate<ServerPlayerEntity>) player -> WorldHelper.getDimID(player.getEntityWorld()) == dimension)
+                .filter((Predicate<ServerPlayer>) player -> WorldHelper.getDimID(player.getLevel()).equals(dimension))
                 .collect(Collectors.toList());
     }
 
@@ -141,7 +116,7 @@ public class ServerHelper {
      * @param message        The message to be sent
      * @param networkHandler The network-handler who has to send the messages
      */
-    public static void sendMessageToAllPlayersInDimension(RegistryKey<World> dimension, IMessage message, INetworkHandler networkHandler) {
+    public static void sendMessageToAllPlayersInDimension(ResourceKey<Level> dimension, IMessage message, INetworkHandler networkHandler) {
         getAllPlayersInDimension(dimension).forEach(playerMP -> networkHandler.sendTo(message, playerMP));
     }
 

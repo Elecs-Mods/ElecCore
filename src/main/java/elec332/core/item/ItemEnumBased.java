@@ -3,19 +3,19 @@ package elec332.core.item;
 import com.google.common.base.Preconditions;
 import elec332.core.api.client.IColoredItem;
 import elec332.core.api.client.IIconRegistrar;
-import elec332.core.api.client.model.IModelBakery;
-import elec332.core.api.client.model.IQuadBakery;
-import elec332.core.api.client.model.ITemplateBakery;
+import elec332.core.api.client.model.IElecModelBakery;
+import elec332.core.api.client.model.IElecQuadBakery;
+import elec332.core.api.client.model.IElecTemplateBakery;
 import elec332.core.client.RenderHelper;
 import elec332.core.client.model.loading.INoJsonItem;
-import net.minecraft.client.renderer.model.IBakedModel;
+import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.NonNullList;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -113,7 +113,7 @@ public class ItemEnumBased<E extends Enum<E> & IEnumItem> extends AbstractItem i
     }
 
     @Override
-    public void registerModels(IQuadBakery quadBakery, IModelBakery modelBakery, ITemplateBakery templateBakery) {
+    public void registerModels(IElecQuadBakery quadBakery, IElecModelBakery modelBakery, IElecTemplateBakery templateBakery) {
         models = new IBakedModel[values.length];
         for (E e : values) {
             if (nji) {
@@ -130,14 +130,14 @@ public class ItemEnumBased<E extends Enum<E> & IEnumItem> extends AbstractItem i
 
     private int getOrdinal(ItemStack stack) {
         if (!stack.hasTag()) {
-            stack.setTag(new CompoundNBT());
+            stack.setTag(new CompoundTag());
         }
         return Preconditions.checkNotNull(stack.getTag()).getInt("elenord");
     }
 
     private void putOrdinal(ItemStack stack, E val) {
         if (!stack.hasTag()) {
-            stack.setTag(new CompoundNBT());
+            stack.setTag(new CompoundTag());
         }
         Preconditions.checkNotNull(stack.getTag()).putInt("elenord", val.ordinal());
     }

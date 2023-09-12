@@ -1,6 +1,6 @@
 package elec332.core.api.registration;
 
-import net.minecraft.item.Item;
+import net.minecraft.world.item.Item;
 
 /**
  * Created by Elec332 on 12-10-2017.

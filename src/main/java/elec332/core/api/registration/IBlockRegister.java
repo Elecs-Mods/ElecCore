@@ -1,6 +1,6 @@
 package elec332.core.api.registration;
 
-import net.minecraft.block.Block;
+import net.minecraft.world.level.block.Block;
 
 /**
  * Created by Elec332 on 12-10-2017.

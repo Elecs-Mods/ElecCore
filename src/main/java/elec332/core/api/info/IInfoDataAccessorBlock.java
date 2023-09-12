@@ -1,15 +1,15 @@
 package elec332.core.api.info;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 import javax.annotation.Nonnull;
@@ -22,39 +22,39 @@ public interface IInfoDataAccessorBlock extends IInfoDataAccessor {
 
     @Nonnull
     @Override
-    PlayerEntity getPlayer();
+    public PlayerEntity getPlayer();
 
     @Nonnull
     @Override
-    World getWorld();
+    public World getWorld();
 
     @Nonnull
-    BlockPos getPos();
-
-    @Nonnull
-    @Override
-    CompoundNBT getData();
+    public BlockPos getPos();
 
     @Nonnull
     @Override
-    Vector3d getHitVec();
+    public CompoundTag getData();
 
     @Nonnull
-    Direction getSide();
+    @Override
+    public Vec3d getHitVec();
 
     @Nonnull
-    BlockState getBlockState();
+    public Direction getSide();
 
     @Nonnull
-    Block getBlock();
+    public BlockState getBlockState();
+
+    @Nonnull
+    public Block getBlock();
 
     @Nullable
-    TileEntity getTileEntity();
+    public TileEntity getTileEntity();
 
     @Nullable
-    ItemStack getStack();
+    public ItemStack getStack();
 
     @Nonnull
-    BlockRayTraceResult getRayTraceResult();
+    public BlockRayTraceResult getRayTraceResult();
 
 }

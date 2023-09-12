@@ -193,11 +193,7 @@ public class FMLHelper {
      * @return Whether the specified {@link ModLoadingStage} has been reached
      */
     public static boolean hasReachedState(ModLoadingStage state) {
-        ModLoadingStage stage = ElecCoreLoader.getLastStage();
-        if (stage == null) {
-            stage = ModLoadingStage.values()[ModLoadingStage.CONSTRUCT.ordinal() - 1];
-        }
-        return stage.ordinal() >= (state.ordinal() - 1);
+        return ElecCoreLoader.getLastStage().ordinal() >= (state.ordinal() - 1);
     }
 
     /**
@@ -270,7 +266,7 @@ public class FMLHelper {
      */
     @Nonnull
     public static <T> Supplier<T> getLater(Callable<T> workToEnqueue) {
-        Future<T> f = DeferredWorkQueue.getLaterChecked(workToEnqueue);
+        Future<T> f = DeferredWorkQueue.(workToEnqueue);
         return () -> {
             try {
                 return f.get();
@@ -327,6 +323,7 @@ public class FMLHelper {
 
     static {
         eventMap = HashBiMap.create();
+        ServiceLoader.load(FMLLoader.getGameLayer(), IModStateProvider.class).findFirst().get().getAllStates().stream();
         Arrays.stream(ModLoadingStage.values()).forEach(new Consumer<ModLoadingStage>() {
 
             @Override

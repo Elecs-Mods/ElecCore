@@ -9,10 +9,13 @@ import io.netty.buffer.Unpooled;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.World;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.event.server.ServerAboutToStartEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.event.server.FMLServerAboutToStartEvent;
 import net.minecraftforge.fml.network.IContainerFactory;
@@ -45,11 +48,11 @@ public class CommonProxy {
     public void addPersonalMessageToPlayer(String s) {
     }
 
-    public World getClientWorld() {
+    public Level getClientWorld() {
         return null;
     }
 
-    public PlayerEntity getClientPlayer() {
+    public Player getClientPlayer() {
         return null;
     }
 
@@ -65,7 +68,7 @@ public class CommonProxy {
     private static MinecraftServer server = null;
 
     static {
-        MinecraftForge.EVENT_BUS.addListener((Consumer<FMLServerAboutToStartEvent>) event -> server = event.getServer());
+        MinecraftForge.EVENT_BUS.addListener((Consumer<ServerAboutToStartEvent>) event -> server = event.getServer());
         WINDOW_CONTAINER_TYPE = new ContainerType<>((IContainerFactory<WindowContainer>) (windowId, inv, data) -> {
             ResourceLocation name = data.readResourceLocation();
             return WindowManager.INSTANCE.getServerGuiElement(windowId, inv.player, inv.player.world, ElecByteBuf.of(Unpooled.wrappedBuffer(data.readByteArray())), WindowManager.INSTANCE.get(name));

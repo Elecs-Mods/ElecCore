@@ -1,6 +1,6 @@
 package elec332.core.util;
 
-import net.minecraft.world.World;
+import net.minecraft.world.level.Level;
 
 /**
  * Created by Elec332 on 23-8-2016.
@@ -21,11 +21,11 @@ public enum MoonPhase {
     WAXING_HALF("halfWaxing"),
     WAXING_GIBBOUS("gibbousWaxing");
 
-    private String phaseName;
-
     MoonPhase(String name) {
         this.phaseName = name;
     }
+
+    private final String phaseName;
 
     public boolean isBetween(MoonPhase first, MoonPhase second) {
         if (first.ordinal() <= second.ordinal()) {
@@ -39,8 +39,8 @@ public enum MoonPhase {
         return StatCollector.translateToLocal("moon." + this.phaseName);
     }
 
-    public static MoonPhase getMoonPhase(World w) {
-        return getMoonPhaseFromTime(w.getWorldInfo().getGameTime());
+    public static MoonPhase getMoonPhase(Level w) {
+        return getMoonPhaseFromTime(w.getLevelData().getGameTime());
     }
 
     public static MoonPhase getMoonPhaseFromTime(long time) {

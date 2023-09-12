@@ -1,16 +1,14 @@
 package elec332.core.inventory.widget.slot;
 
 import com.google.common.collect.Lists;
-import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.datafixers.util.Pair;
 import elec332.core.client.util.GuiDraw;
 import elec332.core.inventory.tooltip.ToolTip;
 import elec332.core.inventory.widget.Widget;
 import elec332.core.inventory.window.Window;
 import elec332.core.util.ItemStackHelper;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.items.IItemHandler;
@@ -59,7 +57,7 @@ public class WidgetSlot extends Widget {
     }
 
     @Override
-    public void draw(Window window, @Nonnull MatrixStack matrixStack, int guiX, int guiY, double mouseX, double mouseY, float partialTicks) {
+    public void draw(Window window, int guiX, int guiY, double mouseX, double mouseY, float partialTicks) {
         if (skipBackground) {
             return;
         }
@@ -191,6 +189,12 @@ public class WidgetSlot extends Widget {
         }
     }
 
+    @Nullable
+    @OnlyIn(Dist.CLIENT)
+    public String getSlotTexture() {
+        return backgroundName;
+    }
+
     /**
      * Decrease the size of the stack in slot (first int arg) by the amount of the second int arg. Returns the new
      * stack.
@@ -212,22 +216,53 @@ public class WidgetSlot extends Widget {
         return !isHidden();
     }
 
-    private Pair<ResourceLocation, ResourceLocation> backgroundPair;
+    private String backgroundName = null;
+    private ResourceLocation backgroundLocation = null;
+    private Object backgroundMap;
 
-    @Nullable
+    /**
+     * Gets the path of the texture file to use for the background image of this slot when drawing the GUI.
+     *
+     * @return The resource location for the background image
+     */
     @OnlyIn(Dist.CLIENT)
-    public Pair<ResourceLocation, ResourceLocation> getBackground() {
-        return backgroundPair;
+    @Nonnull
+    public ResourceLocation getBackgroundLocation() {
+        return (backgroundLocation == null ? net.minecraft.client.renderer.texture.AtlasTexture.LOCATION_BLOCKS_TEXTURE : backgroundLocation);
     }
 
     /**
-     * Sets the background atlas and sprite location.
+     * Sets the texture file to use for the background image of the slot when it's empty.
      *
-     * @param atlas  The atlas name
-     * @param sprite The sprite located on that atlas.
+     * @param texture the resourcelocation for the texture
      */
-    public void setBackground(@Nonnull ResourceLocation atlas, @Nonnull ResourceLocation sprite) {
-        this.backgroundPair = Pair.of(atlas, sprite);
+    @OnlyIn(Dist.CLIENT)
+    public void setBackgroundLocation(@Nonnull ResourceLocation texture) {
+        this.backgroundLocation = texture;
+    }
+
+    /**
+     * Sets which icon index to use as the background image of the slot when it's empty.
+     *
+     * @param name The icon to use, null for none
+     */
+    public void setBackgroundName(@Nullable String name) {
+        this.backgroundName = name;
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    public net.minecraft.client.renderer.texture.TextureAtlasSprite getBackgroundSprite() {
+        String name = getSlotTexture();
+        return name == null ? null : getBackgroundMap().getAtlasSprite(name);
+    }
+
+    @Nonnull
+    @OnlyIn(Dist.CLIENT)
+    public net.minecraft.client.renderer.texture.AtlasTexture getBackgroundMap() {
+        if (backgroundMap == null) {
+            backgroundMap = net.minecraft.client.Minecraft.getInstance().getTextureMap();
+        }
+        return (net.minecraft.client.renderer.texture.AtlasTexture) backgroundMap;
     }
 
     /**

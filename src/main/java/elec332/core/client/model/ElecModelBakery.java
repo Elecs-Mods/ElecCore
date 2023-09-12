@@ -3,18 +3,18 @@ package elec332.core.client.model;
 import com.google.common.collect.ImmutableList;
 import elec332.core.api.APIHandlerInject;
 import elec332.core.api.IAPIHandler;
-import elec332.core.api.client.model.IModelBakery;
-import elec332.core.api.client.model.ITemplateBakery;
+import elec332.core.api.client.model.IElecModelBakery;
+import elec332.core.api.client.model.IElecTemplateBakery;
 import elec332.core.api.client.model.model.IModelWithoutQuads;
 import elec332.core.api.client.model.model.IQuadProvider;
 import elec332.core.api.client.model.template.IModelTemplate;
 import elec332.core.api.client.model.template.IQuadTemplate;
 import elec332.core.api.client.model.template.IQuadTemplateSidedMap;
-import net.minecraft.block.BlockState;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.client.renderer.Vector3f;
 import net.minecraft.client.renderer.model.*;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.util.Direction;
-import net.minecraft.util.math.vector.Vector3f;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -28,7 +28,7 @@ import java.util.Random;
  */
 @OnlyIn(Dist.CLIENT)
 @SuppressWarnings("all")
-public class ElecModelBakery implements IModelBakery {
+public class ElecModelBakery implements IElecModelBakery {
 
     protected static final ElecModelBakery instance = new ElecModelBakery();
 
@@ -38,7 +38,7 @@ public class ElecModelBakery implements IModelBakery {
     private static final List<BakedQuad> EMPTY_LIST;
     private static final ElecQuadBakery quadBakery;
     private static IModelTemplate defaultBlockTemplate, defaultItemTemplate;
-    private static ITemplateBakery templateBakery;
+    private static IElecTemplateBakery templateBakery;
     public static final ItemCameraTransforms DEFAULT_ITEM, DEFAULT_BLOCK;
 
 
@@ -66,8 +66,8 @@ public class ElecModelBakery implements IModelBakery {
             generalQuads = ImmutableList.of();
         }
         DefaultBakedModel ret = new DefaultBakedModel(template);
-        ret.setGeneralQuads(quadBakery.bakeQuads(generalQuads, rotation.getRotation()));
-        ret.setSidedQuads(quadBakery.bakeQuads(sidedQuads, rotation.getRotation()));
+        ret.setGeneralQuads(quadBakery.bakeQuads(generalQuads, rotation));
+        ret.setSidedQuads(quadBakery.bakeQuads(sidedQuads, rotation));
         return ret;
     }
 
@@ -119,7 +119,7 @@ public class ElecModelBakery implements IModelBakery {
 
     @APIHandlerInject
     public void injectModelBakery(IAPIHandler apiHandler) {
-        apiHandler.inject(instance, IModelBakery.class);
+        apiHandler.inject(instance, IElecModelBakery.class);
     }
 
     private BakedItemModel _forTemplateNoQuadsI(IModelTemplate template) {
@@ -144,7 +144,6 @@ public class ElecModelBakery implements IModelBakery {
             this.builtIn = template.isBuiltInRenderer();
             this.texture = template.getParticleTexture();
             this.ict = template.getItemCameraTransforms();
-            this.isSideLit = false; //todo
         }
 
         private DefaultBakedModel(IModelTemplate template) {
@@ -155,12 +154,11 @@ public class ElecModelBakery implements IModelBakery {
             this.builtIn = template.isBuiltInRenderer();
             this.texture = template.getTexture();
             this.ict = template.getItemCameraTransforms();
-            this.isSideLit = false; //todo
         }
 
         private IQuadProvider sidedQuads;
         private List<BakedQuad> generalQuads;
-        private final boolean ao, gui3D, builtIn, isSideLit;
+        private final boolean ao, gui3D, builtIn;
         private final TextureAtlasSprite texture;
         private final ItemCameraTransforms ict;
 
@@ -190,11 +188,6 @@ public class ElecModelBakery implements IModelBakery {
             return this.gui3D;
         }
 
-        @Override //isSideLit
-        public boolean func_230044_c_() {
-            return isSideLit;
-        }
-
         @Override
         public boolean isBuiltInRenderer() {
             return this.builtIn;
@@ -220,7 +213,7 @@ public class ElecModelBakery implements IModelBakery {
     }
 
     @APIHandlerInject
-    public void getTemplates(ITemplateBakery templateBakery) {
+    public void getTemplates(IElecTemplateBakery templateBakery) {
         defaultBlockTemplate = templateBakery.newDefaultBlockTemplate();
         defaultItemTemplate = templateBakery.newDefaultItemTemplate();
         ElecModelBakery.templateBakery = templateBakery;

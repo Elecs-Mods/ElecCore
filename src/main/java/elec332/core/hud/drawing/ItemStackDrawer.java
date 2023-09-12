@@ -3,7 +3,7 @@ package elec332.core.hud.drawing;
 import elec332.core.hud.position.Alignment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -20,7 +20,7 @@ public class ItemStackDrawer implements IDrawer<ItemStack> {
     @Override
     @OnlyIn(Dist.CLIENT)
     public int draw(ItemStack drawable, Minecraft mc, Alignment alignment, int x, int y, Object... data) {
-        RenderHelper.enableStandardItemLighting();
+        RenderHelper.enableGUIStandardItemLighting();
         mc.getItemRenderer().renderItemIntoGUI(drawable, x, y);
         RenderHelper.disableStandardItemLighting();
         return 18;

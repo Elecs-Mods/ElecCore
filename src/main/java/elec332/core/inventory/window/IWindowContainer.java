@@ -3,8 +3,8 @@ package elec332.core.inventory.window;
 import elec332.core.inventory.widget.slot.WidgetSlot;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.container.ClickType;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -42,7 +42,7 @@ public interface IWindowContainer {
 
     public ItemStack slotClickDefault(int slotId, int dragType, ClickType clickTypeIn, PlayerEntity player);
 
-    public void sendPacket(CompoundNBT tag);
+    public void sendPacket(CompoundTag tag);
 
     public int getWindowID();
 

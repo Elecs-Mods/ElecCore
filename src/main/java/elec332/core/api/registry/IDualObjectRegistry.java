@@ -8,8 +8,8 @@ import java.util.Map;
 public interface IDualObjectRegistry<T, V> extends IDualRegister<T, V> {
 
     @Override
-    boolean register(T t, V v);
+    public boolean register(T t, V v);
 
-    Map<T, V> getAllRegisteredObjects();
+    public Map<T, V> getAllRegisteredObjects();
 
 }

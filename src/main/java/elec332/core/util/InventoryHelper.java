@@ -1,15 +1,16 @@
 package elec332.core.util;
 
 import com.google.common.collect.Lists;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.ListNBT;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.world.World;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.ContainerHelper;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.core.NonNullList;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.items.IItemHandler;
@@ -35,23 +36,10 @@ public class InventoryHelper {
      * @return The tooltip for the provided {@link ItemStack}
      */
     @OnlyIn(Dist.CLIENT)
-    public static List<String> getStringTooltip(ItemStack stack, @Nullable PlayerEntity playerIn, boolean advanced) {
-        return getTooltip(stack, playerIn, advanced).stream()
-                .map(ITextComponent::getString)
+    public static List<String> getTooltip(ItemStack stack, @Nullable Player playerIn, boolean advanced) {
+        return stack.getTooltipLines(playerIn, advanced ? TooltipFlag.Default.ADVANCED : TooltipFlag.Default.NORMAL).stream()
+                .map(Component::getString)
                 .collect(Collectors.toList());
-    }
-
-    /**
-     * Gets the tooltip for an {@link ItemStack}
-     *
-     * @param stack    The {@link ItemStack} you want get the tooltip from
-     * @param playerIn The player holding the stack
-     * @param advanced Whether to display extra data
-     * @return The tooltip for the provided {@link ItemStack}
-     */
-    @OnlyIn(Dist.CLIENT)
-    public static List<ITextComponent> getTooltip(ItemStack stack, @Nullable PlayerEntity playerIn, boolean advanced) {
-        return stack.getTooltip(playerIn, advanced ? ITooltipFlag.TooltipFlags.ADVANCED : ITooltipFlag.TooltipFlags.NORMAL);
     }
 
     /**
@@ -64,8 +52,8 @@ public class InventoryHelper {
      * @param advanced Whether to display extra data
      */
     @OnlyIn(Dist.CLIENT)
-    public static void addInformation(Item item, ItemStack stack, World world, List<ITextComponent> tooltip, boolean advanced) {
-        item.addInformation(stack, world, tooltip, advanced ? ITooltipFlag.TooltipFlags.ADVANCED : ITooltipFlag.TooltipFlags.NORMAL);
+    public static void addInformation(Item item, ItemStack stack, Level world, List<Component> tooltip, boolean advanced) {
+        item.appendHoverText(stack, world, tooltip, advanced ? TooltipFlag.Default.ADVANCED : TooltipFlag.Default.NORMAL);
     }
 
     /**
@@ -76,16 +64,16 @@ public class InventoryHelper {
      * @param items Inventory representation
      */
     @SuppressWarnings("all")
-    public static void readItemsFromNBT(@Nonnull CompoundNBT data, @Nonnull List<ItemStack> items) {
+    public static void readItemsFromNBT(@Nonnull CompoundTag data, @Nonnull List<ItemStack> items) {
         items.clear();
-        ListNBT ListNBT = data.getList("Items", 10);
+        ListTag ListTag = data.getList("Items", 10);
 
-        for (int i = 0; i < ListNBT.size(); ++i) {
-            CompoundNBT CompoundNBT = ListNBT.getCompound(i);
-            int j = CompoundNBT.getByte("Slot") & 255;
+        for (int i = 0; i < ListTag.size(); ++i) {
+            CompoundTag CompoundTag = ListTag.getCompound(i);
+            int j = CompoundTag.getByte("Slot") & 255;
 
             if (j >= 0 && j < items.size()) {
-                items.set(j, ItemStackHelper.loadItemStackFromNBT(CompoundNBT));
+                items.set(j, ItemStackHelper.loadItemStackFromNBT(CompoundTag));
             }
         }
     }
@@ -96,8 +84,8 @@ public class InventoryHelper {
      * @param items Inventory representation
      * @return The NBT tag with the inventory data
      */
-    public static CompoundNBT writeItemsToNBT(@Nonnull List<ItemStack> items) {
-        return writeItemsToNBT(new CompoundNBT(), items);
+    public static CompoundTag writeItemsToNBT(@Nonnull List<ItemStack> items) {
+        return writeItemsToNBT(new CompoundTag(), items);
     }
 
     /**
@@ -107,7 +95,7 @@ public class InventoryHelper {
      * @param items Inventory representation
      * @return The original NBT tag with the inventory data added
      */
-    public static CompoundNBT writeItemsToNBT(@Nonnull CompoundNBT tag, @Nonnull List<ItemStack> items) {
+    public static CompoundTag writeItemsToNBT(@Nonnull CompoundTag tag, @Nonnull List<ItemStack> items) {
         NonNullList<ItemStack> wrap = NonNullList.withSize(items.size(), ItemStackHelper.NULL_STACK);
         for (int i = 0; i < items.size(); i++) {
             wrap.set(i, items.get(i));
@@ -122,8 +110,8 @@ public class InventoryHelper {
      * @param items Inventory representation
      * @return The original NBT tag with the inventory data added
      */
-    public static CompoundNBT writeItemsToNBT(@Nonnull CompoundNBT tag, @Nonnull NonNullList<ItemStack> items) {
-        net.minecraft.inventory.ItemStackHelper.saveAllItems(tag, items);
+    public static CompoundTag writeItemsToNBT(@Nonnull CompoundTag tag, @Nonnull NonNullList<ItemStack> items) {
+        ContainerHelper.saveAllItems(tag, items);
         return tag;
     }
 
@@ -184,7 +172,7 @@ public class InventoryHelper {
      * @return Whether the NBT data on both stacks is the same
      */
     public static boolean areNBTsEqual(ItemStack first, ItemStack second) {
-        return ItemStack.areItemStackTagsEqual(first, second);
+        return ItemStack.tagMatches(first, second);
     }
 
     /**
@@ -198,7 +186,7 @@ public class InventoryHelper {
         if (first == null || second == null) {
             return first == second;
         }
-        return first.getItem() == second.getItem() && first.getDamage() == second.getDamage();
+        return first.getItem() == second.getItem() && first.getDamageValue() == second.getDamageValue();
     }
 
     /**

@@ -1,7 +1,7 @@
 package elec332.core.api.registration;
 
-import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
-import net.minecraft.tileentity.TileEntity;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
+import net.minecraft.world.level.block.entity.BlockEntity;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

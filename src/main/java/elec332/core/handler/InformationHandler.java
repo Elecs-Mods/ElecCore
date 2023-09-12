@@ -2,11 +2,11 @@ package elec332.core.handler;
 
 import elec332.core.api.annotations.StaticLoad;
 import elec332.core.api.info.*;
-import net.minecraft.block.Block;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.TileEntity;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.block.entity.BlockEntity;
 
 import javax.annotation.Nonnull;
 
@@ -26,7 +26,7 @@ public enum InformationHandler implements IInfoProvider, IInfoProviderEntity {
     }
 
     @Override
-    public void gatherInformation(@Nonnull CompoundNBT tag, @Nonnull ServerPlayerEntity player, @Nonnull IInfoDataAccessorBlock hitData) {
+    public void gatherInformation(@Nonnull CompoundTag tag, @Nonnull ServerPlayerEntity player, @Nonnull IInfoDataAccessorBlock hitData) {
         for (IInfoProvider info : ElecCoreRegistrar.INFORMATION_PROVIDERS.getAllRegisteredObjects()) {
             info.gatherInformation(tag, player, hitData);
         }
@@ -40,7 +40,7 @@ public enum InformationHandler implements IInfoProvider, IInfoProviderEntity {
     }
 
     @Override
-    public void gatherInformation(@Nonnull CompoundNBT tag, @Nonnull ServerPlayerEntity player, @Nonnull IInfoDataAccessorEntity hitData) {
+    public void gatherInformation(@Nonnull CompoundTag tag, @Nonnull ServerPlayerEntity player, @Nonnull IInfoDataAccessorEntity hitData) {
         for (IInfoProviderEntity info : ElecCoreRegistrar.INFORMATION_PROVIDERS_ENTITY.getAllRegisteredObjects()) {
             info.gatherInformation(tag, player, hitData);
         }
@@ -63,7 +63,7 @@ public enum InformationHandler implements IInfoProvider, IInfoProviderEntity {
             }
 
             @Override
-            public void gatherInformation(@Nonnull CompoundNBT tag, @Nonnull ServerPlayerEntity player, @Nonnull IInfoDataAccessorBlock hitData) {
+            public void gatherInformation(@Nonnull CompoundTag tag, @Nonnull ServerPlayerEntity player, @Nonnull IInfoDataAccessorBlock hitData) {
                 Block block = hitData.getBlock();
                 if (block instanceof IInfoProvider) {
                     ((IInfoProvider) block).gatherInformation(tag, player, hitData);
@@ -87,7 +87,7 @@ public enum InformationHandler implements IInfoProvider, IInfoProviderEntity {
             }
 
             @Override
-            public void gatherInformation(@Nonnull CompoundNBT tag, @Nonnull ServerPlayerEntity player, @Nonnull IInfoDataAccessorEntity hitData) {
+            public void gatherInformation(@Nonnull CompoundTag tag, @Nonnull ServerPlayerEntity player, @Nonnull IInfoDataAccessorEntity hitData) {
                 Entity entity = hitData.getEntity();
                 if (entity instanceof IInfoProviderEntity) {
                     ((IInfoProviderEntity) entity).gatherInformation(tag, player, hitData);

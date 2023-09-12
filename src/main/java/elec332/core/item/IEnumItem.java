@@ -1,9 +1,9 @@
 package elec332.core.item;
 
 import elec332.core.api.client.IColoredItem;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.resources.ResourceLocation;
 
 /**
  * Created by Elec332 on 21-8-2016.

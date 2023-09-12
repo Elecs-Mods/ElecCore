@@ -2,7 +2,7 @@ package elec332.core.handler.event;
 
 import elec332.core.api.util.IRightClickCancel;
 import elec332.core.util.math.RayTraceHelper;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.item.ItemUseContext;
 import net.minecraft.util.Hand;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;

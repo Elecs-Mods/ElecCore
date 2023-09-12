@@ -15,7 +15,7 @@ public interface IPacketRegistry extends IPacketRegistryContainer {
      *
      * @param packetClass The packet class
      */
-    default <T extends IMessage & BiConsumer<T, Supplier<IExtendedMessageContext>>> void registerPacket(Class<T> packetClass) {
+    default public <T extends IMessage & BiConsumer<T, Supplier<IExtendedMessageContext>>> void registerPacket(Class<T> packetClass) {
         registerPacket(packetClass, packetClass);
     }
 
@@ -25,7 +25,7 @@ public interface IPacketRegistry extends IPacketRegistryContainer {
      * @param type The packet type
      */
     @SuppressWarnings("unchecked")
-    default <T extends IMessage & BiConsumer<T, Supplier<IExtendedMessageContext>>> void registerPacket(T type) {
+    default public <T extends IMessage & BiConsumer<T, Supplier<IExtendedMessageContext>>> void registerPacket(T type) {
         registerPacket(type, (Class<T>) type.getClass());
     }
 
@@ -35,7 +35,7 @@ public interface IPacketRegistry extends IPacketRegistryContainer {
      * @param messageHandler The class of the message handler
      * @param messageType    The message class
      */
-    default <M extends IMessage> void registerPacket(Class<? extends BiConsumer<M, Supplier<IExtendedMessageContext>>> messageHandler, Class<M> messageType) {
+    default public <M extends IMessage> void registerPacket(Class<? extends BiConsumer<M, Supplier<IExtendedMessageContext>>> messageHandler, Class<M> messageType) {
         try {
             registerPacket(messageHandler.newInstance(), messageType);
         } catch (Exception e) {
@@ -49,7 +49,7 @@ public interface IPacketRegistry extends IPacketRegistryContainer {
      * @param messageHandler The message handler
      * @param messageType    The message class
      */
-    <M extends IMessage> void registerPacket(BiConsumer<M, Supplier<IExtendedMessageContext>> messageHandler, Class<M> messageType);
+    public <M extends IMessage> void registerPacket(BiConsumer<M, Supplier<IExtendedMessageContext>> messageHandler, Class<M> messageType);
 
     /**
      * Gets called when this container is supposed to register
@@ -58,7 +58,7 @@ public interface IPacketRegistry extends IPacketRegistryContainer {
      * @param packetRegistry The packet registry to register the packets to
      */
     @Override
-    void registerPacketsTo(IPacketRegistry packetRegistry);
+    public void registerPacketsTo(IPacketRegistry packetRegistry);
 
     /**
      * Imports packets from a {@link IPacketRegistryContainer},
@@ -66,7 +66,7 @@ public interface IPacketRegistry extends IPacketRegistryContainer {
      *
      * @param packetRegistryContainer The packet container
      */
-    default void importFrom(IPacketRegistryContainer packetRegistryContainer) {
+    default public void importFrom(IPacketRegistryContainer packetRegistryContainer) {
         if (packetRegistryContainer != this) {
             packetRegistryContainer.registerPacketsTo(this);
         }

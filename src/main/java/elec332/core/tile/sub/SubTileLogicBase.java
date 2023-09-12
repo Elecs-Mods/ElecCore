@@ -1,7 +1,7 @@
 package elec332.core.tile.sub;
 
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.BlockPos;
 import net.minecraft.world.World;
 
 /**
@@ -38,8 +38,8 @@ public abstract class SubTileLogicBase implements ISubTileLogic {
     }
 
     @Override
-    public final void sendPacket(int ID, CompoundNBT data) {
-        CompoundNBT tag = new CompoundNBT();
+    public final void sendPacket(int ID, CompoundTag data) {
+        CompoundTag tag = new CompoundTag();
         tag.putInt("kid", ID);
         tag.put("data", data);
         tile.sendPacket(id, tag);

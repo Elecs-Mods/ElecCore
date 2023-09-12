@@ -8,15 +8,12 @@ import elec332.core.api.callback.RegisteredCallback;
 import elec332.core.api.discovery.AnnotationDataProcessor;
 import elec332.core.api.discovery.IAnnotationData;
 import elec332.core.api.registration.HasSpecialRenderer;
-import elec332.core.api.registration.RegisteredTileEntity;
 import elec332.core.util.FMLHelper;
-import elec332.core.util.RegistryHelper;
-import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
-import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.ModLoadingStage;
+import net.minecraftforge.fml.client.registry.ClientRegistry;
 import org.objectweb.asm.Type;
 
 import java.util.Collections;
@@ -67,20 +64,7 @@ public class InitAnnotationProcessor extends AbstractAnnotationProcessor {
             @SuppressWarnings("all")
             public void accept(IAnnotationData asmData) {
                 try {
-                    Class<TileEntity> clazz = (Class<TileEntity>) Class.forName(asmData.getClassName());
-                    if (!clazz.isAnnotationPresent(RegisteredTileEntity.class)) {
-                        throw new UnsupportedOperationException();
-                    }
-                    RegisteredTileEntity ann = clazz.getAnnotation(RegisteredTileEntity.class);
-                    ResourceLocation name = new ResourceLocation(TileEntityAnnotationProcessor.checkName(ann.value(), ann.mod(), clazz));
-                    Class<TileEntityRenderer> rClazz = (Class<TileEntityRenderer>) Class.forName(((Type) asmData.getAnnotationInfo().get("value")).getClassName());
-                    TileEntityRenderer t = null;
-                    try {
-                        t = rClazz.newInstance();
-                    } catch (Exception e) {
-                        t = rClazz.getConstructor(TileEntityRendererDispatcher.class).newInstance(TileEntityRendererDispatcher.instance);
-                    }
-                    TileEntityRendererDispatcher.instance.setSpecialRendererInternal(RegistryHelper.getTileEntities().getValue(name), t);
+                    ClientRegistry.bindTileEntitySpecialRenderer((Class<TileEntity>) Class.forName(asmData.getClassName()), (TileEntityRenderer<TileEntity>) Class.forName(((Type) asmData.getAnnotationInfo().get("value")).getClassName()).newInstance());
                 } catch (Exception ex) {
                     throw Throwables.propagate(ex);
                 }

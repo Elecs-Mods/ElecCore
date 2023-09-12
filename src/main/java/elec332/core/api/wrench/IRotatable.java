@@ -1,7 +1,7 @@
 package elec332.core.api.wrench;
 
 import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
 import net.minecraft.world.World;
 
 /**
@@ -9,8 +9,8 @@ import net.minecraft.world.World;
  */
 public interface IRotatable {
 
-    Direction getFacing();
+    public Direction getFacing();
 
-    boolean rotateBlock(World world, BlockPos pos, Direction sideHit);
+    public boolean rotateBlock(World world, BlockPos pos, Direction sideHit);
 
 }

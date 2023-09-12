@@ -10,10 +10,10 @@ import elec332.core.api.client.model.loading.ModelHandler;
 import elec332.core.client.ClientHelper;
 import elec332.core.loader.client.RenderingRegistry;
 import elec332.core.util.ResourceHelper;
-import net.minecraft.client.renderer.model.IBakedModel;
+import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.renderer.model.ModelResourceLocation;
-import net.minecraft.item.Item;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.item.Item;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.registries.ForgeRegistryEntry;
 

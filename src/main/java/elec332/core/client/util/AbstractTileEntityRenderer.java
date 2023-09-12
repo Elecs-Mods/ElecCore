@@ -1,20 +1,15 @@
 package elec332.core.client.util;
 
-import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
-import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
-import net.minecraft.tileentity.TileEntity;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
+import net.minecraft.world.level.block.entity.BlockEntity;
 
 /**
- * Created by Elec332 on 29-6-2020
+ * Created by Elec332 on 6-7-2020
  */
 public abstract class AbstractTileEntityRenderer<T extends TileEntity> extends TileEntityRenderer<T> {
 
     public AbstractTileEntityRenderer() {
-        super(TileEntityRendererDispatcher.instance);
-    }
-
-    public AbstractTileEntityRenderer(TileEntityRendererDispatcher rendererDispatcherIn) {
-        super(rendererDispatcherIn);
+        super();
     }
 
 }

@@ -2,8 +2,9 @@ package elec332.core.world.posmap;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import net.minecraft.util.RegistryKey;
-import net.minecraft.world.World;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.Level;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -20,7 +21,7 @@ public abstract class DefaultMultiWorldPositionedObjectHolder<T, V> implements I
 
     @SafeVarargs
     public static <T> DefaultMultiWorldPositionedObjectHolder<T, T> create(Consumer<PositionedObjectHolder<T, T>>... callbacks) {
-        DefaultMultiWorldPositionedObjectHolder<T, T> ret = new DefaultMultiWorldPositionedObjectHolder<T, T>() {
+        DefaultMultiWorldPositionedObjectHolder<T, T> ret = new DefaultMultiWorldPositionedObjectHolder<>() {
 
             @Nonnull
             @Override
@@ -37,7 +38,7 @@ public abstract class DefaultMultiWorldPositionedObjectHolder<T, V> implements I
 
     @SafeVarargs
     public static <T> DefaultMultiWorldPositionedObjectHolder<Set<T>, T> createListed(Consumer<PositionedObjectHolder<Set<T>, T>>... callbacks) {
-        DefaultMultiWorldPositionedObjectHolder<Set<T>, T> ret = new DefaultMultiWorldPositionedObjectHolder<Set<T>, T>() {
+        DefaultMultiWorldPositionedObjectHolder<Set<T>, T> ret = new DefaultMultiWorldPositionedObjectHolder<>() {
 
             @Nonnull
             @Override
@@ -58,31 +59,31 @@ public abstract class DefaultMultiWorldPositionedObjectHolder<T, V> implements I
     }
 
     public DefaultMultiWorldPositionedObjectHolder() {
-        this.objectsInternal = Maps.newIdentityHashMap();
+        this.objectsInternal = Maps.newLinkedHashMap();
         this.view = Collections.unmodifiableMap(this.objectsInternal);
         this.callbacks = Lists.newArrayList();
     }
 
     private final List<Consumer<PositionedObjectHolder<T, V>>> callbacks;
-    private final Map<RegistryKey<World>, PositionedObjectHolder<T, V>> objectsInternal;
-    private final Map<RegistryKey<World>, PositionedObjectHolder<T, V>> view;
+    private final Map<ResourceLocation, PositionedObjectHolder<T, V>> objectsInternal;
+    private final Map<ResourceLocation, PositionedObjectHolder<T, V>> view;
 
     @Nullable
     @Override
-    public PositionedObjectHolder<T, V> get(RegistryKey<World> world) {
-        return objectsInternal.get(world);
+    public PositionedObjectHolder<T, V> get(ResourceKey<Level> world) {
+        return objectsInternal.get(world.location());
     }
 
     @Nonnull
     @Override
-    public PositionedObjectHolder<T, V> getOrCreate(RegistryKey<World> world) {
+    public PositionedObjectHolder<T, V> getOrCreate(ResourceKey<Level> world) {
         PositionedObjectHolder<T, V> ret = get(world);
         if (ret == null) {
             ret = createNew();
             for (Consumer<PositionedObjectHolder<T, V>> callback : callbacks) {
                 callback.accept(ret);
             }
-            objectsInternal.put(world, ret);
+            objectsInternal.put(world.location(), ret);
         }
         return ret;
     }
@@ -95,7 +96,7 @@ public abstract class DefaultMultiWorldPositionedObjectHolder<T, V> implements I
 
     @Nonnull
     @Override
-    public Map<RegistryKey<World>, PositionedObjectHolder<T, V>> getUnModifiableView() {
+    public Map<ResourceLocation, PositionedObjectHolder<T, V>> getUnModifiableView() {
         return view;
     }
 

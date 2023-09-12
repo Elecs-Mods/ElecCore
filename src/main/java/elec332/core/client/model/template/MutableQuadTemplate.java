@@ -3,11 +3,10 @@ package elec332.core.client.model.template;
 import elec332.core.api.client.model.template.IMutableQuadTemplate;
 import elec332.core.api.client.model.template.IQuadTemplate;
 import elec332.core.client.RenderHelper;
-import elec332.core.util.math.VectorHelper;
+import net.minecraft.client.renderer.Vector3f;
 import net.minecraft.client.renderer.model.ModelRotation;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.util.Direction;
-import net.minecraft.util.math.vector.Vector3f;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -34,8 +33,8 @@ public class MutableQuadTemplate implements IMutableQuadTemplate {
         if (template == null)
             return newTemplate(Direction.UP);
         MutableQuadTemplate ret = new MutableQuadTemplate(template.getSide());
-        ret.v1 = VectorHelper.copyVector(template.getV1());
-        ret.v2 = VectorHelper.copyVector(template.getV2());
+        ret.v1 = new Vector3f(template.getV1());
+        ret.v2 = new Vector3f(template.getV2());
         ret.texture = template.getTexture();
         ret.rotation = template.getRotation();
         ret.uvData = makeImmutable(template.getUVData());

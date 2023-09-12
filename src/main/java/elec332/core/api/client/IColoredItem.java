@@ -1,13 +1,13 @@
 package elec332.core.api.client;
 
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 
 /**
  * Created by Elec332 on 21-8-2016.
  */
 public interface IColoredItem {
 
-    default int getColorFromItemStack(ItemStack stack, int tintIndex) {
+    default public int getColorFromItemStack(ItemStack stack, int tintIndex) {
         return -1;
     }
 

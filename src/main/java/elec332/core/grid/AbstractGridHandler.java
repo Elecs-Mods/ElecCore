@@ -6,11 +6,10 @@ import elec332.core.world.DimensionCoordinate;
 import elec332.core.world.posmap.DefaultMultiWorldPositionedObjectHolder;
 import elec332.core.world.posmap.IMultiWorldPositionedObjectHolder;
 import elec332.core.world.posmap.PositionedObjectHolder;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.RegistryKey;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.BlockPos;
 import net.minecraft.util.math.ChunkPos;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 
 import java.lang.reflect.Field;
@@ -55,7 +54,7 @@ public abstract class AbstractGridHandler<T extends IPositionable> implements IS
                     return;
                 }
                 ITileEntityLink object = (ITileEntityLink) objectU;
-                Class<?> type = object.getInformationType();
+                Class type = object.getInformationType();
                 if (type == null) {
                     return;
                 }
@@ -63,7 +62,7 @@ public abstract class AbstractGridHandler<T extends IPositionable> implements IS
                 if (tile != null) {
                     for (Field field : tile.getClass().getDeclaredFields()) {
                         if (field.isAnnotationPresent(GridInformation.class)) {
-                            Class<?> clazz = field.getAnnotation(GridInformation.class).value();
+                            Class clazz = field.getAnnotation(GridInformation.class).value();
                             if (clazz == type) {
                                 if (!field.getType().isAssignableFrom(type)) {
                                     throw new IllegalArgumentException();
@@ -95,7 +94,7 @@ public abstract class AbstractGridHandler<T extends IPositionable> implements IS
         return DefaultMultiWorldPositionedObjectHolder.create();
     }
 
-    protected final Map<RegistryKey<World>, PositionedObjectHolder<T, T>> getObjects() {
+    protected final Map<ResourceLocation, PositionedObjectHolder<T, T>> getObjects() {
         return objectsInternal.get().getUnModifiableView();
     }
 
@@ -203,10 +202,6 @@ public abstract class AbstractGridHandler<T extends IPositionable> implements IS
         updates.addAll(changeCheck);
         for (DimensionCoordinate dimCoord : updates) {
             TileEntity tile = dimCoord.getTileEntity();
-            IWorld world = dimCoord.getWorld();
-            if (tile == null && world != null) {
-                tile = world.getChunk(dimCoord.getPos()).getTileEntity(dimCoord.getPos());
-            }
             if (tile == null || !isValidObject(tile)) {
                 continue;
             }
@@ -217,7 +212,7 @@ public abstract class AbstractGridHandler<T extends IPositionable> implements IS
                 }
             } else {
                 o = createNewObject(tile);
-                getDim(dimCoord).put(o, tile.getPos());
+                objectsInternal.get().get(tile.getWorld()).put(o, tile.getPos());
                 o.hasChanged(); //Set initial data
             }
             internalAdd(o);

@@ -13,7 +13,7 @@ import elec332.core.api.network.simple.ISimpleNetworkPacketManager;
 import elec332.core.util.FMLHelper;
 import elec332.core.util.FieldPointer;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.fml.ModContainer;
 import net.minecraftforge.fml.network.NetworkEvent;
 import net.minecraftforge.fml.network.simple.SimpleChannel;

@@ -1,21 +1,20 @@
 package elec332.core.inventory.widget;
 
 import com.google.common.collect.Lists;
-import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.platform.GLX;
+import com.mojang.blaze3d.platform.GlStateManager;
 import elec332.core.client.RenderHelper;
 import elec332.core.client.util.GuiDraw;
 import elec332.core.inventory.tooltip.ToolTip;
 import elec332.core.inventory.window.Window;
 import elec332.core.util.NBTBuilder;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import org.lwjgl.opengl.GL11;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.List;
@@ -81,7 +80,7 @@ public class WidgetButton extends Widget {
     }
 
     @Override
-    public void readNBTChangesFromPacketServerSide(CompoundNBT tagCompound) {
+    public void readNBTChangesFromPacketServerSide(CompoundTag tagCompound) {
         if (tagCompound.getInt("id") == 1) {
             onButtonClicked(tagCompound.getInt("mbi"));
         }
@@ -92,16 +91,16 @@ public class WidgetButton extends Widget {
     }
 
     @Override
-    public void draw(Window gui, @Nonnull MatrixStack matrixStack, int guiX, int guiY, double mouseX, double mouseY, float partialTicks) {
+    public void draw(Window gui, int guiX, int guiY, double mouseX, double mouseY, float partialTicks) {
         if (!isHidden()) {
-            RenderSystem.pushMatrix();
+            GlStateManager.pushMatrix();
             FontRenderer fontrenderer = RenderHelper.getMCFontrenderer();
             bindTexture(buttonTextures);
             GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
             boolean hovering = isMouseOver(mouseX, mouseY);
             int k = this.getHoverState(hovering);
             GL11.glEnable(GL11.GL_BLEND);
-            RenderSystem.blendFuncSeparate(770, 771, 1, 0);
+            GLX.glBlendFuncSeparate(770, 771, 1, 0);
             GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
             //Left half
             GuiDraw.drawTexturedModalRect(guiX + this.x, guiY + this.y, 0, 46 + k * 20, this.width / 2, this.height / 2);
@@ -119,8 +118,8 @@ public class WidgetButton extends Widget {
                 l = 16777120;
             }
             GuiDraw.drawCenteredString(fontrenderer, this.displayString, guiX + this.x + this.width / 2, guiY + this.y + (this.height - 8) / 2, l);
-            RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
-            RenderSystem.popMatrix();
+            GlStateManager.color4f(1.0f, 1.0f, 1.0f, 1.0f);
+            GlStateManager.popMatrix();
         }
     }
 

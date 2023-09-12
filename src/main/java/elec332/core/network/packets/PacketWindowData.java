@@ -7,7 +7,7 @@ import elec332.core.api.network.simple.ISimplePacket;
 import elec332.core.api.network.simple.ISimplePacketHandler;
 import elec332.core.inventory.window.WindowContainer;
 import net.minecraft.inventory.container.Container;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.CompoundTag;
 
 import javax.annotation.Nullable;
 
@@ -16,18 +16,18 @@ import javax.annotation.Nullable;
  */
 public class PacketWindowData implements ISimplePacket, ISimplePacketHandler {
 
-    public PacketWindowData(WindowContainer container, CompoundNBT tag) {
+    public PacketWindowData(WindowContainer container, CompoundTag tag) {
         this.tag = tag;
         this.window = container.windowId;
     }
 
-    private final CompoundNBT tag;
+    private final CompoundTag tag;
     private final int window;
 
     @Override
     public void toBytes(ElecByteBuf byteBuf) {
         byteBuf.writeInt(window);
-        byteBuf.writeCompoundNBTToBuffer(tag);
+        byteBuf.writeCompoundTagToBuffer(tag);
     }
 
     @Nullable
@@ -40,7 +40,7 @@ public class PacketWindowData implements ISimplePacket, ISimplePacketHandler {
     public void onPacket(ElecByteBuf data, IExtendedMessageContext messageContext, ISimpleNetworkPacketManager networkHandler) {
         Container container = messageContext.getSender().openContainer;
         if (container.windowId == data.readInt() && container instanceof WindowContainer) {
-            ((WindowContainer) container).getWindow().onPacket(data.readCompoundNBTFromBuffer(), messageContext.getReceptionSide());
+            ((WindowContainer) container).getWindow().onPacket(data.readCompoundTagFromBuffer(), messageContext.getReceptionSide());
         }
     }
 

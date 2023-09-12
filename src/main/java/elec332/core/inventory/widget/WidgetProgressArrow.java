@@ -1,12 +1,9 @@
 package elec332.core.inventory.widget;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
 import elec332.core.api.inventory.IHasProgressBar;
 import elec332.core.client.util.GuiDraw;
 import elec332.core.inventory.window.Window;
-import net.minecraft.util.ResourceLocation;
-
-import javax.annotation.Nonnull;
+import net.minecraft.resources.ResourceLocation;
 
 /**
  * Created by Elec332 on 15-8-2015.
@@ -38,7 +35,7 @@ public class WidgetProgressArrow extends Widget {
     }
 
     @Override
-    public void draw(Window gui, @Nonnull MatrixStack matrixStack, int guiX, int guiY, double mouseX, double mouseY, float partialTicks) {
+    public void draw(Window gui, int guiX, int guiY, double mouseX, double mouseY, float partialTicks) {
         float progress = iHasProgressBar.getProgressScaled(lastProgress);
         if (progress > 1) {
             progress = 1;

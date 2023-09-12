@@ -1,8 +1,8 @@
 package elec332.core.api.client.model.loading;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.client.renderer.model.IBakedModel;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.renderer.model.ModelResourceLocation;
 
 /**
@@ -18,7 +18,7 @@ public interface IBlockModelHandler {
      * @param block The block
      * @return Whether this handler can handle this block
      */
-    boolean handleBlock(Block block);
+    public boolean handleBlock(Block block);
 
     /**
      * Notifies this {@link IBlockModelHandler} of the
@@ -27,7 +27,7 @@ public interface IBlockModelHandler {
      * @param state         The {@link BlockState}
      * @param modelLocation The location of the provided {@link BlockState}
      */
-    default void notifyModelLocation(BlockState state, ModelResourceLocation modelLocation) {
+    default public void notifyModelLocation(BlockState state, ModelResourceLocation modelLocation) {
     }
 
     /**
@@ -38,6 +38,6 @@ public interface IBlockModelHandler {
      * @param fullResourceLocation The full ModelResourceLocation for this model
      * @return The model for this {@param state}
      */
-    IBakedModel getModelFor(BlockState state, String identifier, ModelResourceLocation fullResourceLocation);
+    public IBakedModel getModelFor(BlockState state, String identifier, ModelResourceLocation fullResourceLocation);
 
 }

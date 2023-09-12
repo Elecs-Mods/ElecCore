@@ -13,17 +13,13 @@ import elec332.core.api.discovery.AnnotationDataProcessor;
 import elec332.core.api.discovery.IAnnotationData;
 import elec332.core.api.discovery.IAnnotationDataHandler;
 import elec332.core.api.discovery.IAnnotationDataProcessor;
-import elec332.core.api.module.IModuleManager;
-import elec332.core.api.registration.APIInjectedEvent;
 import elec332.core.util.FMLHelper;
 import elec332.core.util.FieldPointer;
 import elec332.core.util.ReflectionHelper;
 import net.minecraftforge.fml.ModContainer;
-import net.minecraftforge.fml.ModLoader;
 import net.minecraftforge.fml.ModLoadingStage;
 import org.apache.commons.lang3.ObjectUtils;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -45,14 +41,13 @@ enum APIHandler implements IAnnotationDataProcessor, IAPIHandler {
     APIHandler() {
         callBacks = Maps.newHashMap();
         injectedHandlers = Maps.newHashMap();
-        constructed = false;
     }
 
     //Used to be a multimap, but multimaps sort contents themselves,
     //we do not want that to happen, because they will be inserted in order
     private final Map<Class<?>, List<Consumer<?>>> callBacks;
+
     private final Map<Class<?>, Object> injectedHandlers;
-    private boolean constructed;
 
     @Override
     public void processASMData(IAnnotationDataHandler asmData, ModLoadingStage state) {
@@ -122,34 +117,24 @@ enum APIHandler implements IAnnotationDataProcessor, IAPIHandler {
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    @SuppressWarnings({"rawtypes", "unchecked"})
-    public void inject(@Nonnull Object o, Class<?>... classes) {
+    public void inject(Object o, Class<?>... classes) {
         for (Class<?> clazz : classes) {
-            ElecCore.logger.debug("Injecting type: " + clazz.getCanonicalName());
             if (!clazz.isAssignableFrom(o.getClass())) {
                 throw new IllegalArgumentException();
             }
-            injectedHandlers.put(clazz, o);
             for (Consumer consumer : Optional.ofNullable(callBacks.remove(clazz)).orElse(ImmutableList.of())) {
                 consumer.accept(o);
             }
-            if (constructed) {
-                ModLoader.get().postEvent(new APIInjectedEventImpl(clazz, o));
-            }
+            injectedHandlers.put(clazz, o);
         }
-    }
-
-    @SuppressWarnings({"rawtypes", "unchecked"})
-    void postConstruction() {
-        constructed = true;
-        injectedHandlers.forEach((clazz, o) -> ModLoader.get().postEvent(new APIInjectedEventImpl(clazz, o)));
     }
 
     @Nullable
     @Override
     @SuppressWarnings("all")
-    public <T> T get(@Nonnull Class<T> type) {
+    public <T> T get(Class<T> type) {
         return (T) injectedHandlers.get(type);
     }
 
@@ -169,7 +154,7 @@ enum APIHandler implements IAnnotationDataProcessor, IAPIHandler {
         if (ReflectionHelper.isStatic(field)) {
             return Lists.newArrayList((Object) null);
         }
-        Class<?> owner = field.getDeclaringClass();
+        Class owner = field.getDeclaringClass();
         if (owner.isEnum()) {
             return Arrays.asList(owner.getEnumConstants());
         }
@@ -199,28 +184,6 @@ enum APIHandler implements IAnnotationDataProcessor, IAPIHandler {
             }
         }
         return null;
-    }
-
-    @APIHandlerInject
-    @SuppressWarnings("unused")
-    private static void injectModuleManager(IModuleManager moduleManager) {
-        moduleManager.registerUncheckedEventType(APIInjectedEvent.class);
-    }
-
-    private static class APIInjectedEventImpl<T> extends APIInjectedEvent<T> {
-
-        public APIInjectedEventImpl(Class<T> type, T api) {
-            super(type);
-            this.api = api;
-        }
-
-        private final T api;
-
-        @Override
-        public T getInjectedAPI() {
-            return api;
-        }
-
     }
 
 }

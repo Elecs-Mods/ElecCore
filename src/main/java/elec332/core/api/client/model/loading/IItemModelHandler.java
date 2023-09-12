@@ -1,8 +1,8 @@
 package elec332.core.api.client.model.loading;
 
-import net.minecraft.client.renderer.model.IBakedModel;
+import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.renderer.model.ModelResourceLocation;
-import net.minecraft.item.Item;
+import net.minecraft.world.item.Item;
 
 /**
  * Created by Elec332 on 11-3-2016.
@@ -17,7 +17,7 @@ public interface IItemModelHandler {
      * @param item The item
      * @return Whether this handler can handle this item
      */
-    boolean handleItem(Item item);
+    public boolean handleItem(Item item);
 
     /**
      * Used to create an identifier for this Item
@@ -26,7 +26,7 @@ public interface IItemModelHandler {
      * @param item The item
      * @return The identifier for this Item
      */
-    String getIdentifier(Item item);
+    public String getIdentifier(Item item);
 
     /**
      * Used to create/fetch the model for this {@param item}
@@ -36,6 +36,6 @@ public interface IItemModelHandler {
      * @param fullResourceLocation The full ModelResourceLocation for this model
      * @return The model for this {@param item}
      */
-    IBakedModel getModelFor(Item item, String identifier, ModelResourceLocation fullResourceLocation);
+    public IBakedModel getModelFor(Item item, String identifier, ModelResourceLocation fullResourceLocation);
 
 }

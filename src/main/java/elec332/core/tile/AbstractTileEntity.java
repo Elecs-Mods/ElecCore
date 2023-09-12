@@ -12,15 +12,14 @@ import elec332.core.util.BlockProperties;
 import elec332.core.util.NBTTypes;
 import elec332.core.util.ServerHelper;
 import elec332.core.world.WorldHelper;
-import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.ListNBT;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
-import net.minecraft.state.Property;
-import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.level.block.state.properties.Property;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.Direction;
 import net.minecraftforge.api.distmarker.Dist;
@@ -34,35 +33,36 @@ import java.util.Map;
  */
 public class AbstractTileEntity extends TileEntity implements IElecCoreNetworkTile, RegisteredTileEntity.TypeSetter {
 
+    @SuppressWarnings("all")
     public AbstractTileEntity() {
-        this(null);
-        this.setTileEntityType(TileEntityAnnotationProcessor.getTileType(this.getClass()));
+        super(null);
+        setTileEntityType(TileEntityAnnotationProcessor.getTileType(getClass()));
     }
 
     public AbstractTileEntity(TileEntityType<?> type) {
         super(type);
-        this.setTileEntityType(type);
+        this.type = type;
     }
 
     private TileEntityType<?> type;
     private boolean isGatheringPackets;
-    private Map<Integer, CompoundNBT> gatherData;
+    private Map<Integer, CompoundTag> gatherData;
 
     public Direction getTileFacing() {
-        return getTileFacing(BlockProperties.FACING_HORIZONTAL);
+        return getTileFacing(BlockProperties.FACING_NORMAL);
     }
 
-    public Direction getTileFacing(Property<Direction> prop) {
+    public Direction getTileFacing(IProperty<Direction> prop) {
         return getBlockState().get(prop);
     }
 
     @Override
-    public void read(@Nonnull BlockState state, @Nonnull CompoundNBT nbt) {
-        super.read(state, nbt);
-        readLegacy(nbt);
+    public void read(@Nonnull CompoundTag compound) {
+        super.read(compound);
+        readLegacy(compound);
     }
 
-    public void readLegacy(CompoundNBT tag) {
+    public void readLegacy(CompoundTag tag) {
     }
 
     /*
@@ -72,7 +72,7 @@ public class AbstractTileEntity extends TileEntity implements IElecCoreNetworkTi
     }*/
 
     public boolean openTileGui(PlayerEntity player) {
-        if (WorldHelper.isClient(getWorld())) {
+        if (world.isRemote()) {
             return true;
         }
         if (!(this instanceof IWindowFactory)) {
@@ -97,14 +97,14 @@ public class AbstractTileEntity extends TileEntity implements IElecCoreNetworkTi
     }
 
     @OnlyIn(Dist.CLIENT)
-    public void sendPacketToServer(int ID, CompoundNBT data) {
+    public void sendPacketToServer(int ID, CompoundTag data) {
         ElecCore.networkHandler.sendToServer(new PacketTileDataToServer(this, ID, data));
     }
 
-    public void onPacketReceivedFromClient(ServerPlayerEntity sender, int ID, CompoundNBT data) {
+    public void onPacketReceivedFromClient(ServerPlayerEntity sender, int ID, CompoundTag data) {
     }
 
-    public void sendPacket(int ID, CompoundNBT data) {
+    public void sendPacket(int ID, CompoundTag data) {
         if (isGatheringPackets) {
             gatherData.put(ID, data);
             return;
@@ -114,7 +114,7 @@ public class AbstractTileEntity extends TileEntity implements IElecCoreNetworkTi
         }
     }
 
-    public void sendPacketTo(ServerPlayerEntity player, int ID, CompoundNBT data) {
+    public void sendPacketTo(ServerPlayerEntity player, int ID, CompoundTag data) {
         player.connection.sendPacket(new SUpdateTileEntityPacket(getPos(), ID, data));
     }
 
@@ -128,16 +128,16 @@ public class AbstractTileEntity extends TileEntity implements IElecCoreNetworkTi
     @Override
     @Nonnull
     @Deprecated
-    public CompoundNBT getUpdateTag() {
+    public CompoundTag getUpdateTag() {
         isGatheringPackets = true;
         gatherData = Maps.newHashMap();
         sendInitialLoadPackets();
         isGatheringPackets = false;
-        CompoundNBT tag = getInitialData();
+        CompoundTag tag = getInitialData();
         if (!gatherData.isEmpty()) {
-            ListNBT list = new ListNBT();
+            ListTag list = new ListTag();
             gatherData.forEach((key, value) -> {
-                CompoundNBT tag1 = new CompoundNBT();
+                CompoundTag tag1 = new CompoundTag();
                 tag1.putInt("pid", key);
                 tag1.put("pda", value);
                 list.add(tag1);
@@ -147,11 +147,11 @@ public class AbstractTileEntity extends TileEntity implements IElecCoreNetworkTi
         return tag;
     }
 
-    public CompoundNBT getInitialData() {
-        return write(new CompoundNBT());
+    public CompoundTag getInitialData() {
+        return write(new CompoundTag());
     }
 
-    public CompoundNBT getDefaultUpdateTag() {
+    public CompoundTag getDefaultUpdateTag() {
         return super.getUpdateTag();
     }
 
@@ -162,13 +162,13 @@ public class AbstractTileEntity extends TileEntity implements IElecCoreNetworkTi
     }
 
     @Override
-    public void handleUpdateTag(BlockState state, @Nonnull CompoundNBT tag) {
-        ListNBT p = tag.getList("morePackets_eD", NBTTypes.COMPOUND.getID());
+    public void handleUpdateTag(@Nonnull CompoundTag tag) {
+        ListTag p = tag.getList("morePackets_eD", NBTTypes.COMPOUND.getID());
         tag.remove("morePackets_eD");
-        read(state, tag);
+        read(tag);
         onDataPacket(0, tag);
         for (int i = 0; i < p.size(); i++) {
-            CompoundNBT tag_ = p.getCompound(i);
+            CompoundTag tag_ = p.getCompound(i);
             onDataPacket(tag_.getInt("pid"), tag_.getCompound("pda"));
         }
     }
@@ -176,13 +176,13 @@ public class AbstractTileEntity extends TileEntity implements IElecCoreNetworkTi
     @Override
     public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket packet) {
         if (packet.getTileEntityType() == 0) {
-            handleUpdateTag(WorldHelper.getBlockState(getWorld(), getPos()), packet.getNbtCompound());
+            handleUpdateTag(packet.getNbtCompound());
         } else {
             onDataPacket(packet.getTileEntityType(), packet.getNbtCompound());
         }
     }
 
-    public void onDataPacket(int id, CompoundNBT tag) {
+    public void onDataPacket(int id, CompoundTag tag) {
     }
 
     @Override

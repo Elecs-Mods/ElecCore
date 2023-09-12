@@ -8,17 +8,17 @@ import mcp.mobius.waila.api.IComponentProvider;
 import mcp.mobius.waila.api.IDataAccessor;
 import mcp.mobius.waila.api.IPluginConfig;
 import mcp.mobius.waila.api.IServerDataProvider;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
 
@@ -32,12 +32,12 @@ import java.util.List;
 public class WailaHandlerBlock implements IComponentProvider, IServerDataProvider<TileEntity> {
 
     @Override
-    public void appendServerData(CompoundNBT data, ServerPlayerEntity player, World world, TileEntity te) {
+    public void appendServerData(CompoundTag data, ServerPlayerEntity player, World world, TileEntity te) {
         if (data == null) {
-            data = new CompoundNBT();
+            data = new CompoundTag();
         }
         final BlockPos pos = te.getPos();
-        final CompoundNBT tag = data;
+        final CompoundTag tag = data;
         final BlockRayTraceResult rtr = RayTraceHelper.retraceBlock(world, pos, player);
         if (rtr == null) {
             tag.putBoolean("_nope_", true);
@@ -67,13 +67,13 @@ public class WailaHandlerBlock implements IComponentProvider, IServerDataProvide
 
             @Nonnull
             @Override
-            public CompoundNBT getData() {
+            public CompoundTag getData() {
                 return tag;
             }
 
             @Nonnull
             @Override
-            public Vector3d getHitVec() {
+            public Vec3d getHitVec() {
                 return getRayTraceResult().getHitVec();
             }
 
@@ -120,7 +120,7 @@ public class WailaHandlerBlock implements IComponentProvider, IServerDataProvide
 
     @Override
     public void appendBody(final List<ITextComponent> tooltip, final IDataAccessor accessor, IPluginConfig config) {
-        final CompoundNBT tag = accessor.getServerData();
+        final CompoundTag tag = accessor.getServerData();
         if (tag != null && !tag.getBoolean("_nope_")) {
             InformationHandler.INSTANCE.addInformation(new WailaInformationType(tooltip), new IInfoDataAccessorBlock() {
 
@@ -144,7 +144,7 @@ public class WailaHandlerBlock implements IComponentProvider, IServerDataProvide
 
                 @Nonnull
                 @Override
-                public CompoundNBT getData() {
+                public CompoundTag getData() {
                     return tag;
                 }
 
@@ -156,7 +156,7 @@ public class WailaHandlerBlock implements IComponentProvider, IServerDataProvide
 
                 @Nonnull
                 @Override
-                public Vector3d getHitVec() {
+                public Vec3d getHitVec() {
                     return accessor.getHitResult().getHitVec();
                 }
 

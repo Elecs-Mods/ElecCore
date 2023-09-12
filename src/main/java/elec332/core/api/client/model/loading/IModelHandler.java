@@ -1,8 +1,8 @@
 package elec332.core.api.client.model.loading;
 
-import net.minecraft.client.renderer.model.IBakedModel;
+import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.renderer.model.ModelResourceLocation;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.client.model.ModelLoader;
 
 import javax.annotation.Nonnull;
@@ -23,7 +23,7 @@ public interface IModelHandler {
     /**
      * @return Whether this model handler is enabled or not
      */
-    default boolean enabled() {
+    default public boolean enabled() {
         return true;
     }
 
@@ -32,7 +32,7 @@ public interface IModelHandler {
      *
      * @param list All objects annotated with {@link ModelHandler}
      */
-    default void getModelHandlers(List<?> list) {
+    default public void getModelHandlers(List<?> list) {
     }
 
     /**
@@ -40,7 +40,7 @@ public interface IModelHandler {
      * <p>
      * Gets called after {@link IModelHandler#getModelHandlers(List)}
      */
-    default void preHandleModels() {
+    default public void preHandleModels() {
     }
 
     /**
@@ -50,7 +50,7 @@ public interface IModelHandler {
      * @return A {@link Collection} with the model locations of the objects handled by this model handler
      */
     @Nonnull
-    Collection<ResourceLocation> getHandlerModelLocations();
+    public Collection<ResourceLocation> getHandlerModelLocations();
 
     /**
      * Used to register the models to the registry,
@@ -60,7 +60,7 @@ public interface IModelHandler {
      * @param modelLoader      The model loader
      * @param registry         The model registry, models that need to be registered can be registered here
      */
-    void registerBakedModels(Function<ModelResourceLocation, IBakedModel> bakedModelGetter, ModelLoader modelLoader, BiConsumer<ModelResourceLocation, IBakedModel> registry);
+    public void registerBakedModels(Function<ModelResourceLocation, IBakedModel> bakedModelGetter, ModelLoader modelLoader, BiConsumer<ModelResourceLocation, IBakedModel> registry);
 
     /**
      * Can be used to remove exceptions from being displayed in the logs,
@@ -68,7 +68,7 @@ public interface IModelHandler {
      *
      * @param loaderExceptions The map with all model-loading exceptions, from which exceptions can be cleared
      */
-    default void cleanExceptions(Map<ResourceLocation, Exception> loaderExceptions) {
+    default public void cleanExceptions(Map<ResourceLocation, Exception> loaderExceptions) {
     }
 
 }

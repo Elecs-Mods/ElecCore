@@ -1,7 +1,7 @@
 package elec332.core.network.packets;
 
 import elec332.core.api.network.IMessage;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.PacketBuffer;
 
 import java.util.function.Supplier;
@@ -11,15 +11,15 @@ import java.util.function.Supplier;
  */
 public abstract class AbstractMessage implements IMessage {
 
-    public AbstractMessage(Supplier<CompoundNBT> dataSupplier) {
+    public AbstractMessage(Supplier<CompoundTag> dataSupplier) {
         this(dataSupplier.get());
     }
 
-    public AbstractMessage(CompoundNBT b) {
+    public AbstractMessage(CompoundTag b) {
         this.networkPackageObject = b;
     }
 
-    protected CompoundNBT networkPackageObject;
+    protected CompoundTag networkPackageObject;
 
     @Override
     public void fromBytes(PacketBuffer buf) {

@@ -2,15 +2,15 @@ package elec332.core.item;
 
 import com.google.common.base.Preconditions;
 import elec332.core.api.client.IIconRegistrar;
-import elec332.core.api.client.model.IModelBakery;
-import elec332.core.api.client.model.IQuadBakery;
-import elec332.core.api.client.model.ITemplateBakery;
+import elec332.core.api.client.model.IElecModelBakery;
+import elec332.core.api.client.model.IElecQuadBakery;
+import elec332.core.api.client.model.IElecTemplateBakery;
 import elec332.core.client.model.loading.INoJsonItem;
-import net.minecraft.client.renderer.model.IBakedModel;
+import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -42,7 +42,7 @@ public class ItemTextured extends AbstractItem implements INoJsonItem {
      */
     @Override
     @OnlyIn(Dist.CLIENT)
-    public void registerModels(IQuadBakery quadBakery, IModelBakery modelBakery, ITemplateBakery templateBakery) {
+    public void registerModels(IElecQuadBakery quadBakery, IElecModelBakery modelBakery, IElecTemplateBakery templateBakery) {
         model = modelBakery.itemModelForTextures(textures);
     }
 

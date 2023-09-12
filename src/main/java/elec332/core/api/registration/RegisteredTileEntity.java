@@ -1,6 +1,6 @@
 package elec332.core.api.registration;
 
-import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.tileentity.TileEntityType;
 
 import java.lang.annotation.ElementType;
@@ -17,21 +17,21 @@ import java.lang.annotation.Target;
 @Target({ElementType.TYPE, ElementType.FIELD})
 public @interface RegisteredTileEntity {
 
-    String value();
+    public String value();
 
     /**
      * Use this to set the mod owner of this tile when auto-detection fails
      *
      * @return The mod owner
      */
-    String mod() default "";
+    public String mod() default "";
 
     /**
      * Use this interface if you want the {@link TileEntityType} to be set automatically
      */
-    interface TypeSetter {
+    public interface TypeSetter {
 
-        void setTileEntityType(TileEntityType<?> type);
+        public void setTileEntityType(TileEntityType<?> type);
 
     }
 

@@ -7,9 +7,7 @@ import elec332.core.api.discovery.IAnnotationData;
 import elec332.core.api.discovery.IAnnotationDataHandler;
 import elec332.core.api.discovery.IAnnotationDataProcessor;
 import elec332.core.api.mod.SidedProxy;
-import elec332.core.api.registration.DataGenerator;
 import elec332.core.api.util.IMemberPointer;
-import elec332.core.data.AbstractDataGenerator;
 import elec332.core.util.FMLHelper;
 import elec332.core.util.FieldPointer;
 import elec332.core.util.MethodPointer;
@@ -88,17 +86,6 @@ public class ConstructionAnnotationProcessor implements IAnnotationDataProcessor
 
         });
 
-        annotationData.getAnnotationList(DataGenerator.class).forEach(annotation -> {
-            Class<?> clazz = annotation.tryLoadClass();
-            if (clazz != null && AbstractDataGenerator.class.isAssignableFrom(clazz)) {
-                try {
-                    AbstractDataGenerator generator = (AbstractDataGenerator) clazz.newInstance();
-                    FMLHelper.getFMLModContainer(annotationData.deepSearchOwner(annotation)).getEventBus().addListener(AbstractDataGenerator.toEventListener(generator));
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
-            }
-        });
     }
 
 }

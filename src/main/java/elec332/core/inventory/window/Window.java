@@ -3,8 +3,7 @@ package elec332.core.inventory.window;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.platform.GlStateManager;
 import elec332.core.ElecCore;
 import elec332.core.client.RenderHelper;
 import elec332.core.client.util.GuiDraw;
@@ -19,10 +18,9 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.container.ClickType;
 import net.minecraft.inventory.container.Container;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.LogicalSide;
@@ -141,8 +139,7 @@ public class Window implements IWidgetContainer, IGuiEventListener {
     @Override
     public <W extends IWidget> W addWidget(W widget) {
         widget.setContainer(this);
-        int id = widgets.size();
-        widget.setID(id);
+        widget.setID(widgets.size());
         WidgetListener wl = new WidgetListener();
         wl.setWidget(widget);
         for (IWindowListener obj : getListeners()) {
@@ -150,7 +147,6 @@ public class Window implements IWidgetContainer, IGuiEventListener {
             widget.initWidget(wl);
         }
         this.widgets.add(widget);
-        this.map.put(widget, id);
         if (widget instanceof WidgetSlot) {
             windowContainer.addSlotToWindow((WidgetSlot) widget);
         }
@@ -262,7 +258,7 @@ public class Window implements IWidgetContainer, IGuiEventListener {
     public void onListenerAdded(IWindowListener listener) {
         WidgetListener wl = new WidgetListener();
         wl.setListener(listener);
-        for (IWidget widget : getWidgets()) {
+        for (IWidget widget : widgets) {
             wl.setWidget(widget);
             widget.initWidget(wl);
         }
@@ -280,12 +276,12 @@ public class Window implements IWidgetContainer, IGuiEventListener {
 
     @OnlyIn(Dist.CLIENT)
     public void updateProgressBar(int id, int data) {
-        getWidgets().get(id).updateProgressbar(data);
+        widgets.get(id).updateProgressbar(data);
     }
 
     public void detectAndSendChanges(Container from) {
         final WidgetListener wl = new WidgetListener();
-        for (IWidget widget : getWidgets()) {
+        for (IWidget widget : widgets) {
             wl.setWidget(widget);
             widget.detectAndSendChanges(new Iterable<IWidgetListener>() {
 
@@ -341,14 +337,14 @@ public class Window implements IWidgetContainer, IGuiEventListener {
         windowContainer.getSlot(slotID).putStack(stack);
     }
 
-    public void onPacket(CompoundNBT tag, LogicalSide receiver) {
+    public void onPacket(CompoundTag tag, LogicalSide receiver) {
     }
 
-    public void modifyTooltip(List<ITextComponent> tooltip, WidgetSlot slot, ItemStack stack, int x, int y) {
+    public void modifyTooltip(List<String> tooltip, WidgetSlot slot, ItemStack stack, int x, int y) {
         modifyTooltip(tooltip, slot, x, y);
     }
 
-    public void modifyTooltip(List<ITextComponent> tooltip, IWidget widget, int mouseX, int mouseY) {
+    public void modifyTooltip(List<String> tooltip, IWidget widget, int mouseX, int mouseY) {
         widget.modifyTooltip(tooltip, mouseX, mouseY);
     }
 
@@ -413,7 +409,7 @@ public class Window implements IWidgetContainer, IGuiEventListener {
     @Override
     @OnlyIn(Dist.CLIENT)
     public boolean mouseScrolled(double wheel, double translatedMouseX, double translatedMouseY) {
-        for (IWidget widget : getWidgets()) {
+        for (IWidget widget : widgets) {
             if (widget.mouseScrolled(wheel, translatedMouseX, translatedMouseY)) {
                 return true;
             }
@@ -424,7 +420,7 @@ public class Window implements IWidgetContainer, IGuiEventListener {
     @Override
     @OnlyIn(Dist.CLIENT)
     public boolean keyPressed(int key, int scanCode, int modifiers) {
-        for (IWidget widget : getWidgets()) {
+        for (IWidget widget : widgets) {
             if (widget.keyPressed(key, scanCode, modifiers)) {
                 return true;
             }
@@ -435,7 +431,7 @@ public class Window implements IWidgetContainer, IGuiEventListener {
     @Override
     @OnlyIn(Dist.CLIENT)
     public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
-        for (IWidget widget : getWidgets()) {
+        for (IWidget widget : widgets) {
             if (widget.keyReleased(keyCode, scanCode, modifiers)) {
                 return true;
             }
@@ -455,20 +451,21 @@ public class Window implements IWidgetContainer, IGuiEventListener {
     }
 
     @OnlyIn(Dist.CLIENT)
-    protected void drawGuiContainerForegroundLayer(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY) {
+    protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
 
     }
 
     @OnlyIn(Dist.CLIENT)
-    protected void drawScreenPre(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+    protected void drawScreenPre(int mouseX, int mouseY, float partialTicks) {
         GuiDraw.drawDefaultBackground();
     }
 
     @OnlyIn(Dist.CLIENT)
-    protected void drawScreenPost(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
-        RenderSystem.disableLighting();
-        RenderSystem.disableDepthTest();
-        RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+    protected void drawScreenPost(int mouseX, int mouseY, float partialTicks) {
+        GlStateManager.disableLighting();
+        GlStateManager.disableDepthTest();
+        GlStateManager.pushMatrix();
+        GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
         net.minecraft.client.renderer.RenderHelper.disableStandardItemLighting();
         for (IWidget widget : getWidgets()) {
             if (widget.isHidden()) {
@@ -486,21 +483,24 @@ public class Window implements IWidgetContainer, IGuiEventListener {
                 }
             }
         }
-        RenderSystem.enableDepthTest();
+        GlStateManager.popMatrix();
+        GlStateManager.enableDepthTest();
     }
 
     @OnlyIn(Dist.CLIENT)
-    protected void drawGuiContainerBackgroundLayer(@Nonnull MatrixStack matrixStack, float partialTicks, int mouseX, int mouseY) {
+    protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
+        GlStateManager.pushMatrix();
         drawBackground();
         int k = (width - xSize) / 2;
         int l = (height - ySize) / 2;
-        drawWidgets(matrixStack, k, l, mouseX, mouseY, partialTicks);
+        drawWidgets(k, l, mouseX, mouseY, partialTicks);
+        GlStateManager.popMatrix();
     }
 
     protected void drawBackground() {
         int k = (width - xSize) / 2;
         int l = (height - ySize) / 2;
-        RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+        GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
         ResourceLocation background = getBackgroundImageLocation();
         if (background != null) {
             RenderHelper.bindTexture(background);
@@ -524,15 +524,15 @@ public class Window implements IWidgetContainer, IGuiEventListener {
         }
     }
 
-    protected void drawWidgets(@Nonnull MatrixStack matrixStack, int k, int l, int mouseX, int mouseY, float partialTicks) {
-        matrixStack.push();
-        RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+    protected void drawWidgets(int k, int l, int mouseX, int mouseY, float partialTicks) {
+        GlStateManager.pushMatrix();
+        GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
         for (IWidget widget : getWidgets()) {
             if (!widget.isHidden()) {
-                widget.draw(this, matrixStack, k, l, translatedMouseX(mouseX), translatedMouseY(mouseY), partialTicks);
+                widget.draw(this, k, l, translatedMouseX(mouseX), translatedMouseY(mouseY), partialTicks);
             }
         }
-        matrixStack.pop();
+        GlStateManager.popMatrix();
     }
 
     @OnlyIn(Dist.CLIENT)
@@ -571,7 +571,7 @@ public class Window implements IWidgetContainer, IGuiEventListener {
         return windowContainer.slotClickDefault(slotId, dragType, clickTypeIn, player);
     }
 
-    protected final void sendPacket(CompoundNBT tag) {
+    protected final void sendPacket(CompoundTag tag) {
         windowContainer.sendPacket(tag);
     }
 

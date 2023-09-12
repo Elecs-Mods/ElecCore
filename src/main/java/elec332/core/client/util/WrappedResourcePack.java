@@ -3,7 +3,7 @@ package elec332.core.client.util;
 import net.minecraft.resources.IResourcePack;
 import net.minecraft.resources.ResourcePackType;
 import net.minecraft.resources.data.IMetadataSectionSerializer;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.fml.ModContainer;
 
 import javax.annotation.Nonnull;
@@ -17,7 +17,6 @@ import java.util.function.Predicate;
 /**
  * Created by Elec332 on 25-11-2016.
  */
-@SuppressWarnings("NullableProblems") //Too lazy, its a wrapper...
 public class WrappedResourcePack implements IResourcePack {
 
     public WrappedResourcePack(@Nonnull IResourcePack parent, @Nonnull ModContainer owner) {
@@ -39,8 +38,8 @@ public class WrappedResourcePack implements IResourcePack {
     }
 
     @Override
-    public Collection<ResourceLocation> getAllResourceLocations(ResourcePackType type, String namespaceIn, String pathIn, int maxDepthIn, Predicate<String> filterIn) {
-        return parent.getAllResourceLocations(type, namespaceIn, pathIn, maxDepthIn, filterIn);
+    public Collection<ResourceLocation> getAllResourceLocations(ResourcePackType resourcePackType, String s, int i, Predicate<String> predicate) {
+        return parent.getAllResourceLocations(resourcePackType, s, i, predicate);
     }
 
     @Override
@@ -65,7 +64,7 @@ public class WrappedResourcePack implements IResourcePack {
     }
 
     @Override
-    public void close() {
+    public void close() throws IOException {
         parent.close();
     }
 

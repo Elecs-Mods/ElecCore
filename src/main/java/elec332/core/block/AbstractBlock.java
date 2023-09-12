@@ -1,46 +1,37 @@
 package elec332.core.block;
 
 import com.google.common.base.Preconditions;
-import elec332.core.tile.IActivatableTile;
 import elec332.core.tile.ITileWithDrops;
 import elec332.core.util.BlockProperties;
 import elec332.core.world.WorldHelper;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.IWaterLoggable;
-import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.RenderTypeLookup;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.LiquidBlockContainer;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
-import net.minecraft.item.ItemStack;
-import net.minecraft.loot.LootContext;
-import net.minecraft.loot.LootParameters;
+import net.minecraft.fluid.IFluidState;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.state.StateContainer;
 import net.minecraft.state.properties.BlockStateProperties;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ActionResultType;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraft.world.storage.loot.LootContext;
+import net.minecraft.world.storage.loot.LootParameters;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.List;
-import java.util.function.Predicate;
 
 /**
  * Created by Elec332 on 26-11-2016.
@@ -49,22 +40,12 @@ public abstract class AbstractBlock extends Block implements IAbstractBlock {
 
     public AbstractBlock(Properties builder) {
         super(builder);
-        if (getDefaultState().hasProperty(BlockProperties.WATERLOGGED)) {
-            setDefaultState(getDefaultState().with(BlockStateProperties.WATERLOGGED, false));
+        if (defaultBlockState().hasProperty(BlockProperties.WATERLOGGED)) {
+            registerDefaultState(defaultBlockState().setValue(BlockProperties.WATERLOGGED, false));
         }
     }
 
     private String unlocalizedName;
-
-    @OnlyIn(Dist.CLIENT)
-    public void setBlockRenderType(RenderType renderType) {
-        RenderTypeLookup.setRenderLayer(this, renderType);
-    }
-
-    @OnlyIn(Dist.CLIENT)
-    public void setBlockRenderType(Predicate<RenderType> renderTypes) {
-        RenderTypeLookup.setRenderLayer(this, renderTypes);
-    }
 
     @Nonnull
     @Override
@@ -123,15 +104,14 @@ public abstract class AbstractBlock extends Block implements IAbstractBlock {
 
     @Override
     @Deprecated
-    @Nonnull
     @SuppressWarnings("deprecation")
-    public ActionResultType onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult hit) {
+    public boolean onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult hit) {
         return BlockMethods.onBlockActivated(state, world, pos, player, hand, hit, this);
     }
 
     @Override
     @Deprecated
-    public boolean removedByPlayer(@Nonnull BlockState state, World world, @Nonnull BlockPos pos, @Nonnull PlayerEntity player, boolean willHarvest, FluidState fluid) {
+    public boolean removedByPlayer(@Nonnull BlockState state, World world, @Nonnull BlockPos pos, @Nonnull PlayerEntity player, boolean willHarvest, IFluidState fluid) {
         return BlockMethods.removedByPlayer(state, world, pos, player, willHarvest, fluid, this);
     }
 
@@ -140,14 +120,14 @@ public abstract class AbstractBlock extends Block implements IAbstractBlock {
     @Deprecated
     @SuppressWarnings("deprecation")
     public List<ItemStack> getDrops(@Nonnull BlockState state, @Nonnull LootContext.Builder builder) {
-        Entity entity = builder.get(LootParameters.THIS_ENTITY);
-        Vector3d pos = Preconditions.checkNotNull(builder.get(LootParameters.field_237457_g_));
+        Entity entity = Preconditions.checkNotNull(builder.get(LootParameters.THIS_ENTITY));
+        BlockPos pos = Preconditions.checkNotNull(builder.get(LootParameters.POSITION));
         ItemStack stack = Preconditions.checkNotNull(builder.get(LootParameters.TOOL));
-        return getDrops(getOriginalDrops(state, builder), builder, entity, builder.getWorld(), new BlockPos(Math.floor(pos.x), Math.floor(pos.y), Math.floor(pos.z)), state, stack);
+        return getDrops(getOriginalDrops(state, builder), builder, entity, entity.world, pos, state, stack);
     }
 
     @Override
-    public List<ItemStack> getDrops(List<ItemStack> drops, @Nonnull LootContext.Builder builder, @Nullable Entity entity, World world, BlockPos pos, @Nonnull BlockState state, ItemStack stack) {
+    public List<ItemStack> getDrops(List<ItemStack> drops, @Nonnull LootContext.Builder builder, Entity entity, World world, BlockPos pos, @Nonnull BlockState state, ItemStack stack) {
         getTileDrops(drops, world, pos, EnchantmentHelper.getEnchantmentLevel(Enchantments.FORTUNE, stack));
         return drops;
     }
@@ -156,7 +136,7 @@ public abstract class AbstractBlock extends Block implements IAbstractBlock {
     @Override
     @SuppressWarnings("deprecation")
     public BlockState updatePostPlacement(@Nonnull BlockState stateIn, Direction facing, BlockState facingState, IWorld worldIn, BlockPos currentPos, BlockPos facingPos) {
-        if (stateIn.hasProperty(BlockProperties.WATERLOGGED) && stateIn.get(BlockStateProperties.WATERLOGGED)) {
+        if (stateIn.has(BlockProperties.WATERLOGGED) && stateIn.get(BlockStateProperties.WATERLOGGED)) {
             worldIn.getPendingFluidTicks().scheduleTick(currentPos, Fluids.WATER, Fluids.WATER.getTickRate(worldIn));
         }
         return super.updatePostPlacement(stateIn, facing, facingState, worldIn, currentPos, facingPos);
@@ -165,8 +145,8 @@ public abstract class AbstractBlock extends Block implements IAbstractBlock {
     @Nonnull
     @Override
     @SuppressWarnings("deprecation")
-    public FluidState getFluidState(BlockState state) {
-        if (state.hasProperty(BlockProperties.WATERLOGGED) && state.get(BlockStateProperties.WATERLOGGED)) {
+    public IFluidState getFluidState(BlockState state) {
+        if (state.has(BlockProperties.WATERLOGGED) && state.get(BlockStateProperties.WATERLOGGED)) {
             return Fluids.WATER.getStillFluidState(false);
         }
         return super.getFluidState(state);
@@ -174,24 +154,18 @@ public abstract class AbstractBlock extends Block implements IAbstractBlock {
 
     @Override
     public boolean propagatesSkylightDown(BlockState state, @Nonnull IBlockReader reader, @Nonnull BlockPos pos) {
-        if (state.hasProperty(BlockProperties.WATERLOGGED) && state.get(BlockStateProperties.WATERLOGGED)) {
+        if (state.has(BlockProperties.WATERLOGGED) && state.get(BlockStateProperties.WATERLOGGED)) {
             return false;
         }
         return super.propagatesSkylightDown(state, reader, pos);
     }
 
     @Override
-    protected void fillStateContainer(@Nonnull StateContainer.Builder<Block, BlockState> builder) {
+    protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
         super.fillStateContainer(builder);
-        if (this instanceof IWaterLoggable) {
+        if (this instanceof LiquidBlockContainer) {
             builder.add(BlockStateProperties.WATERLOGGED);
         }
-    }
-
-    @Override
-    public ActionResultType onBlockActivated(World world, BlockPos pos, BlockState state, PlayerEntity player, Hand hand, BlockRayTraceResult hit) {
-        TileEntity tile = WorldHelper.getTileAt(world, pos);
-        return tile instanceof IActivatableTile ? ((IActivatableTile) tile).onBlockActivated(player, hand, hit) : ActionResultType.PASS;
     }
 
     @SuppressWarnings("all")
@@ -199,6 +173,7 @@ public abstract class AbstractBlock extends Block implements IAbstractBlock {
         return super.getDrops(state, builder);
     }
 
+    @SuppressWarnings("all")
     public final void getTileDrops(List<ItemStack> drops, World world, BlockPos pos, int fortune) {
         TileEntity tile = WorldHelper.getTileAt(world, pos);
         if (tile instanceof ITileWithDrops) {

@@ -1,15 +1,15 @@
 package elec332.core.util.math;
 
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MutableBoundingBox;
-import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.levelgen.structure.BoundingBox;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 
 import javax.annotation.Nonnull;
 
-public class IndexedAABB extends AxisAlignedBB {
+public class IndexedAABB extends AABB {
 
-    public IndexedAABB(AxisAlignedBB aabb, int index) {
+    public IndexedAABB(AABB aabb, int index) {
         super(aabb.minX, aabb.minY, aabb.minZ, aabb.maxX, aabb.maxY, aabb.maxZ);
         this.index = index;
     }
@@ -29,16 +29,46 @@ public class IndexedAABB extends AxisAlignedBB {
         this.index = index;
     }
 
-    public IndexedAABB(MutableBoundingBox mutableBoundingBox, int index) {
-        this(AxisAlignedBB.toImmutable(mutableBoundingBox), index);
+    public IndexedAABB(BoundingBox mutableBoundingBox, int index) {
+        this(AABB.of(mutableBoundingBox), index);
     }
 
-    public IndexedAABB(Vector3d min, Vector3d max, int index) {
+    public IndexedAABB(Vec3 min, Vec3 max, int index) {
         super(min, max);
         this.index = index;
     }
 
     public final int index;
+
+    @Override
+    public AABB setMinX(double pMinX) {
+        return new IndexedAABB(super.setMinX(pMinX), index);
+    }
+
+    @Override
+    public AABB setMinY(double pMinY) {
+        return new IndexedAABB(super.setMinY(pMinY), index);
+    }
+
+    @Override
+    public AABB setMinZ(double pMinZ) {
+        return new IndexedAABB(super.setMinZ(pMinZ), index);
+    }
+
+    @Override
+    public AABB setMaxX(double pMaxX) {
+        return new IndexedAABB(super.setMaxX(pMaxX), index);
+    }
+
+    @Override
+    public AABB setMaxY(double pMaxY) {
+        return new IndexedAABB(super.setMaxY(pMaxY), index);
+    }
+
+    @Override
+    public AABB setMaxZ(double pMaxZ) {
+        return new IndexedAABB(super.setMaxZ(pMaxZ), index);
+    }
 
     @Override
     @Nonnull
@@ -47,62 +77,62 @@ public class IndexedAABB extends AxisAlignedBB {
     }
 
     @Override
-    @Nonnull
-    public IndexedAABB expand(double x, double y, double z) {
-        return new IndexedAABB(super.expand(x, y, z), index);
+    public AABB expandTowards(Vec3 pVector) {
+        return new IndexedAABB(super.expandTowards(pVector), index);
     }
 
     @Override
     @Nonnull
-    public IndexedAABB grow(double value) {
-        return new IndexedAABB(super.grow(value), index);
+    public IndexedAABB expandTowards(double x, double y, double z) {
+        return new IndexedAABB(super.expandTowards(x, y, z), index);
     }
 
     @Override
     @Nonnull
-    public IndexedAABB grow(double x, double y, double z) {
-        return new IndexedAABB(super.grow(x, y, z), index);
+    public IndexedAABB inflate(double value) {
+        return new IndexedAABB(super.inflate(value), index);
     }
 
     @Override
     @Nonnull
-    public IndexedAABB intersect(AxisAlignedBB other) {
+    public IndexedAABB inflate(double x, double y, double z) {
+        return new IndexedAABB(super.inflate(x, y, z), index);
+    }
+
+    @Override
+    @Nonnull
+    public IndexedAABB intersect(AABB other) {
         return new IndexedAABB(super.intersect(other), index);
     }
 
     @Override
     @Nonnull
-    public IndexedAABB union(AxisAlignedBB other) {
-        return new IndexedAABB(super.union(other), index);
+    public IndexedAABB minmax(AABB other) {
+        return new IndexedAABB(super.minmax(other), index);
     }
 
     @Override
     @Nonnull
-    public IndexedAABB offset(Vector3d vec) {
-        return new IndexedAABB(super.offset(vec), index);
+    public IndexedAABB move(Vec3 vec) {
+        return new IndexedAABB(super.move(vec), index);
     }
 
     @Override
     @Nonnull
-    public IndexedAABB offset(BlockPos pos) {
-        return new IndexedAABB(super.offset(pos), index);
+    public IndexedAABB move(BlockPos pos) {
+        return new IndexedAABB(super.move(pos), index);
     }
 
     @Override
     @Nonnull
-    public IndexedAABB offset(double x, double y, double z) {
-        return new IndexedAABB(super.offset(x, y, z), index);
-    }
-
-    @Override
-    public boolean intersects(Vector3d min, Vector3d max) {
-        return this.intersects(Math.min(min.x, max.x), Math.min(min.y, max.y), Math.min(min.z, max.z), Math.max(min.x, max.x), Math.max(min.y, max.y), Math.max(min.z, max.z));
+    public IndexedAABB move(double x, double y, double z) {
+        return new IndexedAABB(super.move(x, y, z), index);
     }
 
     @Override
     @Nonnull
-    public IndexedAABB shrink(double value) {
-        return new IndexedAABB(super.shrink(value), index);
+    public IndexedAABB deflate(double value) {
+        return new IndexedAABB(super.deflate(value), index);
     }
 
     /*
@@ -111,7 +141,7 @@ public class IndexedAABB extends AxisAlignedBB {
 
     @Nullable
     @Override
-    public RayTraceResult calculateIntercept(@Nonnull Vector3d vecA, @Nonnull Vector3d vecB, @Nullable BlockPos pos) {
+    public RayTraceResult calculateIntercept(@Nonnull Vec3d vecA, @Nonnull Vec3d vecB, @Nullable BlockPos pos) {
         RayTraceResult ret = super.calculateIntercept(vecA, vecB, pos);
         if (ret != null) {
             ret.subHit = index;
@@ -119,6 +149,11 @@ public class IndexedAABB extends AxisAlignedBB {
         return ret;
     }
     */
+
+    @Override
+    public String toString() {
+        return super.toString() + " @ " + index;
+    }
 
     @Override
     public boolean equals(Object o) {

@@ -2,8 +2,8 @@ package elec332.core.inventory;
 
 import elec332.core.util.InventoryHelper;
 import elec332.core.util.ItemStackHelper;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.NonNullList;
 import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.items.IItemHandlerModifiable;
@@ -16,7 +16,7 @@ import javax.annotation.Nonnull;
  * <p>
  * Simple (serializable) implementation of {@link IItemHandlerModifiable}
  */
-public class BasicItemHandler implements IItemHandlerModifiable, INBTSerializable<CompoundNBT> {
+public class BasicItemHandler implements IItemHandlerModifiable, INBTSerializable<CompoundTag> {
 
     public BasicItemHandler() {
         this(1);
@@ -40,7 +40,7 @@ public class BasicItemHandler implements IItemHandlerModifiable, INBTSerializabl
     public void setStackInSlot(int slot, @Nonnull ItemStack stack) {
         validateSlotIndex(slot);
         ItemStack stackInSlot = this.stacks.get(slot);
-        if (ItemStack.areItemStacksEqual(stackInSlot, stack)) {
+        if (ItemStack.areItemStacksEqual(stackInSlot, stack) || !isItemValid(slot, stack)) {
             return;
         }
         this.stacks.set(slot, stack);
@@ -121,9 +121,8 @@ public class BasicItemHandler implements IItemHandlerModifiable, INBTSerializabl
             if (!simulate) {
                 this.stacks.set(slot, ItemStackHelper.NULL_STACK);
                 onContentsChanged(slot);
-                return existing;
             }
-            return existing.copy();
+            return existing;
         } else {
             if (!simulate) {
                 this.stacks.set(slot, ItemHandlerHelper.copyStackWithSize(existing, existing.getCount() - toExtract));
@@ -136,22 +135,19 @@ public class BasicItemHandler implements IItemHandlerModifiable, INBTSerializabl
 
 
     @Override
-    public CompoundNBT serializeNBT() {
-        return writeToNBT(new CompoundNBT());
+    public CompoundTag serializeNBT() {
+        return writeToNBT(new CompoundTag());
     }
 
     @Override
-    public void deserializeNBT(CompoundNBT nbt) {
-        int size = nbt.contains("Size", net.minecraftforge.common.util.Constants.NBT.TAG_INT) ? nbt.getInt("Size") : stacks.size();
-        if (size > getSlots()) {
-            setSize(size);
-        }
+    public void deserializeNBT(CompoundTag nbt) {
+        setSize(nbt.contains("Size", net.minecraftforge.common.util.Constants.NBT.TAG_INT) ? nbt.getInt("Size") : stacks.size());
         InventoryHelper.readItemsFromNBT(nbt, stacks);
         onLoad();
     }
 
-    public CompoundNBT writeToNBT(CompoundNBT compound) {
-        CompoundNBT tag = InventoryHelper.writeItemsToNBT(compound, stacks);
+    public CompoundTag writeToNBT(CompoundTag compound) {
+        CompoundTag tag = InventoryHelper.writeItemsToNBT(compound, stacks);
         tag.putInt("Size", stacks.size());
         return tag;
     }

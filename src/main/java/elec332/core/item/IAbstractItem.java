@@ -1,6 +1,6 @@
 package elec332.core.item;
 
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 
 /**
  * Created by Elec332 on 29-12-2018
